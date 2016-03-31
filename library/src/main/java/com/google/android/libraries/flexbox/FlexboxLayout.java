@@ -19,11 +19,15 @@ package com.google.android.libraries.flexbox;
 import android.content.Context;
 import android.content.res.TypedArray;
 import android.support.annotation.IntDef;
+import android.support.annotation.NonNull;
 import android.util.AttributeSet;
+import android.view.View;
 import android.view.ViewGroup;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
+import java.util.SortedSet;
+import java.util.TreeSet;
 
 /**
  * A layout that arranges its children in a way its attributes can be specified like
@@ -96,6 +100,9 @@ public class FlexboxLayout extends ViewGroup {
 
     private int mAlignContent;
 
+    /** Holds reordered indices, which {@link LayoutParams#order} parameter is taken into account */
+    private int[] mReorderedIndex;
+
     public FlexboxLayout(Context context) {
         this(context, null);
     }
@@ -121,7 +128,42 @@ public class FlexboxLayout extends ViewGroup {
     @Override
     protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
         super.onMeasure(widthMeasureSpec, heightMeasureSpec);
+        mReorderedIndex = createReorderedIndex();
+        // TODO: Only calculate the children views which are affected from the last measure.
+
         // TODO: Implement onMeasure
+    }
+
+    /**
+     * Returns a View, which is reordered by taking {@link LayoutParams#order} parameters
+     * into account.
+     *
+     * @param index the index of the view
+     * @return the reordered view, which {@link LayoutParams@order} is taken into account.
+     */
+    public View getReorderedChildAt(int index) {
+        return getChildAt(mReorderedIndex[index]);
+    }
+
+    private int[] createReorderedIndex() {
+        int[] reorderedIndex = new int[getChildCount()];
+        int count = getChildCount();
+        SortedSet<Order> orderSet = new TreeSet<>();
+        for (int i = 0; i < count; i++) {
+            View child = getChildAt(i);
+            LayoutParams params = (LayoutParams) child.getLayoutParams();
+            Order order = new Order();
+            order.order = params.order;
+            order.index = i;
+            orderSet.add(order);
+        }
+
+        int i = 0;
+        for (Order order : orderSet) {
+            reorderedIndex[i] = order.index;
+            i++;
+        }
+        return reorderedIndex;
     }
 
     @Override
@@ -204,6 +246,9 @@ public class FlexboxLayout extends ViewGroup {
         }
     }
 
+    /**
+     * Per child parameters for children views of the {@link FlexboxLayout}.
+     */
     public static class LayoutParams extends ViewGroup.MarginLayoutParams {
 
         private static final int ORDER_DEFAULT = 1;
@@ -239,6 +284,33 @@ public class FlexboxLayout extends ViewGroup {
 
         public LayoutParams(ViewGroup.LayoutParams source) {
             super(source);
+        }
+    }
+
+    /**
+     * A class that is used for calculating the view order which view's indices and order properties
+     * from Flexbox are taken into account.
+     */
+    private static class Order implements Comparable<Order> {
+        /** {@link View}'s index */
+        int index;
+        /** order property in the Flexbox */
+        int order;
+
+        @Override
+        public int compareTo(@NonNull Order another) {
+            if (order != another.order) {
+                return order - another.order;
+            }
+            return index - another.index;
+        }
+
+        @Override
+        public String toString() {
+            return "Order{" +
+                    "order=" + order +
+                    ", index=" + index +
+                    '}';
         }
     }
 }
