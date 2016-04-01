@@ -17,6 +17,15 @@
 package com.google.android.libraries.flexbox.test;
 
 
+import static android.support.test.espresso.Espresso.onView;
+import static android.support.test.espresso.assertion.PositionAssertions.isAbove;
+import static android.support.test.espresso.assertion.PositionAssertions.isBelow;
+import static android.support.test.espresso.assertion.PositionAssertions.isBottomAlignedWith;
+import static android.support.test.espresso.assertion.PositionAssertions.isLeftAlignedWith;
+import static android.support.test.espresso.assertion.PositionAssertions.isRightAlignedWith;
+import static android.support.test.espresso.assertion.PositionAssertions.isRightOf;
+import static android.support.test.espresso.assertion.PositionAssertions.isTopAlignedWith;
+import static android.support.test.espresso.matcher.ViewMatchers.withId;
 import static org.hamcrest.core.Is.is;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertThat;
@@ -53,7 +62,7 @@ public class FlexboxAndroidTest {
         mActivityRule.runOnUiThread(new Runnable() {
             @Override
             public void run() {
-                activity.setContentView(R.layout.activity_flexbox_simple);
+                activity.setContentView(R.layout.activity_simple);
             }
         });
         FlexboxLayout flexboxLayout = (FlexboxLayout) activity.findViewById(R.id.flexbox_layout);
@@ -78,7 +87,7 @@ public class FlexboxAndroidTest {
         mActivityRule.runOnUiThread(new Runnable() {
             @Override
             public void run() {
-                activity.setContentView(R.layout.activity_flexbox_order_test);
+                activity.setContentView(R.layout.activity_order_test);
             }
         });
         FlexboxLayout flexboxLayout = (FlexboxLayout) activity.findViewById(R.id.flexbox_layout);
@@ -106,7 +115,7 @@ public class FlexboxAndroidTest {
         mActivityRule.runOnUiThread(new Runnable() {
             @Override
             public void run() {
-                activity.setContentView(R.layout.activity_flexbox_order_test);
+                activity.setContentView(R.layout.activity_order_test);
             }
         });
         FlexboxLayout flexboxLayout = (FlexboxLayout) activity.findViewById(R.id.flexbox_layout);
@@ -137,11 +146,137 @@ public class FlexboxAndroidTest {
                 is(String.valueOf(1)));
     }
 
+    @Test
+    public void testFlexWrap_wrap() throws Throwable {
+        final FlexboxTestActivity activity = mActivityRule.getActivity();
+        mActivityRule.runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                activity.setContentView(R.layout.activity_flex_wrap_test);
+            }
+        });
+        FlexboxLayout flexboxLayout = (FlexboxLayout) activity.findViewById(R.id.flexbox_layout);
+
+        assertThat(flexboxLayout.getFlexWrap(), is(FlexboxLayout.FLEX_WRAP_WRAP));
+        onView(withId(R.id.text1)).check(isLeftAlignedWith(withId(R.id.flexbox_layout)));
+        onView(withId(R.id.text1)).check(isTopAlignedWith(withId(R.id.flexbox_layout)));
+        onView(withId(R.id.text2)).check(isRightOf(withId(R.id.text1)));
+        onView(withId(R.id.text2)).check(isTopAlignedWith(withId(R.id.flexbox_layout)));
+        // The width of the FlexboxLayout is not enough for placing the three text views.
+        // The third text view should be placed below the first one
+        onView(withId(R.id.text3)).check(isBelow(withId(R.id.text1)));
+        onView(withId(R.id.text3)).check(isBelow(withId(R.id.text2)));
+        onView(withId(R.id.text3)).check(isLeftAlignedWith(withId(R.id.flexbox_layout)));
+    }
+
+    @Test
+    public void testFlexWrap_nowrap() throws Throwable {
+        final FlexboxTestActivity activity = mActivityRule.getActivity();
+        mActivityRule.runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                activity.setContentView(R.layout.activity_flex_wrap_test);
+            }
+        });
+        FlexboxLayout flexboxLayout = (FlexboxLayout) activity.findViewById(R.id.flexbox_layout);
+        flexboxLayout.setFlexWrap(FlexboxLayout.FLEX_WRAP_NOWRAP);
+        InstrumentationRegistry.getInstrumentation().waitForIdleSync();
+
+        assertThat(flexboxLayout.getFlexWrap(), is(FlexboxLayout.FLEX_WRAP_NOWRAP));
+        onView(withId(R.id.text1)).check(isLeftAlignedWith(withId(R.id.flexbox_layout)));
+        onView(withId(R.id.text1)).check(isTopAlignedWith(withId(R.id.flexbox_layout)));
+        onView(withId(R.id.text2)).check(isRightOf(withId(R.id.text1)));
+        onView(withId(R.id.text2)).check(isTopAlignedWith(withId(R.id.flexbox_layout)));
+        // The width of the FlexboxLayout is not enough for placing the three text views.
+        // But the flexWrap attribute is set to FLEX_WRAP_NOWRAP, the third text view is placed
+        // to the right of the second one and overflowing the parent FlexboxLayout.
+        onView(withId(R.id.text3)).check(isRightOf(withId(R.id.text2)));
+        onView(withId(R.id.text3)).check(isTopAlignedWith(withId(R.id.flexbox_layout)));
+    }
+
+    @Test
+    public void testFlexWrap_wrap_reverse() throws Throwable {
+        final FlexboxTestActivity activity = mActivityRule.getActivity();
+        mActivityRule.runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                activity.setContentView(R.layout.activity_flex_wrap_test);
+            }
+        });
+        FlexboxLayout flexboxLayout = (FlexboxLayout) activity.findViewById(R.id.flexbox_layout);
+        flexboxLayout.setFlexWrap(FlexboxLayout.FLEX_WRAP_WRAP_REVERSE);
+        InstrumentationRegistry.getInstrumentation().waitForIdleSync();
+
+        assertThat(flexboxLayout.getFlexWrap(), is(FlexboxLayout.FLEX_WRAP_WRAP_REVERSE));
+        onView(withId(R.id.text1)).check(isLeftAlignedWith(withId(R.id.flexbox_layout)));
+        onView(withId(R.id.text2)).check(isRightOf(withId(R.id.text1)));
+        // The width of the FlexboxLayout is not enough for placing the three text views.
+        // There should be two flex lines same as FLEX_WRAP_WRAP, but the layout starts from bottom
+        // to top in FLEX_WRAP_WRAP_REVERSE
+        onView(withId(R.id.text3)).check(isAbove(withId(R.id.text1)));
+        onView(withId(R.id.text3)).check(isAbove(withId(R.id.text2)));
+        onView(withId(R.id.text3)).check(isLeftAlignedWith(withId(R.id.flexbox_layout)));
+    }
+
+    @Test
+    public void testFlexboxLayout_wrapContent() throws Throwable {
+        final FlexboxTestActivity activity = mActivityRule.getActivity();
+        mActivityRule.runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                activity.setContentView(R.layout.activity_flexbox_wrap_content);
+            }
+        });
+        // The parent FlexboxLayout's layout_width and layout_height are set to wrap_content
+        // The size of the FlexboxLayout is aligned with three text views.
+
+        onView(withId(R.id.text1)).check(isLeftAlignedWith(withId(R.id.flexbox_layout)));
+        onView(withId(R.id.text1)).check(isTopAlignedWith(withId(R.id.flexbox_layout)));
+        onView(withId(R.id.text1)).check(isBottomAlignedWith(withId(R.id.flexbox_layout)));
+
+        onView(withId(R.id.text2)).check(isRightOf(withId(R.id.text1)));
+        onView(withId(R.id.text2)).check(isTopAlignedWith(withId(R.id.flexbox_layout)));
+        onView(withId(R.id.text2)).check(isBottomAlignedWith(withId(R.id.flexbox_layout)));
+
+        onView(withId(R.id.text3)).check(isRightOf(withId(R.id.text2)));
+        onView(withId(R.id.text3)).check(isTopAlignedWith(withId(R.id.flexbox_layout)));
+        onView(withId(R.id.text3)).check(isBottomAlignedWith(withId(R.id.flexbox_layout)));
+        onView(withId(R.id.text3)).check(isRightAlignedWith(withId(R.id.flexbox_layout)));
+    }
+
+    @Test
+    public void testFlexboxLayout_wrapped_with_ScrollView() throws Throwable {
+        final FlexboxTestActivity activity = mActivityRule.getActivity();
+        mActivityRule.runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                activity.setContentView(R.layout.activity_flexbox_wrapped_with_scrollview);
+            }
+        });
+        FlexboxLayout flexboxLayout = (FlexboxLayout) activity.findViewById(R.id.flexbox_layout);
+
+        onView(withId(R.id.text1)).check(isLeftAlignedWith(withId(R.id.flexbox_layout)));
+        onView(withId(R.id.text1)).check(isTopAlignedWith(withId(R.id.flexbox_layout)));
+
+        onView(withId(R.id.text2)).check(isRightOf(withId(R.id.text1)));
+        onView(withId(R.id.text2)).check(isTopAlignedWith(withId(R.id.flexbox_layout)));
+
+        onView(withId(R.id.text3)).check(isBelow(withId(R.id.text1)));
+        onView(withId(R.id.text3)).check(isBelow(withId(R.id.text2)));
+        onView(withId(R.id.text3)).check(isLeftAlignedWith(withId(R.id.flexbox_layout)));
+
+        // The heightMode of the FlexboxLayout is set as MeasureSpec.UNSPECIFIED, the height of the
+        // layout will be expanded to include the all children views
+        TextView textView1 = (TextView) activity.findViewById(R.id.text1);
+        TextView textView3 = (TextView) activity.findViewById(R.id.text3);
+        assertThat(flexboxLayout.getHeight(), is(textView1.getHeight() + textView3.getHeight()));
+    }
+
     private TextView createTextView(Context context, String text, int order) {
         TextView textView = new TextView(context);
         textView.setText(text);
-        FlexboxLayout.LayoutParams lp = new FlexboxLayout.LayoutParams(new ViewGroup.LayoutParams(
-                ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT));
+        FlexboxLayout.LayoutParams lp = new FlexboxLayout.LayoutParams(
+                ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
         lp.order = order;
         textView.setLayoutParams(lp);
         return textView;
