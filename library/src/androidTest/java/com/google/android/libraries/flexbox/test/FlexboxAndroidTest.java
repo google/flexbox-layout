@@ -22,6 +22,7 @@ import static android.support.test.espresso.assertion.PositionAssertions.isAbove
 import static android.support.test.espresso.assertion.PositionAssertions.isBelow;
 import static android.support.test.espresso.assertion.PositionAssertions.isBottomAlignedWith;
 import static android.support.test.espresso.assertion.PositionAssertions.isLeftAlignedWith;
+import static android.support.test.espresso.assertion.PositionAssertions.isLeftOf;
 import static android.support.test.espresso.assertion.PositionAssertions.isRightAlignedWith;
 import static android.support.test.espresso.assertion.PositionAssertions.isRightOf;
 import static android.support.test.espresso.assertion.PositionAssertions.isTopAlignedWith;
@@ -270,6 +271,132 @@ public class FlexboxAndroidTest {
         TextView textView1 = (TextView) activity.findViewById(R.id.text1);
         TextView textView3 = (TextView) activity.findViewById(R.id.text3);
         assertThat(flexboxLayout.getHeight(), is(textView1.getHeight() + textView3.getHeight()));
+    }
+
+    @Test
+    public void testJustifyContent_flexStart() throws Throwable {
+        final FlexboxTestActivity activity = mActivityRule.getActivity();
+        mActivityRule.runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                activity.setContentView(R.layout.activity_justify_content_test);
+            }
+        });
+        FlexboxLayout flexboxLayout = (FlexboxLayout) activity.findViewById(R.id.flexbox_layout);
+
+        assertThat(flexboxLayout.getJustifyContent(), is(FlexboxLayout.JUSTIFY_CONTENT_FLEX_START));
+        onView(withId(R.id.text1)).check(isTopAlignedWith(withId(R.id.flexbox_layout)));
+        onView(withId(R.id.text1)).check(isLeftAlignedWith(withId(R.id.flexbox_layout)));
+        onView(withId(R.id.text2)).check(isRightOf(withId(R.id.text1)));
+        onView(withId(R.id.text3)).check(isRightOf(withId(R.id.text2)));
+    }
+
+    @Test
+    public void testJustifyContent_flexEnd() throws Throwable {
+        final FlexboxTestActivity activity = mActivityRule.getActivity();
+        mActivityRule.runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                activity.setContentView(R.layout.activity_justify_content_test);
+            }
+        });
+        FlexboxLayout flexboxLayout = (FlexboxLayout) activity.findViewById(R.id.flexbox_layout);
+        flexboxLayout.setJustifyContent(FlexboxLayout.JUSTIFY_CONTENT_FLEX_END);
+
+        assertThat(flexboxLayout.getJustifyContent(), is(FlexboxLayout.JUSTIFY_CONTENT_FLEX_END));
+        onView(withId(R.id.text3)).check(isTopAlignedWith(withId(R.id.flexbox_layout)));
+        onView(withId(R.id.text3)).check(isRightAlignedWith(withId(R.id.flexbox_layout)));
+        onView(withId(R.id.text2)).check(isLeftOf(withId(R.id.text3)));
+        onView(withId(R.id.text1)).check(isLeftOf(withId(R.id.text2)));
+    }
+
+    @Test
+    public void testJustifyContent_center() throws Throwable {
+        final FlexboxTestActivity activity = mActivityRule.getActivity();
+        mActivityRule.runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                activity.setContentView(R.layout.activity_justify_content_test);
+            }
+        });
+        FlexboxLayout flexboxLayout = (FlexboxLayout) activity.findViewById(R.id.flexbox_layout);
+        flexboxLayout.setJustifyContent(FlexboxLayout.JUSTIFY_CONTENT_CENTER);
+
+        assertThat(flexboxLayout.getJustifyContent(), is(FlexboxLayout.JUSTIFY_CONTENT_CENTER));
+        onView(withId(R.id.text1)).check(isTopAlignedWith(withId(R.id.flexbox_layout)));
+        onView(withId(R.id.text2)).check(isRightOf(withId(R.id.text1)));
+        onView(withId(R.id.text2)).check(isTopAlignedWith(withId(R.id.flexbox_layout)));
+        onView(withId(R.id.text3)).check(isRightOf(withId(R.id.text2)));
+        onView(withId(R.id.text3)).check(isTopAlignedWith(withId(R.id.flexbox_layout)));
+
+        TextView textView1 = (TextView) activity.findViewById(R.id.text1);
+        TextView textView2 = (TextView) activity.findViewById(R.id.text2);
+        TextView textView3 = (TextView) activity.findViewById(R.id.text3);
+        int space = flexboxLayout.getWidth() - textView1.getWidth() - textView2.getWidth() -
+                textView3.getWidth();
+        space = space / 2;
+        assertThat(textView1.getLeft(), is(space));
+        assertThat(flexboxLayout.getRight() - textView3.getRight(), is(space));
+    }
+
+    @Test
+    public void testJustifyContent_spaceBetween() throws Throwable {
+        final FlexboxTestActivity activity = mActivityRule.getActivity();
+        mActivityRule.runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                activity.setContentView(R.layout.activity_justify_content_test);
+            }
+        });
+        FlexboxLayout flexboxLayout = (FlexboxLayout) activity.findViewById(R.id.flexbox_layout);
+        flexboxLayout.setJustifyContent(FlexboxLayout.JUSTIFY_CONTENT_SPACE_BETWEEN);
+
+        assertThat(flexboxLayout.getJustifyContent(),
+                is(FlexboxLayout.JUSTIFY_CONTENT_SPACE_BETWEEN));
+        onView(withId(R.id.text1)).check(isTopAlignedWith(withId(R.id.flexbox_layout)));
+        onView(withId(R.id.text1)).check(isLeftAlignedWith(withId(R.id.flexbox_layout)));
+        onView(withId(R.id.text2)).check(isTopAlignedWith(withId(R.id.flexbox_layout)));
+        onView(withId(R.id.text3)).check(isTopAlignedWith(withId(R.id.flexbox_layout)));
+        onView(withId(R.id.text3)).check(isRightAlignedWith(withId(R.id.flexbox_layout)));
+
+        TextView textView1 = (TextView) activity.findViewById(R.id.text1);
+        TextView textView2 = (TextView) activity.findViewById(R.id.text2);
+        TextView textView3 = (TextView) activity.findViewById(R.id.text3);
+        int space = flexboxLayout.getWidth() - textView1.getWidth() - textView2.getWidth() -
+                textView3.getWidth();
+        space = space / 2;
+        assertThat(textView2.getLeft() - textView1.getRight(), is(space));
+        assertThat(textView3.getLeft() - textView2.getRight(), is(space));
+    }
+
+    @Test
+    public void testJustifyContent_spaceAround() throws Throwable {
+        final FlexboxTestActivity activity = mActivityRule.getActivity();
+        mActivityRule.runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                activity.setContentView(R.layout.activity_justify_content_test);
+            }
+        });
+        FlexboxLayout flexboxLayout = (FlexboxLayout) activity.findViewById(R.id.flexbox_layout);
+        flexboxLayout.setJustifyContent(FlexboxLayout.JUSTIFY_CONTENT_SPACE_AROUND);
+
+        assertThat(flexboxLayout.getJustifyContent(),
+                is(FlexboxLayout.JUSTIFY_CONTENT_SPACE_AROUND));
+        onView(withId(R.id.text1)).check(isTopAlignedWith(withId(R.id.flexbox_layout)));
+        onView(withId(R.id.text2)).check(isTopAlignedWith(withId(R.id.flexbox_layout)));
+        onView(withId(R.id.text3)).check(isTopAlignedWith(withId(R.id.flexbox_layout)));
+
+        TextView textView1 = (TextView) activity.findViewById(R.id.text1);
+        TextView textView2 = (TextView) activity.findViewById(R.id.text2);
+        TextView textView3 = (TextView) activity.findViewById(R.id.text3);
+        int space = flexboxLayout.getWidth() - textView1.getWidth() - textView2.getWidth() -
+                textView3.getWidth();
+        space = space / 6; // Divide by the number of children * 2
+        assertThat(textView1.getLeft(), is(space));
+        assertThat(textView2.getLeft() - textView1.getRight(), is(space * 2));
+        assertThat(textView3.getLeft() - textView2.getRight(), is(space * 2));
+        assertThat(flexboxLayout.getRight() - textView3.getRight(), is(space));
     }
 
     private TextView createTextView(Context context, String text, int order) {

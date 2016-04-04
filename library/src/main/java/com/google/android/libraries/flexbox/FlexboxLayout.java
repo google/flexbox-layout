@@ -396,7 +396,33 @@ public class FlexboxLayout extends ViewGroup {
 
         for (FlexLine flexLine : mFlexLines) {
             int spaceBetweenItem = 0;
-            // TODO: Take justify content into account for the horizontal alignment.
+            switch (mJustifyContent) {
+                case JUSTIFY_CONTENT_FLEX_START:
+                    childStart = paddingStart;
+                    break;
+                case JUSTIFY_CONTENT_FLEX_END:
+                    childStart = right - paddingEnd - flexLine.mainSize;
+                    break;
+                case JUSTIFY_CONTENT_CENTER:
+                    childStart = paddingStart +
+                            +(right - left - flexLine.mainSize) / 2;
+                    break;
+                case JUSTIFY_CONTENT_SPACE_AROUND:
+                    spaceBetweenItem = (right - left - paddingStart - paddingEnd
+                            - flexLine.mainSize) / flexLine.itemCount;
+                    childStart = paddingStart + spaceBetweenItem / 2;
+                    break;
+                case JUSTIFY_CONTENT_SPACE_BETWEEN:
+                    childStart = paddingStart;
+                    int denominator = flexLine.itemCount != 1 ? flexLine.itemCount - 1 : 1;
+                    spaceBetweenItem = (right - left - paddingStart - paddingEnd
+                            - flexLine.mainSize) / denominator;
+                    break;
+                default:
+                    throw new IllegalStateException(
+                            "Invalid justifyContent is set: " + mJustifyContent);
+            }
+            spaceBetweenItem = Math.max(spaceBetweenItem, 0);
 
             for (int i = 0; i < flexLine.itemCount; i++) {
                 View child = getReorderedChildAt(currentViewIndex);
@@ -421,7 +447,6 @@ public class FlexboxLayout extends ViewGroup {
                 childStart += child.getMeasuredWidth() + spaceBetweenItem + lp.rightMargin;
                 currentViewIndex++;
             }
-            childStart = paddingStart;
             childTop += flexLine.crossSize;
             childBottom -= flexLine.crossSize;
         }
