@@ -484,6 +484,8 @@ public class FlexboxLayout extends ViewGroup {
      *
      * @param index the index of the view
      * @return the reordered view, which {@link LayoutParams@order} is taken into account.
+     *         If the index is negative or out of bounds of the number of contained views,
+     *         returns {@code null}.
      */
     public View getReorderedChildAt(int index) {
         if (index < 0 || index >= mReorderedIndex.length) {
@@ -536,7 +538,7 @@ public class FlexboxLayout extends ViewGroup {
     private void layoutHorizontal(boolean changed, int left, int top, int right, int bottom) {
         int paddingStart = getPaddingStart();
         int paddingEnd = getPaddingEnd();
-        int childStart = paddingStart;
+        int childStart;
         int currentViewIndex = 0;
 
         int height = bottom - top;
@@ -604,10 +606,47 @@ public class FlexboxLayout extends ViewGroup {
     }
 
     private void layoutSingleChildHorizontal(View view, int flexWrap, int alignItems,
-            int crossAxisLength, int left, int top, int right, int bottom) {
-        // TODO: Take alignItems into account for individual child
+            int crossSize, int left, int top, int right, int bottom) {
         LayoutParams lp = (LayoutParams) view.getLayoutParams();
-        view.layout(left, top + lp.topMargin, right, bottom + lp.topMargin);
+        if (lp.alignSelf != LayoutParams.ALIGN_SELF_AUTO) {
+            // Expecting the values for alignItems and alignSelf match except for ALIGN_SELF_AUTO.
+            // Assigning the alignSelf value as alignItems should work.
+            alignItems = lp.alignSelf;
+        }
+        switch (alignItems) {
+            case ALIGN_ITEMS_FLEX_START:
+            case ALIGN_ITEMS_STRETCH: // Intentional fall through
+            case ALIGN_ITEMS_BASELINE: // TODO: Change the case for BASELINE correctly
+                view.layout(left, top + lp.topMargin, right,
+                        bottom + lp.topMargin);
+                break;
+            case ALIGN_ITEMS_FLEX_END:
+                if (flexWrap != FLEX_WRAP_WRAP_REVERSE) {
+                    view.layout(left,
+                            top + crossSize - view.getMeasuredHeight() - lp.bottomMargin,
+                            right, top + crossSize - lp.bottomMargin);
+                } else {
+                    // If the flexWrap == FLEX_WRAP_WRAP_REVERSE, the direction of the
+                    // flexEnd is flipped (from top to bottom).
+                    view.layout(left, top - crossSize + view.getMeasuredHeight() + lp.topMargin,
+                            right, bottom - crossSize + view.getMeasuredHeight());
+                }
+                break;
+            case ALIGN_ITEMS_CENTER:
+                int topFromCrossAxis = (crossSize - view.getMeasuredHeight()) / 2;
+                if (flexWrap != FLEX_WRAP_WRAP_REVERSE) {
+                    view.layout(left, top + topFromCrossAxis + lp.topMargin - lp.bottomMargin,
+                            right,
+                            top + topFromCrossAxis + view.getMeasuredHeight() + lp.topMargin
+                                    - lp.bottomMargin);
+                } else {
+                    view.layout(left, top - topFromCrossAxis + lp.topMargin - lp.bottomMargin,
+                            right,
+                            top - topFromCrossAxis + view.getMeasuredHeight() + lp.topMargin
+                                    - lp.bottomMargin);
+                }
+                break;
+        }
     }
 
     @Override
