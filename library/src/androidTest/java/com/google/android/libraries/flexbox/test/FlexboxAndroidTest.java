@@ -28,6 +28,7 @@ import static android.support.test.espresso.assertion.PositionAssertions.isRight
 import static android.support.test.espresso.assertion.PositionAssertions.isTopAlignedWith;
 import static android.support.test.espresso.matcher.ViewMatchers.withId;
 import static org.hamcrest.core.Is.is;
+import static org.hamcrest.core.IsNot.not;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertThat;
 
@@ -609,6 +610,66 @@ public class FlexboxAndroidTest {
         TextView textView1 = (TextView) activity.findViewById(R.id.text1);
         TextView textView3 = (TextView) activity.findViewById(R.id.text3);
         assertThat(textView3.getTop(), is(textView1.getHeight()));
+    }
+
+    @Test
+    public void testAlignItems_stretch() throws Throwable {
+        final FlexboxTestActivity activity = mActivityRule.getActivity();
+        mActivityRule.runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                activity.setContentView(R.layout.activity_stretch_test);
+            }
+        });
+        FlexboxLayout flexboxLayout = (FlexboxLayout) activity.findViewById(R.id.flexbox_layout);
+
+        assertThat(flexboxLayout.getAlignItems(), is(FlexboxLayout.ALIGN_ITEMS_STRETCH));
+        onView(withId(R.id.text1)).check(isTopAlignedWith(withId(R.id.flexbox_layout)));
+        onView(withId(R.id.text1)).check(isLeftAlignedWith(withId(R.id.flexbox_layout)));
+        onView(withId(R.id.text2)).check(isTopAlignedWith(withId(R.id.flexbox_layout)));
+        onView(withId(R.id.text2)).check(isRightOf(withId(R.id.text1)));
+        onView(withId(R.id.text3)).check(isLeftAlignedWith(withId(R.id.flexbox_layout)));
+        onView(withId(R.id.text3)).check(isBelow(withId(R.id.text1)));
+        onView(withId(R.id.text3)).check(isBelow(withId(R.id.text2)));
+
+        // There should be 2 flex lines in the layout with the given layout.
+        int flexLineSize = flexboxLayout.getHeight() / 2;
+        TextView textView1 = (TextView) activity.findViewById(R.id.text1);
+        TextView textView2 = (TextView) activity.findViewById(R.id.text2);
+        TextView textView3 = (TextView) activity.findViewById(R.id.text3);
+        assertThat(textView1.getHeight(), is(flexLineSize));
+        assertThat(textView2.getHeight(), is(flexLineSize));
+        assertThat(textView3.getHeight(), is(flexLineSize));
+    }
+
+    @Test
+    public void testAlignSelf_stretch() throws Throwable {
+        final FlexboxTestActivity activity = mActivityRule.getActivity();
+        mActivityRule.runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                activity.setContentView(R.layout.activity_align_self_stretch_test);
+            }
+        });
+        FlexboxLayout flexboxLayout = (FlexboxLayout) activity.findViewById(R.id.flexbox_layout);
+
+        onView(withId(R.id.text1)).check(isTopAlignedWith(withId(R.id.flexbox_layout)));
+        onView(withId(R.id.text1)).check(isLeftAlignedWith(withId(R.id.flexbox_layout)));
+        onView(withId(R.id.text2)).check(isTopAlignedWith(withId(R.id.flexbox_layout)));
+        onView(withId(R.id.text2)).check(isRightOf(withId(R.id.text1)));
+        onView(withId(R.id.text3)).check(isLeftAlignedWith(withId(R.id.flexbox_layout)));
+        onView(withId(R.id.text3)).check(isBelow(withId(R.id.text1)));
+        onView(withId(R.id.text3)).check(isBelow(withId(R.id.text2)));
+
+        // There should be 2 flex lines in the layout with the given layout.
+        // Only the first TextView's alignSelf is set to ALIGN_SELF_STRETCH
+        int flexLineSize = flexboxLayout.getHeight() / 2;
+        TextView textView1 = (TextView) activity.findViewById(R.id.text1);
+        TextView textView2 = (TextView) activity.findViewById(R.id.text2);
+        TextView textView3 = (TextView) activity.findViewById(R.id.text3);
+        assertThat(textView1.getHeight(), is(flexLineSize));
+        assertThat(textView2.getHeight(), not(flexLineSize));
+        assertThat(textView3.getHeight(), not(flexLineSize));
     }
 
     private TextView createTextView(Context context, String text, int order) {

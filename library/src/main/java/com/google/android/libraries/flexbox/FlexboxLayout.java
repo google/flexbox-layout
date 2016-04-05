@@ -347,7 +347,22 @@ public class FlexboxLayout extends ViewGroup {
             }
         }
 
-        // TODO: handle stretch attributes
+        // Now cross size for each flex line is determined.
+        // Expand the views if alignItems (or alignSelf in each child view) is stretch
+        if (mAlignItems == ALIGN_ITEMS_STRETCH) {
+            int viewIndex = 0;
+            for (FlexLine flexLine : mFlexLines) {
+                for (int i = 0; i < flexLine.itemCount; i++, viewIndex++) {
+                    stretchViewVerticallyAt(viewIndex, flexLine.crossSize);
+                }
+            }
+        } else {
+            for (FlexLine flexLine : mFlexLines) {
+                for (Integer index : flexLine.indicesAlignSelfStretch) {
+                    stretchViewVerticallyAt(index, flexLine.crossSize);
+                }
+            }
+        }
 
         // Set this FlexboxLayout's width and height depending on the calculated length of main axis
         // and cross axis.
@@ -413,6 +428,21 @@ public class FlexboxLayout extends ViewGroup {
             }
             setMeasuredDimension(widthSizeAndState, heightSizeAndState);
         }
+    }
+
+    /**
+     * Expand the view vertically to the size of the crossSize (considering the view margins)
+     * @param index the absolute index of the view to be expanded
+     * @param crossSize the cross size
+     */
+    private void stretchViewVerticallyAt(int index, int crossSize) {
+        View child = getReorderedChildAt(index);
+        LayoutParams lp = (LayoutParams) child.getLayoutParams();
+        int newHeight = crossSize - lp.topMargin - lp.bottomMargin;
+        newHeight = Math.max(newHeight, 0);
+        child.measure(MeasureSpec
+                        .makeMeasureSpec(child.getMeasuredWidth(), MeasureSpec.EXACTLY),
+                MeasureSpec.makeMeasureSpec(newHeight, MeasureSpec.EXACTLY));
     }
 
     /**
