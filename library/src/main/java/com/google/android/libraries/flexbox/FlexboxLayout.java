@@ -224,8 +224,129 @@ public class FlexboxLayout extends ViewGroup {
             }
         }
 
-        // TODO: Calculate the main axis length
-        // TODO: Calculate the cross axis length
+        // Main size determination (Calculate the length along the main axis)
+        // Distribute the free remaining space to each flex item
+        // TODO: Take flexShrink attributes into account
+        {
+            int mainSize;
+            if (widthMode == MeasureSpec.EXACTLY) {
+                mainSize = widthSize;
+            } else {
+                mainSize = getLargestMainSize();
+            }
+
+            int childIndex = 0;
+            for (FlexLine flexLine : mFlexLines) {
+                if (flexLine.totalFlexGrow <= 0 || mainSize < flexLine.mainSize) {
+                    childIndex += flexLine.itemCount;
+                    continue;
+                }
+                int unitSpace = (mainSize - flexLine.mainSize) / flexLine.totalFlexGrow;
+                flexLine.mainSize = getPaddingStart() + getPaddingEnd();
+                for (int i = 0; i < flexLine.itemCount; i++) {
+                    View child = getReorderedChildAt(childIndex);
+                    if (child == null || child.getVisibility() == View.GONE) {
+                        childIndex++;
+                        continue;
+                    }
+                    LayoutParams lp = (LayoutParams) child.getLayoutParams();
+                    int newWidth = child.getMeasuredWidth() + unitSpace * lp.flexGrow;
+                    child.measure(MeasureSpec.makeMeasureSpec(newWidth, MeasureSpec.EXACTLY),
+                            MeasureSpec
+                                    .makeMeasureSpec(child.getMeasuredHeight(),
+                                            MeasureSpec.EXACTLY));
+                    flexLine.mainSize += child.getMeasuredWidth() + lp.getMarginStart()
+                            + lp.getMarginEnd();
+                    childIndex++;
+                }
+            }
+        }
+
+        // Cross size determination (Calculate the length along the cross axis)
+        // Expand the cross size only if the height mode is MeasureSpec.EXACTLY, otherwise
+        // use the sum of cross sizes of all flex lines.
+        // TODO: Consider the case mAlignContent == ALIGN_CONTENT_BASELINE
+        if (heightMode == MeasureSpec.EXACTLY) {
+            int totalCrossSize = getSumOfCrossSize();
+            if (mFlexLines.size() == 1) {
+                mFlexLines.get(0).crossSize = heightSize;
+                // alignContent property is valid only if the Flexbox has at least two lines
+            } else if (mFlexLines.size() >= 2 && totalCrossSize < heightSize) {
+                switch (mAlignContent) {
+                    case ALIGN_CONTENT_STRETCH: {
+                        int freeSpaceUnit = (heightSize - totalCrossSize)
+                                / mFlexLines.size();
+                        for (FlexLine flexLine : mFlexLines) {
+                            flexLine.crossSize += freeSpaceUnit;
+                        }
+                        break;
+                    }
+                    case ALIGN_CONTENT_SPACE_AROUND: {
+                        // The value of free space along the cross axis which needs to be put on top
+                        // and below the bottom of each flex line.
+                        int spaceTopAndBottom = heightSize - totalCrossSize;
+                        // The number of spaces along the cross axis
+                        int numberOfSpaces = mFlexLines.size() * 2;
+                        spaceTopAndBottom = spaceTopAndBottom / numberOfSpaces;
+                        List<FlexLine> newFlexLines = new ArrayList<>();
+                        FlexLine dummySpaceFlexLine = new FlexLine();
+                        dummySpaceFlexLine.crossSize = spaceTopAndBottom;
+                        for (FlexLine flexLine : mFlexLines) {
+                            newFlexLines.add(dummySpaceFlexLine);
+                            newFlexLines.add(flexLine);
+                            newFlexLines.add(dummySpaceFlexLine);
+                        }
+                        mFlexLines = newFlexLines;
+                        break;
+                    }
+                    case ALIGN_CONTENT_SPACE_BETWEEN: {
+                        // The value of free space along the cross axis between each flex line.
+                        int spaceBetweenFlexLine = heightSize - totalCrossSize;
+                        int numberOfSpaces = mFlexLines.size() - 1;
+                        spaceBetweenFlexLine = spaceBetweenFlexLine / numberOfSpaces;
+                        List<FlexLine> newFlexLines = new ArrayList<>();
+                        FlexLine dummySpaceFlexLine = new FlexLine();
+                        dummySpaceFlexLine.crossSize = spaceBetweenFlexLine;
+                        for (int i = 0; i < mFlexLines.size(); i++) {
+                            FlexLine flexLine = mFlexLines.get(i);
+                            newFlexLines.add(flexLine);
+                            if (i != mFlexLines.size() - 1) {
+                                newFlexLines.add(dummySpaceFlexLine);
+                            }
+                        }
+                        mFlexLines = newFlexLines;
+                        break;
+                    }
+                    case ALIGN_CONTENT_CENTER: {
+                        int spaceAboveAndBottom = heightSize - totalCrossSize;
+                        spaceAboveAndBottom = spaceAboveAndBottom / 2;
+                        List<FlexLine> newFlexLines = new ArrayList<>();
+                        FlexLine dummySpaceFlexLine = new FlexLine();
+                        dummySpaceFlexLine.crossSize = spaceAboveAndBottom;
+                        for (int i = 0; i < mFlexLines.size(); i++) {
+                            if (i == 0) {
+                                newFlexLines.add(dummySpaceFlexLine);
+                            }
+                            FlexLine flexLine = mFlexLines.get(i);
+                            newFlexLines.add(flexLine);
+                            if (i == mFlexLines.size() - 1) {
+                                newFlexLines.add(dummySpaceFlexLine);
+                            }
+                        }
+                        mFlexLines = newFlexLines;
+                        break;
+                    }
+                    case ALIGN_CONTENT_FLEX_END: {
+                        int spaceTop = heightSize - totalCrossSize;
+                        FlexLine dummySpaceFlexLine = new FlexLine();
+                        dummySpaceFlexLine.crossSize = spaceTop;
+                        mFlexLines.add(0, dummySpaceFlexLine);
+                        break;
+                    }
+                }
+            }
+        }
+
         // TODO: handle stretch attributes
 
         // Set this FlexboxLayout's width and height depending on the calculated length of main axis

@@ -399,6 +399,218 @@ public class FlexboxAndroidTest {
         assertThat(flexboxLayout.getRight() - textView3.getRight(), is(space));
     }
 
+    @Test
+    public void testFlexGrow_withExactParentLength() throws Throwable {
+        final FlexboxTestActivity activity = mActivityRule.getActivity();
+        mActivityRule.runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                activity.setContentView(R.layout.activity_flex_grow_test);
+            }
+        });
+        FlexboxLayout flexboxLayout = (FlexboxLayout) activity.findViewById(R.id.flexbox_layout);
+
+        onView(withId(R.id.text1)).check(isTopAlignedWith(withId(R.id.flexbox_layout)));
+        onView(withId(R.id.text1)).check(isLeftAlignedWith(withId(R.id.flexbox_layout)));
+        onView(withId(R.id.text2)).check(isTopAlignedWith(withId(R.id.flexbox_layout)));
+        onView(withId(R.id.text2)).check(isRightOf(withId(R.id.text1)));
+        // the third TextView is expanded to the right edge of the FlexboxLayout
+        onView(withId(R.id.text3)).check(isTopAlignedWith(withId(R.id.flexbox_layout)));
+        onView(withId(R.id.text3)).check(isRightAlignedWith(withId(R.id.flexbox_layout)));
+        onView(withId(R.id.text3)).check(isRightOf(withId(R.id.text2)));
+
+        TextView textView1 = (TextView) activity.findViewById(R.id.text1);
+        TextView textView2 = (TextView) activity.findViewById(R.id.text2);
+        TextView textView3 = (TextView) activity.findViewById(R.id.text3);
+        assertThat(textView3.getWidth(),
+                is(flexboxLayout.getWidth() - textView1.getWidth() - textView2.getWidth()));
+    }
+
+    @Test
+    public void testAlignContent_stretch() throws Throwable {
+        final FlexboxTestActivity activity = mActivityRule.getActivity();
+        mActivityRule.runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                activity.setContentView(R.layout.activity_align_content_test);
+            }
+        });
+        FlexboxLayout flexboxLayout = (FlexboxLayout) activity.findViewById(R.id.flexbox_layout);
+
+        assertThat(flexboxLayout.getAlignContent(), is(FlexboxLayout.ALIGN_CONTENT_STRETCH));
+        onView(withId(R.id.text1)).check(isTopAlignedWith(withId(R.id.flexbox_layout)));
+        onView(withId(R.id.text1)).check(isLeftAlignedWith(withId(R.id.flexbox_layout)));
+        onView(withId(R.id.text2)).check(isTopAlignedWith(withId(R.id.flexbox_layout)));
+        onView(withId(R.id.text2)).check(isRightOf(withId(R.id.text1)));
+        // the third TextView is wrapped to the next flex line
+        onView(withId(R.id.text3)).check(isLeftAlignedWith(withId(R.id.flexbox_layout)));
+        onView(withId(R.id.text3)).check(isBelow(withId(R.id.text1)));
+        onView(withId(R.id.text3)).check(isBelow(withId(R.id.text2)));
+
+        TextView textView3 = (TextView) activity.findViewById(R.id.text3);
+        int flexLineCrossSize = flexboxLayout.getHeight() / 2;
+        // Two flex line's cross sizes are expanded to the half of the height of the FlexboxLayout.
+        // The third textView's top should be aligned witht the second flex line.
+        assertThat(textView3.getTop(), is(flexLineCrossSize));
+    }
+
+    @Test
+    public void testAlignContent_flexStart() throws Throwable {
+        final FlexboxTestActivity activity = mActivityRule.getActivity();
+        mActivityRule.runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                activity.setContentView(R.layout.activity_align_content_test);
+            }
+        });
+        FlexboxLayout flexboxLayout = (FlexboxLayout) activity.findViewById(R.id.flexbox_layout);
+        flexboxLayout.setAlignContent(FlexboxLayout.ALIGN_CONTENT_FLEX_START);
+
+        assertThat(flexboxLayout.getAlignContent(), is(FlexboxLayout.ALIGN_CONTENT_FLEX_START));
+        onView(withId(R.id.text1)).check(isTopAlignedWith(withId(R.id.flexbox_layout)));
+        onView(withId(R.id.text1)).check(isLeftAlignedWith(withId(R.id.flexbox_layout)));
+        onView(withId(R.id.text2)).check(isTopAlignedWith(withId(R.id.flexbox_layout)));
+        onView(withId(R.id.text2)).check(isRightOf(withId(R.id.text1)));
+        // the third TextView is wrapped to the next flex line
+        onView(withId(R.id.text3)).check(isLeftAlignedWith(withId(R.id.flexbox_layout)));
+        onView(withId(R.id.text3)).check(isBelow(withId(R.id.text1)));
+        onView(withId(R.id.text3)).check(isBelow(withId(R.id.text2)));
+
+        TextView textView1 = (TextView) activity.findViewById(R.id.text1);
+        TextView textView3 = (TextView) activity.findViewById(R.id.text3);
+        assertThat(textView3.getTop(), is(textView1.getHeight()));
+    }
+
+    @Test
+    public void testAlignContent_flexEnd() throws Throwable {
+        final FlexboxTestActivity activity = mActivityRule.getActivity();
+        mActivityRule.runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                activity.setContentView(R.layout.activity_align_content_test);
+            }
+        });
+        FlexboxLayout flexboxLayout = (FlexboxLayout) activity.findViewById(R.id.flexbox_layout);
+        flexboxLayout.setAlignContent(FlexboxLayout.ALIGN_CONTENT_FLEX_END);
+
+        assertThat(flexboxLayout.getAlignContent(), is(FlexboxLayout.ALIGN_CONTENT_FLEX_END));
+        onView(withId(R.id.text3)).check(isLeftAlignedWith(withId(R.id.flexbox_layout)));
+        onView(withId(R.id.text3)).check(isBottomAlignedWith(withId(R.id.flexbox_layout)));
+        onView(withId(R.id.text1)).check(isAbove(withId(R.id.text3)));
+        onView(withId(R.id.text1)).check(isLeftAlignedWith(withId(R.id.flexbox_layout)));
+        onView(withId(R.id.text2)).check(isAbove(withId(R.id.text3)));
+
+        TextView textView1 = (TextView) activity.findViewById(R.id.text1);
+        TextView textView3 = (TextView) activity.findViewById(R.id.text3);
+        assertThat(textView1.getBottom(), is(flexboxLayout.getBottom() - textView3.getHeight()));
+    }
+
+    @Test
+    public void testAlignContent_center() throws Throwable {
+        final FlexboxTestActivity activity = mActivityRule.getActivity();
+        mActivityRule.runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                activity.setContentView(R.layout.activity_align_content_test);
+            }
+        });
+        FlexboxLayout flexboxLayout = (FlexboxLayout) activity.findViewById(R.id.flexbox_layout);
+        flexboxLayout.setAlignContent(FlexboxLayout.ALIGN_CONTENT_CENTER);
+
+        assertThat(flexboxLayout.getAlignContent(), is(FlexboxLayout.ALIGN_CONTENT_CENTER));
+        onView(withId(R.id.text1)).check(isLeftAlignedWith(withId(R.id.flexbox_layout)));
+        onView(withId(R.id.text2)).check(isRightOf(withId(R.id.text1)));
+        onView(withId(R.id.text3)).check(isBelow(withId(R.id.text1)));
+
+        TextView textView1 = (TextView) activity.findViewById(R.id.text1);
+        TextView textView3 = (TextView) activity.findViewById(R.id.text3);
+        int spaceAboveAndBottom = flexboxLayout.getHeight() - textView1.getHeight() - textView3
+                .getHeight();
+        spaceAboveAndBottom /= 2;
+
+        assertThat(textView1.getTop(), is(spaceAboveAndBottom));
+        assertThat(textView3.getBottom(), is(flexboxLayout.getBottom() - spaceAboveAndBottom));
+    }
+
+    @Test
+    public void testAlignContent_spaceBetween() throws Throwable {
+        final FlexboxTestActivity activity = mActivityRule.getActivity();
+        mActivityRule.runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                activity.setContentView(R.layout.activity_align_content_test);
+            }
+        });
+        FlexboxLayout flexboxLayout = (FlexboxLayout) activity.findViewById(R.id.flexbox_layout);
+        flexboxLayout.setAlignContent(FlexboxLayout.ALIGN_CONTENT_SPACE_BETWEEN);
+
+        assertThat(flexboxLayout.getAlignContent(), is(FlexboxLayout.ALIGN_CONTENT_SPACE_BETWEEN));
+        onView(withId(R.id.text1)).check(isLeftAlignedWith(withId(R.id.flexbox_layout)));
+        onView(withId(R.id.text1)).check(isTopAlignedWith(withId(R.id.flexbox_layout)));
+        onView(withId(R.id.text2)).check(isRightOf(withId(R.id.text1)));
+        onView(withId(R.id.text2)).check(isTopAlignedWith(withId(R.id.flexbox_layout)));
+        onView(withId(R.id.text3)).check(isBottomAlignedWith(withId(R.id.flexbox_layout)));
+        onView(withId(R.id.text3)).check(isLeftAlignedWith(withId(R.id.flexbox_layout)));
+    }
+
+    @Test
+    public void testAlignContent_spaceAround() throws Throwable {
+        final FlexboxTestActivity activity = mActivityRule.getActivity();
+        mActivityRule.runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                activity.setContentView(R.layout.activity_align_content_test);
+            }
+        });
+        FlexboxLayout flexboxLayout = (FlexboxLayout) activity.findViewById(R.id.flexbox_layout);
+        flexboxLayout.setAlignContent(FlexboxLayout.ALIGN_CONTENT_SPACE_AROUND);
+
+        assertThat(flexboxLayout.getAlignContent(), is(FlexboxLayout.ALIGN_CONTENT_SPACE_AROUND));
+        onView(withId(R.id.text1)).check(isLeftAlignedWith(withId(R.id.flexbox_layout)));
+        onView(withId(R.id.text2)).check(isRightOf(withId(R.id.text1)));
+        onView(withId(R.id.text3)).check(isLeftAlignedWith(withId(R.id.flexbox_layout)));
+        TextView textView1 = (TextView) activity.findViewById(R.id.text1);
+        TextView textView3 = (TextView) activity.findViewById(R.id.text3);
+
+        int spaceAround = flexboxLayout.getHeight() - textView1.getHeight() - textView3.getHeight();
+        spaceAround /= 4; // Divide by the number of flex lines * 2
+
+        assertThat(textView1.getTop(), is(spaceAround));
+        assertThat(textView3.getTop(), is(textView1.getBottom() + spaceAround * 2));
+    }
+
+    @Test
+    public void testAlignContent_stretch_parentWrapContent() throws Throwable {
+        final FlexboxTestActivity activity = mActivityRule.getActivity();
+        mActivityRule.runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                activity.setContentView(R.layout.activity_align_content_test);
+            }
+        });
+        FlexboxLayout flexboxLayout = (FlexboxLayout) activity.findViewById(R.id.flexbox_layout);
+        ViewGroup.LayoutParams parentLp = flexboxLayout.getLayoutParams();
+        parentLp.height = ViewGroup.LayoutParams.WRAP_CONTENT;
+        flexboxLayout.setLayoutParams(parentLp);
+
+        assertThat(flexboxLayout.getAlignContent(), is(FlexboxLayout.ALIGN_CONTENT_STRETCH));
+        onView(withId(R.id.text1)).check(isTopAlignedWith(withId(R.id.flexbox_layout)));
+        onView(withId(R.id.text1)).check(isLeftAlignedWith(withId(R.id.flexbox_layout)));
+        onView(withId(R.id.text2)).check(isTopAlignedWith(withId(R.id.flexbox_layout)));
+        onView(withId(R.id.text2)).check(isRightOf(withId(R.id.text1)));
+        // the third TextView is wrapped to the next flex line
+        onView(withId(R.id.text3)).check(isLeftAlignedWith(withId(R.id.flexbox_layout)));
+        onView(withId(R.id.text3)).check(isBelow(withId(R.id.text1)));
+        onView(withId(R.id.text3)).check(isBelow(withId(R.id.text2)));
+
+        // alignContent is only effective if the parent's height/width mode is MeasureSpec.EXACTLY.
+        // The size of the flex lines don't change even if the alingContent is set to
+        // ALIGN_CONTENT_STRETCH
+        TextView textView1 = (TextView) activity.findViewById(R.id.text1);
+        TextView textView3 = (TextView) activity.findViewById(R.id.text3);
+        assertThat(textView3.getTop(), is(textView1.getHeight()));
+    }
+
     private TextView createTextView(Context context, String text, int order) {
         TextView textView = new TextView(context);
         textView.setText(text);
