@@ -561,8 +561,10 @@ public class FlexboxLayout extends ViewGroup {
                             +(right - left - flexLine.mainSize) / 2;
                     break;
                 case JUSTIFY_CONTENT_SPACE_AROUND:
-                    spaceBetweenItem = (right - left - paddingStart - paddingEnd
-                            - flexLine.mainSize) / flexLine.itemCount;
+                    if (flexLine.itemCount != 0) {
+                        spaceBetweenItem = (right - left - paddingStart - paddingEnd
+                                - flexLine.mainSize) / flexLine.itemCount;
+                    }
                     childStart = paddingStart + spaceBetweenItem / 2;
                     break;
                 case JUSTIFY_CONTENT_SPACE_BETWEEN:
