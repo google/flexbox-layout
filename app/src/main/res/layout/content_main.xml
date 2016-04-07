@@ -22,15 +22,20 @@ limitations under the License.
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     app:layout_behavior="@string/appbar_scrolling_view_behavior"
+    app:flexWrap="wrap"
+    app:alignItems="flex_start"
+    app:alignContent="flex_start"
     tools:showIn="@layout/activity_main" >
 
     <TextView
+        android:id="@+id/textview1"
         android:layout_width="@dimen/flex_item_length2"
         android:layout_height="@dimen/flex_item_length"
         android:text="@string/one"
         style="@style/FlexItem" />
 
     <TextView
+        android:id="@+id/textview2"
         android:layout_width="@dimen/flex_item_length3"
         android:layout_height="@dimen/flex_item_length"
         android:text="@string/two"
@@ -38,6 +43,7 @@ limitations under the License.
         />
 
     <TextView
+        android:id="@+id/textview3"
         android:layout_width="@dimen/flex_item_length"
         android:layout_height="@dimen/flex_item_length"
         android:text="@string/three"

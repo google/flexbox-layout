@@ -45,6 +45,7 @@ public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
 
     private static final String FLEX_ITEMS_KEY = "flex_items";
+    private static final String EDIT_DIALOG_TAG = "edit_dialog_tag";
 
     private String ROW;
     private String COLUMN;
@@ -116,6 +117,10 @@ public class MainActivity extends AppCompatActivity
                 textView.setLayoutParams(lp);
                 mFlexboxLayout.addView(textView);
             }
+        }
+
+        for (int i = 0; i < mFlexboxLayout.getChildCount(); i++) {
+            mFlexboxLayout.getChildAt(i).setOnClickListener(new FlexItemClickListener(i));
         }
 
         FloatingActionButton addFab = (FloatingActionButton) findViewById(R.id.add_fab);
@@ -477,7 +482,37 @@ public class MainActivity extends AppCompatActivity
 
         @Override
         public void onClick(View v) {
-            // TODO: Implement the onClick listener
+            FlexboxLayout.LayoutParams lp = (FlexboxLayout.LayoutParams) v.getLayoutParams();
+            FlexItem flexItem = new FlexItem();
+            flexItem.index = mViewIndex;
+            flexItem.order = lp.order;
+            flexItem.flexGrow = lp.flexGrow;
+            flexItem.flexShrink = lp.flexShrink;
+            flexItem.alignSelf = lp.alignSelf;
+            flexItem.minWidth = Util.pixelToDp(MainActivity.this, lp.width);
+            flexItem.minHeight = Util.pixelToDp(MainActivity.this, lp.height);
+            FlexItemEditFragment fragment = FlexItemEditFragment.newInstance(flexItem);
+            fragment.setFlexItemChangedListener(new FlexItemChangeListenerImpl());
+            fragment.show(getSupportFragmentManager(), EDIT_DIALOG_TAG);
+        }
+    }
+
+    private class FlexItemChangeListenerImpl
+            implements FlexItemEditFragment.FlexItemChangedListener {
+
+        @Override
+        public void onFlexItemChanged(FlexItem flexItem) {
+            View view = mFlexboxLayout.getChildAt(flexItem.index);
+            FlexboxLayout.LayoutParams lp = (FlexboxLayout.LayoutParams) view.getLayoutParams();
+            lp.order = flexItem.order;
+            lp.flexGrow = flexItem.flexGrow;
+            lp.flexShrink = flexItem.flexShrink;
+            lp.alignSelf = flexItem.alignSelf;
+            lp.width = Util.dpToPixel(MainActivity.this, flexItem.minWidth);
+            lp.height = Util.dpToPixel(MainActivity.this, flexItem.minHeight);
+            view.setLayoutParams(lp);
+            // TODO: Update the layout only related views
+            mFlexboxLayout.requestLayout();
         }
     }
 

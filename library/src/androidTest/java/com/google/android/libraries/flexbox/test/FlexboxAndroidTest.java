@@ -39,6 +39,7 @@ import android.support.test.InstrumentationRegistry;
 import android.support.test.filters.MediumTest;
 import android.support.test.rule.ActivityTestRule;
 import android.support.test.runner.AndroidJUnit4;
+import android.test.FlakyTest;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
@@ -59,6 +60,7 @@ public class FlexboxAndroidTest {
             new ActivityTestRule<>(FlexboxTestActivity.class);
 
     @Test
+    @FlakyTest(tolerance = 3)
     public void testLoadFromLayoutXml() throws Throwable {
         final FlexboxTestActivity activity = mActivityRule.getActivity();
         mActivityRule.runOnUiThread(new Runnable() {
@@ -84,6 +86,7 @@ public class FlexboxAndroidTest {
     }
 
     @Test
+    @FlakyTest(tolerance = 3)
     public void testOrderAttribute_fromLayoutXml() throws Throwable {
         final FlexboxTestActivity activity = mActivityRule.getActivity();
         mActivityRule.runOnUiThread(new Runnable() {
@@ -112,6 +115,7 @@ public class FlexboxAndroidTest {
     }
 
     @Test
+    @FlakyTest(tolerance = 3)
     public void testOrderAttribute_fromCode() throws Throwable {
         final FlexboxTestActivity activity = mActivityRule.getActivity();
         mActivityRule.runOnUiThread(new Runnable() {
@@ -151,6 +155,7 @@ public class FlexboxAndroidTest {
     }
 
     @Test
+    @FlakyTest(tolerance = 3)
     public void testFlexWrap_wrap() throws Throwable {
         final FlexboxTestActivity activity = mActivityRule.getActivity();
         mActivityRule.runOnUiThread(new Runnable() {
@@ -174,6 +179,7 @@ public class FlexboxAndroidTest {
     }
 
     @Test
+    @FlakyTest(tolerance = 3)
     public void testFlexWrap_nowrap() throws Throwable {
         final FlexboxTestActivity activity = mActivityRule.getActivity();
         mActivityRule.runOnUiThread(new Runnable() {
@@ -201,6 +207,7 @@ public class FlexboxAndroidTest {
     }
 
     @Test
+    @FlakyTest(tolerance = 3)
     public void testFlexWrap_wrap_reverse() throws Throwable {
         final FlexboxTestActivity activity = mActivityRule.getActivity();
         mActivityRule.runOnUiThread(new Runnable() {
@@ -227,6 +234,7 @@ public class FlexboxAndroidTest {
     }
 
     @Test
+    @FlakyTest(tolerance = 3)
     public void testFlexboxLayout_wrapContent() throws Throwable {
         final FlexboxTestActivity activity = mActivityRule.getActivity();
         mActivityRule.runOnUiThread(new Runnable() {
@@ -253,6 +261,7 @@ public class FlexboxAndroidTest {
     }
 
     @Test
+    @FlakyTest(tolerance = 3)
     public void testFlexboxLayout_wrapped_with_ScrollView() throws Throwable {
         final FlexboxTestActivity activity = mActivityRule.getActivity();
         mActivityRule.runOnUiThread(new Runnable() {
@@ -281,6 +290,7 @@ public class FlexboxAndroidTest {
     }
 
     @Test
+    @FlakyTest(tolerance = 3)
     public void testJustifyContent_flexStart() throws Throwable {
         final FlexboxTestActivity activity = mActivityRule.getActivity();
         mActivityRule.runOnUiThread(new Runnable() {
@@ -299,6 +309,7 @@ public class FlexboxAndroidTest {
     }
 
     @Test
+    @FlakyTest(tolerance = 3)
     public void testJustifyContent_flexEnd() throws Throwable {
         final FlexboxTestActivity activity = mActivityRule.getActivity();
         mActivityRule.runOnUiThread(new Runnable() {
@@ -320,6 +331,7 @@ public class FlexboxAndroidTest {
     }
 
     @Test
+    @FlakyTest(tolerance = 3)
     public void testJustifyContent_center() throws Throwable {
         final FlexboxTestActivity activity = mActivityRule.getActivity();
         mActivityRule.runOnUiThread(new Runnable() {
@@ -349,6 +361,7 @@ public class FlexboxAndroidTest {
     }
 
     @Test
+    @FlakyTest(tolerance = 3)
     public void testJustifyContent_spaceBetween() throws Throwable {
         final FlexboxTestActivity activity = mActivityRule.getActivity();
         mActivityRule.runOnUiThread(new Runnable() {
@@ -381,6 +394,7 @@ public class FlexboxAndroidTest {
     }
 
     @Test
+    @FlakyTest(tolerance = 3)
     public void testJustifyContent_spaceAround() throws Throwable {
         final FlexboxTestActivity activity = mActivityRule.getActivity();
         mActivityRule.runOnUiThread(new Runnable() {
@@ -413,6 +427,7 @@ public class FlexboxAndroidTest {
     }
 
     @Test
+    @FlakyTest(tolerance = 3)
     public void testFlexGrow_withExactParentLength() throws Throwable {
         final FlexboxTestActivity activity = mActivityRule.getActivity();
         mActivityRule.runOnUiThread(new Runnable() {
@@ -440,6 +455,7 @@ public class FlexboxAndroidTest {
     }
 
     @Test
+    @FlakyTest(tolerance = 3)
     public void testAlignContent_stretch() throws Throwable {
         final FlexboxTestActivity activity = mActivityRule.getActivity();
         mActivityRule.runOnUiThread(new Runnable() {
@@ -468,6 +484,7 @@ public class FlexboxAndroidTest {
     }
 
     @Test
+    @FlakyTest(tolerance = 3)
     public void testAlignContent_flexStart() throws Throwable {
         final FlexboxTestActivity activity = mActivityRule.getActivity();
         mActivityRule.runOnUiThread(new Runnable() {
@@ -497,6 +514,7 @@ public class FlexboxAndroidTest {
     }
 
     @Test
+    @FlakyTest(tolerance = 3)
     public void testAlignContent_flexEnd() throws Throwable {
         final FlexboxTestActivity activity = mActivityRule.getActivity();
         mActivityRule.runOnUiThread(new Runnable() {
@@ -523,6 +541,7 @@ public class FlexboxAndroidTest {
     }
 
     @Test
+    @FlakyTest(tolerance = 3)
     public void testAlignContent_center() throws Throwable {
         final FlexboxTestActivity activity = mActivityRule.getActivity();
         mActivityRule.runOnUiThread(new Runnable() {
@@ -551,6 +570,7 @@ public class FlexboxAndroidTest {
     }
 
     @Test
+    @FlakyTest(tolerance = 3)
     public void testAlignContent_spaceBetween() throws Throwable {
         final FlexboxTestActivity activity = mActivityRule.getActivity();
         mActivityRule.runOnUiThread(new Runnable() {
@@ -574,6 +594,7 @@ public class FlexboxAndroidTest {
     }
 
     @Test
+    @FlakyTest(tolerance = 3)
     public void testAlignContent_spaceAround() throws Throwable {
         final FlexboxTestActivity activity = mActivityRule.getActivity();
         mActivityRule.runOnUiThread(new Runnable() {
@@ -602,6 +623,7 @@ public class FlexboxAndroidTest {
     }
 
     @Test
+    @FlakyTest(tolerance = 3)
     public void testAlignContent_stretch_parentWrapContent() throws Throwable {
         final FlexboxTestActivity activity = mActivityRule.getActivity();
         mActivityRule.runOnUiThread(new Runnable() {
@@ -636,6 +658,7 @@ public class FlexboxAndroidTest {
     }
 
     @Test
+    @FlakyTest(tolerance = 3)
     public void testAlignItems_stretch() throws Throwable {
         final FlexboxTestActivity activity = mActivityRule.getActivity();
         mActivityRule.runOnUiThread(new Runnable() {
@@ -666,6 +689,7 @@ public class FlexboxAndroidTest {
     }
 
     @Test
+    @FlakyTest(tolerance = 3)
     public void testAlignSelf_stretch() throws Throwable {
         final FlexboxTestActivity activity = mActivityRule.getActivity();
         mActivityRule.runOnUiThread(new Runnable() {
@@ -696,6 +720,7 @@ public class FlexboxAndroidTest {
     }
 
     @Test
+    @FlakyTest(tolerance = 3)
     public void testAlignItems_flexStart() throws Throwable {
         final FlexboxTestActivity activity = mActivityRule.getActivity();
         mActivityRule.runOnUiThread(new Runnable() {
@@ -727,6 +752,7 @@ public class FlexboxAndroidTest {
     }
 
     @Test
+    @FlakyTest(tolerance = 3)
     public void testAlignItems_flexEnd() throws Throwable {
         final FlexboxTestActivity activity = mActivityRule.getActivity();
         mActivityRule.runOnUiThread(new Runnable() {
@@ -762,6 +788,7 @@ public class FlexboxAndroidTest {
     }
 
     @Test
+    @FlakyTest(tolerance = 3)
     public void testAlignItems_center() throws Throwable {
         final FlexboxTestActivity activity = mActivityRule.getActivity();
         mActivityRule.runOnUiThread(new Runnable() {
@@ -799,6 +826,7 @@ public class FlexboxAndroidTest {
     }
 
     @Test
+    @FlakyTest(tolerance = 3)
     public void testAlignItems_flexEnd_wrapReverse() throws Throwable {
         final FlexboxTestActivity activity = mActivityRule.getActivity();
         mActivityRule.runOnUiThread(new Runnable() {
@@ -835,6 +863,7 @@ public class FlexboxAndroidTest {
     }
 
     @Test
+    @FlakyTest(tolerance = 3)
     public void testAlignItems_center_wrapReverse() throws Throwable {
         final FlexboxTestActivity activity = mActivityRule.getActivity();
         mActivityRule.runOnUiThread(new Runnable() {

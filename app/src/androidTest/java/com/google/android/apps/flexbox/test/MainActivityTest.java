@@ -18,6 +18,8 @@ package com.google.android.apps.flexbox.test;
 
 import static android.support.test.espresso.Espresso.onView;
 import static android.support.test.espresso.action.ViewActions.click;
+import static android.support.test.espresso.action.ViewActions.closeSoftKeyboard;
+import static android.support.test.espresso.action.ViewActions.replaceText;
 import static android.support.test.espresso.matcher.ViewMatchers.withId;
 import static junit.framework.Assert.assertNotNull;
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -38,6 +40,7 @@ import android.test.FlakyTest;
 import android.view.Menu;
 import android.widget.ArrayAdapter;
 import android.widget.Spinner;
+import android.widget.TextView;
 
 import org.junit.Rule;
 import org.junit.Test;
@@ -285,5 +288,43 @@ public class MainActivityTest {
         });
         InstrumentationRegistry.getInstrumentation().waitForIdleSync();
         assertThat(flexboxLayout.getAlignContent(), is(FlexboxLayout.ALIGN_CONTENT_STRETCH));
+    }
+
+    @Test
+    @FlakyTest(tolerance = 3)
+    public void testEditFragment_changeOrder() {
+        MainActivity activity = mActivityRule.getActivity();
+        FlexboxLayout flexboxLayout = (FlexboxLayout) activity.findViewById(R.id.flexbox_layout);
+        assertNotNull(flexboxLayout);
+        onView(withId(R.id.textview1)).perform(click());
+        onView(withId(R.id.edit_text_order)).perform(replaceText("3"), closeSoftKeyboard());
+        onView(withId(R.id.button_ok)).perform(click());
+        TextView first = (TextView) flexboxLayout.getReorderedChildAt(0);
+        TextView second = (TextView) flexboxLayout.getReorderedChildAt(1);
+        TextView third = (TextView) flexboxLayout.getReorderedChildAt(2);
+
+        assertThat(first.getText().toString(), is("2"));
+        assertThat(second.getText().toString(), is("3"));
+        assertThat(third.getText().toString(), is("1"));
+    }
+
+    @Test
+    @FlakyTest(tolerance = 3)
+    public void testEditFragment_changeFlexGrow() {
+        MainActivity activity = mActivityRule.getActivity();
+        FlexboxLayout flexboxLayout = (FlexboxLayout) activity.findViewById(R.id.flexbox_layout);
+        assertNotNull(flexboxLayout);
+        onView(withId(R.id.textview1)).perform(click());
+        onView(withId(R.id.edit_text_flex_grow)).perform(replaceText("1"), closeSoftKeyboard());
+        onView(withId(R.id.button_ok)).perform(click());
+        TextView first = (TextView) activity.findViewById(R.id.textview1);
+        TextView second = (TextView) activity.findViewById(R.id.textview2);
+        TextView third = (TextView) activity.findViewById(R.id.textview3);
+        assertNotNull(first);
+        assertNotNull(second);
+        assertNotNull(third);
+
+        assertThat(first.getWidth(),
+                is(flexboxLayout.getWidth() - second.getWidth() - third.getWidth()));
     }
 }
