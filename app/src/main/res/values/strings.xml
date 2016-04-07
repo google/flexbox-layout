@@ -24,4 +24,73 @@ limitations under the License.
 
     <string name="navigation_drawer_open">Open navigation drawer</string>
     <string name="navigation_drawer_close">Close navigation drawer</string>
+
+    <string name="flex_direction" translatable="false">Flex Direction</string>
+    <string name="flex_wrap" translatable="false">Flex Wrap</string>
+    <string name="justify_content" translatable="false">Justify Content</string>
+    <string name="align_items" translatable="false">Align Items</string>
+    <string name="align_content" translatable="false">Align Content</string>
+
+    <string name="row" translatable="false">Row</string>
+    <string name="row_reverse" translatable="false">Row Reverse</string>
+    <string name="column" translatable="false">Column</string>
+    <string name="column_reverse" translatable="false">Column Reverse</string>
+    <string name="nowrap" translatable="false">Nowrap</string>
+    <string name="wrap" translatable="false">Wrap</string>
+    <string name="wrap_reverse" translatable="false">Wrap Reverse</string>
+    <string name="flex_start" translatable="false">Flex Start</string>
+    <string name="flex_end" translatable="false">Flex End</string>
+    <string name="center" translatable="false">Center</string>
+    <string name="space_between" translatable="false">Space Between</string>
+    <string name="space_around" translatable="false">Space Around</string>
+    <string name="baseline" translatable="false">Baseline</string>
+    <string name="stretch" translatable="false">Stretch</string>
+    <string name="auto" translatable="false">Auto</string>
+
+    <string-array translatable="false" name="array_flex_direction">
+        <item>@string/row</item>
+        <item>@string/row_reverse</item>
+        <item>@string/column</item>
+        <item>@string/column_reverse</item>
+    </string-array>
+
+    <string-array translatable="false" name="array_flex_wrap">
+        <item>@string/nowrap</item>
+        <item>@string/wrap</item>
+        <item>@string/wrap_reverse</item>
+    </string-array>
+
+    <string-array translatable="false" name="array_justify_content">
+        <item>@string/flex_start</item>
+        <item>@string/flex_end</item>
+        <item>@string/center</item>
+        <item>@string/space_between</item>
+        <item>@string/space_around</item>
+    </string-array>
+
+    <string-array translatable="false" name="array_align_items">
+        <item>@string/flex_start</item>
+        <item>@string/flex_end</item>
+        <item>@string/center</item>
+        <item>@string/baseline</item>
+        <item>@string/stretch</item>
+    </string-array>
+
+    <string-array translatable="false" name="array_align_content">
+        <item>@string/flex_start</item>
+        <item>@string/flex_end</item>
+        <item>@string/center</item>
+        <item>@string/space_between</item>
+        <item>@string/space_around</item>
+        <item>@string/stretch</item>
+    </string-array>
+
+    <string-array translatable="false" name="array_align_self">
+        <item>@string/auto</item>
+        <item>@string/flex_start</item>
+        <item>@string/flex_end</item>
+        <item>@string/center</item>
+        <item>@string/baseline</item>
+        <item>@string/stretch</item>
+    </string-array>
 </resources>

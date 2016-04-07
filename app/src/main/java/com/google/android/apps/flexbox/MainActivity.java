@@ -23,6 +23,7 @@ import android.content.res.TypedArray;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.NavigationView;
+import android.support.v4.view.MenuItemCompat;
 import android.support.v4.view.ViewCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
@@ -32,6 +33,9 @@ import android.view.Gravity;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
+import android.widget.Spinner;
 import android.widget.TextView;
 
 import java.security.SecureRandom;
@@ -42,13 +46,30 @@ public class MainActivity extends AppCompatActivity
 
     private static final String FLEX_ITEMS_KEY = "flex_items";
 
+    private String ROW;
+    private String COLUMN;
+    private String ROW_REVERSE;
+    private String COLUMN_REVERSE;
+    private String NOWRAP;
+    private String WRAP;
+    private String WRAP_REVERSE;
+    private String FLEX_START;
+    private String FLEX_END;
+    private String CENTER;
+    private String BASELINE;
+    private String STRETCH;
+    private String SPACE_BETWEEN;
+    private String SPACE_AROUND;
+
     private FlexboxLayout mFlexboxLayout;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        initializeStringResrouces();
 
+        mFlexboxLayout = (FlexboxLayout) findViewById(R.id.flexbox_layout);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
@@ -64,9 +85,12 @@ public class MainActivity extends AppCompatActivity
         if (navigationView != null) {
             navigationView.setNavigationItemSelectedListener(this);
             Menu navigationMenu = navigationView.getMenu();
+            initializeFlexDirectionSpinner(navigationMenu);
+            initializeFlexWrapSpinner(navigationMenu);
+            initializeJustifyContentSpinner(navigationMenu);
+            initializeAlignItemsSpinner(navigationMenu);
+            initializeAlignContentSpinner(navigationMenu);
         }
-
-        mFlexboxLayout = (FlexboxLayout) findViewById(R.id.flexbox_layout);
 
         if (savedInstanceState != null) {
             ArrayList<FlexItem> flexItems = savedInstanceState
@@ -129,6 +153,23 @@ public class MainActivity extends AppCompatActivity
         }
     }
 
+    private void initializeStringResrouces() {
+        ROW = getString(R.string.row);
+        COLUMN = getString(R.string.column);
+        ROW_REVERSE = getString(R.string.row_reverse);
+        COLUMN_REVERSE = getString(R.string.column_reverse);
+        NOWRAP = getString(R.string.nowrap);
+        WRAP = getString(R.string.wrap);
+        WRAP_REVERSE = getString(R.string.wrap_reverse);
+        FLEX_START = getString(R.string.flex_start);
+        FLEX_END = getString(R.string.flex_end);
+        CENTER = getString(R.string.center);
+        BASELINE = getString(R.string.baseline);
+        STRETCH = getString(R.string.stretch);
+        SPACE_BETWEEN = getString(R.string.space_between);
+        SPACE_AROUND = getString(R.string.space_around);
+    }
+
     @Override
     public void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
@@ -179,6 +220,253 @@ public class MainActivity extends AppCompatActivity
         return width;
     }
 
+    private void initializeSpinner(int currentValue, int menuItemId, Menu navigationMenu,
+            int arrayResourceId, AdapterView.OnItemSelectedListener listener,
+            ValueToStringConverter converter) {
+        Spinner spinner = (Spinner) MenuItemCompat
+                .getActionView(navigationMenu.findItem(menuItemId));
+        ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(this,
+                arrayResourceId, R.layout.spinner_item);
+        spinner.setAdapter(adapter);
+        spinner.setOnItemSelectedListener(listener);
+        String selectedAsString = converter.asString(currentValue);
+        int position = adapter.getPosition(selectedAsString);
+        spinner.setSelection(position);
+    }
+
+
+    private void initializeFlexDirectionSpinner(Menu navigationMenu) {
+        initializeSpinner(mFlexboxLayout.getFlexDirection(), R.id.menu_item_flex_direction,
+                navigationMenu, R.array.array_flex_direction,
+                new AdapterView.OnItemSelectedListener() {
+                    @Override
+                    public void onItemSelected(AdapterView<?> parent, View view, int position,
+                            long id) {
+                        int flexDirection = FlexboxLayout.FLEX_DIRECTION_ROW;
+                        String selected = parent.getItemAtPosition(position).toString();
+                        if (selected.equals(ROW)) {
+                            flexDirection = FlexboxLayout.FLEX_DIRECTION_ROW;
+                        } else if (selected.equals(ROW_REVERSE)) {
+                            flexDirection = FlexboxLayout.FLEX_DIRECTION_ROW_REVERSE;
+                        } else if (selected.equals(COLUMN)) {
+                            flexDirection = FlexboxLayout.FLEX_DIRECTION_COLUMN;
+                        } else if (selected.equals(COLUMN_REVERSE)) {
+                            flexDirection = FlexboxLayout.FLEX_DIRECTION_COLUMN_REVERSE;
+                        }
+                        mFlexboxLayout.setFlexDirection(flexDirection);
+                    }
+
+                    @Override
+                    public void onNothingSelected(AdapterView<?> parent) {
+                        // No op
+                    }
+                }, new ValueToStringConverter() {
+                    @Override
+                    public String asString(int value) {
+                        switch (value) {
+                            case FlexboxLayout.FLEX_DIRECTION_ROW:
+                                return ROW;
+                            case FlexboxLayout.FLEX_DIRECTION_ROW_REVERSE:
+                                return ROW_REVERSE;
+                            case FlexboxLayout.FLEX_DIRECTION_COLUMN:
+                                return COLUMN;
+                            case FlexboxLayout.FLEX_DIRECTION_COLUMN_REVERSE:
+                                return COLUMN_REVERSE;
+                            default:
+                                return ROW;
+                        }
+                    }
+                });
+    }
+
+    private void initializeFlexWrapSpinner(Menu navigationMenu) {
+        initializeSpinner(mFlexboxLayout.getFlexWrap(), R.id.menu_item_flex_wrap,
+                navigationMenu, R.array.array_flex_wrap,
+                new AdapterView.OnItemSelectedListener() {
+                    @Override
+                    public void onItemSelected(AdapterView<?> parent, View view, int position,
+                            long id) {
+                        int flexWrap = FlexboxLayout.FLEX_WRAP_NOWRAP;
+                        String selected = parent.getItemAtPosition(position).toString();
+                        if (selected.equals(NOWRAP)) {
+                            flexWrap = FlexboxLayout.FLEX_WRAP_NOWRAP;
+                        } else if (selected.equals(WRAP)) {
+                            flexWrap = FlexboxLayout.FLEX_WRAP_WRAP;
+                        } else if (selected.equals(WRAP_REVERSE)) {
+                            flexWrap = FlexboxLayout.FLEX_WRAP_WRAP_REVERSE;
+                        }
+                        mFlexboxLayout.setFlexWrap(flexWrap);
+                    }
+
+                    @Override
+                    public void onNothingSelected(AdapterView<?> parent) {
+                        // No op
+                    }
+                }, new ValueToStringConverter() {
+                    @Override
+                    public String asString(int value) {
+                        switch (value) {
+                            case FlexboxLayout.FLEX_WRAP_NOWRAP:
+                                return NOWRAP;
+                            case FlexboxLayout.FLEX_WRAP_WRAP:
+                                return WRAP;
+                            case FlexboxLayout.FLEX_WRAP_WRAP_REVERSE:
+                                return WRAP_REVERSE;
+                            default:
+                                return NOWRAP;
+                        }
+                    }
+                });
+    }
+
+    private void initializeJustifyContentSpinner(Menu navigationMenu) {
+        initializeSpinner(mFlexboxLayout.getJustifyContent(), R.id.menu_item_justify_content,
+                navigationMenu, R.array.array_justify_content,
+                new AdapterView.OnItemSelectedListener() {
+                    @Override
+                    public void onItemSelected(AdapterView<?> parent, View view, int position,
+                            long id) {
+                        int justifyContent = FlexboxLayout.JUSTIFY_CONTENT_FLEX_START;
+                        String selected = parent.getItemAtPosition(position).toString();
+                        if (selected.equals(FLEX_START)) {
+                            justifyContent = FlexboxLayout.JUSTIFY_CONTENT_FLEX_START;
+                        } else if (selected.equals(FLEX_END)) {
+                            justifyContent = FlexboxLayout.JUSTIFY_CONTENT_FLEX_END;
+                        } else if (selected.equals(CENTER)) {
+                            justifyContent = FlexboxLayout.JUSTIFY_CONTENT_CENTER;
+                        } else if (selected.equals(SPACE_BETWEEN)) {
+                            justifyContent = FlexboxLayout.JUSTIFY_CONTENT_SPACE_BETWEEN;
+                        } else if (selected.equals(SPACE_AROUND)) {
+                            justifyContent = FlexboxLayout.JUSTIFY_CONTENT_SPACE_AROUND;
+                        }
+                        mFlexboxLayout.setJustifyContent(justifyContent);
+                    }
+
+                    @Override
+                    public void onNothingSelected(AdapterView<?> parent) {
+                        // No op
+                    }
+                }, new ValueToStringConverter() {
+                    @Override
+                    public String asString(int value) {
+                        switch (value) {
+                            case FlexboxLayout.JUSTIFY_CONTENT_FLEX_START:
+                                return FLEX_START;
+                            case FlexboxLayout.JUSTIFY_CONTENT_FLEX_END:
+                                return FLEX_END;
+                            case FlexboxLayout.JUSTIFY_CONTENT_CENTER:
+                                return CENTER;
+                            case FlexboxLayout.JUSTIFY_CONTENT_SPACE_AROUND:
+                                return SPACE_AROUND;
+                            case FlexboxLayout.JUSTIFY_CONTENT_SPACE_BETWEEN:
+                                return SPACE_BETWEEN;
+                            default:
+                                return FLEX_START;
+                        }
+                    }
+                });
+    }
+
+    private void initializeAlignItemsSpinner(Menu navigationMenu) {
+        initializeSpinner(mFlexboxLayout.getAlignItems(), R.id.menu_item_align_items,
+                navigationMenu, R.array.array_align_items,
+                new AdapterView.OnItemSelectedListener() {
+                    @Override
+                    public void onItemSelected(AdapterView<?> parent, View view, int position,
+                            long id) {
+                        int alignItems = FlexboxLayout.ALIGN_ITEMS_STRETCH;
+                        String selected = parent.getItemAtPosition(position).toString();
+                        if (selected.equals(FLEX_START)) {
+                            alignItems = FlexboxLayout.ALIGN_ITEMS_FLEX_START;
+                        } else if (selected.equals(FLEX_END)) {
+                            alignItems = FlexboxLayout.ALIGN_ITEMS_FLEX_END;
+                        } else if (selected.equals(CENTER)) {
+                            alignItems = FlexboxLayout.ALIGN_ITEMS_CENTER;
+                        } else if (selected.equals(BASELINE)) {
+                            alignItems = FlexboxLayout.ALIGN_ITEMS_BASELINE;
+                        } else if (selected.equals(STRETCH)) {
+                            alignItems = FlexboxLayout.ALIGN_ITEMS_STRETCH;
+                        }
+                        mFlexboxLayout.setAlignItems(alignItems);
+                    }
+
+                    @Override
+                    public void onNothingSelected(AdapterView<?> parent) {
+                        // No op
+                    }
+                }, new ValueToStringConverter() {
+                    @Override
+                    public String asString(int value) {
+                        switch (value) {
+                            case FlexboxLayout.ALIGN_ITEMS_FLEX_START:
+                                return FLEX_START;
+                            case FlexboxLayout.ALIGN_ITEMS_FLEX_END:
+                                return FLEX_END;
+                            case FlexboxLayout.ALIGN_ITEMS_CENTER:
+                                return CENTER;
+                            case FlexboxLayout.ALIGN_ITEMS_BASELINE:
+                                return BASELINE;
+                            case FlexboxLayout.ALIGN_ITEMS_STRETCH:
+                                return STRETCH;
+                            default:
+                                return STRETCH;
+                        }
+                    }
+                });
+    }
+
+    private void initializeAlignContentSpinner(Menu navigationMenu) {
+        initializeSpinner(mFlexboxLayout.getAlignContent(), R.id.menu_item_align_content,
+                navigationMenu, R.array.array_align_content,
+                new AdapterView.OnItemSelectedListener() {
+                    @Override
+                    public void onItemSelected(AdapterView<?> parent, View view, int position,
+                            long id) {
+                        int alignContent = FlexboxLayout.ALIGN_CONTENT_STRETCH;
+                        String selected = parent.getItemAtPosition(position).toString();
+                        if (selected.equals(FLEX_START)) {
+                            alignContent = FlexboxLayout.ALIGN_CONTENT_FLEX_START;
+                        } else if (selected.equals(FLEX_END)) {
+                            alignContent = FlexboxLayout.ALIGN_CONTENT_FLEX_END;
+                        } else if (selected.equals(CENTER)) {
+                            alignContent = FlexboxLayout.ALIGN_CONTENT_CENTER;
+                        } else if (selected.equals(SPACE_BETWEEN)) {
+                            alignContent = FlexboxLayout.ALIGN_CONTENT_SPACE_BETWEEN;
+                        } else if (selected.equals(SPACE_AROUND)) {
+                            alignContent = FlexboxLayout.ALIGN_CONTENT_SPACE_AROUND;
+                        } else if (selected.equals(STRETCH)) {
+                            alignContent = FlexboxLayout.ALIGN_CONTENT_STRETCH;
+                        }
+                        mFlexboxLayout.setAlignContent(alignContent);
+                    }
+
+                    @Override
+                    public void onNothingSelected(AdapterView<?> parent) {
+                        // No op
+                    }
+                }, new ValueToStringConverter() {
+                    @Override
+                    public String asString(int value) {
+                        switch (value) {
+                            case FlexboxLayout.ALIGN_CONTENT_FLEX_START:
+                                return FLEX_START;
+                            case FlexboxLayout.ALIGN_CONTENT_FLEX_END:
+                                return FLEX_END;
+                            case FlexboxLayout.ALIGN_CONTENT_CENTER:
+                                return CENTER;
+                            case FlexboxLayout.ALIGN_CONTENT_SPACE_BETWEEN:
+                                return SPACE_BETWEEN;
+                            case FlexboxLayout.ALIGN_CONTENT_SPACE_AROUND:
+                                return SPACE_AROUND;
+                            case FlexboxLayout.ALIGN_CONTENT_STRETCH:
+                                return STRETCH;
+                            default:
+                                return STRETCH;
+                        }
+                    }
+                });
+    }
+
     private class FlexItemClickListener implements View.OnClickListener {
 
         int mViewIndex;
@@ -191,5 +479,12 @@ public class MainActivity extends AppCompatActivity
         public void onClick(View v) {
             // TODO: Implement the onClick listener
         }
+    }
+
+    /**
+     * Converter for converting an int value for Flexbox properties to a String.
+     */
+    private interface ValueToStringConverter {
+        String asString(int value);
     }
 }

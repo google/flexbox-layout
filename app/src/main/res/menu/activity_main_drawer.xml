@@ -17,5 +17,31 @@ limitations under the License.
 <menu xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     >
-    <!-- TODO Add menu items -->
+    <group android:checkableBehavior="none">
+        <item
+            android:id="@+id/menu_item_flex_direction"
+            android:title="@string/flex_direction"
+            app:actionLayout="@layout/spinner_flex_direction"
+            />
+        <item
+            android:id="@+id/menu_item_flex_wrap"
+            android:title="@string/flex_wrap"
+            app:actionLayout="@layout/spinner_flex_wrap"
+            />
+        <item
+            android:id="@+id/menu_item_justify_content"
+            android:title="@string/justify_content"
+            app:actionLayout="@layout/spinner_justify_content"
+            />
+        <item
+            android:id="@+id/menu_item_align_items"
+            android:title="@string/align_items"
+            app:actionLayout="@layout/spinner_align_items"
+            />
+        <item
+            android:id="@+id/menu_item_align_content"
+            android:title="@string/align_content"
+            app:actionLayout="@layout/spinner_align_content"
+            />
+    </group>
 </menu>
