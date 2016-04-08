@@ -235,6 +235,28 @@ public class FlexboxAndroidTest {
 
     @Test
     @FlakyTest(tolerance = 3)
+    public void testFlexItem_match_parent() throws Throwable {
+        final FlexboxTestActivity activity = mActivityRule.getActivity();
+        mActivityRule.runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                activity.setContentView(R.layout.activity_flex_item_match_parent);
+            }
+        });
+        FlexboxLayout flexboxLayout = (FlexboxLayout) activity.findViewById(R.id.flexbox_layout);
+        TextView text1 = (TextView) activity.findViewById(R.id.text1);
+        TextView text2 = (TextView) activity.findViewById(R.id.text2);
+        TextView text3 = (TextView) activity.findViewById(R.id.text3);
+
+        assertThat(text1.getWidth(), is(flexboxLayout.getWidth()));
+        assertThat(text2.getWidth(), is(flexboxLayout.getWidth()));
+        assertThat(text3.getWidth(), is(flexboxLayout.getWidth()));
+        assertThat(flexboxLayout.getHeight(),
+                is(text1.getHeight() + text2.getHeight() + text3.getHeight()));
+    }
+
+    @Test
+    @FlakyTest(tolerance = 3)
     public void testFlexboxLayout_wrapContent() throws Throwable {
         final FlexboxTestActivity activity = mActivityRule.getActivity();
         mActivityRule.runOnUiThread(new Runnable() {

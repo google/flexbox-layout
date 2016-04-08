@@ -184,8 +184,13 @@ public class FlexboxLayout extends ViewGroup {
                 if (lp.alignSelf == LayoutParams.ALIGN_SELF_STRETCH) {
                     flexLine.indicesAlignSelfStretch.add(i);
                 }
-                measureChildWithMargins(child, widthMeasureSpec, flexLine.mainSize,
-                        heightMeasureSpec, heightUsed);
+                int childWidthMeasureSpec = getChildMeasureSpec(widthMeasureSpec,
+                        child.getPaddingLeft() + child.getPaddingRight() + lp.leftMargin
+                                + lp.rightMargin, lp.width);
+                int childHeightMeasureSpec = getChildMeasureSpec(heightMeasureSpec,
+                        child.getPaddingTop() + child.getPaddingBottom() + lp.topMargin
+                                + lp.bottomMargin, lp.height);
+                child.measure(childWidthMeasureSpec, childHeightMeasureSpec);
                 childState = combineMeasuredStates(childState, child.getMeasuredState());
                 largestHeightInRow = Math.max(largestHeightInRow,
                         child.getMeasuredHeight() + lp.topMargin + lp.bottomMargin);

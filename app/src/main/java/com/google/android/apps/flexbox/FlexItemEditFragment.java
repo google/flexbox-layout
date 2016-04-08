@@ -167,8 +167,7 @@ public class FlexItemEditFragment extends DialogFragment {
         int alignSelfPosition = arrayAdapter.getPosition(alignSelfAsString(mFlexItem.alignSelf));
         alignSelfSpinner.setSelection(alignSelfPosition);
 
-        view.findViewById(
-                R.id.button_cancel).setOnClickListener(new View.OnClickListener() {
+        view.findViewById(R.id.button_cancel).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 dismiss();
