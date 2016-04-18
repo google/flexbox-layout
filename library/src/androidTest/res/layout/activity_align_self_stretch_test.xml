@@ -18,8 +18,8 @@
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:id="@+id/flexbox_layout"
-    android:layout_width="360dp"
-    android:layout_height="360dp"
+    android:layout_width="320dp"
+    android:layout_height="320dp"
     app:flexDirection="row"
     app:flexWrap="wrap"
     app:alignItems="flex_start"
@@ -28,23 +28,23 @@
 
     <TextView
         android:id="@+id/text1"
-        android:layout_width="140dp"
-        android:layout_height="80dp"
+        android:layout_width="120dp"
+        android:layout_height="120dp"
         android:text="1"
         app:layout_alignSelf="stretch"
         />
 
     <TextView
         android:id="@+id/text2"
-        android:layout_width="140dp"
-        android:layout_height="80dp"
+        android:layout_width="120dp"
+        android:layout_height="120dp"
         android:text="2"
         />
 
     <TextView
         android:id="@+id/text3"
-        android:layout_width="140dp"
-        android:layout_height="80dp"
+        android:layout_width="120dp"
+        android:layout_height="120dp"
         android:text="3"
         />
 </com.google.android.libraries.flexbox.FlexboxLayout>

@@ -27,21 +27,21 @@
     <TextView
         android:id="@+id/text1"
         android:layout_width="60dp"
-        android:layout_height="120dp"
+        android:layout_height="60dp"
         android:text="1"
         />
 
     <TextView
         android:id="@+id/text2"
         android:layout_width="60dp"
-        android:layout_height="120dp"
+        android:layout_height="60dp"
         android:text="2"
         />
 
     <TextView
         android:id="@+id/text3"
         android:layout_width="60dp"
-        android:layout_height="120dp"
+        android:layout_height="60dp"
         android:text="3"
         app:layout_flexGrow="1"
         />

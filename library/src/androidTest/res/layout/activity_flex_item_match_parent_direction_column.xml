@@ -14,34 +14,37 @@
   See the License for the specific language governing permissions and
   limitations under the License.
   -->
+
 <com.google.android.libraries.flexbox.FlexboxLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:id="@+id/flexbox_layout"
-    android:layout_width="match_parent"
+    android:layout_width="wrap_content"
     android:layout_height="match_parent"
-    app:flexDirection="row"
-    app:justifyContent="flex_start"
+    app:flexDirection="column"
+    app:flexWrap="wrap"
+    app:alignItems="flex_start"
+    app:alignContent="flex_start"
     >
 
     <TextView
         android:id="@+id/text1"
-        android:layout_width="60dp"
-        android:layout_height="60dp"
+        android:layout_width="40dp"
+        android:layout_height="match_parent"
         android:text="1"
         />
 
     <TextView
         android:id="@+id/text2"
-        android:layout_width="60dp"
-        android:layout_height="60dp"
+        android:layout_width="40dp"
+        android:layout_height="match_parent"
         android:text="2"
         />
 
     <TextView
         android:id="@+id/text3"
-        android:layout_width="60dp"
-        android:layout_height="60dp"
+        android:layout_width="40dp"
+        android:layout_height="match_parent"
         android:text="3"
         />
 </com.google.android.libraries.flexbox.FlexboxLayout>
