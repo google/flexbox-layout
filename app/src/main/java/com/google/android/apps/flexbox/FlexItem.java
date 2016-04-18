@@ -16,8 +16,13 @@
 
 package com.google.android.apps.flexbox;
 
+import com.google.android.libraries.flexbox.FlexboxLayout;
+
+import android.content.Context;
 import android.os.Parcel;
 import android.os.Parcelable;
+import android.support.v4.view.ViewCompat;
+import android.view.View;
 
 /**
  * Entity class representing a single flex item in the demo app.
@@ -87,6 +92,42 @@ public class FlexItem implements Parcelable {
         this.flexGrow = in.readInt();
         this.flexShrink = in.readInt();
         this.alignSelf = in.readInt();
+    }
+
+    public FlexboxLayout.LayoutParams toLayoutParams(Context context) {
+        FlexboxLayout.LayoutParams lp = new FlexboxLayout.LayoutParams(
+                Util.dpToPixel(context, minWidth),
+                Util.dpToPixel(context, minHeight));
+        lp.order = order;
+        lp.flexGrow = flexGrow;
+        lp.flexShrink = flexShrink;
+        lp.alignSelf = alignSelf;
+        lp.topMargin = topMargin;
+        lp.setMarginStart(startMargin);
+        lp.setMarginEnd(endMargin);
+        lp.bottomMargin = bottomMargin;
+        return lp;
+    }
+
+    public static FlexItem fromFlexView(View view, int index) {
+        FlexboxLayout.LayoutParams lp = (FlexboxLayout.LayoutParams) view.getLayoutParams();
+        FlexItem flexItem = new FlexItem();
+        flexItem.index = index;
+        flexItem.order = lp.order;
+        flexItem.flexGrow = lp.flexGrow;
+        flexItem.flexShrink = lp.flexShrink;
+        flexItem.alignSelf = lp.alignSelf;
+        flexItem.minWidth = Util.pixelToDp(view.getContext(), lp.width);
+        flexItem.minHeight = Util.pixelToDp(view.getContext(), lp.height);
+        flexItem.topMargin = lp.topMargin;
+        flexItem.startMargin = lp.getMarginStart();
+        flexItem.endMargin = lp.getMarginEnd();
+        flexItem.bottomMargin = lp.bottomMargin;
+        flexItem.paddingTop = view.getPaddingTop();
+        flexItem.paddingStart = ViewCompat.getPaddingStart(view);
+        flexItem.paddingEnd = ViewCompat.getPaddingEnd(view);
+        flexItem.paddingBottom = view.getPaddingBottom();
+        return flexItem;
     }
 
     public static final Creator<FlexItem> CREATOR = new Creator<FlexItem>() {

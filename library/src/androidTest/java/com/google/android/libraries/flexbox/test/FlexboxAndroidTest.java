@@ -924,6 +924,53 @@ public class FlexboxAndroidTest {
                 is(flexboxLayout.getHeight() - flexLineSize - spaceAboveAndBelow));
     }
 
+    @Test
+    @FlakyTest(tolerance = 3)
+    public void testAlignItems_baseline() throws Throwable {
+        final FlexboxTestActivity activity = mActivityRule.getActivity();
+        mActivityRule.runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                activity.setContentView(R.layout.activity_align_items_baseline_test);
+            }
+        });
+        InstrumentationRegistry.getInstrumentation().waitForIdleSync();
+        TextView textView1 = (TextView) activity.findViewById(R.id.text1);
+        TextView textView2 = (TextView) activity.findViewById(R.id.text2);
+        TextView textView3 = (TextView) activity.findViewById(R.id.text3);
+        int topPluBaseline1 = textView1.getTop() + textView1.getBaseline();
+        int topPluBaseline2 = textView2.getTop() + textView2.getBaseline();
+        int topPluBaseline3 = textView3.getTop() + textView3.getBaseline();
+
+        assertThat(topPluBaseline1, is(topPluBaseline2));
+        assertThat(topPluBaseline2, is(topPluBaseline3));
+    }
+
+    @Test
+    @FlakyTest(tolerance = 3)
+    public void testAlignItems_baseline_wrapReverse() throws Throwable {
+        final FlexboxTestActivity activity = mActivityRule.getActivity();
+        mActivityRule.runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                activity.setContentView(R.layout.activity_align_items_baseline_test);
+                FlexboxLayout flexboxLayout = (FlexboxLayout) activity
+                        .findViewById(R.id.flexbox_layout);
+                flexboxLayout.setFlexWrap(FlexboxLayout.FLEX_WRAP_WRAP_REVERSE);
+            }
+        });
+        InstrumentationRegistry.getInstrumentation().waitForIdleSync();
+        TextView textView1 = (TextView) activity.findViewById(R.id.text1);
+        TextView textView2 = (TextView) activity.findViewById(R.id.text2);
+        TextView textView3 = (TextView) activity.findViewById(R.id.text3);
+        int bottomPluBaseline1 = textView1.getBottom() + textView1.getBaseline();
+        int bottomPluBaseline2 = textView2.getBottom() + textView2.getBaseline();
+        int bottomPluBaseline3 = textView3.getBottom() + textView3.getBaseline();
+
+        assertThat(bottomPluBaseline1, is(bottomPluBaseline2));
+        assertThat(bottomPluBaseline2, is(bottomPluBaseline3));
+    }
+
     private TextView createTextView(Context context, String text, int order) {
         TextView textView = new TextView(context);
         textView.setText(text);

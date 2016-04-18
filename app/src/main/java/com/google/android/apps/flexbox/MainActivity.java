@@ -100,17 +100,7 @@ public class MainActivity extends AppCompatActivity
             mFlexboxLayout.removeAllViews();
             for (int i = 0; i < flexItems.size(); i++) {
                 FlexItem flexItem = flexItems.get(i);
-                FlexboxLayout.LayoutParams lp = new FlexboxLayout.LayoutParams(
-                        Util.dpToPixel(this, flexItem.minWidth),
-                        Util.dpToPixel(this, flexItem.minHeight));
-                lp.order = flexItem.order;
-                lp.flexGrow = flexItem.flexGrow;
-                lp.flexShrink = flexItem.flexShrink;
-                lp.alignSelf = flexItem.alignSelf;
-                lp.topMargin = flexItem.topMargin;
-                lp.setMarginStart(flexItem.startMargin);
-                lp.setMarginEnd(flexItem.endMargin);
-                lp.bottomMargin = flexItem.bottomMargin;
+                FlexboxLayout.LayoutParams lp = flexItem.toLayoutParams(this);
                 TextView textView = createBaseFlexItemTextView(i);
                 ViewCompat.setPaddingRelative(textView, flexItem.paddingStart, flexItem.paddingTop,
                         flexItem.paddingEnd, flexItem.paddingBottom);
@@ -181,23 +171,7 @@ public class MainActivity extends AppCompatActivity
         ArrayList<FlexItem> flexItems = new ArrayList<>();
         for (int i = 0; i < mFlexboxLayout.getChildCount(); i++) {
             View child = mFlexboxLayout.getChildAt(i);
-            FlexboxLayout.LayoutParams lp = (FlexboxLayout.LayoutParams) child.getLayoutParams();
-            FlexItem flexItem = new FlexItem();
-            flexItem.index = i;
-            flexItem.order = lp.order;
-            flexItem.flexGrow = lp.flexGrow;
-            flexItem.flexShrink = lp.flexShrink;
-            flexItem.alignSelf = lp.alignSelf;
-            flexItem.minWidth = Util.pixelToDp(this, lp.width);
-            flexItem.minHeight = Util.pixelToDp(this, lp.height);
-            flexItem.topMargin = lp.topMargin;
-            flexItem.startMargin = lp.getMarginStart();
-            flexItem.endMargin = lp.getMarginEnd();
-            flexItem.bottomMargin = lp.bottomMargin;
-            flexItem.paddingTop = child.getPaddingTop();
-            flexItem.paddingStart = ViewCompat.getPaddingStart(child);
-            flexItem.paddingEnd = ViewCompat.getPaddingEnd(child);
-            flexItem.paddingBottom = child.getPaddingBottom();
+            FlexItem flexItem = FlexItem.fromFlexView(child, i);
             flexItems.add(flexItem);
         }
         outState.putParcelableArrayList(FLEX_ITEMS_KEY, flexItems);
@@ -482,15 +456,7 @@ public class MainActivity extends AppCompatActivity
 
         @Override
         public void onClick(View v) {
-            FlexboxLayout.LayoutParams lp = (FlexboxLayout.LayoutParams) v.getLayoutParams();
-            FlexItem flexItem = new FlexItem();
-            flexItem.index = mViewIndex;
-            flexItem.order = lp.order;
-            flexItem.flexGrow = lp.flexGrow;
-            flexItem.flexShrink = lp.flexShrink;
-            flexItem.alignSelf = lp.alignSelf;
-            flexItem.minWidth = Util.pixelToDp(MainActivity.this, lp.width);
-            flexItem.minHeight = Util.pixelToDp(MainActivity.this, lp.height);
+            FlexItem flexItem = FlexItem.fromFlexView(v, mViewIndex);
             FlexItemEditFragment fragment = FlexItemEditFragment.newInstance(flexItem);
             fragment.setFlexItemChangedListener(new FlexItemChangeListenerImpl());
             fragment.show(getSupportFragmentManager(), EDIT_DIALOG_TAG);
@@ -503,13 +469,7 @@ public class MainActivity extends AppCompatActivity
         @Override
         public void onFlexItemChanged(FlexItem flexItem) {
             View view = mFlexboxLayout.getChildAt(flexItem.index);
-            FlexboxLayout.LayoutParams lp = (FlexboxLayout.LayoutParams) view.getLayoutParams();
-            lp.order = flexItem.order;
-            lp.flexGrow = flexItem.flexGrow;
-            lp.flexShrink = flexItem.flexShrink;
-            lp.alignSelf = flexItem.alignSelf;
-            lp.width = Util.dpToPixel(MainActivity.this, flexItem.minWidth);
-            lp.height = Util.dpToPixel(MainActivity.this, flexItem.minHeight);
+            FlexboxLayout.LayoutParams lp = flexItem.toLayoutParams(MainActivity.this);
             view.setLayoutParams(lp);
             // TODO: Update the layout only related views
             mFlexboxLayout.requestLayout();
