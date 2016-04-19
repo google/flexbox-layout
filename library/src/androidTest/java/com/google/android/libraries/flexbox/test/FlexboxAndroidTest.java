@@ -1750,6 +1750,57 @@ public class FlexboxAndroidTest {
         assertThat(bottomPluBaseline2, is(bottomPluBaseline3));
     }
 
+    @Test
+    @FlakyTest(tolerance = 3)
+    public void testFlexDirection_row_reverse() throws Throwable {
+        final FlexboxTestActivity activity = mActivityRule.getActivity();
+        mActivityRule.runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                activity.setContentView(R.layout.activity_flex_wrap_test);
+                FlexboxLayout flexboxLayout = (FlexboxLayout) activity
+                        .findViewById(R.id.flexbox_layout);
+                flexboxLayout.setFlexDirection(FlexboxLayout.FLEX_DIRECTION_ROW_REVERSE);
+            }
+        });
+        FlexboxLayout flexboxLayout = (FlexboxLayout) activity.findViewById(R.id.flexbox_layout);
+        assertThat(flexboxLayout.getFlexDirection(), is(FlexboxLayout.FLEX_DIRECTION_ROW_REVERSE));
+        // The layout direction should be right to left
+        onView(withId(R.id.text1)).check(isTopAlignedWith(withId(R.id.flexbox_layout)));
+        onView(withId(R.id.text1)).check(isRightAlignedWith(withId(R.id.flexbox_layout)));
+        onView(withId(R.id.text2)).check(isTopAlignedWith(withId(R.id.flexbox_layout)));
+        onView(withId(R.id.text2)).check(isLeftOf(withId(R.id.text1)));
+        onView(withId(R.id.text3)).check(isBelow(withId(R.id.text1)));
+        onView(withId(R.id.text3)).check(isBelow(withId(R.id.text2)));
+        onView(withId(R.id.text3)).check(isRightAlignedWith(withId(R.id.flexbox_layout)));
+    }
+
+    @Test
+    @FlakyTest(tolerance = 3)
+    public void testFlexDirection_column_reverse() throws Throwable {
+        final FlexboxTestActivity activity = mActivityRule.getActivity();
+        mActivityRule.runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                activity.setContentView(R.layout.activity_flex_wrap_test);
+                FlexboxLayout flexboxLayout = (FlexboxLayout) activity
+                        .findViewById(R.id.flexbox_layout);
+                flexboxLayout.setFlexDirection(FlexboxLayout.FLEX_DIRECTION_COLUMN_REVERSE);
+            }
+        });
+        FlexboxLayout flexboxLayout = (FlexboxLayout) activity.findViewById(R.id.flexbox_layout);
+
+        assertThat(flexboxLayout.getFlexDirection(),
+                is(FlexboxLayout.FLEX_DIRECTION_COLUMN_REVERSE));
+        onView(withId(R.id.text1)).check(isBottomAlignedWith(withId(R.id.flexbox_layout)));
+        onView(withId(R.id.text1)).check(isLeftAlignedWith(withId(R.id.flexbox_layout)));
+        onView(withId(R.id.text2)).check(isLeftAlignedWith(withId(R.id.flexbox_layout)));
+        onView(withId(R.id.text2)).check(isAbove(withId(R.id.text1)));
+        onView(withId(R.id.text3)).check(isRightOf(withId(R.id.text1)));
+        onView(withId(R.id.text3)).check(isRightOf(withId(R.id.text2)));
+        onView(withId(R.id.text3)).check(isBottomAlignedWith(withId(R.id.flexbox_layout)));
+    }
+
     private TextView createTextView(Context context, String text, int order) {
         TextView textView = new TextView(context);
         textView.setText(text);

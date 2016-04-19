@@ -20,6 +20,7 @@ import android.content.Context;
 import android.content.res.TypedArray;
 import android.support.annotation.IntDef;
 import android.support.annotation.NonNull;
+import android.support.v4.view.ViewCompat;
 import android.util.AttributeSet;
 import android.view.View;
 import android.view.ViewGroup;
@@ -768,28 +769,51 @@ public class FlexboxLayout extends ViewGroup {
 
     @Override
     protected void onLayout(boolean changed, int left, int top, int right, int bottom) {
+        int layoutDirection = ViewCompat.getLayoutDirection(this);
+        boolean isRtl;
         switch (mFlexDirection) {
             case FLEX_DIRECTION_ROW:
-                layoutHorizontal(changed, left, top, right, bottom);
+                isRtl = layoutDirection == ViewCompat.LAYOUT_DIRECTION_RTL;
+                layoutHorizontal(isRtl, left, top, right, bottom);
                 break;
             case FLEX_DIRECTION_ROW_REVERSE:
-                // TODO: Implement this
+                isRtl = layoutDirection != ViewCompat.LAYOUT_DIRECTION_RTL;
+                layoutHorizontal(isRtl, left, top, right, bottom);
                 break;
             case FLEX_DIRECTION_COLUMN:
-                layoutVertical(changed, left, top, right, bottom);
+                isRtl = layoutDirection == ViewCompat.LAYOUT_DIRECTION_RTL;
+                if (mFlexWrap == FLEX_WRAP_WRAP_REVERSE) {
+                    isRtl = !isRtl;
+                }
+                layoutVertical(isRtl, false, left, top, right, bottom);
                 break;
             case FLEX_DIRECTION_COLUMN_REVERSE:
-                // TODO: Implement this
+                isRtl = layoutDirection == ViewCompat.LAYOUT_DIRECTION_RTL;
+                if (mFlexWrap == FLEX_WRAP_WRAP_REVERSE) {
+                    isRtl = !isRtl;
+                }
+                layoutVertical(isRtl, true, left, top, right, bottom);
                 break;
             default:
                 throw new IllegalStateException("Invalid flex direction is set: " + mFlexDirection);
         }
     }
 
-    private void layoutHorizontal(boolean changed, int left, int top, int right, int bottom) {
-        int paddingStart = getPaddingStart();
-        int paddingEnd = getPaddingEnd();
-        int childStart;
+    /**
+     * Sub method for {@link #onLayout(boolean, int, int, int, int)} when the
+     * {@link #mFlexDirection} is either {@link #FLEX_DIRECTION_ROW} or
+     * {@link #FLEX_DIRECTION_ROW_REVERSE}.
+     *
+     * @param isRtl {@code true} if the layout direction is right to left, {@code false} otherwise.
+     * @param left the left position of this View
+     * @param top the top position of this View
+     * @param right the right position of this View
+     * @param bottom the bottom position of this View
+     */
+    private void layoutHorizontal(boolean isRtl, int left, int top, int right, int bottom) {
+        int paddingLeft = getPaddingLeft();
+        int paddingRight = getPaddingRight();
+        int childLeft;
         int currentViewIndex = 0;
 
         int height = bottom - top;
@@ -798,31 +822,37 @@ public class FlexboxLayout extends ViewGroup {
         int childBottom = height - getPaddingBottom();
         int childTop = getPaddingTop();
 
+        // Used only for RTL layout
+        int childRight;
         for (FlexLine flexLine : mFlexLines) {
             int spaceBetweenItem = 0;
             switch (mJustifyContent) {
                 case JUSTIFY_CONTENT_FLEX_START:
-                    childStart = paddingStart;
+                    childLeft = left + paddingLeft;
+                    childRight = right - paddingRight;
                     break;
                 case JUSTIFY_CONTENT_FLEX_END:
-                    childStart = right - paddingEnd - flexLine.mainSize;
+                    childLeft = right - paddingRight - flexLine.mainSize;
+                    childRight = left + paddingLeft + flexLine.mainSize;
                     break;
                 case JUSTIFY_CONTENT_CENTER:
-                    childStart = paddingStart +
-                            +(right - left - flexLine.mainSize) / 2;
+                    childLeft = paddingLeft + (right - left - flexLine.mainSize) / 2;
+                    childRight = right - paddingRight - (right - left - flexLine.mainSize) / 2;
                     break;
                 case JUSTIFY_CONTENT_SPACE_AROUND:
                     if (flexLine.itemCount != 0) {
-                        spaceBetweenItem = (right - left - paddingStart - paddingEnd
+                        spaceBetweenItem = (right - left - paddingLeft - paddingRight
                                 - flexLine.mainSize) / flexLine.itemCount;
                     }
-                    childStart = paddingStart + spaceBetweenItem / 2;
+                    childLeft = paddingLeft + spaceBetweenItem / 2;
+                    childRight = right - paddingRight - spaceBetweenItem / 2;
                     break;
                 case JUSTIFY_CONTENT_SPACE_BETWEEN:
-                    childStart = paddingStart;
+                    childLeft = paddingLeft;
                     int denominator = flexLine.itemCount != 1 ? flexLine.itemCount - 1 : 1;
-                    spaceBetweenItem = (right - left - paddingStart - paddingEnd
+                    spaceBetweenItem = (right - left - paddingLeft - paddingRight
                             - flexLine.mainSize) / denominator;
+                    childRight = right - paddingRight;
                     break;
                 default:
                     throw new IllegalStateException(
@@ -837,18 +867,33 @@ public class FlexboxLayout extends ViewGroup {
                     continue;
                 }
                 LayoutParams lp = ((LayoutParams) child.getLayoutParams());
-                childStart += lp.getMarginStart();
+                childLeft += lp.leftMargin;
+                childRight -= lp.rightMargin;
                 if (mFlexWrap == FLEX_WRAP_WRAP_REVERSE) {
-                    layoutSingleChildHorizontal(child, flexLine, mFlexWrap, mAlignItems,
-                            childStart, childBottom - child.getMeasuredHeight(),
-                            childStart + child.getMeasuredWidth(),
-                            childBottom);
+                    if (isRtl) {
+                        layoutSingleChildHorizontal(child, flexLine, mFlexWrap, mAlignItems,
+                                childRight - child.getMeasuredWidth(),
+                                childBottom - child.getMeasuredHeight(), childRight,
+                                childBottom);
+                    } else {
+                        layoutSingleChildHorizontal(child, flexLine, mFlexWrap, mAlignItems,
+                                childLeft, childBottom - child.getMeasuredHeight(),
+                                childLeft + child.getMeasuredWidth(),
+                                childBottom);
+                    }
                 } else {
-                    layoutSingleChildHorizontal(child, flexLine, mFlexWrap, mAlignItems,
-                            childStart, childTop, childStart + child.getMeasuredWidth(),
-                            childTop + child.getMeasuredHeight());
+                    if (isRtl) {
+                        layoutSingleChildHorizontal(child, flexLine, mFlexWrap, mAlignItems,
+                                childRight - child.getMeasuredWidth(), childTop,
+                                childRight, childTop + child.getMeasuredHeight());
+                    } else {
+                        layoutSingleChildHorizontal(child, flexLine, mFlexWrap, mAlignItems,
+                                childLeft, childTop, childLeft + child.getMeasuredWidth(),
+                                childTop + child.getMeasuredHeight());
+                    }
                 }
-                childStart += child.getMeasuredWidth() + spaceBetweenItem + lp.getMarginEnd();
+                childLeft += child.getMeasuredWidth() + spaceBetweenItem + lp.rightMargin;
+                childRight -= child.getMeasuredWidth() + spaceBetweenItem + lp.leftMargin;
                 currentViewIndex++;
             }
             childTop += flexLine.crossSize;
@@ -856,6 +901,24 @@ public class FlexboxLayout extends ViewGroup {
         }
     }
 
+    /**
+     * Place a single View when the layout direction is horizontal ({@link #mFlexDirection} is
+     * either {@link #FLEX_DIRECTION_ROW} or {@link #FLEX_DIRECTION_ROW_REVERSE}).
+     *
+     * @param view the View to be placed
+     * @param flexLine the {@link FlexLine} where the View belongs to
+     * @param flexWrap the flex wrap attribute of this FlexboxLayout
+     * @param alignItems the align items attribute of this FlexboxLayout
+     * @param left the left position of the View, which the View's margin is already taken into
+     *             account
+     * @param top the top position of the flex line where the View belongs to. The actual View's
+     *            top position is shifted depending on the flexWrap and alignItems attributes
+     * @param right the right position of the View, which the View's margin is already taken into
+     *              account
+     * @param bottom the bottom position of the flex line where the View belongs to. The actual
+     *               View's bottom position is shifted depending on the flexWrap and alignItems
+     *               attributes
+     */
     private void layoutSingleChildHorizontal(View view, FlexLine flexLine, @FlexWrap int flexWrap,
             int alignItems, int left, int top, int right, int bottom) {
         LayoutParams lp = (LayoutParams) view.getLayoutParams();
@@ -869,11 +932,9 @@ public class FlexboxLayout extends ViewGroup {
             case ALIGN_ITEMS_FLEX_START: // Intentional fall through
             case ALIGN_ITEMS_STRETCH:
                 if (flexWrap != FLEX_WRAP_WRAP_REVERSE) {
-                    view.layout(left, top + lp.topMargin, right,
-                            bottom + lp.topMargin);
+                    view.layout(left, top + lp.topMargin, right, bottom + lp.topMargin);
                 } else {
-                    view.layout(left, top - lp.bottomMargin, right,
-                            bottom - lp.bottomMargin);
+                    view.layout(left, top - lp.bottomMargin, right, bottom - lp.bottomMargin);
                 }
                 break;
             case ALIGN_ITEMS_BASELINE:
@@ -915,32 +976,50 @@ public class FlexboxLayout extends ViewGroup {
         }
     }
 
-    private void layoutVertical(boolean changed, int left, int top, int right, int bottom) {
+    /**
+     * Sub method for {@link #onLayout(boolean, int, int, int, int)} when the
+     * {@link #mFlexDirection} is either {@link #FLEX_DIRECTION_COLUMN} or
+     * {@link #FLEX_DIRECTION_COLUMN_REVERSE}.
+     *
+     * @param isRtl {@code true} if the layout direction is right to left, {@code false} otherwise.
+     * @param fromBottomToTop {@code true} if the layout direction is bottom to top, {@code false}
+     *                        otherwise.
+     * @param left the left position of this View
+     * @param top the top position of this View
+     * @param right the right position of this View
+     * @param bottom the bottom position of this View
+     */
+    private void layoutVertical(boolean isRtl, boolean fromBottomToTop, int left, int top,
+            int right, int bottom) {
         int paddingTop = getPaddingTop();
         int paddingBottom = getPaddingBottom();
-        int paddingEnd = getPaddingEnd();
-        int childStart = getPaddingStart();
+        int paddingRight = getPaddingRight();
+        int childLeft = getPaddingLeft();
         int currentViewIndex = 0;
 
         int width = right - left;
         int height = bottom - top;
-        // childEnd is used if the mFlexWrap is FLEX_WRAP_WRAP_REVERSE otherwise
-        // childStart is used to align the horizontal position of the children views.
-        int childEnd = width - paddingEnd;
+        // childRight is used if the mFlexWrap is FLEX_WRAP_WRAP_REVERSE otherwise
+        // childLeft is used to align the horizontal position of the children views.
+        int childRight = width - paddingRight;
         int childTop;
 
+        // Used only for if the direction is from bottom to top
+        int childBottom;
         for (FlexLine flexLine : mFlexLines) {
             int spaceBetweenItem = 0;
             switch (mJustifyContent) {
                 case JUSTIFY_CONTENT_FLEX_START:
                     childTop = paddingTop;
+                    childBottom = height - paddingBottom;
                     break;
                 case JUSTIFY_CONTENT_FLEX_END:
                     childTop = height - paddingBottom - flexLine.mainSize;
+                    childBottom = paddingTop + flexLine.mainSize;
                     break;
                 case JUSTIFY_CONTENT_CENTER:
-                    childTop = paddingTop +
-                            + (height - flexLine.mainSize) / 2;
+                    childTop = paddingTop + (height - flexLine.mainSize) / 2;
+                    childBottom = height - paddingBottom - (height - flexLine.mainSize) / 2;
                     break;
                 case JUSTIFY_CONTENT_SPACE_AROUND:
                     if (flexLine.itemCount != 0) {
@@ -948,12 +1027,14 @@ public class FlexboxLayout extends ViewGroup {
                                 - flexLine.mainSize) / flexLine.itemCount;
                     }
                     childTop = paddingTop + spaceBetweenItem / 2;
+                    childBottom = height - paddingBottom - spaceBetweenItem / 2;
                     break;
                 case JUSTIFY_CONTENT_SPACE_BETWEEN:
                     childTop = paddingTop;
                     int denominator = flexLine.itemCount != 1 ? flexLine.itemCount - 1 : 1;
                     spaceBetweenItem = (height - paddingTop - paddingBottom
                             - flexLine.mainSize) / denominator;
+                    childBottom = height - paddingBottom;
                     break;
                 default:
                     throw new IllegalStateException(
@@ -969,24 +1050,55 @@ public class FlexboxLayout extends ViewGroup {
                 }
                 LayoutParams lp = ((LayoutParams) child.getLayoutParams());
                 childTop += lp.topMargin;
-                if (mFlexWrap == FLEX_WRAP_WRAP_REVERSE) {
-                    layoutSingleChildVertical(child, flexLine, mFlexWrap, mAlignItems,
-                            childEnd - child.getMeasuredWidth(), childTop,
-                            childEnd, childTop + child.getMeasuredHeight());
+                childBottom -= lp.bottomMargin;
+                if (isRtl) {
+                    if (fromBottomToTop) {
+                        layoutSingleChildVertical(child, flexLine, true, mAlignItems,
+                                childRight - child.getMeasuredWidth(),
+                                childBottom - child.getMeasuredHeight(), childRight, childBottom);
+                    } else {
+                        layoutSingleChildVertical(child, flexLine, true, mAlignItems,
+                                childRight - child.getMeasuredWidth(), childTop,
+                                childRight, childTop + child.getMeasuredHeight());
+                    }
                 } else {
-                    layoutSingleChildVertical(child, flexLine, mFlexWrap, mAlignItems,
-                            childStart, childTop, childStart + child.getMeasuredWidth(),
-                            childTop + child.getMeasuredHeight());
+                    if (fromBottomToTop) {
+                        layoutSingleChildVertical(child, flexLine, false, mAlignItems,
+                                childLeft, childBottom - child.getMeasuredHeight(),
+                                childLeft + child.getMeasuredWidth(), childBottom);
+                    } else {
+                        layoutSingleChildVertical(child, flexLine, false, mAlignItems,
+                                childLeft, childTop, childLeft + child.getMeasuredWidth(),
+                                childTop + child.getMeasuredHeight());
+                    }
                 }
                 childTop += child.getMeasuredHeight() + spaceBetweenItem + lp.bottomMargin;
+                childBottom -= child.getMeasuredHeight() + spaceBetweenItem + lp.topMargin;
                 currentViewIndex++;
             }
-            childStart += flexLine.crossSize;
-            childEnd -= flexLine.crossSize;
+            childLeft += flexLine.crossSize;
+            childRight -= flexLine.crossSize;
         }
     }
 
-    private void layoutSingleChildVertical(View view, FlexLine flexLine, @FlexWrap int flexWrap,
+    /**
+     * Place a single View when the layout direction is vertical ({@link #mFlexDirection} is
+     * either {@link #FLEX_DIRECTION_COLUMN} or {@link #FLEX_DIRECTION_COLUMN_REVERSE}).
+     *
+     * @param view the View to be placed
+     * @param flexLine the {@link FlexLine} where the View belongs to
+     * @param isRtl {@code true} if the layout direction is right to left, {@code false} otherwise
+     * @param alignItems the align items attribute of this FlexboxLayout
+     * @param left the left position of the flex line where the View belongs to. The actual View's
+     *             left position is shifted depending on the isRtl and alignItems attributes
+     * @param top the top position of the View, which the View's margin is already taken into
+     *            account
+     * @param right the right position of the flex line where the View belongs to. The actual View's
+     *              right position is shifted depending on the isRtl and alignItems attributes
+     * @param bottom the bottom position of the View, which the View's margin is already taken into
+     *               account
+     */
+    private void layoutSingleChildVertical(View view, FlexLine flexLine, boolean isRtl,
             int alignItems, int left, int top, int right, int bottom) {
         LayoutParams lp = (LayoutParams) view.getLayoutParams();
         if (lp.alignSelf != LayoutParams.ALIGN_SELF_AUTO) {
@@ -999,14 +1111,14 @@ public class FlexboxLayout extends ViewGroup {
             case ALIGN_ITEMS_FLEX_START: // Intentional fall through
             case ALIGN_ITEMS_STRETCH: // Intentional fall through
             case ALIGN_ITEMS_BASELINE:
-                if (flexWrap != FLEX_WRAP_WRAP_REVERSE) {
+                if (!isRtl) {
                     view.layout(left + lp.leftMargin, top, right + lp.leftMargin, bottom);
                 } else {
                     view.layout(left - lp.rightMargin, top, right - lp.rightMargin, bottom);
                 }
                 break;
             case ALIGN_ITEMS_FLEX_END:
-                if (flexWrap != FLEX_WRAP_WRAP_REVERSE) {
+                if (!isRtl) {
                     view.layout(left + crossSize - view.getMeasuredWidth() - lp.rightMargin,
                             top, right + crossSize - view.getMeasuredWidth() - lp.rightMargin,
                             bottom);
@@ -1020,7 +1132,7 @@ public class FlexboxLayout extends ViewGroup {
                 break;
             case ALIGN_ITEMS_CENTER:
                 int leftFromCrossAxis = (crossSize - view.getMeasuredWidth()) / 2;
-                if (flexWrap != FLEX_WRAP_WRAP_REVERSE) {
+                if (!isRtl) {
                     view.layout(left + leftFromCrossAxis + lp.leftMargin - lp.rightMargin,
                             top, right + leftFromCrossAxis + lp.leftMargin - lp.rightMargin,
                             bottom);
