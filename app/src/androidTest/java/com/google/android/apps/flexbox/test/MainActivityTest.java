@@ -330,12 +330,12 @@ public class MainActivityTest {
 
     @Test
     @FlakyTest(tolerance = 3)
-    public void testEditFragment_changePercentLength() {
+    public void testEditFragment_changeFlexBasisPercent() {
         MainActivity activity = mActivityRule.getActivity();
         FlexboxLayout flexboxLayout = (FlexboxLayout) activity.findViewById(R.id.flexbox_layout);
         assertNotNull(flexboxLayout);
         onView(withId(R.id.textview1)).perform(click());
-        onView(withId(R.id.edit_text_percent_length)).perform(replaceText("50"), closeSoftKeyboard());
+        onView(withId(R.id.edit_text_flex_basis_percent)).perform(replaceText("50"), closeSoftKeyboard());
         onView(withId(R.id.button_ok)).perform(click());
         TextView first = (TextView) activity.findViewById(R.id.textview1);
         TextView second = (TextView) activity.findViewById(R.id.textview2);

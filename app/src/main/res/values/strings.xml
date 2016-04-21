@@ -97,7 +97,7 @@ limitations under the License.
     <string name="hint_order">Order</string>
     <string name="hint_flex_grow">Flex Grow</string>
     <string name="hint_flex_shrink">Flex Shrink</string>
-    <string name="hint_percent_length">Percent Length (-1: not set)</string>
+    <string name="hint_flex_basis_percent">Flex Basis Percent (-1: not set)</string>
     <string name="hint_align_self">Align Self</string>
     <string name="hint_width">Width (-1: match_parent, -2: wrap_content)</string>
     <string name="hint_height">Height (-1: match_parent, -2: wrap_content)</string>

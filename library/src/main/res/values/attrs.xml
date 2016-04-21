@@ -84,7 +84,7 @@ limitations under the License.
             Thus, this attribute only accepts fraction values, which can't be done through
             layout_width (or layout_height) for simplicity.
         -->
-        <attr name="layout_percentLength" format="fraction" />
+        <attr name="layout_flexBasisPercent" format="fraction" />
 
         <!--
             Omitting flex property since it's a shorthand for layout_flexGrow and layout_flexShrink
