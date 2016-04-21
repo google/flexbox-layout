@@ -33,8 +33,27 @@ import java.util.SortedSet;
 import java.util.TreeSet;
 
 /**
- * A layout that arranges its children in a way its attributes can be specified like
+ * A layout that arranges its children in a way its attributes can be specified like the
  * CSS Flexible Box Layout Module.
+ *
+ * The supported attributes that you can use are:
+ * <ul>
+ *     <li>{@code flexDirection}</li>
+ *     <li>{@code flexWrap}</li>
+ *     <li>{@code justifyContent}</li>
+ *     <li>{@code alignItems}</li>
+ *     <li>{@code alignContent}</li>
+ * </ul>
+ * for the FlexboxLayout.
+ *
+ * And for the children of the FlexboxLayout, you can use:
+ * <ul>
+ *     <li>{@code layout_order}</li>
+ *     <li>{@code layout_flexGrow}</li>
+ *     <li>{@code layout_flexShrink}</li>
+ *     <li>{@code layout_percentLength}</li>
+ *     <li>{@code layout_alignSelf}</li>
+ * </ul>
  */
 public class FlexboxLayout extends ViewGroup {
 
@@ -149,8 +168,10 @@ public class FlexboxLayout extends ViewGroup {
      */
     private int mAlignContent;
 
-    /** Holds reordered indices, which {@link LayoutParams#order} parameter is taken into account */
-    private int[] mReorderedIndex;
+    /**
+     * Holds reordered indices, which {@link LayoutParams#order} parameters are taken into account
+     */
+    private int[] mReorderedIndices;
 
     private List<FlexLine> mFlexLines = new ArrayList<>();
 
@@ -179,7 +200,7 @@ public class FlexboxLayout extends ViewGroup {
     @Override
     protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
         super.onMeasure(widthMeasureSpec, heightMeasureSpec);
-        mReorderedIndex = createReorderedIndex();
+        mReorderedIndices = createReorderedIndices();
         // TODO: Only calculate the children views which are affected from the last measure.
 
         switch (mFlexDirection) {
@@ -197,6 +218,56 @@ public class FlexboxLayout extends ViewGroup {
         }
     }
 
+    /**
+     * Returns a View, which is reordered by taking {@link LayoutParams#order} parameters
+     * into account.
+     *
+     * @param index the index of the view
+     * @return the reordered view, which {@link LayoutParams@order} is taken into account.
+     *         If the index is negative or out of bounds of the number of contained views,
+     *         returns {@code null}.
+     */
+    public View getReorderedChildAt(int index) {
+        if (index < 0 || index >= mReorderedIndices.length) {
+            return null;
+        }
+        return getChildAt(mReorderedIndices[index]);
+    }
+
+    /**
+     * Create an array, which indicates the reordered indices that {@link LayoutParams#order}
+     * attributes are taken into account.
+     *
+     * @return an array which have the reordered indices
+     */
+    private int[] createReorderedIndices() {
+        int[] reorderedIndex = new int[getChildCount()];
+        int count = getChildCount();
+        SortedSet<Order> orderSet = new TreeSet<>();
+        for (int i = 0; i < count; i++) {
+            View child = getChildAt(i);
+            LayoutParams params = (LayoutParams) child.getLayoutParams();
+            Order order = new Order();
+            order.order = params.order;
+            order.index = i;
+            orderSet.add(order);
+        }
+
+        int i = 0;
+        for (Order order : orderSet) {
+            reorderedIndex[i] = order.index;
+            i++;
+        }
+        return reorderedIndex;
+    }
+
+    /**
+     * Sub method for {@link #onMeasure(int, int)}, when the main axis direction is horizontal
+     * (either left to right or right to left).
+     *
+     * @param widthMeasureSpec the measure spec for the width
+     * @param heightMeasureSpec the measure spec for the height
+     */
     private void measureHorizontal(int widthMeasureSpec, int heightMeasureSpec) {
         int widthMode = MeasureSpec.getMode(widthMeasureSpec);
         int widthSize = MeasureSpec.getSize(widthMeasureSpec);
@@ -323,6 +394,13 @@ public class FlexboxLayout extends ViewGroup {
                 childState);
     }
 
+    /**
+     * Sub method for {@link #onMeasure(int, int)} when the main axis direction is vertical
+     * (either from top to bottom or bottom to top).
+     *
+     * @param widthMeasureSpec the measure spec for the width
+     * @param heightMeasureSpec the measure spec for the height
+     */
     private void measureVertical(int widthMeasureSpec, int heightMeasureSpec) {
         int heightMode = MeasureSpec.getMode(heightMeasureSpec);
         int heightSize = MeasureSpec.getSize(heightMeasureSpec);
@@ -406,170 +484,6 @@ public class FlexboxLayout extends ViewGroup {
         stretchViews(mFlexDirection, mAlignItems);
         setMeasuredDimensionForFlex(mFlexDirection, widthMeasureSpec, heightMeasureSpec,
                 childState);
-    }
-
-    /**
-     * Expand the view if the {@link #mAlignItems} attribute is set to {@link #ALIGN_ITEMS_STRETCH}
-     * of {@link LayoutParams#ALIGN_SELF_STRETCH} is set to an individual child view.
-     *
-     * @param flexDirection the flex direction attribute
-     * @param alignItems the align items attribute
-     */
-    private void stretchViews(int flexDirection, int alignItems) {
-        if (alignItems == ALIGN_ITEMS_STRETCH) {
-            int viewIndex = 0;
-            for (FlexLine flexLine : mFlexLines) {
-                for (int i = 0; i < flexLine.itemCount; i++, viewIndex++) {
-                    View view = getReorderedChildAt(viewIndex);
-                    LayoutParams lp = (LayoutParams) view.getLayoutParams();
-                    if (lp.alignSelf != LayoutParams.ALIGN_SELF_AUTO &&
-                            lp.alignSelf != LayoutParams.ALIGN_SELF_STRETCH) {
-                        continue;
-                    }
-                    switch (flexDirection) {
-                        case FLEX_DIRECTION_ROW: // Intentional fall through
-                        case FLEX_DIRECTION_ROW_REVERSE:
-                            stretchViewVertically(view, flexLine.crossSize);
-                            break;
-                        case FLEX_DIRECTION_COLUMN:
-                        case FLEX_DIRECTION_COLUMN_REVERSE:
-                            stretchViewHorizontally(view, flexLine.crossSize);
-                            break;
-                        default:
-                            throw new IllegalArgumentException(
-                                    "Invalid flex direction: " + flexDirection);
-                    }
-                }
-            }
-        } else {
-            for (FlexLine flexLine : mFlexLines) {
-                for (Integer index : flexLine.indicesAlignSelfStretch) {
-                    View view = getReorderedChildAt(index);
-                    switch (flexDirection) {
-                        case FLEX_DIRECTION_ROW: // Intentional fall through
-                        case FLEX_DIRECTION_ROW_REVERSE:
-                            stretchViewVertically(view, flexLine.crossSize);
-                            break;
-                        case FLEX_DIRECTION_COLUMN:
-                        case FLEX_DIRECTION_COLUMN_REVERSE:
-                            stretchViewHorizontally(view, flexLine.crossSize);
-                            break;
-                        default:
-                            throw new IllegalArgumentException(
-                                    "Invalid flex direction: " + flexDirection);
-                    }
-                }
-            }
-        }
-    }
-
-    /**
-     * Determines the cross size (Calculate the length along the cross axis).
-     * Expand the cross size only if the height mode is MeasureSpec.EXACTLY, otherwise
-     * use the sum of cross sizes of all flex lines.
-     *
-     * @param flexDirection the flex direction attribute
-     * @param widthMeasureSpec the measure spec parameter for width
-     * @param heightMeasureSpec the measure spec parameter for height
-     */
-    private void determineCrossSize(int flexDirection, int widthMeasureSpec, int heightMeasureSpec) {
-        // The MeasureSpec mode along the cross axis
-        int mode;
-        // The MeasureSpec size along the cross axis
-        int size;
-        switch (flexDirection) {
-            case FLEX_DIRECTION_ROW: // Intentional fall through
-            case FLEX_DIRECTION_ROW_REVERSE:
-                mode = MeasureSpec.getMode(heightMeasureSpec);
-                size = MeasureSpec.getSize(heightMeasureSpec);
-                break;
-            case FLEX_DIRECTION_COLUMN: // Intentional fall through
-            case FLEX_DIRECTION_COLUMN_REVERSE:
-                mode = MeasureSpec.getMode(widthMeasureSpec);
-                size = MeasureSpec.getSize(widthMeasureSpec);
-                break;
-            default:
-                throw new IllegalArgumentException("Invalid flex direction: " + flexDirection);
-        }
-        if (mode == MeasureSpec.EXACTLY) {
-            int totalCrossSize = getSumOfCrossSize();
-            if (mFlexLines.size() == 1) {
-                mFlexLines.get(0).crossSize = size;
-                // alignContent property is valid only if the Flexbox has at least two lines
-            } else if (mFlexLines.size() >= 2 && totalCrossSize < size) {
-                switch (mAlignContent) {
-                    case ALIGN_CONTENT_STRETCH: {
-                        int freeSpaceUnit = (size - totalCrossSize) / mFlexLines.size();
-                        for (FlexLine flexLine : mFlexLines) {
-                            flexLine.crossSize += freeSpaceUnit;
-                        }
-                        break;
-                    }
-                    case ALIGN_CONTENT_SPACE_AROUND: {
-                        // The value of free space along the cross axis which needs to be put on top
-                        // and below the bottom of each flex line.
-                        int spaceTopAndBottom = size - totalCrossSize;
-                        // The number of spaces along the cross axis
-                        int numberOfSpaces = mFlexLines.size() * 2;
-                        spaceTopAndBottom = spaceTopAndBottom / numberOfSpaces;
-                        List<FlexLine> newFlexLines = new ArrayList<>();
-                        FlexLine dummySpaceFlexLine = new FlexLine();
-                        dummySpaceFlexLine.crossSize = spaceTopAndBottom;
-                        for (FlexLine flexLine : mFlexLines) {
-                            newFlexLines.add(dummySpaceFlexLine);
-                            newFlexLines.add(flexLine);
-                            newFlexLines.add(dummySpaceFlexLine);
-                        }
-                        mFlexLines = newFlexLines;
-                        break;
-                    }
-                    case ALIGN_CONTENT_SPACE_BETWEEN: {
-                        // The value of free space along the cross axis between each flex line.
-                        int spaceBetweenFlexLine = size - totalCrossSize;
-                        int numberOfSpaces = mFlexLines.size() - 1;
-                        spaceBetweenFlexLine = spaceBetweenFlexLine / numberOfSpaces;
-                        List<FlexLine> newFlexLines = new ArrayList<>();
-                        FlexLine dummySpaceFlexLine = new FlexLine();
-                        dummySpaceFlexLine.crossSize = spaceBetweenFlexLine;
-                        for (int i = 0; i < mFlexLines.size(); i++) {
-                            FlexLine flexLine = mFlexLines.get(i);
-                            newFlexLines.add(flexLine);
-                            if (i != mFlexLines.size() - 1) {
-                                newFlexLines.add(dummySpaceFlexLine);
-                            }
-                        }
-                        mFlexLines = newFlexLines;
-                        break;
-                    }
-                    case ALIGN_CONTENT_CENTER: {
-                        int spaceAboveAndBottom = size - totalCrossSize;
-                        spaceAboveAndBottom = spaceAboveAndBottom / 2;
-                        List<FlexLine> newFlexLines = new ArrayList<>();
-                        FlexLine dummySpaceFlexLine = new FlexLine();
-                        dummySpaceFlexLine.crossSize = spaceAboveAndBottom;
-                        for (int i = 0; i < mFlexLines.size(); i++) {
-                            if (i == 0) {
-                                newFlexLines.add(dummySpaceFlexLine);
-                            }
-                            FlexLine flexLine = mFlexLines.get(i);
-                            newFlexLines.add(flexLine);
-                            if (i == mFlexLines.size() - 1) {
-                                newFlexLines.add(dummySpaceFlexLine);
-                            }
-                        }
-                        mFlexLines = newFlexLines;
-                        break;
-                    }
-                    case ALIGN_CONTENT_FLEX_END: {
-                        int spaceTop = size - totalCrossSize;
-                        FlexLine dummySpaceFlexLine = new FlexLine();
-                        dummySpaceFlexLine.crossSize = spaceTop;
-                        mFlexLines.add(0, dummySpaceFlexLine);
-                        break;
-                    }
-                }
-            }
-        }
     }
 
     /**
@@ -707,12 +621,12 @@ public class FlexboxLayout extends ViewGroup {
                 if (newWidth < 0) {
                     // This means the child doesn't have enough space to distribute the negative
                     // free space. To adjust the flex line length down to the maxMainSize, remaining
-                    // negative free space needs to be re-distributed from other flex items
+                    // negative free space needs to be re-distributed to other flex items
                     // (children views). In that case, invoke this method again with the same
                     // startIndex.
                     needsReshrink = true;
+                    newWidth = 0;
                 }
-                newWidth = Math.max(newWidth, 0);
                 child.measure(MeasureSpec.makeMeasureSpec(newWidth, MeasureSpec.EXACTLY),
                         MeasureSpec
                                 .makeMeasureSpec(child.getMeasuredHeight(),
@@ -721,7 +635,11 @@ public class FlexboxLayout extends ViewGroup {
                         + lp.getMarginEnd();
             } else {
                 int newHeight = Math.round(child.getMeasuredHeight() - unitShrink * lp.flexShrink);
-                newHeight = Math.max(newHeight, child.getPaddingTop() + child.getPaddingBottom());
+                if (newHeight < 0) {
+                    // Need to invoke this method again like the case flex direction is vertical
+                    needsReshrink = true;
+                    newHeight  = 0;
+                }
                 child.measure(MeasureSpec.makeMeasureSpec(child.getMeasuredWidth(),
                         MeasureSpec.EXACTLY),
                         MeasureSpec.makeMeasureSpec(newHeight, MeasureSpec.EXACTLY));
@@ -734,6 +652,198 @@ public class FlexboxLayout extends ViewGroup {
             shrinkFlexItems(flexLine, flexDirection, maxMainSize, paddingAlongMainAxis, startIndex);
         }
         return childIndex;
+    }
+
+    /**
+     * Determines the cross size (Calculate the length along the cross axis).
+     * Expand the cross size only if the height mode is MeasureSpec.EXACTLY, otherwise
+     * use the sum of cross sizes of all flex lines.
+     *
+     * @param flexDirection the flex direction attribute
+     * @param widthMeasureSpec the measure spec parameter for width
+     * @param heightMeasureSpec the measure spec parameter for height
+     */
+    private void determineCrossSize(int flexDirection, int widthMeasureSpec, int heightMeasureSpec) {
+        // The MeasureSpec mode along the cross axis
+        int mode;
+        // The MeasureSpec size along the cross axis
+        int size;
+        switch (flexDirection) {
+            case FLEX_DIRECTION_ROW: // Intentional fall through
+            case FLEX_DIRECTION_ROW_REVERSE:
+                mode = MeasureSpec.getMode(heightMeasureSpec);
+                size = MeasureSpec.getSize(heightMeasureSpec);
+                break;
+            case FLEX_DIRECTION_COLUMN: // Intentional fall through
+            case FLEX_DIRECTION_COLUMN_REVERSE:
+                mode = MeasureSpec.getMode(widthMeasureSpec);
+                size = MeasureSpec.getSize(widthMeasureSpec);
+                break;
+            default:
+                throw new IllegalArgumentException("Invalid flex direction: " + flexDirection);
+        }
+        if (mode == MeasureSpec.EXACTLY) {
+            int totalCrossSize = getSumOfCrossSize();
+            if (mFlexLines.size() == 1) {
+                mFlexLines.get(0).crossSize = size;
+                // alignContent property is valid only if the Flexbox has at least two lines
+            } else if (mFlexLines.size() >= 2 && totalCrossSize < size) {
+                switch (mAlignContent) {
+                    case ALIGN_CONTENT_STRETCH: {
+                        int freeSpaceUnit = (size - totalCrossSize) / mFlexLines.size();
+                        for (FlexLine flexLine : mFlexLines) {
+                            flexLine.crossSize += freeSpaceUnit;
+                        }
+                        break;
+                    }
+                    case ALIGN_CONTENT_SPACE_AROUND: {
+                        // The value of free space along the cross axis which needs to be put on top
+                        // and below the bottom of each flex line.
+                        int spaceTopAndBottom = size - totalCrossSize;
+                        // The number of spaces along the cross axis
+                        int numberOfSpaces = mFlexLines.size() * 2;
+                        spaceTopAndBottom = spaceTopAndBottom / numberOfSpaces;
+                        List<FlexLine> newFlexLines = new ArrayList<>();
+                        FlexLine dummySpaceFlexLine = new FlexLine();
+                        dummySpaceFlexLine.crossSize = spaceTopAndBottom;
+                        for (FlexLine flexLine : mFlexLines) {
+                            newFlexLines.add(dummySpaceFlexLine);
+                            newFlexLines.add(flexLine);
+                            newFlexLines.add(dummySpaceFlexLine);
+                        }
+                        mFlexLines = newFlexLines;
+                        break;
+                    }
+                    case ALIGN_CONTENT_SPACE_BETWEEN: {
+                        // The value of free space along the cross axis between each flex line.
+                        int spaceBetweenFlexLine = size - totalCrossSize;
+                        int numberOfSpaces = mFlexLines.size() - 1;
+                        spaceBetweenFlexLine = spaceBetweenFlexLine / numberOfSpaces;
+                        List<FlexLine> newFlexLines = new ArrayList<>();
+                        FlexLine dummySpaceFlexLine = new FlexLine();
+                        dummySpaceFlexLine.crossSize = spaceBetweenFlexLine;
+                        for (int i = 0; i < mFlexLines.size(); i++) {
+                            FlexLine flexLine = mFlexLines.get(i);
+                            newFlexLines.add(flexLine);
+                            if (i != mFlexLines.size() - 1) {
+                                newFlexLines.add(dummySpaceFlexLine);
+                            }
+                        }
+                        mFlexLines = newFlexLines;
+                        break;
+                    }
+                    case ALIGN_CONTENT_CENTER: {
+                        int spaceAboveAndBottom = size - totalCrossSize;
+                        spaceAboveAndBottom = spaceAboveAndBottom / 2;
+                        List<FlexLine> newFlexLines = new ArrayList<>();
+                        FlexLine dummySpaceFlexLine = new FlexLine();
+                        dummySpaceFlexLine.crossSize = spaceAboveAndBottom;
+                        for (int i = 0; i < mFlexLines.size(); i++) {
+                            if (i == 0) {
+                                newFlexLines.add(dummySpaceFlexLine);
+                            }
+                            FlexLine flexLine = mFlexLines.get(i);
+                            newFlexLines.add(flexLine);
+                            if (i == mFlexLines.size() - 1) {
+                                newFlexLines.add(dummySpaceFlexLine);
+                            }
+                        }
+                        mFlexLines = newFlexLines;
+                        break;
+                    }
+                    case ALIGN_CONTENT_FLEX_END: {
+                        int spaceTop = size - totalCrossSize;
+                        FlexLine dummySpaceFlexLine = new FlexLine();
+                        dummySpaceFlexLine.crossSize = spaceTop;
+                        mFlexLines.add(0, dummySpaceFlexLine);
+                        break;
+                    }
+                }
+            }
+        }
+    }
+
+    /**
+     * Expand the view if the {@link #mAlignItems} attribute is set to {@link #ALIGN_ITEMS_STRETCH}
+     * of {@link LayoutParams#ALIGN_SELF_STRETCH} is set to an individual child view.
+     *
+     * @param flexDirection the flex direction attribute
+     * @param alignItems the align items attribute
+     */
+    private void stretchViews(int flexDirection, int alignItems) {
+        if (alignItems == ALIGN_ITEMS_STRETCH) {
+            int viewIndex = 0;
+            for (FlexLine flexLine : mFlexLines) {
+                for (int i = 0; i < flexLine.itemCount; i++, viewIndex++) {
+                    View view = getReorderedChildAt(viewIndex);
+                    LayoutParams lp = (LayoutParams) view.getLayoutParams();
+                    if (lp.alignSelf != LayoutParams.ALIGN_SELF_AUTO &&
+                            lp.alignSelf != LayoutParams.ALIGN_SELF_STRETCH) {
+                        continue;
+                    }
+                    switch (flexDirection) {
+                        case FLEX_DIRECTION_ROW: // Intentional fall through
+                        case FLEX_DIRECTION_ROW_REVERSE:
+                            stretchViewVertically(view, flexLine.crossSize);
+                            break;
+                        case FLEX_DIRECTION_COLUMN:
+                        case FLEX_DIRECTION_COLUMN_REVERSE:
+                            stretchViewHorizontally(view, flexLine.crossSize);
+                            break;
+                        default:
+                            throw new IllegalArgumentException(
+                                    "Invalid flex direction: " + flexDirection);
+                    }
+                }
+            }
+        } else {
+            for (FlexLine flexLine : mFlexLines) {
+                for (Integer index : flexLine.indicesAlignSelfStretch) {
+                    View view = getReorderedChildAt(index);
+                    switch (flexDirection) {
+                        case FLEX_DIRECTION_ROW: // Intentional fall through
+                        case FLEX_DIRECTION_ROW_REVERSE:
+                            stretchViewVertically(view, flexLine.crossSize);
+                            break;
+                        case FLEX_DIRECTION_COLUMN:
+                        case FLEX_DIRECTION_COLUMN_REVERSE:
+                            stretchViewHorizontally(view, flexLine.crossSize);
+                            break;
+                        default:
+                            throw new IllegalArgumentException(
+                                    "Invalid flex direction: " + flexDirection);
+                    }
+                }
+            }
+        }
+    }
+
+    /**
+     * Expand the view vertically to the size of the crossSize (considering the view margins)
+     * @param view the View to be stretched
+     * @param crossSize the cross size
+     */
+    private void stretchViewVertically(View view, int crossSize) {
+        LayoutParams lp = (LayoutParams) view.getLayoutParams();
+        int newHeight = crossSize - lp.topMargin - lp.bottomMargin;
+        newHeight = Math.max(newHeight, 0);
+        view.measure(MeasureSpec
+                        .makeMeasureSpec(view.getMeasuredWidth(), MeasureSpec.EXACTLY),
+                MeasureSpec.makeMeasureSpec(newHeight, MeasureSpec.EXACTLY));
+    }
+
+    /**
+     * Expand the view horizontally to the size of the crossSize (considering the view margins)
+     * @param view the View to be stretched
+     * @param crossSize the cross size
+     */
+    private void stretchViewHorizontally(View view, int crossSize) {
+        LayoutParams lp = (LayoutParams) view.getLayoutParams();
+        int newWidth = crossSize - lp.leftMargin - lp.rightMargin;
+        newWidth = Math.max(newWidth, 0);
+        view.measure(MeasureSpec
+                        .makeMeasureSpec(newWidth, MeasureSpec.EXACTLY),
+                MeasureSpec.makeMeasureSpec(view.getMeasuredHeight(), MeasureSpec.EXACTLY));
     }
 
     /**
@@ -828,34 +938,6 @@ public class FlexboxLayout extends ViewGroup {
     }
 
     /**
-     * Expand the view vertically to the size of the crossSize (considering the view margins)
-     * @param view the View to be stretched
-     * @param crossSize the cross size
-     */
-    private void stretchViewVertically(View view, int crossSize) {
-        LayoutParams lp = (LayoutParams) view.getLayoutParams();
-        int newHeight = crossSize - lp.topMargin - lp.bottomMargin;
-        newHeight = Math.max(newHeight, 0);
-        view.measure(MeasureSpec
-                        .makeMeasureSpec(view.getMeasuredWidth(), MeasureSpec.EXACTLY),
-                MeasureSpec.makeMeasureSpec(newHeight, MeasureSpec.EXACTLY));
-    }
-
-    /**
-     * Expand the view horizontally to the size of the crossSize (considering the view margins)
-     * @param view the View to be stretched
-     * @param crossSize the cross size
-     */
-    private void stretchViewHorizontally(View view, int crossSize) {
-        LayoutParams lp = (LayoutParams) view.getLayoutParams();
-        int newWidth = crossSize - lp.leftMargin - lp.rightMargin;
-        newWidth = Math.max(newWidth, 0);
-        view.measure(MeasureSpec
-                        .makeMeasureSpec(newWidth, MeasureSpec.EXACTLY),
-                MeasureSpec.makeMeasureSpec(view.getMeasuredHeight(), MeasureSpec.EXACTLY));
-    }
-
-    /**
      * Determine if a wrap is required (add a new flex line).
      *
      * @param flexWrap the flexWrap attribute
@@ -872,6 +954,11 @@ public class FlexboxLayout extends ViewGroup {
                 maxSize < currentLength + childLength;
     }
 
+    /**
+     * Retrieve the largest main size of all flex lines.
+     *
+     * @return the largest main size
+     */
     private int getLargestMainSize() {
         int largestSize = Integer.MIN_VALUE;
         for (FlexLine flexLine : mFlexLines) {
@@ -880,49 +967,17 @@ public class FlexboxLayout extends ViewGroup {
         return largestSize;
     }
 
+    /**
+     * Retrieve the sum of the cross sizes of all flex lines.
+     *
+     * @return the sum of the cross sizes
+     */
     private int getSumOfCrossSize() {
         int sum = 0;
         for (FlexLine flexLine : mFlexLines) {
             sum += flexLine.crossSize;
         }
         return sum;
-    }
-
-    /**
-     * Returns a View, which is reordered by taking {@link LayoutParams#order} parameters
-     * into account.
-     *
-     * @param index the index of the view
-     * @return the reordered view, which {@link LayoutParams@order} is taken into account.
-     *         If the index is negative or out of bounds of the number of contained views,
-     *         returns {@code null}.
-     */
-    public View getReorderedChildAt(int index) {
-        if (index < 0 || index >= mReorderedIndex.length) {
-            return null;
-        }
-        return getChildAt(mReorderedIndex[index]);
-    }
-
-    private int[] createReorderedIndex() {
-        int[] reorderedIndex = new int[getChildCount()];
-        int count = getChildCount();
-        SortedSet<Order> orderSet = new TreeSet<>();
-        for (int i = 0; i < count; i++) {
-            View child = getChildAt(i);
-            LayoutParams params = (LayoutParams) child.getLayoutParams();
-            Order order = new Order();
-            order.order = params.order;
-            order.index = i;
-            orderSet.add(order);
-        }
-
-        int i = 0;
-        for (Order order : orderSet) {
-            reorderedIndex[i] = order.index;
-            i++;
-        }
-        return reorderedIndex;
     }
 
     @Override

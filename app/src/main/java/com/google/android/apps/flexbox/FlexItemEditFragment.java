@@ -120,15 +120,15 @@ public class FlexItemEditFragment extends DialogFragment {
 
         final TextInputLayout percentLengthInput = (TextInputLayout) view
                 .findViewById(R.id.input_layout_percent_length);
-        EditText flexBasisEdit = (EditText) view.findViewById(
+        EditText percentLengthEdit = (EditText) view.findViewById(
                 R.id.edit_text_percent_length);
         if (mFlexItem.percentLength != FlexboxLayout.LayoutParams.PERCENT_LENGTH_DEFAULT) {
-            flexBasisEdit
+            percentLengthEdit
                     .setText(String.valueOf(Math.round(mFlexItem.percentLength * 100)));
         } else {
-            flexBasisEdit.setText(String.valueOf((int) mFlexItem.percentLength));
+            percentLengthEdit.setText(String.valueOf((int) mFlexItem.percentLength));
         }
-        flexBasisEdit.addTextChangedListener(
+        percentLengthEdit.addTextChangedListener(
                 new FlexEditTextWatcher(percentLengthInput, new PercentLengthInputVerifier(),
                         R.string.must_be_minus_one_or_non_negative_integer));
 
