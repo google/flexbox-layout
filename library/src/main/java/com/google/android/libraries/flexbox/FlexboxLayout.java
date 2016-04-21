@@ -51,7 +51,7 @@ import java.util.TreeSet;
  *     <li>{@code layout_order}</li>
  *     <li>{@code layout_flexGrow}</li>
  *     <li>{@code layout_flexShrink}</li>
- *     <li>{@code layout_percentLength}</li>
+ *     <li>{@code layout_flexBasisPercent}</li>
  *     <li>{@code layout_alignSelf}</li>
  * </ul>
  */
@@ -297,11 +297,12 @@ public class FlexboxLayout extends ViewGroup {
                 }
 
                 int childWidth = lp.width;
-                if (lp.percentLength != LayoutParams.PERCENT_LENGTH_DEFAULT
+                if (lp.flexBasisPercent != LayoutParams.FLEX_BASIS_PERCENT_DEFAULT
                         && widthMode == MeasureSpec.EXACTLY) {
-                    childWidth = Math.round(widthSize * lp.percentLength);
+                    childWidth = Math.round(widthSize * lp.flexBasisPercent);
                     // Use the dimension from the layout_width attribute if the widthMode is not
-                    // MeasureSpec.EXACTLY even if any fraction value is set to layout_percentLength.
+                    // MeasureSpec.EXACTLY even if any fraction value is set to
+                    // layout_flexBasisPercent.
                     // There are likely quite few use cases where assigning any fraction values
                     // with widthMode is not MeasureSpec.EXACTLY (e.g. FlexboxLayout's layout_width
                     // is set to wrap_content)
@@ -429,11 +430,11 @@ public class FlexboxLayout extends ViewGroup {
             }
 
             int childHeight = lp.height;
-            if (lp.percentLength != LayoutParams.PERCENT_LENGTH_DEFAULT
+            if (lp.flexBasisPercent != LayoutParams.FLEX_BASIS_PERCENT_DEFAULT
                     && heightMode == MeasureSpec.EXACTLY) {
-                childHeight = Math.round(heightSize * lp.percentLength);
+                childHeight = Math.round(heightSize * lp.flexBasisPercent);
                 // Use the dimension from the layout_height attribute if the heightMode is not
-                // MeasureSpec.EXACTLY even if any fraction value is set to layout_percentLength.
+                // MeasureSpec.EXACTLY even if any fraction value is set to layout_flexBasisPercent.
                 // There are likely quite few use cases where assigning any fraction values
                 // with heightMode is not MeasureSpec.EXACTLY (e.g. FlexboxLayout's layout_height
                 // is set to wrap_content)
@@ -1443,7 +1444,7 @@ public class FlexboxLayout extends ViewGroup {
         private static final int ORDER_DEFAULT = 1;
         private static final int FLEX_GROW_DEFAULT = 0;
         private static final int FLEX_SHRINK_DEFAULT = 1;
-        public static final float PERCENT_LENGTH_DEFAULT = -1f;
+        public static final float FLEX_BASIS_PERCENT_DEFAULT = -1f;
 
         public static final int ALIGN_SELF_AUTO = -1;
         public static final int ALIGN_SELF_FLEX_START = ALIGN_ITEMS_FLEX_START;
@@ -1494,7 +1495,7 @@ public class FlexboxLayout extends ViewGroup {
          * This attribute is only effective when the parent's MeasureSpec mode is
          * MeasureSpec.EXACTLY.
          */
-        public float percentLength = PERCENT_LENGTH_DEFAULT;
+        public float flexBasisPercent = FLEX_BASIS_PERCENT_DEFAULT;
 
         public LayoutParams(Context context, AttributeSet attrs) {
             super(context, attrs);
@@ -1508,9 +1509,9 @@ public class FlexboxLayout extends ViewGroup {
                     FLEX_SHRINK_DEFAULT);
             alignSelf = a
                     .getInt(R.styleable.FlexboxLayout_Layout_layout_alignSelf, ALIGN_SELF_AUTO);
-            percentLength = a
-                    .getFraction(R.styleable.FlexboxLayout_Layout_layout_percentLength, 1, 1,
-                            PERCENT_LENGTH_DEFAULT);
+            flexBasisPercent = a
+                    .getFraction(R.styleable.FlexboxLayout_Layout_layout_flexBasisPercent, 1, 1,
+                            FLEX_BASIS_PERCENT_DEFAULT);
             a.recycle();
         }
 

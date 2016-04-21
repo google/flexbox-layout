@@ -118,18 +118,18 @@ public class FlexItemEditFragment extends DialogFragment {
                 new FlexEditTextWatcher(flexShrinkInput, new NonNegativeIntegerInputVerifier(),
                         R.string.must_be_non_negative_integer));
 
-        final TextInputLayout percentLengthInput = (TextInputLayout) view
-                .findViewById(R.id.input_layout_percent_length);
-        EditText percentLengthEdit = (EditText) view.findViewById(
-                R.id.edit_text_percent_length);
-        if (mFlexItem.percentLength != FlexboxLayout.LayoutParams.PERCENT_LENGTH_DEFAULT) {
-            percentLengthEdit
-                    .setText(String.valueOf(Math.round(mFlexItem.percentLength * 100)));
+        final TextInputLayout flexBasisPercentInput = (TextInputLayout) view
+                .findViewById(R.id.input_layout_flex_basis_percent);
+        EditText flexBasisPercentEdit = (EditText) view.findViewById(
+                R.id.edit_text_flex_basis_percent);
+        if (mFlexItem.flexBasisPercent != FlexboxLayout.LayoutParams.FLEX_BASIS_PERCENT_DEFAULT) {
+            flexBasisPercentEdit
+                    .setText(String.valueOf(Math.round(mFlexItem.flexBasisPercent * 100)));
         } else {
-            percentLengthEdit.setText(String.valueOf((int) mFlexItem.percentLength));
+            flexBasisPercentEdit.setText(String.valueOf((int) mFlexItem.flexBasisPercent));
         }
-        percentLengthEdit.addTextChangedListener(
-                new FlexEditTextWatcher(percentLengthInput, new PercentLengthInputVerifier(),
+        flexBasisPercentEdit.addTextChangedListener(
+                new FlexEditTextWatcher(flexBasisPercentInput, new FlexBasisPercentInputVerifier(),
                         R.string.must_be_minus_one_or_non_negative_integer));
 
         final TextInputLayout widthInput = (TextInputLayout) view
@@ -192,7 +192,7 @@ public class FlexItemEditFragment extends DialogFragment {
             @Override
             public void onClick(View v) {
                 if (orderTextInput.isErrorEnabled() || flexGrowInput.isErrorEnabled() ||
-                        percentLengthInput.isErrorEnabled() || widthInput.isErrorEnabled() ||
+                        flexBasisPercentInput.isErrorEnabled() || widthInput.isErrorEnabled() ||
                         heightInput.isErrorEnabled()) {
                     Toast.makeText(getActivity(), R.string.invalid_values_exist, Toast.LENGTH_SHORT)
                             .show();
@@ -282,11 +282,12 @@ public class FlexItemEditFragment extends DialogFragment {
                 case R.id.input_layout_height:
                     mFlexItem.height = intValue;
                     break;
-                case R.id.input_layout_percent_length:
-                    if (intValue != FlexboxLayout.LayoutParams.PERCENT_LENGTH_DEFAULT) {
-                        mFlexItem.percentLength = (float) (intValue / 100.0);
+                case R.id.input_layout_flex_basis_percent:
+                    if (intValue != FlexboxLayout.LayoutParams.FLEX_BASIS_PERCENT_DEFAULT) {
+                        mFlexItem.flexBasisPercent = (float) (intValue / 100.0);
                     } else {
-                        mFlexItem.percentLength = FlexboxLayout.LayoutParams.PERCENT_LENGTH_DEFAULT;
+                        mFlexItem.flexBasisPercent
+                                = FlexboxLayout.LayoutParams.FLEX_BASIS_PERCENT_DEFAULT;
                     }
                     break;
             }
@@ -331,7 +332,7 @@ public class FlexItemEditFragment extends DialogFragment {
         }
     }
 
-    private static class PercentLengthInputVerifier implements InputVerifier {
+    private static class FlexBasisPercentInputVerifier implements InputVerifier {
 
         @Override
         public boolean isValidInput(CharSequence charSequence) {

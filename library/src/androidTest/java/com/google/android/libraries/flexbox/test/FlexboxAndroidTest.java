@@ -1804,12 +1804,12 @@ public class FlexboxAndroidTest {
 
     @Test
     @FlakyTest(tolerance = 3)
-    public void testPercentLength_wrap() throws Throwable {
+    public void testFlexBasisPercent_wrap() throws Throwable {
         final FlexboxTestActivity activity = mActivityRule.getActivity();
         mActivityRule.runOnUiThread(new Runnable() {
             @Override
             public void run() {
-                activity.setContentView(R.layout.activity_percent_length_test);
+                activity.setContentView(R.layout.activity_flex_basis_percent_test);
             }
         });
         FlexboxLayout flexboxLayout = (FlexboxLayout) activity.findViewById(R.id.flexbox_layout);
@@ -1828,19 +1828,19 @@ public class FlexboxAndroidTest {
         FlexboxLayout.LayoutParams lp1 = (FlexboxLayout.LayoutParams) textView1.getLayoutParams();
         FlexboxLayout.LayoutParams lp2 = (FlexboxLayout.LayoutParams) textView2.getLayoutParams();
         assertThat(textView1.getWidth(),
-                is(Math.round(flexboxLayout.getWidth() * lp1.percentLength)));
+                is(Math.round(flexboxLayout.getWidth() * lp1.flexBasisPercent)));
         assertThat(textView2.getWidth(),
-                is(Math.round(flexboxLayout.getWidth() * lp2.percentLength)));
+                is(Math.round(flexboxLayout.getWidth() * lp2.flexBasisPercent)));
     }
 
     @Test
     @FlakyTest(tolerance = 3)
-    public void testPercentLength_nowrap() throws Throwable {
+    public void testFlexBasisPercent_nowrap() throws Throwable {
         final FlexboxTestActivity activity = mActivityRule.getActivity();
         mActivityRule.runOnUiThread(new Runnable() {
             @Override
             public void run() {
-                activity.setContentView(R.layout.activity_percent_length_test);
+                activity.setContentView(R.layout.activity_flex_basis_percent_test);
                 FlexboxLayout flexboxLayout = (FlexboxLayout) activity
                         .findViewById(R.id.flexbox_layout);
                 flexboxLayout.setFlexWrap(FlexboxLayout.FLEX_WRAP_NOWRAP);
@@ -1873,12 +1873,12 @@ public class FlexboxAndroidTest {
 
     @Test
     @FlakyTest(tolerance = 3)
-    public void testPercentLength_wrap_flexDirection_column() throws Throwable {
+    public void testFlexBasisPercent_wrap_flexDirection_column() throws Throwable {
         final FlexboxTestActivity activity = mActivityRule.getActivity();
         mActivityRule.runOnUiThread(new Runnable() {
             @Override
             public void run() {
-                activity.setContentView(R.layout.activity_percent_length_test);
+                activity.setContentView(R.layout.activity_flex_basis_percent_test);
                 FlexboxLayout flexboxLayout = (FlexboxLayout) activity
                         .findViewById(R.id.flexbox_layout);
                 flexboxLayout.setFlexDirection(FlexboxLayout.FLEX_DIRECTION_COLUMN);
@@ -1901,19 +1901,19 @@ public class FlexboxAndroidTest {
         FlexboxLayout.LayoutParams lp1 = (FlexboxLayout.LayoutParams) textView1.getLayoutParams();
         FlexboxLayout.LayoutParams lp2 = (FlexboxLayout.LayoutParams) textView2.getLayoutParams();
         assertThat(textView1.getHeight(),
-                is(Math.round(flexboxLayout.getHeight() * lp1.percentLength)));
+                is(Math.round(flexboxLayout.getHeight() * lp1.flexBasisPercent)));
         assertThat(textView2.getHeight(),
-                is(Math.round(flexboxLayout.getHeight() * lp2.percentLength)));
+                is(Math.round(flexboxLayout.getHeight() * lp2.flexBasisPercent)));
     }
 
     @Test
     @FlakyTest(tolerance = 3)
-    public void testPercentLength_nowrap_flexDirection_column() throws Throwable {
+    public void testFlexBasisPercent_nowrap_flexDirection_column() throws Throwable {
         final FlexboxTestActivity activity = mActivityRule.getActivity();
         mActivityRule.runOnUiThread(new Runnable() {
             @Override
             public void run() {
-                activity.setContentView(R.layout.activity_percent_length_test);
+                activity.setContentView(R.layout.activity_flex_basis_percent_test);
                 FlexboxLayout flexboxLayout = (FlexboxLayout) activity
                         .findViewById(R.id.flexbox_layout);
                 flexboxLayout.setFlexWrap(FlexboxLayout.FLEX_WRAP_NOWRAP);

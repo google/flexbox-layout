@@ -49,7 +49,7 @@ public class FlexItem implements Parcelable {
     public int flexGrow;
     public int flexShrink;
     public int alignSelf;
-    public float percentLength;
+    public float flexBasisPercent;
 
     public FlexItem() {}
 
@@ -75,7 +75,7 @@ public class FlexItem implements Parcelable {
         dest.writeInt(this.flexGrow);
         dest.writeInt(this.flexShrink);
         dest.writeInt(this.alignSelf);
-        dest.writeFloat(this.percentLength);
+        dest.writeFloat(this.flexBasisPercent);
     }
 
     protected FlexItem(Parcel in) {
@@ -94,7 +94,7 @@ public class FlexItem implements Parcelable {
         this.flexGrow = in.readInt();
         this.flexShrink = in.readInt();
         this.alignSelf = in.readInt();
-        this.percentLength = in.readFloat();
+        this.flexBasisPercent = in.readFloat();
     }
 
     public FlexboxLayout.LayoutParams toLayoutParams(Context context) {
@@ -105,7 +105,7 @@ public class FlexItem implements Parcelable {
         lp.flexGrow = flexGrow;
         lp.flexShrink = flexShrink;
         lp.alignSelf = alignSelf;
-        lp.percentLength = percentLength;
+        lp.flexBasisPercent = flexBasisPercent;
         lp.topMargin = topMargin;
         lp.setMarginStart(startMargin);
         lp.setMarginEnd(endMargin);
@@ -121,7 +121,7 @@ public class FlexItem implements Parcelable {
         flexItem.flexGrow = lp.flexGrow;
         flexItem.flexShrink = lp.flexShrink;
         flexItem.alignSelf = lp.alignSelf;
-        flexItem.percentLength = lp.percentLength;
+        flexItem.flexBasisPercent = lp.flexBasisPercent;
         flexItem.width = Util.pixelToDp(view.getContext(), lp.width);
         flexItem.height = Util.pixelToDp(view.getContext(), lp.height);
         flexItem.topMargin = lp.topMargin;
