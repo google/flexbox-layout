@@ -327,4 +327,23 @@ public class MainActivityTest {
         assertThat(first.getWidth(),
                 is(flexboxLayout.getWidth() - second.getWidth() - third.getWidth()));
     }
+
+    @Test
+    @FlakyTest(tolerance = 3)
+    public void testEditFragment_changePercentLength() {
+        MainActivity activity = mActivityRule.getActivity();
+        FlexboxLayout flexboxLayout = (FlexboxLayout) activity.findViewById(R.id.flexbox_layout);
+        assertNotNull(flexboxLayout);
+        onView(withId(R.id.textview1)).perform(click());
+        onView(withId(R.id.edit_text_percent_length)).perform(replaceText("50"), closeSoftKeyboard());
+        onView(withId(R.id.button_ok)).perform(click());
+        TextView first = (TextView) activity.findViewById(R.id.textview1);
+        TextView second = (TextView) activity.findViewById(R.id.textview2);
+        TextView third = (TextView) activity.findViewById(R.id.textview3);
+        assertNotNull(first);
+        assertNotNull(second);
+        assertNotNull(third);
+
+        assertThat(first.getWidth(), is(flexboxLayout.getWidth() / 2));
+    }
 }

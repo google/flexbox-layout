@@ -30,10 +30,10 @@ import android.view.View;
 public class FlexItem implements Parcelable {
 
     public int index;
-    /** minimum width in DP or -1 (MATCH_PARENT) or -2 (WRAP_CONTENT) */
-    public int minWidth;
-    /** minimum height in DP or -1 (MATCH_PARENT) or -2 (WRAP_CONTENT) */
-    public int minHeight;
+    /** Initial width in DP or -1 (MATCH_PARENT) or -2 (WRAP_CONTENT) */
+    public int width;
+    /** Initial height in DP or -1 (MATCH_PARENT) or -2 (WRAP_CONTENT) */
+    public int height;
 
     public int topMargin;
     public int startMargin;
@@ -49,6 +49,7 @@ public class FlexItem implements Parcelable {
     public int flexGrow;
     public int flexShrink;
     public int alignSelf;
+    public float percentLength;
 
     public FlexItem() {}
 
@@ -60,8 +61,8 @@ public class FlexItem implements Parcelable {
     @Override
     public void writeToParcel(Parcel dest, int flags) {
         dest.writeInt(this.index);
-        dest.writeInt(this.minWidth);
-        dest.writeInt(this.minHeight);
+        dest.writeInt(this.width);
+        dest.writeInt(this.height);
         dest.writeInt(this.topMargin);
         dest.writeInt(this.startMargin);
         dest.writeInt(this.endMargin);
@@ -74,12 +75,13 @@ public class FlexItem implements Parcelable {
         dest.writeInt(this.flexGrow);
         dest.writeInt(this.flexShrink);
         dest.writeInt(this.alignSelf);
+        dest.writeFloat(this.percentLength);
     }
 
     protected FlexItem(Parcel in) {
         this.index = in.readInt();
-        this.minWidth = in.readInt();
-        this.minHeight = in.readInt();
+        this.width = in.readInt();
+        this.height = in.readInt();
         this.topMargin = in.readInt();
         this.startMargin = in.readInt();
         this.endMargin = in.readInt();
@@ -92,16 +94,18 @@ public class FlexItem implements Parcelable {
         this.flexGrow = in.readInt();
         this.flexShrink = in.readInt();
         this.alignSelf = in.readInt();
+        this.percentLength = in.readFloat();
     }
 
     public FlexboxLayout.LayoutParams toLayoutParams(Context context) {
         FlexboxLayout.LayoutParams lp = new FlexboxLayout.LayoutParams(
-                Util.dpToPixel(context, minWidth),
-                Util.dpToPixel(context, minHeight));
+                Util.dpToPixel(context, width),
+                Util.dpToPixel(context, height));
         lp.order = order;
         lp.flexGrow = flexGrow;
         lp.flexShrink = flexShrink;
         lp.alignSelf = alignSelf;
+        lp.percentLength = percentLength;
         lp.topMargin = topMargin;
         lp.setMarginStart(startMargin);
         lp.setMarginEnd(endMargin);
@@ -117,8 +121,9 @@ public class FlexItem implements Parcelable {
         flexItem.flexGrow = lp.flexGrow;
         flexItem.flexShrink = lp.flexShrink;
         flexItem.alignSelf = lp.alignSelf;
-        flexItem.minWidth = Util.pixelToDp(view.getContext(), lp.width);
-        flexItem.minHeight = Util.pixelToDp(view.getContext(), lp.height);
+        flexItem.percentLength = lp.percentLength;
+        flexItem.width = Util.pixelToDp(view.getContext(), lp.width);
+        flexItem.height = Util.pixelToDp(view.getContext(), lp.height);
         flexItem.topMargin = lp.topMargin;
         flexItem.startMargin = lp.getMarginStart();
         flexItem.endMargin = lp.getMarginEnd();

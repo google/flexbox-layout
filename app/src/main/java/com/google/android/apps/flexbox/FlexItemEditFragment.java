@@ -118,21 +118,35 @@ public class FlexItemEditFragment extends DialogFragment {
                 new FlexEditTextWatcher(flexShrinkInput, new NonNegativeIntegerInputVerifier(),
                         R.string.must_be_non_negative_integer));
 
-        final TextInputLayout minWidthInput = (TextInputLayout) view
-                .findViewById(R.id.input_layout_min_width);
-        EditText minWidthEdit = (EditText) view.findViewById(R.id.edit_text_min_width);
-        minWidthEdit.setText(String.valueOf(mFlexItem.minWidth));
-        minWidthEdit.addTextChangedListener(
-                new FlexEditTextWatcher(minWidthInput, new SizeUnitInputVerifier(),
+        final TextInputLayout percentLengthInput = (TextInputLayout) view
+                .findViewById(R.id.input_layout_percent_length);
+        EditText flexBasisEdit = (EditText) view.findViewById(
+                R.id.edit_text_percent_length);
+        if (mFlexItem.percentLength != FlexboxLayout.LayoutParams.PERCENT_LENGTH_DEFAULT) {
+            flexBasisEdit
+                    .setText(String.valueOf(Math.round(mFlexItem.percentLength * 100)));
+        } else {
+            flexBasisEdit.setText(String.valueOf((int) mFlexItem.percentLength));
+        }
+        flexBasisEdit.addTextChangedListener(
+                new FlexEditTextWatcher(percentLengthInput, new PercentLengthInputVerifier(),
+                        R.string.must_be_minus_one_or_non_negative_integer));
+
+        final TextInputLayout widthInput = (TextInputLayout) view
+                .findViewById(R.id.input_layout_width);
+        EditText widthEdit = (EditText) view.findViewById(R.id.edit_text_width);
+        widthEdit.setText(String.valueOf(mFlexItem.width));
+        widthEdit.addTextChangedListener(
+                new FlexEditTextWatcher(widthInput, new SizeUnitInputVerifier(),
                         R.string.must_be_minus_one_or_minus_two_or_non_negative_integer));
 
-        final TextInputLayout minHeightInput = (TextInputLayout) view
-                .findViewById(R.id.input_layout_min_height);
-        EditText minHeightEdit = (EditText) view.findViewById(
-                R.id.edit_text_min_height);
-        minHeightEdit.setText(String.valueOf(mFlexItem.minHeight));
-        minHeightEdit.addTextChangedListener(
-                new FlexEditTextWatcher(minHeightInput, new SizeUnitInputVerifier(),
+        final TextInputLayout heightInput = (TextInputLayout) view
+                .findViewById(R.id.input_layout_height);
+        EditText heightEdit = (EditText) view.findViewById(
+                R.id.edit_text_height);
+        heightEdit.setText(String.valueOf(mFlexItem.height));
+        heightEdit.addTextChangedListener(
+                new FlexEditTextWatcher(heightInput, new SizeUnitInputVerifier(),
                         R.string.must_be_minus_one_or_minus_two_or_non_negative_integer));
 
         Spinner alignSelfSpinner = (Spinner) view.findViewById(
@@ -178,8 +192,8 @@ public class FlexItemEditFragment extends DialogFragment {
             @Override
             public void onClick(View v) {
                 if (orderTextInput.isErrorEnabled() || flexGrowInput.isErrorEnabled() ||
-                        flexShrinkInput.isErrorEnabled() || minWidthInput.isErrorEnabled() ||
-                        minHeightInput.isErrorEnabled()) {
+                        percentLengthInput.isErrorEnabled() || widthInput.isErrorEnabled() ||
+                        heightInput.isErrorEnabled()) {
                     Toast.makeText(getActivity(), R.string.invalid_values_exist, Toast.LENGTH_SHORT)
                             .show();
                     return;
@@ -262,11 +276,18 @@ public class FlexItemEditFragment extends DialogFragment {
                 case R.id.input_layout_flex_shrink:
                     mFlexItem.flexShrink = intValue;
                     break;
-                case R.id.input_layout_min_width:
-                    mFlexItem.minWidth = intValue;
+                case R.id.input_layout_width:
+                    mFlexItem.width = intValue;
                     break;
-                case R.id.input_layout_min_height:
-                    mFlexItem.minHeight = intValue;
+                case R.id.input_layout_height:
+                    mFlexItem.height = intValue;
+                    break;
+                case R.id.input_layout_percent_length:
+                    if (intValue != FlexboxLayout.LayoutParams.PERCENT_LENGTH_DEFAULT) {
+                        mFlexItem.percentLength = (float) (intValue / 100.0);
+                    } else {
+                        mFlexItem.percentLength = FlexboxLayout.LayoutParams.PERCENT_LENGTH_DEFAULT;
+                    }
                     break;
             }
         }
@@ -307,6 +328,17 @@ public class FlexItemEditFragment extends DialogFragment {
                     (TextUtils.isDigitsOnly(charSequence) ||
                             charSequence.toString().equals("-1") ||
                             charSequence.toString().equals("-2"));
+        }
+    }
+
+    private static class PercentLengthInputVerifier implements InputVerifier {
+
+        @Override
+        public boolean isValidInput(CharSequence charSequence) {
+            // -1 represents not set
+            return !TextUtils.isEmpty(charSequence) &&
+                    (TextUtils.isDigitsOnly(charSequence) ||
+                            charSequence.toString().equals("-1"));
         }
     }
 

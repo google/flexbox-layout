@@ -70,14 +70,25 @@ limitations under the License.
         <!-- Negative numbers are invalid. -->
         <attr name="layout_flexShrink" format="integer" />
 
-
         <!--
-            Omitting flex basis since it can be replaced by specifying a fixed length in the
-            layout_width or layout_height.
+            The initial length in a percentage format relative to its parent. This is similar to the
+            flex-basis property in the original CSS specification.
+            (https://www.w3.org/TR/css-flexbox-1/#flex-basis-property)
+            But unlike the flex-basis property, this attribute only accepts a value in fraction
+            (percentage), whereas flex-basis property accepts width values such as 1em, 10px and
+            the 'content' string.
+            But specifying initial fixed width values can be done by specifying width values in
+            layout_width (or layout_height, varies depending on the flexDirection). Also the same
+            effect can be done by specifying "wrap_contnet" in layout_width (or layout_height) if
+            developers want to achieve the same effect as 'content'.
+            Thus, this attribute only accepts fraction values, which can't be done through
+            layout_width (or layout_height) for simplicity.
         -->
+        <attr name="layout_percentLength" format="fraction" />
 
         <!--
-            Omitting flex property since it's a shorthand for flexGrow and flexShrink and flexBasis.
+            Omitting flex property since it's a shorthand for layout_flexGrow and layout_flexShrink
+            and layout_percentInParent (flex-basis in the original CSS spec).
         -->
 
         <attr name="layout_alignSelf" >
