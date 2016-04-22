@@ -18,9 +18,10 @@ package com.google.android.apps.flexbox;
 
 import com.google.android.libraries.flexbox.FlexboxLayout;
 
-import android.content.res.Resources;
-import android.content.res.TypedArray;
+import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.NavigationView;
 import android.support.v4.view.MenuItemCompat;
@@ -38,7 +39,6 @@ import android.widget.ArrayAdapter;
 import android.widget.Spinner;
 import android.widget.TextView;
 
-import java.security.SecureRandom;
 import java.util.ArrayList;
 
 public class MainActivity extends AppCompatActivity
@@ -46,6 +46,8 @@ public class MainActivity extends AppCompatActivity
 
     private static final String FLEX_ITEMS_KEY = "flex_items";
     private static final String EDIT_DIALOG_TAG = "edit_dialog_tag";
+    private static final String DEFAULT_WIDTH = "120";
+    private static final String DEFAULT_HEIGHT = "80";
 
     private String ROW;
     private String COLUMN;
@@ -63,6 +65,7 @@ public class MainActivity extends AppCompatActivity
     private String SPACE_AROUND;
 
     private FlexboxLayout mFlexboxLayout;
+    private SharedPreferences mSharedPreferences;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -71,6 +74,7 @@ public class MainActivity extends AppCompatActivity
         initializeStringResrouces();
 
         mFlexboxLayout = (FlexboxLayout) findViewById(R.id.flexbox_layout);
+        mSharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
@@ -122,12 +126,7 @@ public class MainActivity extends AppCompatActivity
                     // index starts from 0. New View's index is N if N views ([0, 1, 2, ... N-1])
                     // exist.
                     TextView textView = createBaseFlexItemTextView(viewIndex);
-                    int height = (int) getResources().getDimension(
-                            R.dimen.flex_item_length);
-                    int width = getRandomFlexItemWidth(getResources(), height);
-                    FlexboxLayout.LayoutParams lp = new FlexboxLayout.LayoutParams(
-                            width, height);
-                    textView.setLayoutParams(lp);
+                    textView.setLayoutParams(createDefaultLayoutParams());
                     textView.setOnClickListener(new FlexItemClickListener(viewIndex));
                     mFlexboxLayout.addView(textView);
                 }
@@ -190,13 +189,33 @@ public class MainActivity extends AppCompatActivity
         return textView;
     }
 
-    private int getRandomFlexItemWidth(Resources resources, float defaultValue) {
-        SecureRandom random = new SecureRandom();
-        TypedArray candidates = resources.obtainTypedArray(R.array.flex_item_width_candidates);
-        int width = (int) candidates
-                .getDimension(random.nextInt(candidates.length()), defaultValue);
-        candidates.recycle();
-        return width;
+    /**
+     * Creates a new {@link FlexboxLayout.LayoutParams} based on the stored default values in
+     * the SharedPreferences.
+     *
+     * @return a {@link FlexboxLayout.LayoutParams} instance
+     */
+    private FlexboxLayout.LayoutParams createDefaultLayoutParams() {
+        FlexboxLayout.LayoutParams lp = new FlexboxLayout.LayoutParams(
+                Util.dpToPixel(this,
+                        readPreferenceAsInteger(getString(R.string.new_width_key), DEFAULT_WIDTH)),
+                Util.dpToPixel(this, readPreferenceAsInteger(getString(R.string.new_height_key),
+                        DEFAULT_HEIGHT)));
+        lp.order = readPreferenceAsInteger(getString(R.string.new_flex_item_order_key), "1");
+        lp.flexGrow = readPreferenceAsInteger(getString(R.string.new_flex_grow_key), "0");
+        lp.flexShrink = readPreferenceAsInteger(getString(R.string.new_flex_shrink_key), "1");
+        int flexBasisPercent = readPreferenceAsInteger(
+                getString(R.string.new_flex_basis_percent_key), "-1");
+        lp.flexBasisPercent = flexBasisPercent == -1 ? -1 : (float) (flexBasisPercent / 100.0);
+        return lp;
+    }
+
+    private int readPreferenceAsInteger(String key, String defValue) {
+        if (mSharedPreferences.contains(key)) {
+            return Integer.valueOf(mSharedPreferences.getString(key, defValue));
+        } else {
+            return Integer.valueOf(defValue);
+        }
     }
 
     private void initializeSpinner(int currentValue, int menuItemId, Menu navigationMenu,
@@ -212,7 +231,6 @@ public class MainActivity extends AppCompatActivity
         int position = adapter.getPosition(selectedAsString);
         spinner.setSelection(position);
     }
-
 
     private void initializeFlexDirectionSpinner(Menu navigationMenu) {
         initializeSpinner(mFlexboxLayout.getFlexDirection(), R.id.menu_item_flex_direction,
@@ -444,6 +462,24 @@ public class MainActivity extends AppCompatActivity
                         }
                     }
                 });
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.menu_main, menu);
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        int id = item.getItemId();
+
+        if (id == R.id.action_settings) {
+            Intent intent = new Intent(this, SettingsActivity.class);
+            startActivity(intent);
+            return true;
+        }
+        return super.onOptionsItemSelected(item);
     }
 
     private class FlexItemClickListener implements View.OnClickListener {

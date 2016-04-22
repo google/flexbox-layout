@@ -107,4 +107,19 @@ limitations under the License.
     <string name="must_be_integer">Must be an integer value</string>
     <string name="must_be_minus_one_or_non_negative_integer">Must be -1 or a non-negative integer value</string>
     <string name="invalid_values_exist">Invalid values exist</string>
+
+    <string name="action_settings">Settings</string>
+    <string name="new_flex_items_default">Default values for new flex items</string>
+    <string name="new_flex_items_default_key" translatable="false">new_flex_items_default_key</string>
+    <string name="new_flex_item_order_key" translatable="false">new_flex_item_order_key</string>
+    <string name="new_flex_grow_key" translatable="false">new_flex_grow_key</string>
+    <string name="new_flex_shrink_key" translatable="false">new_flex_shrink_key</string>
+    <string name="new_flex_basis_percent_key" translatable="false">new_flex_basis_percent_key</string>
+    <string name="flex_basis_percent" translatable="false">Flex Basis Percent</string>
+    <string name="flex_basis_percent_summary">(-1: not set)</string>
+    <string name="width">Width</string>
+    <string name="height">Height</string>
+    <string name="size_unit_summary">(-1: match_parent, -2: wrap_content)</string>
+    <string name="new_width_key" translatable="false">new_width_key</string>
+    <string name="new_height_key" translatable="false">new_height_key</string>
 </resources>

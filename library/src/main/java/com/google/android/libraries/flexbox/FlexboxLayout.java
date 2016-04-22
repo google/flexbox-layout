@@ -602,6 +602,7 @@ public class FlexboxLayout extends ViewGroup {
     private int shrinkFlexItems(FlexLine flexLine, @FlexDirection int flexDirection,
             int maxMainSize, int paddingAlongMainAxis, int startIndex) {
         int childIndex = startIndex;
+        int sizeBeforeShrink = flexLine.mainSize;
         if (flexLine.totalFlexShrink <= 0 || maxMainSize > flexLine.mainSize) {
             childIndex += flexLine.itemCount;
             return childIndex;
@@ -649,7 +650,9 @@ public class FlexboxLayout extends ViewGroup {
             childIndex++;
         }
 
-        if (needsReshrink) {
+        if (needsReshrink && sizeBeforeShrink != flexLine.mainSize) {
+            // Re-invoke the method with the same startIndex to distribute the negative free space
+            // that wasn't fully distributed (because some views length were not enough)
             shrinkFlexItems(flexLine, flexDirection, maxMainSize, paddingAlongMainAxis, startIndex);
         }
         return childIndex;

@@ -16,6 +16,11 @@
 
 package com.google.android.apps.flexbox;
 
+import com.google.android.apps.flexbox.validators.FlexBasisPercentInputValidator;
+import com.google.android.apps.flexbox.validators.InputValidator;
+import com.google.android.apps.flexbox.validators.IntegerInputValidator;
+import com.google.android.apps.flexbox.validators.NonNegativeIntegerInputValidator;
+import com.google.android.apps.flexbox.validators.DimensionInputValidator;
 import com.google.android.libraries.flexbox.FlexboxLayout;
 
 import android.app.Activity;
@@ -72,11 +77,7 @@ public class FlexItemEditFragment extends DialogFragment {
         }
         Bundle args = getArguments();
         mFlexItem = args.getParcelable(FLEX_ITEM_KEY);
-    }
 
-    @Override
-    public void onActivityCreated(Bundle savedInstanceState) {
-        super.onActivityCreated(savedInstanceState);
         Activity activity = getActivity();
         ALIGN_SELF_AUTO = activity.getString(R.string.auto);
         ALIGN_SELF_FLEX_START = activity.getString(R.string.flex_start);
@@ -98,7 +99,7 @@ public class FlexItemEditFragment extends DialogFragment {
         EditText orderEdit = (EditText) view.findViewById(R.id.edit_text_order);
         orderEdit.setText(String.valueOf(mFlexItem.order));
         orderEdit.addTextChangedListener(
-                new FlexEditTextWatcher(orderTextInput, new IntegerInputVerifier(),
+                new FlexEditTextWatcher(orderTextInput, new IntegerInputValidator(),
                         R.string.must_be_integer));
 
         final TextInputLayout flexGrowInput = (TextInputLayout) view
@@ -106,7 +107,7 @@ public class FlexItemEditFragment extends DialogFragment {
         EditText flexGrowEdit = (EditText) view.findViewById(R.id.edit_text_flex_grow);
         flexGrowEdit.setText(String.valueOf(mFlexItem.flexGrow));
         flexGrowEdit.addTextChangedListener(
-                new FlexEditTextWatcher(flexGrowInput, new NonNegativeIntegerInputVerifier(),
+                new FlexEditTextWatcher(flexGrowInput, new NonNegativeIntegerInputValidator(),
                         R.string.must_be_non_negative_integer));
 
         final TextInputLayout flexShrinkInput = (TextInputLayout) view
@@ -115,7 +116,7 @@ public class FlexItemEditFragment extends DialogFragment {
                 R.id.edit_text_flex_shrink);
         flexShrinkEdit.setText(String.valueOf(mFlexItem.flexShrink));
         flexShrinkEdit.addTextChangedListener(
-                new FlexEditTextWatcher(flexShrinkInput, new NonNegativeIntegerInputVerifier(),
+                new FlexEditTextWatcher(flexShrinkInput, new NonNegativeIntegerInputValidator(),
                         R.string.must_be_non_negative_integer));
 
         final TextInputLayout flexBasisPercentInput = (TextInputLayout) view
@@ -129,7 +130,7 @@ public class FlexItemEditFragment extends DialogFragment {
             flexBasisPercentEdit.setText(String.valueOf((int) mFlexItem.flexBasisPercent));
         }
         flexBasisPercentEdit.addTextChangedListener(
-                new FlexEditTextWatcher(flexBasisPercentInput, new FlexBasisPercentInputVerifier(),
+                new FlexEditTextWatcher(flexBasisPercentInput, new FlexBasisPercentInputValidator(),
                         R.string.must_be_minus_one_or_non_negative_integer));
 
         final TextInputLayout widthInput = (TextInputLayout) view
@@ -137,7 +138,7 @@ public class FlexItemEditFragment extends DialogFragment {
         EditText widthEdit = (EditText) view.findViewById(R.id.edit_text_width);
         widthEdit.setText(String.valueOf(mFlexItem.width));
         widthEdit.addTextChangedListener(
-                new FlexEditTextWatcher(widthInput, new SizeUnitInputVerifier(),
+                new FlexEditTextWatcher(widthInput, new DimensionInputValidator(),
                         R.string.must_be_minus_one_or_minus_two_or_non_negative_integer));
 
         final TextInputLayout heightInput = (TextInputLayout) view
@@ -146,7 +147,7 @@ public class FlexItemEditFragment extends DialogFragment {
                 R.id.edit_text_height);
         heightEdit.setText(String.valueOf(mFlexItem.height));
         heightEdit.addTextChangedListener(
-                new FlexEditTextWatcher(heightInput, new SizeUnitInputVerifier(),
+                new FlexEditTextWatcher(heightInput, new DimensionInputValidator(),
                         R.string.must_be_minus_one_or_minus_two_or_non_negative_integer));
 
         Spinner alignSelfSpinner = (Spinner) view.findViewById(
@@ -233,10 +234,10 @@ public class FlexItemEditFragment extends DialogFragment {
     private class FlexEditTextWatcher implements TextWatcher {
 
         TextInputLayout mTextInputLayout;
-        InputVerifier mInputVerifier;
+        InputValidator mInputVerifier;
         int mErrorMessageId;
 
-        FlexEditTextWatcher(TextInputLayout textInputLayout, InputVerifier inputVerifier,
+        FlexEditTextWatcher(TextInputLayout textInputLayout, InputValidator inputVerifier,
                 int errorMessageId) {
             mTextInputLayout = textInputLayout;
             mInputVerifier = inputVerifier;
@@ -291,55 +292,6 @@ public class FlexItemEditFragment extends DialogFragment {
                     }
                     break;
             }
-        }
-    }
-
-    /**
-     * Verifies the input in a EditText
-     */
-    private interface InputVerifier {
-        boolean isValidInput(CharSequence charSequence);
-    }
-
-    private static class IntegerInputVerifier implements InputVerifier {
-        @Override
-        public boolean isValidInput(CharSequence charSequence) {
-            try {
-                Integer.parseInt(charSequence.toString());
-            } catch (NumberFormatException | NullPointerException e) {
-                return false;
-            }
-            return true;
-        }
-    }
-
-    private static class NonNegativeIntegerInputVerifier implements InputVerifier {
-        @Override
-        public boolean isValidInput(CharSequence charSequence) {
-            return !TextUtils.isEmpty(charSequence) &&  TextUtils.isDigitsOnly(charSequence)
-                    && Integer.valueOf(charSequence.toString()) >= 0;
-        }
-    }
-
-    private static class SizeUnitInputVerifier implements InputVerifier {
-        @Override
-        public boolean isValidInput(CharSequence charSequence) {
-            // -1 represents match_parent, -2 represents wrap_content
-            return !TextUtils.isEmpty(charSequence) &&
-                    (TextUtils.isDigitsOnly(charSequence) ||
-                            charSequence.toString().equals("-1") ||
-                            charSequence.toString().equals("-2"));
-        }
-    }
-
-    private static class FlexBasisPercentInputVerifier implements InputVerifier {
-
-        @Override
-        public boolean isValidInput(CharSequence charSequence) {
-            // -1 represents not set
-            return !TextUtils.isEmpty(charSequence) &&
-                    (TextUtils.isDigitsOnly(charSequence) ||
-                            charSequence.toString().equals("-1"));
         }
     }
 

@@ -34,10 +34,4 @@ limitations under the License.
     <dimen name="flex_item_length">80dp</dimen>
     <dimen name="flex_item_length2">120dp</dimen>
     <dimen name="flex_item_length3">160dp</dimen>
-
-    <array name="flex_item_width_candidates">
-        <item>@dimen/flex_item_length</item>
-        <item>@dimen/flex_item_length2</item>
-        <item>@dimen/flex_item_length3</item>
-    </array>
 </resources>
