@@ -19,6 +19,8 @@ package com.google.android.apps.flexbox;
 import com.google.android.apps.flexbox.validators.FlexBasisPercentInputValidator;
 import com.google.android.apps.flexbox.validators.InputValidator;
 import com.google.android.apps.flexbox.validators.DimensionInputValidator;
+import com.google.android.apps.flexbox.validators.IntegerInputValidator;
+import com.google.android.apps.flexbox.validators.NonNegativeIntegerInputValidator;
 
 import android.app.Activity;
 import android.os.Bundle;
@@ -47,6 +49,57 @@ public class SettingsActivity extends Activity {
         public void onCreate(Bundle savedInstanceState) {
             super.onCreate(savedInstanceState);
             addPreferencesFromResource(R.xml.new_flex_item_preferences);
+
+            EditTextPreference orderPreference = (EditTextPreference) findPreference(
+                    getString(R.string.new_flex_item_order_key));
+            orderPreference.setOnPreferenceChangeListener(
+                    new Preference.OnPreferenceChangeListener() {
+                        @Override
+                        public boolean onPreferenceChange(Preference preference, Object newValue) {
+                            InputValidator validator = new IntegerInputValidator();
+                            if (!validator.isValidInput(newValue.toString())) {
+                                Toast.makeText(getActivity(),
+                                        R.string.must_be_integer,
+                                        Toast.LENGTH_LONG).show();
+                                return false;
+                            }
+                            return true;
+                        }
+                    });
+
+            EditTextPreference flexGrowPreference = (EditTextPreference) findPreference(
+                    getString(R.string.new_flex_grow_key));
+            flexGrowPreference.setOnPreferenceChangeListener(
+                    new Preference.OnPreferenceChangeListener() {
+                        @Override
+                        public boolean onPreferenceChange(Preference preference, Object newValue) {
+                            InputValidator validator = new NonNegativeIntegerInputValidator();
+                            if (!validator.isValidInput(newValue.toString())) {
+                                Toast.makeText(getActivity(),
+                                        R.string.must_be_non_negative_integer,
+                                        Toast.LENGTH_LONG).show();
+                                return false;
+                            }
+                            return true;
+                        }
+                    });
+
+            EditTextPreference flexShrinkPreference = (EditTextPreference) findPreference(
+                    getString(R.string.new_flex_shrink_key));
+            flexShrinkPreference.setOnPreferenceChangeListener(
+                    new Preference.OnPreferenceChangeListener() {
+                        @Override
+                        public boolean onPreferenceChange(Preference preference, Object newValue) {
+                            InputValidator validator = new NonNegativeIntegerInputValidator();
+                            if (!validator.isValidInput(newValue.toString())) {
+                                Toast.makeText(getActivity(),
+                                        R.string.must_be_non_negative_integer,
+                                        Toast.LENGTH_LONG).show();
+                                return false;
+                            }
+                            return true;
+                        }
+                    });
 
             EditTextPreference flexBasisPercentPreference = (EditTextPreference) findPreference(
                     getString(R.string.new_flex_basis_percent_key));
