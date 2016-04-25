@@ -21,10 +21,10 @@ import android.text.TextUtils;
 /**
  * Validator for non negative integers.
  */
-public class NonNegativeIntegerInputValidator implements InputValidator {
+public class NonNegativeDecimalInputValidator implements InputValidator {
     @Override
     public boolean isValidInput(CharSequence charSequence) {
         return !TextUtils.isEmpty(charSequence) &&  TextUtils.isDigitsOnly(charSequence)
-                && Integer.valueOf(charSequence.toString()) >= 0;
+                && Float.valueOf(charSequence.toString()) >= 0;
     }
 }

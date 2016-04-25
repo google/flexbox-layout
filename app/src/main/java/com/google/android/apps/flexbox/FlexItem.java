@@ -46,8 +46,8 @@ public class FlexItem implements Parcelable {
     public int paddingBottom;
 
     public int order;
-    public int flexGrow;
-    public int flexShrink;
+    public float flexGrow;
+    public float flexShrink;
     public int alignSelf;
     public float flexBasisPercent;
 
@@ -72,8 +72,8 @@ public class FlexItem implements Parcelable {
         dest.writeInt(this.paddingEnd);
         dest.writeInt(this.paddingBottom);
         dest.writeInt(this.order);
-        dest.writeInt(this.flexGrow);
-        dest.writeInt(this.flexShrink);
+        dest.writeFloat(this.flexGrow);
+        dest.writeFloat(this.flexShrink);
         dest.writeInt(this.alignSelf);
         dest.writeFloat(this.flexBasisPercent);
     }
@@ -91,8 +91,8 @@ public class FlexItem implements Parcelable {
         this.paddingEnd = in.readInt();
         this.paddingBottom = in.readInt();
         this.order = in.readInt();
-        this.flexGrow = in.readInt();
-        this.flexShrink = in.readInt();
+        this.flexGrow = in.readFloat();
+        this.flexShrink = in.readFloat();
         this.alignSelf = in.readInt();
         this.flexBasisPercent = in.readFloat();
     }

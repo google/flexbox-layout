@@ -84,7 +84,7 @@ public class FlexboxAndroidTest {
         View child = flexboxLayout.getChildAt(0);
         FlexboxLayout.LayoutParams lp = (FlexboxLayout.LayoutParams) child.getLayoutParams();
         assertThat(lp.order, is(2));
-        assertThat(lp.flexGrow, is(1));
+        assertThat(lp.flexGrow, is(1f));
         assertThat(lp.alignSelf, is(FlexboxLayout.LayoutParams.ALIGN_SELF_STRETCH));
     }
 
