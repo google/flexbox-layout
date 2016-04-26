@@ -582,6 +582,7 @@ public class FlexboxLayout extends ViewGroup {
         }
         float unitSpace = (maxMainSize - flexLine.mainSize) / flexLine.totalFlexGrow;
         flexLine.mainSize = paddingAlongMainAxis;
+        float accumulatedRoundError = 0;
         for (int i = 0; i < flexLine.itemCount; i++) {
             View child = getReorderedChildAt(startIndex);
             if (child == null || child.getVisibility() == View.GONE) {
@@ -591,7 +592,20 @@ public class FlexboxLayout extends ViewGroup {
             LayoutParams lp = (LayoutParams) child.getLayoutParams();
             if (flexDirection == FLEX_DIRECTION_ROW
                     || flexDirection == FLEX_DIRECTION_ROW_REVERSE) {
-                int newWidth = Math.round(child.getMeasuredWidth() + unitSpace * lp.flexGrow);
+                float rawCalculatedWidth = child.getMeasuredWidth() + unitSpace * lp.flexGrow;
+                if (i == flexLine.itemCount - 1) {
+                    rawCalculatedWidth += accumulatedRoundError;
+                    accumulatedRoundError = 0;
+                }
+                int newWidth = Math.round(rawCalculatedWidth);
+                accumulatedRoundError += (rawCalculatedWidth - newWidth);
+                if (accumulatedRoundError > 1.0) {
+                    newWidth += 1;
+                    accumulatedRoundError -= 1.0;
+                } else if (accumulatedRoundError < -1.0) {
+                    newWidth -= 1;
+                    accumulatedRoundError += 1.0;
+                }
                 child.measure(MeasureSpec.makeMeasureSpec(newWidth, MeasureSpec.EXACTLY),
                         MeasureSpec
                                 .makeMeasureSpec(child.getMeasuredHeight(),
@@ -599,7 +613,20 @@ public class FlexboxLayout extends ViewGroup {
                 flexLine.mainSize += child.getMeasuredWidth() + lp.getMarginStart()
                         + lp.getMarginEnd();
             } else {
-                int newHeight = Math.round(child.getMeasuredHeight() + unitSpace * lp.flexGrow);
+                float rawCalculatedHeight = child.getMeasuredHeight() + unitSpace * lp.flexGrow;
+                if (i == flexLine.itemCount - 1) {
+                    rawCalculatedHeight += accumulatedRoundError;
+                    accumulatedRoundError = 0;
+                }
+                int newHeight = Math.round(rawCalculatedHeight);
+                accumulatedRoundError += (rawCalculatedHeight - newHeight);
+                if (accumulatedRoundError > 1.0) {
+                    newHeight += 1;
+                    accumulatedRoundError -= 1.0;
+                } else if (accumulatedRoundError < -1.0) {
+                    newHeight -= 1;
+                    accumulatedRoundError += 1.0;
+                }
                 child.measure(MeasureSpec.makeMeasureSpec(child.getMeasuredWidth(),
                         MeasureSpec.EXACTLY),
                         MeasureSpec.makeMeasureSpec(newHeight, MeasureSpec.EXACTLY));
@@ -636,6 +663,7 @@ public class FlexboxLayout extends ViewGroup {
         }
         boolean needsReshrink = false;
         float unitShrink = (flexLine.mainSize - maxMainSize) / flexLine.totalFlexShrink;
+        float accumulatedRoundError = 0;
         flexLine.mainSize = paddingAlongMainAxis;
         for (int i = 0; i < flexLine.itemCount; i++) {
             View child = getReorderedChildAt(childIndex);
@@ -646,7 +674,12 @@ public class FlexboxLayout extends ViewGroup {
             LayoutParams lp = (LayoutParams) child.getLayoutParams();
             if (flexDirection == FLEX_DIRECTION_ROW
                     || flexDirection == FLEX_DIRECTION_ROW_REVERSE) {
-                int newWidth = Math.round(child.getMeasuredWidth() - unitShrink * lp.flexShrink);
+                float rawCalculatedWidth = child.getMeasuredWidth() - unitShrink * lp.flexShrink;
+                if (i == flexLine.itemCount - 1) {
+                    rawCalculatedWidth += accumulatedRoundError;
+                    accumulatedRoundError = 0;
+                }
+                int newWidth = Math.round(rawCalculatedWidth);
                 if (newWidth < 0) {
                     // This means the child doesn't have enough space to distribute the negative
                     // free space. To adjust the flex line length down to the maxMainSize, remaining
@@ -655,6 +688,15 @@ public class FlexboxLayout extends ViewGroup {
                     // startIndex.
                     needsReshrink = true;
                     newWidth = 0;
+                } else {
+                    accumulatedRoundError += (rawCalculatedWidth - newWidth);
+                    if (accumulatedRoundError > 1.0) {
+                        newWidth += 1;
+                        accumulatedRoundError -= 1;
+                    } else if (accumulatedRoundError < -1.0) {
+                        newWidth -= 1;
+                        accumulatedRoundError += 1;
+                    }
                 }
                 child.measure(MeasureSpec.makeMeasureSpec(newWidth, MeasureSpec.EXACTLY),
                         MeasureSpec
@@ -663,11 +705,25 @@ public class FlexboxLayout extends ViewGroup {
                 flexLine.mainSize += child.getMeasuredWidth() + lp.getMarginStart()
                         + lp.getMarginEnd();
             } else {
-                int newHeight = Math.round(child.getMeasuredHeight() - unitShrink * lp.flexShrink);
+                float rawCalculatedHeight = child.getMeasuredHeight() - unitShrink * lp.flexShrink;
+                if (i == flexLine.itemCount - 1) {
+                    rawCalculatedHeight += accumulatedRoundError;
+                    accumulatedRoundError = 0;
+                }
+                int newHeight = Math.round(rawCalculatedHeight);
                 if (newHeight < 0) {
                     // Need to invoke this method again like the case flex direction is vertical
                     needsReshrink = true;
                     newHeight  = 0;
+                } else {
+                    accumulatedRoundError += (rawCalculatedHeight - newHeight);
+                    if (accumulatedRoundError > 1.0) {
+                        newHeight += 1;
+                        accumulatedRoundError -= 1;
+                    } else if (accumulatedRoundError < -1.0) {
+                        newHeight -= 1;
+                        accumulatedRoundError += 1;
+                    }
                 }
                 child.measure(MeasureSpec.makeMeasureSpec(child.getMeasuredWidth(),
                         MeasureSpec.EXACTLY),
@@ -1083,7 +1139,9 @@ public class FlexboxLayout extends ViewGroup {
     private void layoutHorizontal(boolean isRtl, int left, int top, int right, int bottom) {
         int paddingLeft = getPaddingLeft();
         int paddingRight = getPaddingRight();
-        int childLeft;
+        // Use float to reduce the round error that may happen in when justifyContent ==
+        // SPACE_BETWEEN or SPACE_AROUND
+        float childLeft;
         int currentViewIndex = 0;
 
         int height = bottom - top;
@@ -1093,9 +1151,11 @@ public class FlexboxLayout extends ViewGroup {
         int childTop = getPaddingTop();
 
         // Used only for RTL layout
-        int childRight;
+        // Use float to reduce the round error that may happen in when justifyContent ==
+        // SPACE_BETWEEN or SPACE_AROUND
+        float childRight;
         for (FlexLine flexLine : mFlexLines) {
-            int spaceBetweenItem = 0;
+            float spaceBetweenItem = 0f;
             switch (mJustifyContent) {
                 case JUSTIFY_CONTENT_FLEX_START:
                     childLeft = left + paddingLeft;
@@ -1106,22 +1166,23 @@ public class FlexboxLayout extends ViewGroup {
                     childRight = left + paddingLeft + flexLine.mainSize;
                     break;
                 case JUSTIFY_CONTENT_CENTER:
-                    childLeft = paddingLeft + (right - left - flexLine.mainSize) / 2;
-                    childRight = right - paddingRight - (right - left - flexLine.mainSize) / 2;
+                    childLeft = paddingLeft + (right - left - flexLine.mainSize) / 2f;
+                    childRight = right - paddingRight - (right - left - flexLine.mainSize) / 2f;
                     break;
                 case JUSTIFY_CONTENT_SPACE_AROUND:
                     if (flexLine.itemCount != 0) {
                         spaceBetweenItem = (right - left - paddingLeft - paddingRight
-                                - flexLine.mainSize) / flexLine.itemCount;
+                                - flexLine.mainSize) / (float) flexLine.itemCount;
                     }
-                    childLeft = paddingLeft + spaceBetweenItem / 2;
-                    childRight = right - paddingRight - spaceBetweenItem / 2;
+                    childLeft = left + paddingLeft + spaceBetweenItem / 2f;
+                    childRight = right - paddingRight - spaceBetweenItem / 2f;
                     break;
                 case JUSTIFY_CONTENT_SPACE_BETWEEN:
-                    childLeft = paddingLeft;
-                    int denominator = flexLine.itemCount != 1 ? flexLine.itemCount - 1 : 1;
-                    spaceBetweenItem = (right - left - paddingLeft - paddingRight
-                            - flexLine.mainSize) / denominator;
+                    childLeft = left + paddingLeft;
+                    float denominator = flexLine.itemCount != 1 ? flexLine.itemCount - 1 : 1f;
+                    spaceBetweenItem =
+                            (right - left - paddingLeft - paddingRight - flexLine.mainSize)
+                                    / denominator;
                     childRight = right - paddingRight;
                     break;
                 default:
@@ -1142,23 +1203,24 @@ public class FlexboxLayout extends ViewGroup {
                 if (mFlexWrap == FLEX_WRAP_WRAP_REVERSE) {
                     if (isRtl) {
                         layoutSingleChildHorizontal(child, flexLine, mFlexWrap, mAlignItems,
-                                childRight - child.getMeasuredWidth(),
-                                childBottom - child.getMeasuredHeight(), childRight,
+                                Math.round(childRight) - child.getMeasuredWidth(),
+                                childBottom - child.getMeasuredHeight(), Math.round(childRight),
                                 childBottom);
                     } else {
                         layoutSingleChildHorizontal(child, flexLine, mFlexWrap, mAlignItems,
-                                childLeft, childBottom - child.getMeasuredHeight(),
-                                childLeft + child.getMeasuredWidth(),
+                                Math.round(childLeft), childBottom - child.getMeasuredHeight(),
+                                Math.round(childLeft) + child.getMeasuredWidth(),
                                 childBottom);
                     }
                 } else {
                     if (isRtl) {
                         layoutSingleChildHorizontal(child, flexLine, mFlexWrap, mAlignItems,
-                                childRight - child.getMeasuredWidth(), childTop,
-                                childRight, childTop + child.getMeasuredHeight());
+                                Math.round(childRight) - child.getMeasuredWidth(), childTop,
+                                Math.round(childRight), childTop + child.getMeasuredHeight());
                     } else {
                         layoutSingleChildHorizontal(child, flexLine, mFlexWrap, mAlignItems,
-                                childLeft, childTop, childLeft + child.getMeasuredWidth(),
+                                Math.round(childLeft), childTop,
+                                Math.round(childLeft) + child.getMeasuredWidth(),
                                 childTop + child.getMeasuredHeight());
                     }
                 }
@@ -1276,6 +1338,7 @@ public class FlexboxLayout extends ViewGroup {
             int right, int bottom) {
         int paddingTop = getPaddingTop();
         int paddingBottom = getPaddingBottom();
+
         int paddingRight = getPaddingRight();
         int childLeft = getPaddingLeft();
         int currentViewIndex = 0;
@@ -1285,12 +1348,15 @@ public class FlexboxLayout extends ViewGroup {
         // childRight is used if the mFlexWrap is FLEX_WRAP_WRAP_REVERSE otherwise
         // childLeft is used to align the horizontal position of the children views.
         int childRight = width - paddingRight;
-        int childTop;
+
+        // Use float to reduce the round error that may happen in when justifyContent ==
+        // SPACE_BETWEEN or SPACE_AROUND
+        float childTop;
 
         // Used only for if the direction is from bottom to top
-        int childBottom;
+        float childBottom;
         for (FlexLine flexLine : mFlexLines) {
-            int spaceBetweenItem = 0;
+            float spaceBetweenItem = 0f;
             switch (mJustifyContent) {
                 case JUSTIFY_CONTENT_FLEX_START:
                     childTop = paddingTop;
@@ -1301,20 +1367,20 @@ public class FlexboxLayout extends ViewGroup {
                     childBottom = paddingTop + flexLine.mainSize;
                     break;
                 case JUSTIFY_CONTENT_CENTER:
-                    childTop = paddingTop + (height - flexLine.mainSize) / 2;
-                    childBottom = height - paddingBottom - (height - flexLine.mainSize) / 2;
+                    childTop = paddingTop + (height - flexLine.mainSize) / 2f;
+                    childBottom = height - paddingBottom - (height - flexLine.mainSize) / 2f;
                     break;
                 case JUSTIFY_CONTENT_SPACE_AROUND:
                     if (flexLine.itemCount != 0) {
                         spaceBetweenItem = (height - paddingTop - paddingBottom
-                                - flexLine.mainSize) / flexLine.itemCount;
+                                - flexLine.mainSize) / (float) flexLine.itemCount;
                     }
-                    childTop = paddingTop + spaceBetweenItem / 2;
-                    childBottom = height - paddingBottom - spaceBetweenItem / 2;
+                    childTop = paddingTop + spaceBetweenItem / 2f;
+                    childBottom = height - paddingBottom - spaceBetweenItem / 2f;
                     break;
                 case JUSTIFY_CONTENT_SPACE_BETWEEN:
                     childTop = paddingTop;
-                    int denominator = flexLine.itemCount != 1 ? flexLine.itemCount - 1 : 1;
+                    float denominator = flexLine.itemCount != 1 ? flexLine.itemCount - 1 : 1f;
                     spaceBetweenItem = (height - paddingTop - paddingBottom
                             - flexLine.mainSize) / denominator;
                     childBottom = height - paddingBottom;
@@ -1338,21 +1404,22 @@ public class FlexboxLayout extends ViewGroup {
                     if (fromBottomToTop) {
                         layoutSingleChildVertical(child, flexLine, true, mAlignItems,
                                 childRight - child.getMeasuredWidth(),
-                                childBottom - child.getMeasuredHeight(), childRight, childBottom);
+                                Math.round(childBottom) - child.getMeasuredHeight(), childRight,
+                                Math.round(childBottom));
                     } else {
                         layoutSingleChildVertical(child, flexLine, true, mAlignItems,
-                                childRight - child.getMeasuredWidth(), childTop,
-                                childRight, childTop + child.getMeasuredHeight());
+                                childRight - child.getMeasuredWidth(), Math.round(childTop),
+                                childRight, Math.round(childTop) + child.getMeasuredHeight());
                     }
                 } else {
                     if (fromBottomToTop) {
                         layoutSingleChildVertical(child, flexLine, false, mAlignItems,
-                                childLeft, childBottom - child.getMeasuredHeight(),
-                                childLeft + child.getMeasuredWidth(), childBottom);
+                                childLeft, Math.round(childBottom) - child.getMeasuredHeight(),
+                                childLeft + child.getMeasuredWidth(), Math.round(childBottom));
                     } else {
                         layoutSingleChildVertical(child, flexLine, false, mAlignItems,
-                                childLeft, childTop, childLeft + child.getMeasuredWidth(),
-                                childTop + child.getMeasuredHeight());
+                                childLeft, Math.round(childTop), childLeft + child.getMeasuredWidth(),
+                                Math.round(childTop) + child.getMeasuredHeight());
                     }
                 }
                 childTop += child.getMeasuredHeight() + spaceBetweenItem + lp.bottomMargin;
@@ -1513,8 +1580,8 @@ public class FlexboxLayout extends ViewGroup {
     public static class LayoutParams extends ViewGroup.MarginLayoutParams {
 
         private static final int ORDER_DEFAULT = 1;
-        private static final int FLEX_GROW_DEFAULT = 0;
-        private static final int FLEX_SHRINK_DEFAULT = 1;
+        private static final float FLEX_GROW_DEFAULT = 0f;
+        private static final float FLEX_SHRINK_DEFAULT = 1f;
         public static final float FLEX_BASIS_PERCENT_DEFAULT = -1f;
 
         public static final int ALIGN_SELF_AUTO = -1;
@@ -1536,14 +1603,14 @@ public class FlexboxLayout extends ViewGroup {
          * distributed relative to the rest of other flex items included in the same flex line.
          * If not specified, {@link #FLEX_GROW_DEFAULT} is set as a default value.
          */
-        public int flexGrow = FLEX_GROW_DEFAULT;
+        public float flexGrow = FLEX_GROW_DEFAULT;
 
         /**
          * This attributes determines how much this child will shrink is negative free space is
          * distributed relative to the rest of other flex items included in the same flex line.
          * If not specified, {@link #FLEX_SHRINK_DEFAULT} is set as a default value.
          */
-        public int flexShrink = FLEX_SHRINK_DEFAULT;
+        public float flexShrink = FLEX_SHRINK_DEFAULT;
 
         /**
          * This attributes determines the alignment along the cross axis (perpendicular to the
@@ -1576,8 +1643,8 @@ public class FlexboxLayout extends ViewGroup {
                     .obtainStyledAttributes(attrs, R.styleable.FlexboxLayout_Layout);
             order = a.getInt(R.styleable.FlexboxLayout_Layout_layout_order, ORDER_DEFAULT);
             flexGrow = a
-                    .getInt(R.styleable.FlexboxLayout_Layout_layout_flexGrow, FLEX_GROW_DEFAULT);
-            flexShrink = a.getInt(R.styleable.FlexboxLayout_Layout_layout_flexShrink,
+                    .getFloat(R.styleable.FlexboxLayout_Layout_layout_flexGrow, FLEX_GROW_DEFAULT);
+            flexShrink = a.getFloat(R.styleable.FlexboxLayout_Layout_layout_flexShrink,
                     FLEX_SHRINK_DEFAULT);
             alignSelf = a
                     .getInt(R.styleable.FlexboxLayout_Layout_layout_alignSelf, ALIGN_SELF_AUTO);
@@ -1635,10 +1702,10 @@ public class FlexboxLayout extends ViewGroup {
         int itemCount;
 
         /** The sum of the flexGrow properties of the children included in this flex line */
-        int totalFlexGrow;
+        float totalFlexGrow;
 
         /** The sum of the flexShrink properties of the children included in this flex line */
-        int totalFlexShrink;
+        float totalFlexShrink;
 
         /**
          * The largest value of the individual child's baseline (obtained by View#getBaseline()

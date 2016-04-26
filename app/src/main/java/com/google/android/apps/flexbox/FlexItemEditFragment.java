@@ -19,7 +19,7 @@ package com.google.android.apps.flexbox;
 import com.google.android.apps.flexbox.validators.FlexBasisPercentInputValidator;
 import com.google.android.apps.flexbox.validators.InputValidator;
 import com.google.android.apps.flexbox.validators.IntegerInputValidator;
-import com.google.android.apps.flexbox.validators.NonNegativeIntegerInputValidator;
+import com.google.android.apps.flexbox.validators.NonNegativeDecimalInputValidator;
 import com.google.android.apps.flexbox.validators.DimensionInputValidator;
 import com.google.android.libraries.flexbox.FlexboxLayout;
 
@@ -107,7 +107,7 @@ public class FlexItemEditFragment extends DialogFragment {
         EditText flexGrowEdit = (EditText) view.findViewById(R.id.edit_text_flex_grow);
         flexGrowEdit.setText(String.valueOf(mFlexItem.flexGrow));
         flexGrowEdit.addTextChangedListener(
-                new FlexEditTextWatcher(flexGrowInput, new NonNegativeIntegerInputValidator(),
+                new FlexEditTextWatcher(flexGrowInput, new NonNegativeDecimalInputValidator(),
                         R.string.must_be_non_negative_integer));
 
         final TextInputLayout flexShrinkInput = (TextInputLayout) view
@@ -116,7 +116,7 @@ public class FlexItemEditFragment extends DialogFragment {
                 R.id.edit_text_flex_shrink);
         flexShrinkEdit.setText(String.valueOf(mFlexItem.flexShrink));
         flexShrinkEdit.addTextChangedListener(
-                new FlexEditTextWatcher(flexShrinkInput, new NonNegativeIntegerInputValidator(),
+                new FlexEditTextWatcher(flexShrinkInput, new NonNegativeDecimalInputValidator(),
                         R.string.must_be_non_negative_integer));
 
         final TextInputLayout flexBasisPercentInput = (TextInputLayout) view

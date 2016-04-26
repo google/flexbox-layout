@@ -65,10 +65,10 @@ limitations under the License.
         <attr name="layout_order" format="integer" />
 
         <!-- Negative numbers are invalid. -->
-        <attr name="layout_flexGrow" format="integer" />
+        <attr name="layout_flexGrow" format="float" />
 
         <!-- Negative numbers are invalid. -->
-        <attr name="layout_flexShrink" format="integer" />
+        <attr name="layout_flexShrink" format="float" />
 
         <!--
             The initial length in a percentage format relative to its parent. This is similar to the
