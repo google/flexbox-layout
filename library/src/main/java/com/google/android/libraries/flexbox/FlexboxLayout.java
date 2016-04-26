@@ -24,6 +24,8 @@ import android.support.v4.view.ViewCompat;
 import android.util.AttributeSet;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.LinearLayout;
+import android.widget.RelativeLayout;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
@@ -35,6 +37,8 @@ import java.util.TreeSet;
 /**
  * A layout that arranges its children in a way its attributes can be specified like the
  * CSS Flexible Box Layout Module.
+ * This class extends the {@link ViewGroup} like other layout classes such as {@link LinearLayout}
+ * or {@link RelativeLayout}, the attributes can be specified from a layout XML or from code.
  *
  * The supported attributes that you can use are:
  * <ul>
@@ -265,8 +269,14 @@ public class FlexboxLayout extends ViewGroup {
      * Sub method for {@link #onMeasure(int, int)}, when the main axis direction is horizontal
      * (either left to right or right to left).
      *
-     * @param widthMeasureSpec the measure spec for the width
-     * @param heightMeasureSpec the measure spec for the height
+     * @param widthMeasureSpec horizontal space requirements as imposed by the parent
+     * @param heightMeasureSpec vertical space requirements as imposed by the parent
+     *
+     * @see #onMeasure(int, int)
+     * @see #setFlexDirection(int)
+     * @see #setFlexWrap(int)
+     * @see #setAlignItems(int)
+     * @see #setAlignContent(int)
      */
     private void measureHorizontal(int widthMeasureSpec, int heightMeasureSpec) {
         int widthMode = MeasureSpec.getMode(widthMeasureSpec);
@@ -399,8 +409,14 @@ public class FlexboxLayout extends ViewGroup {
      * Sub method for {@link #onMeasure(int, int)} when the main axis direction is vertical
      * (either from top to bottom or bottom to top).
      *
-     * @param widthMeasureSpec the measure spec for the width
-     * @param heightMeasureSpec the measure spec for the height
+     * @param widthMeasureSpec horizontal space requirements as imposed by the parent
+     * @param heightMeasureSpec vertical space requirements as imposed by the parent
+     *
+     * @see #onMeasure(int, int)
+     * @see #setFlexDirection(int)
+     * @see #setFlexWrap(int)
+     * @see #setAlignItems(int)
+     * @see #setAlignContent(int)
      */
     private void measureVertical(int widthMeasureSpec, int heightMeasureSpec) {
         int heightMode = MeasureSpec.getMode(heightMeasureSpec);
@@ -493,8 +509,11 @@ public class FlexboxLayout extends ViewGroup {
      * space is negative) properties are set to non-zero.
      *
      * @param flexDirection the value of the flex direction
-     * @param widthMeasureSpec the width measure spec value
-     * @param heightMeasureSpec the height measure spec value
+     * @param widthMeasureSpec horizontal space requirements as imposed by the parent
+     * @param heightMeasureSpec vertical space requirements as imposed by the parent
+     *
+     * @see #setFlexDirection(int)
+     * @see #getFlexDirection()
      */
     private void determineMainSize(@FlexDirection int flexDirection, int widthMeasureSpec,
             int heightMeasureSpec) {
@@ -550,6 +569,10 @@ public class FlexboxLayout extends ViewGroup {
      *                   be an absolute index in the flex container (FlexboxLayout),
      *                   not the relative index in the flex line.
      * @return the next index, the next flex line's first flex item starts from the returned index
+     *
+     * @see #getFlexDirection()
+     * @see #setFlexDirection(int)
+     * @see LayoutParams#flexGrow
      */
     private int expandFlexItems(FlexLine flexLine, @FlexDirection int flexDirection,
             int maxMainSize, int paddingAlongMainAxis, int startIndex) {
@@ -598,6 +621,10 @@ public class FlexboxLayout extends ViewGroup {
      *                   be an absolute index in the flex container (FlexboxLayout),
      *                   not the relative index in the flex line.
      * @return the next index, the next flex line's first flex item starts from the returned index
+     *
+     * @see #getFlexDirection()
+     * @see #setFlexDirection(int)
+     * @see LayoutParams#flexShrink
      */
     private int shrinkFlexItems(FlexLine flexLine, @FlexDirection int flexDirection,
             int maxMainSize, int paddingAlongMainAxis, int startIndex) {
@@ -664,8 +691,13 @@ public class FlexboxLayout extends ViewGroup {
      * use the sum of cross sizes of all flex lines.
      *
      * @param flexDirection the flex direction attribute
-     * @param widthMeasureSpec the measure spec parameter for width
-     * @param heightMeasureSpec the measure spec parameter for height
+     * @param widthMeasureSpec horizontal space requirements as imposed by the parent
+     * @param heightMeasureSpec vertical space requirements as imposed by the parent
+     *
+     * @see #getFlexDirection()
+     * @see #setFlexDirection(int)
+     * @see #getAlignContent()
+     * @see #setAlignContent(int)
      */
     private void determineCrossSize(int flexDirection, int widthMeasureSpec, int heightMeasureSpec) {
         // The MeasureSpec mode along the cross axis
@@ -773,6 +805,12 @@ public class FlexboxLayout extends ViewGroup {
      *
      * @param flexDirection the flex direction attribute
      * @param alignItems the align items attribute
+     *
+     * @see #getFlexDirection()
+     * @see #setFlexDirection(int)
+     * @see #getAlignItems()
+     * @see #setAlignItems(int)
+     * @see LayoutParams#alignSelf
      */
     private void stretchViews(int flexDirection, int alignItems) {
         if (alignItems == ALIGN_ITEMS_STRETCH) {
@@ -855,9 +893,12 @@ public class FlexboxLayout extends ViewGroup {
      * cross axis.
      *
      * @param flexDirection the value of the flex direction
-     * @param widthMeasureSpec the widthMeasureSpec of this FlexboxLayout
-     * @param heightMeasureSpec the heightMeasureSpec of this FlexboxLayout
+     * @param widthMeasureSpec horizontal space requirements as imposed by the parent
+     * @param heightMeasureSpec vertical space requirements as imposed by the parent
      * @param childState the child state of the View
+     *
+     * @see #getFlexDirection()
+     * @see #setFlexDirection(int)
      */
     private void setMeasuredDimensionForFlex(@FlexDirection int flexDirection, int widthMeasureSpec,
             int heightMeasureSpec, int childState) {
@@ -950,6 +991,9 @@ public class FlexboxLayout extends ViewGroup {
      * @param currentLength the accumulated current length
      * @param childLength the length of a child view which is to be collected to the flex line
      * @return {@code true} if a wrap is required, {@code false} otherwise
+     *
+     * @see #getFlexWrap()
+     * @see #setFlexWrap(int)
      */
     private boolean isWrapRequired(int flexWrap, int mode, int maxSize,
             int currentLength, int childLength) {
@@ -1027,6 +1071,14 @@ public class FlexboxLayout extends ViewGroup {
      * @param top the top position of this View
      * @param right the right position of this View
      * @param bottom the bottom position of this View
+     *
+     * @see #getFlexWrap()
+     * @see #setFlexWrap(int)
+     * @see #getJustifyContent()
+     * @see #setJustifyContent(int)
+     * @see #getAlignItems()
+     * @see #setAlignItems(int)
+     * @see LayoutParams#alignSelf
      */
     private void layoutHorizontal(boolean isRtl, int left, int top, int right, int bottom) {
         int paddingLeft = getPaddingLeft();
@@ -1136,6 +1188,10 @@ public class FlexboxLayout extends ViewGroup {
      * @param bottom the bottom position of the flex line where the View belongs to. The actual
      *               View's bottom position is shifted depending on the flexWrap and alignItems
      *               attributes
+     *
+     * @see #getAlignItems()
+     * @see #setAlignItems(int)
+     * @see LayoutParams#alignSelf
      */
     private void layoutSingleChildHorizontal(View view, FlexLine flexLine, @FlexWrap int flexWrap,
             int alignItems, int left, int top, int right, int bottom) {
@@ -1207,6 +1263,14 @@ public class FlexboxLayout extends ViewGroup {
      * @param top the top position of this View
      * @param right the right position of this View
      * @param bottom the bottom position of this View
+     *
+     * @see #getFlexWrap()
+     * @see #setFlexWrap(int)
+     * @see #getJustifyContent()
+     * @see #setJustifyContent(int)
+     * @see #getAlignItems()
+     * @see #setAlignItems(int)
+     * @see LayoutParams#alignSelf
      */
     private void layoutVertical(boolean isRtl, boolean fromBottomToTop, int left, int top,
             int right, int bottom) {
@@ -1316,6 +1380,10 @@ public class FlexboxLayout extends ViewGroup {
      *              right position is shifted depending on the isRtl and alignItems attributes
      * @param bottom the bottom position of the View, which the View's margin is already taken into
      *               account
+     *
+     * @see #getAlignItems()
+     * @see #setAlignItems(int)
+     * @see LayoutParams#alignSelf
      */
     private void layoutSingleChildVertical(View view, FlexLine flexLine, boolean isRtl,
             int alignItems, int left, int top, int right, int bottom) {
@@ -1496,7 +1564,8 @@ public class FlexboxLayout extends ViewGroup {
          * If this value is set, the length specified from layout_width
          * (or layout_height) is overridden by the calculated value from this attribute.
          * This attribute is only effective when the parent's MeasureSpec mode is
-         * MeasureSpec.EXACTLY.
+         * MeasureSpec.EXACTLY. The default value is {@link #FLEX_BASIS_PERCENT_DEFAULT}, which
+         * means not set.
          */
         public float flexBasisPercent = FLEX_BASIS_PERCENT_DEFAULT;
 
