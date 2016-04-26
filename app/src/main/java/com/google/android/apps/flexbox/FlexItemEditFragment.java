@@ -234,13 +234,13 @@ public class FlexItemEditFragment extends DialogFragment {
     private class FlexEditTextWatcher implements TextWatcher {
 
         TextInputLayout mTextInputLayout;
-        InputValidator mInputVerifier;
+        InputValidator mInputValidator;
         int mErrorMessageId;
 
-        FlexEditTextWatcher(TextInputLayout textInputLayout, InputValidator inputVerifier,
+        FlexEditTextWatcher(TextInputLayout textInputLayout, InputValidator inputValidator,
                 int errorMessageId) {
             mTextInputLayout = textInputLayout;
-            mInputVerifier = inputVerifier;
+            mInputValidator = inputValidator;
             mErrorMessageId = errorMessageId;
         }
 
@@ -251,7 +251,7 @@ public class FlexItemEditFragment extends DialogFragment {
 
         @Override
         public void onTextChanged(CharSequence s, int start, int before, int count) {
-            if (mInputVerifier.isValidInput(s)) {
+            if (mInputValidator.isValidInput(s)) {
                 mTextInputLayout.setErrorEnabled(false);
                 mTextInputLayout.setError("");
             } else {
@@ -263,10 +263,16 @@ public class FlexItemEditFragment extends DialogFragment {
 
         @Override
         public void afterTextChanged(Editable editable) {
-            if (mTextInputLayout.isErrorEnabled() || TextUtils.isEmpty(editable)) {
+            if (mTextInputLayout.isErrorEnabled() || TextUtils.isEmpty(editable) ||
+                    !mInputValidator.isValidInput(editable.toString())) {
                 return;
             }
-            int intValue = Integer.valueOf(editable.toString());
+            int intValue;
+            try {
+                intValue = Integer.valueOf(editable.toString());
+            } catch (NumberFormatException | NullPointerException ignore) {
+                return;
+            }
             switch (mTextInputLayout.getId()) {
                 case R.id.input_layout_order:
                     mFlexItem.order = intValue;
