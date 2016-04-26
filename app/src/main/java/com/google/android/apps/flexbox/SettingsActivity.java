@@ -16,11 +16,11 @@
 
 package com.google.android.apps.flexbox;
 
+import com.google.android.apps.flexbox.validators.DimensionInputValidator;
 import com.google.android.apps.flexbox.validators.FlexBasisPercentInputValidator;
 import com.google.android.apps.flexbox.validators.InputValidator;
-import com.google.android.apps.flexbox.validators.DimensionInputValidator;
 import com.google.android.apps.flexbox.validators.IntegerInputValidator;
-import com.google.android.apps.flexbox.validators.NonNegativeIntegerInputValidator;
+import com.google.android.apps.flexbox.validators.NonNegativeDecimalInputValidator;
 
 import android.app.Activity;
 import android.os.Bundle;
@@ -73,7 +73,7 @@ public class SettingsActivity extends Activity {
                     new Preference.OnPreferenceChangeListener() {
                         @Override
                         public boolean onPreferenceChange(Preference preference, Object newValue) {
-                            InputValidator validator = new NonNegativeIntegerInputValidator();
+                            InputValidator validator = new NonNegativeDecimalInputValidator();
                             if (!validator.isValidInput(newValue.toString())) {
                                 Toast.makeText(getActivity(),
                                         R.string.must_be_non_negative_integer,
@@ -90,7 +90,7 @@ public class SettingsActivity extends Activity {
                     new Preference.OnPreferenceChangeListener() {
                         @Override
                         public boolean onPreferenceChange(Preference preference, Object newValue) {
-                            InputValidator validator = new NonNegativeIntegerInputValidator();
+                            InputValidator validator = new NonNegativeDecimalInputValidator();
                             if (!validator.isValidInput(newValue.toString())) {
                                 Toast.makeText(getActivity(),
                                         R.string.must_be_non_negative_integer,
