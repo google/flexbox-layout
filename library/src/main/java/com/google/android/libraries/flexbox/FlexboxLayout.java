@@ -782,9 +782,25 @@ public class FlexboxLayout extends ViewGroup {
             } else if (mFlexLines.size() >= 2 && totalCrossSize < size) {
                 switch (mAlignContent) {
                     case ALIGN_CONTENT_STRETCH: {
-                        int freeSpaceUnit = (size - totalCrossSize) / mFlexLines.size();
-                        for (FlexLine flexLine : mFlexLines) {
-                            flexLine.crossSize += freeSpaceUnit;
+                        float freeSpaceUnit = (size - totalCrossSize) / (float) mFlexLines.size();
+                        float accumulatedError = 0;
+                        for (int i = 0; i < mFlexLines.size(); i++) {
+                            FlexLine flexLine = mFlexLines.get(i);
+                            float newCrossSizeAsFloat = flexLine.crossSize + freeSpaceUnit;
+                            if (i == mFlexLines.size() - 1) {
+                                newCrossSizeAsFloat += accumulatedError;
+                                accumulatedError = 0;
+                            }
+                            int newCrossSize = Math.round(newCrossSizeAsFloat);
+                            accumulatedError += (newCrossSizeAsFloat - newCrossSize);
+                            if (accumulatedError > 1) {
+                                newCrossSize += 1;
+                                accumulatedError -= 1;
+                            } else if (accumulatedError < -1) {
+                                newCrossSize -= 1;
+                                accumulatedError += 1;
+                            }
+                            flexLine.crossSize = newCrossSize;
                         }
                         break;
                     }
@@ -808,16 +824,35 @@ public class FlexboxLayout extends ViewGroup {
                     }
                     case ALIGN_CONTENT_SPACE_BETWEEN: {
                         // The value of free space along the cross axis between each flex line.
-                        int spaceBetweenFlexLine = size - totalCrossSize;
+                        float spaceBetweenFlexLine = size - totalCrossSize;
                         int numberOfSpaces = mFlexLines.size() - 1;
-                        spaceBetweenFlexLine = spaceBetweenFlexLine / numberOfSpaces;
+                        spaceBetweenFlexLine = spaceBetweenFlexLine / (float) numberOfSpaces;
+                        float accumulatedError = 0;
                         List<FlexLine> newFlexLines = new ArrayList<>();
-                        FlexLine dummySpaceFlexLine = new FlexLine();
-                        dummySpaceFlexLine.crossSize = spaceBetweenFlexLine;
                         for (int i = 0; i < mFlexLines.size(); i++) {
                             FlexLine flexLine = mFlexLines.get(i);
                             newFlexLines.add(flexLine);
+
                             if (i != mFlexLines.size() - 1) {
+                                FlexLine dummySpaceFlexLine = new FlexLine();
+                                if (i == mFlexLines.size() - 2) {
+                                    // The last dummy space block in the flex container.
+                                    // Adjust the cross size by the accumulated error.
+                                    dummySpaceFlexLine.crossSize = Math
+                                            .round(spaceBetweenFlexLine + accumulatedError);
+                                    accumulatedError = 0;
+                                } else {
+                                    dummySpaceFlexLine.crossSize = Math.round(spaceBetweenFlexLine);
+                                }
+                                accumulatedError += (spaceBetweenFlexLine
+                                        - dummySpaceFlexLine.crossSize);
+                                if (accumulatedError > 1) {
+                                    dummySpaceFlexLine.crossSize += 1;
+                                    accumulatedError -= 1;
+                                } else if (accumulatedError < -1) {
+                                    dummySpaceFlexLine.crossSize -= 1;
+                                    accumulatedError += 1;
+                                }
                                 newFlexLines.add(dummySpaceFlexLine);
                             }
                         }
@@ -857,7 +892,7 @@ public class FlexboxLayout extends ViewGroup {
 
     /**
      * Expand the view if the {@link #mAlignItems} attribute is set to {@link #ALIGN_ITEMS_STRETCH}
-     * of {@link LayoutParams#ALIGN_SELF_STRETCH} is set to an individual child view.
+     * or {@link LayoutParams#ALIGN_SELF_STRETCH} is set to an individual child view.
      *
      * @param flexDirection the flex direction attribute
      * @param alignItems the align items attribute
