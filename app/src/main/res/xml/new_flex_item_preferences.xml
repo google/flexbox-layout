@@ -29,14 +29,14 @@ limitations under the License.
             android:title="@string/hint_flex_grow"
             android:inputType="numberDecimal"
             android:persistent="true"
-            android:defaultValue="0" />
+            android:defaultValue="0.0" />
 
         <EditTextPreference
             android:key="@string/new_flex_shrink_key"
             android:title="@string/hint_flex_shrink"
             android:inputType="numberDecimal"
             android:persistent="true"
-            android:defaultValue="1" />
+            android:defaultValue="1.0" />
 
         <EditTextPreference
             android:key="@string/new_flex_basis_percent_key"

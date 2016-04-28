@@ -108,7 +108,7 @@ public class FlexItemEditFragment extends DialogFragment {
         flexGrowEdit.setText(String.valueOf(mFlexItem.flexGrow));
         flexGrowEdit.addTextChangedListener(
                 new FlexEditTextWatcher(flexGrowInput, new NonNegativeDecimalInputValidator(),
-                        R.string.must_be_non_negative_integer));
+                        R.string.must_be_non_negative_float));
 
         final TextInputLayout flexShrinkInput = (TextInputLayout) view
                 .findViewById(R.id.input_layout_flex_shrink);
@@ -117,7 +117,7 @@ public class FlexItemEditFragment extends DialogFragment {
         flexShrinkEdit.setText(String.valueOf(mFlexItem.flexShrink));
         flexShrinkEdit.addTextChangedListener(
                 new FlexEditTextWatcher(flexShrinkInput, new NonNegativeDecimalInputValidator(),
-                        R.string.must_be_non_negative_integer));
+                        R.string.must_be_non_negative_float));
 
         final TextInputLayout flexBasisPercentInput = (TextInputLayout) view
                 .findViewById(R.id.input_layout_flex_basis_percent);

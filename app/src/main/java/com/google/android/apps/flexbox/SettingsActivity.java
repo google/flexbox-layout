@@ -76,7 +76,7 @@ public class SettingsActivity extends Activity {
                             InputValidator validator = new NonNegativeDecimalInputValidator();
                             if (!validator.isValidInput(newValue.toString())) {
                                 Toast.makeText(getActivity(),
-                                        R.string.must_be_non_negative_integer,
+                                        R.string.must_be_non_negative_float,
                                         Toast.LENGTH_LONG).show();
                                 return false;
                             }
@@ -93,7 +93,7 @@ public class SettingsActivity extends Activity {
                             InputValidator validator = new NonNegativeDecimalInputValidator();
                             if (!validator.isValidInput(newValue.toString())) {
                                 Toast.makeText(getActivity(),
-                                        R.string.must_be_non_negative_integer,
+                                        R.string.must_be_non_negative_float,
                                         Toast.LENGTH_LONG).show();
                                 return false;
                             }

@@ -202,8 +202,8 @@ public class MainActivity extends AppCompatActivity
                 Util.dpToPixel(this, readPreferenceAsInteger(getString(R.string.new_height_key),
                         DEFAULT_HEIGHT)));
         lp.order = readPreferenceAsInteger(getString(R.string.new_flex_item_order_key), "1");
-        lp.flexGrow = readPreferenceAsInteger(getString(R.string.new_flex_grow_key), "0");
-        lp.flexShrink = readPreferenceAsInteger(getString(R.string.new_flex_shrink_key), "1");
+        lp.flexGrow = readPreferenceAsFloat(getString(R.string.new_flex_grow_key), "0.0");
+        lp.flexShrink = readPreferenceAsFloat(getString(R.string.new_flex_shrink_key), "1.0");
         int flexBasisPercent = readPreferenceAsInteger(
                 getString(R.string.new_flex_basis_percent_key), "-1");
         lp.flexBasisPercent = flexBasisPercent == -1 ? -1 : (float) (flexBasisPercent / 100.0);
@@ -215,6 +215,14 @@ public class MainActivity extends AppCompatActivity
             return Integer.valueOf(mSharedPreferences.getString(key, defValue));
         } else {
             return Integer.valueOf(defValue);
+        }
+    }
+
+    private float readPreferenceAsFloat(String key, String defValue) {
+        if (mSharedPreferences.contains(key)) {
+            return Float.valueOf(mSharedPreferences.getString(key, defValue));
+        } else {
+            return Float.valueOf(defValue);
         }
     }
 

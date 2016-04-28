@@ -24,7 +24,11 @@ import android.text.TextUtils;
 public class NonNegativeDecimalInputValidator implements InputValidator {
     @Override
     public boolean isValidInput(CharSequence charSequence) {
-        return !TextUtils.isEmpty(charSequence) &&  TextUtils.isDigitsOnly(charSequence)
-                && Float.valueOf(charSequence.toString()) >= 0;
+        try {
+            Float.parseFloat(charSequence.toString());
+        } catch (NumberFormatException | NullPointerException ignore) {
+            return false;
+        }
+        return !TextUtils.isEmpty(charSequence) && Float.valueOf(charSequence.toString()) >= 0;
     }
 }
