@@ -3,30 +3,15 @@ FlexboxLayout is a library project which brings the similar capabilities of
 [CSS Flexible Box Layout Module](https://www.w3.org/TR/css-flexbox-1) to Android.
 
 ## Installation
-You have two options to install the library. You can choose either of:
+Add the following dependency to your `build.gradle` file.
 
-(1) Add the following dependency to your `build.gradle` file
 (At this moment not available from jcenter)
 TODO(thagikura): Upload the library to jCenter
 
-(2) Use the GitHub source and include that as a module dependency by following steps
-* Clone this library, parallel to your own application project:
-```
-git clone https://github.com/google/FlexboxLayout
-```
-
-* In the root of your application's project, edit the `settings.gradle` and add the following lines:
-```
-include ':FlexboxLayout'
-project(':FlexboxLayout').projectDir = new File('../FlexboxLayout/')
-```
-
-* In your application's main module, edit your `build.gradle` to add a new dependency:
 ```
 dependencies {
-    ...
-    compile project(':FlexboxLayout')
- }
+    compile 'com.google.android:flexbox:0.1.0'
+}
 ```
 
 ## Usage
