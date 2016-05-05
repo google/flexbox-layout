@@ -20,7 +20,7 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content">
 
-    <com.google.android.libraries.flexbox.FlexboxLayout
+    <com.google.android.flexbox.FlexboxLayout
         xmlns:app="http://schemas.android.com/apk/res-auto"
         android:id="@+id/flexbox_layout"
         android:layout_width="360dp"
@@ -45,5 +45,5 @@
             android:layout_width="140dp"
             android:layout_height="500dp"
             android:text="3" />
-    </com.google.android.libraries.flexbox.FlexboxLayout>
+    </com.google.android.flexbox.FlexboxLayout>
 </ScrollView>

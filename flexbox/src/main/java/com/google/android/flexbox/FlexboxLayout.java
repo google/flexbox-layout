@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.google.android.libraries.flexbox;
+package com.google.android.flexbox;
 
 import android.content.Context;
 import android.content.res.TypedArray;

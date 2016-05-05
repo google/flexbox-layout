@@ -16,7 +16,7 @@
   -->
 <!-- Set the layout_width and layout_height as wrap_content to test the behavior of
      the situation MeasureSpec.AT_MOST is set as width/height mode -->
-<com.google.android.libraries.flexbox.FlexboxLayout
+<com.google.android.flexbox.FlexboxLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:id="@+id/flexbox_layout"
@@ -46,4 +46,4 @@
         android:layout_height="wrap_content"
         android:text="3"
         />
-</com.google.android.libraries.flexbox.FlexboxLayout>
+</com.google.android.flexbox.FlexboxLayout>

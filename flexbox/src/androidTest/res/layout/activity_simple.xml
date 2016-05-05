@@ -15,7 +15,7 @@
   limitations under the License.
   -->
 
-<com.google.android.libraries.flexbox.FlexboxLayout
+<com.google.android.flexbox.FlexboxLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:id="@+id/flexbox_layout"
@@ -34,4 +34,4 @@
         app:layout_flexGrow="1"
         app:layout_alignSelf="stretch"
         />
-</com.google.android.libraries.flexbox.FlexboxLayout>
+</com.google.android.flexbox.FlexboxLayout>

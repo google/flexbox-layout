@@ -27,7 +27,7 @@ import static org.hamcrest.core.Is.is;
 
 import com.google.android.apps.flexbox.MainActivity;
 import com.google.android.apps.flexbox.R;
-import com.google.android.libraries.flexbox.FlexboxLayout;
+import com.google.android.flexbox.FlexboxLayout;
 
 import android.content.pm.ActivityInfo;
 import android.support.design.widget.NavigationView;

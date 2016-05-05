@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.google.android.libraries.flexbox.test;
+package com.google.android.flexbox.test;
 
 
 import static android.support.test.espresso.Espresso.onView;
@@ -33,7 +33,7 @@ import static org.hamcrest.core.IsNot.not;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertThat;
 
-import com.google.android.libraries.flexbox.FlexboxLayout;
+import com.google.android.flexbox.FlexboxLayout;
 
 import android.content.Context;
 import android.support.test.InstrumentationRegistry;

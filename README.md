@@ -18,7 +18,7 @@ dependencies {
 FlexboxLayout extends the ViewGroup like LinearLayout and RelativeLayout.
 You can specify the attributes from a layout XML like:
 ```xml
-<com.google.android.libraries.flexbox.FlexboxLayout
+<com.google.android.flexbox.FlexboxLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
@@ -47,7 +47,7 @@ You can specify the attributes from a layout XML like:
         android:layout_height="80dp"
         app:layout_alignSelf="flex_end"
         />
-</com.google.android.libraries.flexbox.FlexboxLayout>
+</com.google.android.flexbox.FlexboxLayout>
 ```
 
 Or from code like:
