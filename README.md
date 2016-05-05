@@ -5,9 +5,6 @@ FlexboxLayout is a library project which brings the similar capabilities of
 ## Installation
 Add the following dependency to your `build.gradle` file.
 
-(At this moment not available from jcenter)
-TODO(thagikura): Upload the library to jCenter
-
 ```
 dependencies {
     compile 'com.google.android:flexbox:0.1.0'
