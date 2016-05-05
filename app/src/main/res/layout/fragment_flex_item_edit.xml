@@ -154,18 +154,16 @@ limitations under the License.
                 android:layout_weight="1"
                 android:visibility="invisible" />
 
-            <!-- TODO Prepare style for API level less thatn 21 -->
             <Button
                 android:id="@+id/button_cancel"
-                style="?android:attr/buttonBarNegativeButtonStyle"
+                style="?android:attr/buttonBarStyle"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="@string/cancel" />
 
-            <!-- TODO Prepare style for API level less thatn 21 -->
             <Button
                 android:id="@+id/button_ok"
-                style="?android:attr/buttonBarPositiveButtonStyle"
+                style="?android:attr/buttonBarStyle"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="@string/ok" />
