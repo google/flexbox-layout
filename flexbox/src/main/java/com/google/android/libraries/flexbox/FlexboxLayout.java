@@ -290,8 +290,8 @@ public class FlexboxLayout extends ViewGroup {
         // loop)
         {
             int childCount = getChildCount();
-            int paddingStart = getPaddingStart();
-            int paddingEnd = getPaddingEnd();
+            int paddingStart = ViewCompat.getPaddingStart(this);
+            int paddingEnd = ViewCompat.getPaddingEnd(this);
             int largestHeightInRow = Integer.MIN_VALUE;
             FlexLine flexLine = new FlexLine();
             flexLine.mainSize = paddingStart;
@@ -529,7 +529,7 @@ public class FlexboxLayout extends ViewGroup {
                 } else {
                     mainSize = getLargestMainSize();
                 }
-                paddingAlongMainAxis = getPaddingStart() + getPaddingEnd();
+                paddingAlongMainAxis = getPaddingLeft() + getPaddingRight();
                 break;
             case FLEX_DIRECTION_COLUMN: // Intentional fall through
             case FLEX_DIRECTION_COLUMN_REVERSE:
@@ -610,8 +610,7 @@ public class FlexboxLayout extends ViewGroup {
                         MeasureSpec
                                 .makeMeasureSpec(child.getMeasuredHeight(),
                                         MeasureSpec.EXACTLY));
-                flexLine.mainSize += child.getMeasuredWidth() + lp.getMarginStart()
-                        + lp.getMarginEnd();
+                flexLine.mainSize += child.getMeasuredWidth() + lp.leftMargin + lp.rightMargin;
             } else {
                 float rawCalculatedHeight = child.getMeasuredHeight() + unitSpace * lp.flexGrow;
                 if (i == flexLine.itemCount - 1) {
@@ -702,8 +701,7 @@ public class FlexboxLayout extends ViewGroup {
                         MeasureSpec
                                 .makeMeasureSpec(child.getMeasuredHeight(),
                                         MeasureSpec.EXACTLY));
-                flexLine.mainSize += child.getMeasuredWidth() + lp.getMarginStart()
-                        + lp.getMarginEnd();
+                flexLine.mainSize += child.getMeasuredWidth() + lp.leftMargin + lp.rightMargin;
             } else {
                 float rawCalculatedHeight = child.getMeasuredHeight() - unitShrink * lp.flexShrink;
                 if (i == flexLine.itemCount - 1) {

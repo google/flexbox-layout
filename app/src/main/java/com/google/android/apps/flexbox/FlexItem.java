@@ -21,6 +21,7 @@ import com.google.android.libraries.flexbox.FlexboxLayout;
 import android.content.Context;
 import android.os.Parcel;
 import android.os.Parcelable;
+import android.support.v4.view.MarginLayoutParamsCompat;
 import android.support.v4.view.ViewCompat;
 import android.view.View;
 
@@ -107,8 +108,8 @@ public class FlexItem implements Parcelable {
         lp.alignSelf = alignSelf;
         lp.flexBasisPercent = flexBasisPercent;
         lp.topMargin = topMargin;
-        lp.setMarginStart(startMargin);
-        lp.setMarginEnd(endMargin);
+        MarginLayoutParamsCompat.setMarginStart(lp, startMargin);
+        MarginLayoutParamsCompat.setMarginEnd(lp, endMargin);
         lp.bottomMargin = bottomMargin;
         return lp;
     }
@@ -125,8 +126,8 @@ public class FlexItem implements Parcelable {
         flexItem.width = Util.pixelToDp(view.getContext(), lp.width);
         flexItem.height = Util.pixelToDp(view.getContext(), lp.height);
         flexItem.topMargin = lp.topMargin;
-        flexItem.startMargin = lp.getMarginStart();
-        flexItem.endMargin = lp.getMarginEnd();
+        flexItem.startMargin = MarginLayoutParamsCompat.getMarginStart(lp);
+        flexItem.endMargin = MarginLayoutParamsCompat.getMarginEnd(lp);
         flexItem.bottomMargin = lp.bottomMargin;
         flexItem.paddingTop = view.getPaddingTop();
         flexItem.paddingStart = ViewCompat.getPaddingStart(view);
