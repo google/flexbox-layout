@@ -38,7 +38,7 @@ android {
 }
 
 dependencies {
-    compile project(":library")
+    compile project(":flexbox")
     compile "com.android.support:appcompat-v7:${rootProject.ext.supportLibVersion}"
     compile "com.android.support:design:${rootProject.ext.supportLibVersion}"
 
