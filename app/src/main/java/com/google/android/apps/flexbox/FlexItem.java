@@ -16,7 +16,7 @@
 
 package com.google.android.apps.flexbox;
 
-import com.google.android.libraries.flexbox.FlexboxLayout;
+import com.google.android.flexbox.FlexboxLayout;
 
 import android.content.Context;
 import android.os.Parcel;

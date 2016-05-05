@@ -15,7 +15,7 @@
   limitations under the License.
   -->
 <manifest
-    package="com.google.android.libraries.flexbox.test"
+    package="com.google.android.flexbox.test"
     xmlns:android="http://schemas.android.com/apk/res/android" >
 
     <application>

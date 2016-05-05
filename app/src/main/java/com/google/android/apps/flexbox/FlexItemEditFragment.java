@@ -21,7 +21,7 @@ import com.google.android.apps.flexbox.validators.InputValidator;
 import com.google.android.apps.flexbox.validators.IntegerInputValidator;
 import com.google.android.apps.flexbox.validators.NonNegativeDecimalInputValidator;
 import com.google.android.apps.flexbox.validators.DimensionInputValidator;
-import com.google.android.libraries.flexbox.FlexboxLayout;
+import com.google.android.flexbox.FlexboxLayout;
 
 import android.app.Activity;
 import android.os.Build;

@@ -14,9 +14,9 @@
  * limitations under the License.
  */
 
-package com.google.android.libraries.flexbox.test;
+package com.google.android.flexbox.test;
 
-import com.google.android.libraries.flexbox.FlexboxLayout;
+import com.google.android.flexbox.FlexboxLayout;
 
 import android.app.Activity;
 
