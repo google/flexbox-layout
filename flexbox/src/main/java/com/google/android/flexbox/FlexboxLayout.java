@@ -335,6 +335,7 @@ public class FlexboxLayout extends ViewGroup {
 
                     flexLine = new FlexLine();
                     flexLine.itemCount = 1;
+                    flexLine.mainSize = paddingStart;
                     largestHeightInRow = child.getMeasuredHeight() + lp.topMargin + lp.bottomMargin;
                 } else {
                     flexLine.itemCount++;
@@ -474,6 +475,7 @@ public class FlexboxLayout extends ViewGroup {
 
                 flexLine = new FlexLine();
                 flexLine.itemCount = 1;
+                flexLine.mainSize = paddingTop;
                 largestWidthInColumn = child.getMeasuredWidth() + lp.leftMargin
                         + lp.rightMargin;
             } else {
@@ -1204,8 +1206,8 @@ public class FlexboxLayout extends ViewGroup {
                     break;
                 case JUSTIFY_CONTENT_SPACE_AROUND:
                     if (flexLine.itemCount != 0) {
-                        spaceBetweenItem = (right - left - paddingLeft - paddingRight
-                                - flexLine.mainSize) / (float) flexLine.itemCount;
+                        spaceBetweenItem = (right - left - flexLine.mainSize)
+                                / (float) flexLine.itemCount;
                     }
                     childLeft = left + paddingLeft + spaceBetweenItem / 2f;
                     childRight = right - paddingRight - spaceBetweenItem / 2f;
@@ -1214,8 +1216,7 @@ public class FlexboxLayout extends ViewGroup {
                     childLeft = left + paddingLeft;
                     float denominator = flexLine.itemCount != 1 ? flexLine.itemCount - 1 : 1f;
                     spaceBetweenItem =
-                            (right - left - paddingLeft - paddingRight - flexLine.mainSize)
-                                    / denominator;
+                            (right - left - flexLine.mainSize) / denominator;
                     childRight = right - paddingRight;
                     break;
                 default:
@@ -1405,8 +1406,8 @@ public class FlexboxLayout extends ViewGroup {
                     break;
                 case JUSTIFY_CONTENT_SPACE_AROUND:
                     if (flexLine.itemCount != 0) {
-                        spaceBetweenItem = (height - paddingTop - paddingBottom
-                                - flexLine.mainSize) / (float) flexLine.itemCount;
+                        spaceBetweenItem = (height - flexLine.mainSize)
+                                / (float) flexLine.itemCount;
                     }
                     childTop = paddingTop + spaceBetweenItem / 2f;
                     childBottom = height - paddingBottom - spaceBetweenItem / 2f;
@@ -1414,8 +1415,7 @@ public class FlexboxLayout extends ViewGroup {
                 case JUSTIFY_CONTENT_SPACE_BETWEEN:
                     childTop = paddingTop;
                     float denominator = flexLine.itemCount != 1 ? flexLine.itemCount - 1 : 1f;
-                    spaceBetweenItem = (height - paddingTop - paddingBottom
-                            - flexLine.mainSize) / denominator;
+                    spaceBetweenItem = (height - flexLine.mainSize) / denominator;
                     childBottom = height - paddingBottom;
                     break;
                 default:
