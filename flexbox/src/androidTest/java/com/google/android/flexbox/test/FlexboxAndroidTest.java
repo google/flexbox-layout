@@ -570,6 +570,42 @@ public class FlexboxAndroidTest {
 
     @Test
     @FlakyTest(tolerance = TOLERANCE)
+    public void testJustifyContent_spaceBetween_withPadding() throws Throwable {
+        final FlexboxTestActivity activity = mActivityRule.getActivity();
+        final int padding = 40;
+        mActivityRule.runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                activity.setContentView(R.layout.activity_justify_content_test);
+                FlexboxLayout flexboxLayout = (FlexboxLayout) activity
+                        .findViewById(R.id.flexbox_layout);
+                flexboxLayout.setJustifyContent(FlexboxLayout.JUSTIFY_CONTENT_SPACE_BETWEEN);
+                flexboxLayout.setPadding(padding, padding, padding, padding);
+            }
+        });
+        InstrumentationRegistry.getInstrumentation().waitForIdleSync();
+
+        FlexboxLayout flexboxLayout = (FlexboxLayout) activity.findViewById(R.id.flexbox_layout);
+
+        assertThat(flexboxLayout.getJustifyContent(),
+                is(FlexboxLayout.JUSTIFY_CONTENT_SPACE_BETWEEN));
+
+        TextView textView1 = (TextView) activity.findViewById(R.id.text1);
+        TextView textView2 = (TextView) activity.findViewById(R.id.text2);
+        TextView textView3 = (TextView) activity.findViewById(R.id.text3);
+        int space = flexboxLayout.getWidth() - textView1.getWidth() - textView2.getWidth() -
+                textView3.getWidth() - padding * 2;
+        space = space / 2;
+        assertThat(textView1.getLeft(), is(padding));
+        assertThat(flexboxLayout.getRight() - textView3.getRight(), is(padding));
+        assertTrue(space - 1 <= textView2.getLeft() - textView1.getRight() &&
+                textView2.getLeft() - textView1.getRight() <= space + 1);
+        assertTrue(space - 1 <= textView3.getLeft() - textView2.getRight() &&
+                textView3.getLeft() - textView2.getRight() <= space + 1);
+    }
+
+    @Test
+    @FlakyTest(tolerance = TOLERANCE)
     public void testJustifyContent_spaceAround() throws Throwable {
         final FlexboxTestActivity activity = mActivityRule.getActivity();
         mActivityRule.runOnUiThread(new Runnable() {
@@ -604,6 +640,46 @@ public class FlexboxAndroidTest {
                 textView3.getLeft() - textView2.getRight() <= spaceUpperBound);
         assertTrue(space - 1 <= flexboxLayout.getRight() - textView3.getRight() &&
                 flexboxLayout.getRight() - textView3.getRight() <= space + 1);
+    }
+
+    @Test
+    @FlakyTest(tolerance = TOLERANCE)
+    public void testJustifyContent_spaceAround_withPadding() throws Throwable {
+        final FlexboxTestActivity activity = mActivityRule.getActivity();
+        final int padding = 40;
+        mActivityRule.runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                activity.setContentView(R.layout.activity_justify_content_test);
+                FlexboxLayout flexboxLayout = (FlexboxLayout) activity
+                        .findViewById(R.id.flexbox_layout);
+                flexboxLayout.setJustifyContent(FlexboxLayout.JUSTIFY_CONTENT_SPACE_AROUND);
+                flexboxLayout.setPadding(padding, padding, padding, padding);
+            }
+        });
+        InstrumentationRegistry.getInstrumentation().waitForIdleSync();
+
+        FlexboxLayout flexboxLayout = (FlexboxLayout) activity.findViewById(R.id.flexbox_layout);
+
+        assertThat(flexboxLayout.getJustifyContent(),
+                is(FlexboxLayout.JUSTIFY_CONTENT_SPACE_AROUND));
+
+        TextView textView1 = (TextView) activity.findViewById(R.id.text1);
+        TextView textView2 = (TextView) activity.findViewById(R.id.text2);
+        TextView textView3 = (TextView) activity.findViewById(R.id.text3);
+        int space = flexboxLayout.getWidth() - textView1.getWidth() - textView2.getWidth() -
+                textView3.getWidth() - padding * 2;
+        space = space / 6; // Divide by the number of children * 2
+        assertTrue(space - 1 <= textView1.getLeft() - padding
+                && textView1.getLeft() - padding <= space + 1);
+        int spaceLowerBound = space * 2 - 1;
+        int spaceUpperBound = space * 2 + 1;
+        assertTrue(spaceLowerBound <= textView2.getLeft() - textView1.getRight() &&
+                textView2.getLeft() - textView1.getRight() <= spaceUpperBound);
+        assertTrue(spaceLowerBound <= textView3.getLeft() - textView2.getRight() &&
+                textView3.getLeft() - textView2.getRight() <= spaceUpperBound);
+        assertTrue(space - 1 <= flexboxLayout.getRight() - textView3.getRight() - padding &&
+                flexboxLayout.getRight() - textView3.getRight() - padding <= space + 1);
     }
 
     @Test
@@ -729,6 +805,45 @@ public class FlexboxAndroidTest {
 
     @Test
     @FlakyTest(tolerance = TOLERANCE)
+    public void testJustifyContent_spaceBetween_flexDirection_column_withPadding()
+            throws Throwable {
+        final FlexboxTestActivity activity = mActivityRule.getActivity();
+        final int padding = 40;
+        mActivityRule.runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                activity.setContentView(R.layout.activity_justify_content_test);
+                FlexboxLayout flexboxLayout = (FlexboxLayout) activity
+                        .findViewById(R.id.flexbox_layout);
+                flexboxLayout.setJustifyContent(FlexboxLayout.JUSTIFY_CONTENT_SPACE_BETWEEN);
+                flexboxLayout.setFlexDirection(FlexboxLayout.FLEX_DIRECTION_COLUMN);
+                flexboxLayout.setPadding(padding, padding, padding, padding);
+            }
+        });
+        InstrumentationRegistry.getInstrumentation().waitForIdleSync();
+
+        FlexboxLayout flexboxLayout = (FlexboxLayout) activity.findViewById(R.id.flexbox_layout);
+
+        assertThat(flexboxLayout.getJustifyContent(),
+                is(FlexboxLayout.JUSTIFY_CONTENT_SPACE_BETWEEN));
+        assertThat(flexboxLayout.getFlexDirection(), is(FlexboxLayout.FLEX_DIRECTION_COLUMN));
+
+        TextView textView1 = (TextView) activity.findViewById(R.id.text1);
+        TextView textView2 = (TextView) activity.findViewById(R.id.text2);
+        TextView textView3 = (TextView) activity.findViewById(R.id.text3);
+        int space = flexboxLayout.getHeight() - textView1.getHeight() - textView2.getHeight() -
+                textView3.getHeight() - padding * 2;
+        space = space / 2;
+        assertThat(textView1.getTop(), is(padding));
+        assertThat(flexboxLayout.getBottom() - textView3.getBottom(), is(padding));
+        assertTrue(space - 1 <= textView2.getTop() - textView1.getBottom() &&
+                textView2.getTop() - textView1.getBottom() <= space + 1);
+        assertTrue(space - 1 <= textView3.getTop() - textView2.getBottom() &&
+                textView3.getTop() - textView2.getBottom() <= space + 1);
+    }
+
+    @Test
+    @FlakyTest(tolerance = TOLERANCE)
     public void testJustifyContent_spaceAround_flexDirection_column() throws Throwable {
         final FlexboxTestActivity activity = mActivityRule.getActivity();
         mActivityRule.runOnUiThread(new Runnable() {
@@ -765,6 +880,48 @@ public class FlexboxAndroidTest {
                 textView3.getTop() - textView2.getBottom() <= spaceUpperBound);
         assertTrue(space - 1 <= flexboxLayout.getBottom() - textView3.getBottom() &&
                 flexboxLayout.getBottom() - textView3.getBottom() <= space + 1);
+    }
+
+    @Test
+    @FlakyTest(tolerance = TOLERANCE)
+    public void testJustifyContent_spaceAround_flexDirection_column_withPadding() throws Throwable {
+        final FlexboxTestActivity activity = mActivityRule.getActivity();
+        final int padding = 40;
+        mActivityRule.runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                activity.setContentView(R.layout.activity_justify_content_test);
+                FlexboxLayout flexboxLayout = (FlexboxLayout) activity
+                        .findViewById(R.id.flexbox_layout);
+                flexboxLayout.setJustifyContent(FlexboxLayout.JUSTIFY_CONTENT_SPACE_AROUND);
+                flexboxLayout.setFlexDirection(FlexboxLayout.FLEX_DIRECTION_COLUMN);
+                flexboxLayout.setPadding(padding, padding, padding, padding);
+            }
+        });
+        InstrumentationRegistry.getInstrumentation().waitForIdleSync();
+
+        FlexboxLayout flexboxLayout = (FlexboxLayout) activity.findViewById(R.id.flexbox_layout);
+
+        assertThat(flexboxLayout.getJustifyContent(),
+                is(FlexboxLayout.JUSTIFY_CONTENT_SPACE_AROUND));
+        assertThat(flexboxLayout.getFlexDirection(), is(FlexboxLayout.FLEX_DIRECTION_COLUMN));
+
+        TextView textView1 = (TextView) activity.findViewById(R.id.text1);
+        TextView textView2 = (TextView) activity.findViewById(R.id.text2);
+        TextView textView3 = (TextView) activity.findViewById(R.id.text3);
+        float space = flexboxLayout.getHeight() - textView1.getHeight() - textView2.getHeight() -
+                textView3.getHeight() - padding * 2;
+        space = space / 6; // Divide by the number of children * 2
+        assertTrue(space - 1 <= textView1.getTop() - padding
+                && textView1.getTop() - padding <= space + 1);
+        float spaceLowerBound = space * 2 - 1;
+        float spaceUpperBound = space * 2 + 1;
+        assertTrue(spaceLowerBound <= textView2.getTop() - textView1.getBottom() &&
+                textView2.getTop() - textView1.getBottom() <= spaceUpperBound);
+        assertTrue(spaceLowerBound <= textView3.getTop() - textView2.getBottom() &&
+                textView3.getTop() - textView2.getBottom() <= spaceUpperBound);
+        assertTrue(space - 1 <= flexboxLayout.getBottom() - textView3.getBottom() - padding &&
+                flexboxLayout.getBottom() - textView3.getBottom() - padding <= space + 1);
     }
 
     @Test
@@ -946,6 +1103,30 @@ public class FlexboxAndroidTest {
     @Test
     @FlakyTest(tolerance = TOLERANCE)
     public void testAlignContent_spaceBetween() throws Throwable {
+        final FlexboxTestActivity activity = mActivityRule.getActivity();
+        mActivityRule.runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                activity.setContentView(R.layout.activity_align_content_test);
+                FlexboxLayout flexboxLayout = (FlexboxLayout) activity
+                        .findViewById(R.id.flexbox_layout);
+                flexboxLayout.setAlignContent(FlexboxLayout.ALIGN_CONTENT_SPACE_BETWEEN);
+            }
+        });
+        FlexboxLayout flexboxLayout = (FlexboxLayout) activity.findViewById(R.id.flexbox_layout);
+
+        assertThat(flexboxLayout.getAlignContent(), is(FlexboxLayout.ALIGN_CONTENT_SPACE_BETWEEN));
+        onView(withId(R.id.text1)).check(isLeftAlignedWith(withId(R.id.flexbox_layout)));
+        onView(withId(R.id.text1)).check(isTopAlignedWith(withId(R.id.flexbox_layout)));
+        onView(withId(R.id.text2)).check(isRightOf(withId(R.id.text1)));
+        onView(withId(R.id.text2)).check(isTopAlignedWith(withId(R.id.flexbox_layout)));
+        onView(withId(R.id.text3)).check(isBottomAlignedWith(withId(R.id.flexbox_layout)));
+        onView(withId(R.id.text3)).check(isLeftAlignedWith(withId(R.id.flexbox_layout)));
+    }
+
+    @Test
+    @FlakyTest(tolerance = TOLERANCE)
+    public void testAlignContent_spaceBetween_withPadding() throws Throwable {
         final FlexboxTestActivity activity = mActivityRule.getActivity();
         mActivityRule.runOnUiThread(new Runnable() {
             @Override
