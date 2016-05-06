@@ -1002,13 +1002,13 @@ public class FlexboxLayout extends ViewGroup {
         switch (flexDirection) {
             case FLEX_DIRECTION_ROW: // Intentional fall through
             case FLEX_DIRECTION_ROW_REVERSE:
-                calculatedMaxHeight = getSumOfCrossSize();
+                calculatedMaxHeight = getSumOfCrossSize() + getPaddingTop() + getPaddingBottom();
                 calculatedMaxWidth = getLargestMainSize();
                 break;
             case FLEX_DIRECTION_COLUMN: // Intentional fall through
             case FLEX_DIRECTION_COLUMN_REVERSE:
                 calculatedMaxHeight = getLargestMainSize();
-                calculatedMaxWidth = getSumOfCrossSize();
+                calculatedMaxWidth = getSumOfCrossSize() + getPaddingLeft() + getPaddingRight();
                 break;
             default:
                 throw new IllegalArgumentException("Invalid flex direction: " + flexDirection);
