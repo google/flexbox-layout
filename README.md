@@ -74,7 +74,7 @@ You can specify following attributes for the FlexboxLayout.
 
 * flexWrap
   * This attribute controls whether the flex container is single-line or multi-line, and the
-  direction of the cross axis. Poissble values are:
+  direction of the cross axis. Possible values are:
     * nowrap (default)
     * wrap
     * wrap_reverse
@@ -126,12 +126,12 @@ Also you can specify following attributes for the children of a FlexboxLayout
   If not specified, `0` is set as a default value.
 
 * layout_flexShrink
-  * This attributes determines how much this child will shrink is negative free space is
+  * This attribute determines how much this child will shrink is negative free space is
   distributed relative to the rest of other flex items included in the same flex line.
   If not specified, `1` is set as a default value.
 
 * layout_alignSelf
-  * This attributes determines the alignment along the cross axis (perpendicular to the
+  * This attribute determines the alignment along the cross axis (perpendicular to the
   main axis). The alignment in the same direction can be determined by the
   `alignItems` in the parent, but if this is set to other than
   `auto`, the cross axis alignment is overridden for this child. Possible values are:
@@ -170,12 +170,12 @@ equivalent attribute
   [flexBasis](https://www.w3.org/TR/css-flexbox-1/#flex-basis-property)
   * Both `layout_flexBasisPercent` in this library and `flex-basis` property in the CSS are used to
   determine the initial length of an individual flex item. The `flex-basis` property accepts width
-  values such as `1em`, `10px` and the `content` as string as well as percentage values such as
-  `10%`, `30%` whereas `layout_flexBasisPercent` only accepts percentage values.
+  values such as `1em`, `10px`, and `content` as strings as well as percentage values such as
+  `10%` and `30%`, whereas `layout_flexBasisPercent` only accepts percentage values.
   But specifying initial fixed width values can be done by specifying width (or height) values in
-  layout_width (or layout_height, varies depending on the `flexDirection`). Also the same
-  effect can be done by specifying "wrap_contnet" in layout_width (or layout_height) if
-  developers want to achieve the same effect as 'content'. Thus, `layout_flexBasisProperty` only
+  layout_width (or layout_height, varies depending on the `flexDirection`). Also, the same
+  effect can be done by specifying "wrap_content" in layout_width (or layout_height) if
+  developers want to achieve the same effect as 'content'. Thus, `layout_flexBasisPercent` only
   accepts percentage values, which can't be done through layout_width (or layout_height) for
   simplicity.
 
