@@ -1,0 +1,16 @@
+machine:
+    java:
+        version: oraclejdk8
+
+dependencies:
+    pre:
+        - echo y | android update sdk --no-ui --all --filter "build-tools-23.0.3"
+    cache_directories:
+        - ~/.android
+    override:
+        - ./gradlew dependencies
+
+test:
+    override:
+        # TODO: Enable connectedAndroidTest
+        - ./gradlew build
