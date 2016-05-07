@@ -3,7 +3,7 @@ FlexboxLayout is a library project which brings the similar capabilities of
 [CSS Flexible Box Layout Module](https://www.w3.org/TR/css-flexbox-1) to Android.
 
 ## Installation
-Add the following dependency to your `build.gradle` file.
+Add the following dependency to your `build.gradle` file:
 
 ```
 dependencies {
@@ -60,7 +60,7 @@ view.setLayoutParams(lp);
 ```
 
 ## Supported attributes
-You can specify following attributes for the FlexboxLayout.
+You can specify the following attributes for the FlexboxLayout:
 * flexDirection
   * The direction children items are placed inside the Flexbox layout, it determines the
   direction of the main axis (and the cross axis, perpendicular to the main axis).
@@ -113,10 +113,10 @@ You can specify following attributes for the FlexboxLayout.
 
     ![Align Content explanation](/assets/align-content.gif)
 
-Also you can specify following attributes for the children of a FlexboxLayout
+Also you can specify the following attributes for the children of a FlexboxLayout.
 
 * layout_order
-  * This attribute can change the ordering of the children views are laid out.
+  * This attribute can change how the ordering of the children views are laid out.
   By default, children are displayed and laid out in the same order as they appear in the
   layout XML. If not specified, `1` is set as a default value.
 
@@ -144,7 +144,7 @@ Also you can specify following attributes for the children of a FlexboxLayout
 
 * layout_flexBasisPercent
   * The initial flex item length in a fraction format relative to its parent.
-  The initial main size of this child View is trying to be expanded as the specified
+  The initial main size of this child view is trying to be expanded as the specified
   fraction against the parent main size.
   If this value is set, the length specified from `layout_width`
   (or `layout_height`) is overridden by the calculated value from this attribute.
@@ -180,7 +180,7 @@ equivalent attribute
   simplicity.
 
 (4) min-width and min-height can't be specified
-  * Which isn't just implemented yet.
+  * Which isn't implemented just yet.
 
 ## How to make contributions
 Please read and follow the steps in CONTRIBUTING.md
