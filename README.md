@@ -126,7 +126,7 @@ Also you can specify the following attributes for the children of a FlexboxLayou
   If not specified, `0` is set as a default value.
 
 * layout_flexShrink
-  * This attribute determines how much this child will shrink is negative free space is
+  * This attribute determines how much this child will shrink if negative free space is
   distributed relative to the rest of other flex items included in the same flex line.
   If not specified, `1` is set as a default value.
 
@@ -153,7 +153,7 @@ Also you can specify the following attributes for the children of a FlexboxLayou
 
 ## Known differences from the original CSS specification
 This library tries to achieve the same capabilities of the original
-[Flexible specification](https://www.w3.org/TR/css-flexbox-1) as much as possible,
+[Flexible Box specification](https://www.w3.org/TR/css-flexbox-1) as much as possible,
 but due to some reasons such as the way specifying attributes can't be the same between
 CSS and Android XML, there are some known differences from the original specification.
 
