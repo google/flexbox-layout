@@ -1,4 +1,7 @@
 # FlexboxLayout
+[ ![Circle CI](https://circleci.com/gh/google/flexbox-layout.svg?style=shield&circle-token=2a42716dfffab73d73c5ce7ed7b3ee620cfa137b)
+![Download](https://api.bintray.com/packages/google/flexbox-layout/flexbox/images/download.svg) ](https://bintray.com/google/flexbox-layout/flexbox/_latestVersion)
+
 FlexboxLayout is a library project which brings the similar capabilities of
 [CSS Flexible Box Layout Module](https://www.w3.org/TR/css-flexbox-1) to Android.
 
