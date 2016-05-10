@@ -53,12 +53,14 @@ import org.junit.runner.RunWith;
 @MediumTest
 public class MainActivityTest {
 
+    private static final int TOLERANCE = 3;
+
     @Rule
     public ActivityTestRule<MainActivity> mActivityRule =
             new ActivityTestRule<>(MainActivity.class);
 
     @Test
-    @FlakyTest(tolerance = 3)
+    @FlakyTest(tolerance = TOLERANCE)
     public void testAddFlexItem() {
         MainActivity activity = mActivityRule.getActivity();
         FlexboxLayout flexboxLayout = (FlexboxLayout) activity.findViewById(R.id.flexbox_layout);
@@ -70,7 +72,7 @@ public class MainActivityTest {
     }
 
     @Test
-    @FlakyTest(tolerance = 3)
+    @FlakyTest(tolerance = TOLERANCE)
     public void testRemoveFlexItem() {
         MainActivity activity = mActivityRule.getActivity();
         FlexboxLayout flexboxLayout = (FlexboxLayout) activity.findViewById(R.id.flexbox_layout);
@@ -82,7 +84,7 @@ public class MainActivityTest {
     }
 
     @Test
-    @FlakyTest(tolerance = 3)
+    @FlakyTest(tolerance = TOLERANCE)
     public void testConfigurationChange() {
         MainActivity activity = mActivityRule.getActivity();
         FlexboxLayout flexboxLayout = (FlexboxLayout) activity.findViewById(R.id.flexbox_layout);
@@ -100,7 +102,7 @@ public class MainActivityTest {
 
     @Test
     @SuppressWarnings("unchecked")
-    @FlakyTest(tolerance = 3)
+    @FlakyTest(tolerance = TOLERANCE)
     public void testFlexDirectionSpinner() {
         MainActivity activity = mActivityRule.getActivity();
         FlexboxLayout flexboxLayout = (FlexboxLayout) activity.findViewById(R.id.flexbox_layout);
@@ -137,7 +139,7 @@ public class MainActivityTest {
 
     @Test
     @SuppressWarnings("unchecked")
-    @FlakyTest(tolerance = 3)
+    @FlakyTest(tolerance = TOLERANCE)
     public void testFlexWrapSpinner() {
         MainActivity activity = mActivityRule.getActivity();
         FlexboxLayout flexboxLayout = (FlexboxLayout) activity.findViewById(R.id.flexbox_layout);
@@ -175,7 +177,7 @@ public class MainActivityTest {
 
     @Test
     @SuppressWarnings("unchecked")
-    @FlakyTest(tolerance = 3)
+    @FlakyTest(tolerance = TOLERANCE)
     public void testJustifyContentSpinner() {
         MainActivity activity = mActivityRule.getActivity();
         FlexboxLayout flexboxLayout = (FlexboxLayout) activity.findViewById(R.id.flexbox_layout);
@@ -214,7 +216,7 @@ public class MainActivityTest {
 
     @Test
     @SuppressWarnings("unchecked")
-    @FlakyTest(tolerance = 3)
+    @FlakyTest(tolerance = TOLERANCE)
     public void testAlignItemsSpinner() {
         MainActivity activity = mActivityRule.getActivity();
         FlexboxLayout flexboxLayout = (FlexboxLayout) activity.findViewById(R.id.flexbox_layout);
@@ -253,7 +255,7 @@ public class MainActivityTest {
 
     @Test
     @SuppressWarnings("unchecked")
-    @FlakyTest(tolerance = 3)
+    @FlakyTest(tolerance = TOLERANCE)
     public void testAlignContentSpinner() {
         MainActivity activity = mActivityRule.getActivity();
         FlexboxLayout flexboxLayout = (FlexboxLayout) activity.findViewById(R.id.flexbox_layout);
@@ -291,7 +293,7 @@ public class MainActivityTest {
     }
 
     @Test
-    @FlakyTest(tolerance = 3)
+    @FlakyTest(tolerance = TOLERANCE)
     public void testEditFragment_changeOrder() {
         MainActivity activity = mActivityRule.getActivity();
         FlexboxLayout flexboxLayout = (FlexboxLayout) activity.findViewById(R.id.flexbox_layout);
@@ -309,7 +311,7 @@ public class MainActivityTest {
     }
 
     @Test
-    @FlakyTest(tolerance = 3)
+    @FlakyTest(tolerance = TOLERANCE)
     public void testEditFragment_changeFlexGrow() {
         MainActivity activity = mActivityRule.getActivity();
         FlexboxLayout flexboxLayout = (FlexboxLayout) activity.findViewById(R.id.flexbox_layout);
@@ -329,7 +331,7 @@ public class MainActivityTest {
     }
 
     @Test
-    @FlakyTest(tolerance = 3)
+    @FlakyTest(tolerance = TOLERANCE)
     public void testEditFragment_changeFlexBasisPercent() {
         MainActivity activity = mActivityRule.getActivity();
         FlexboxLayout flexboxLayout = (FlexboxLayout) activity.findViewById(R.id.flexbox_layout);

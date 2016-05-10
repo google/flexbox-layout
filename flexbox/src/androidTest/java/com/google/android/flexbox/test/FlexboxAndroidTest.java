@@ -985,6 +985,34 @@ public class FlexboxAndroidTest {
 
     @Test
     @FlakyTest(tolerance = TOLERANCE)
+    public void testFlexGrow_including_view_gone() throws Throwable {
+        final FlexboxTestActivity activity = mActivityRule.getActivity();
+        mActivityRule.runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                activity.setContentView(R.layout.activity_flex_grow_test);
+                TextView textView2 = (TextView) activity.findViewById(R.id.text2);
+                textView2.setVisibility(View.GONE);
+            }
+        });
+        FlexboxLayout flexboxLayout = (FlexboxLayout) activity.findViewById(R.id.flexbox_layout);
+
+        onView(withId(R.id.text1)).check(isTopAlignedWith(withId(R.id.flexbox_layout)));
+        onView(withId(R.id.text1)).check(isLeftAlignedWith(withId(R.id.flexbox_layout)));
+        // the third TextView is expanded to the right edge of the FlexboxLayout
+        onView(withId(R.id.text3)).check(isTopAlignedWith(withId(R.id.flexbox_layout)));
+        onView(withId(R.id.text3)).check(isRightAlignedWith(withId(R.id.flexbox_layout)));
+        onView(withId(R.id.text3)).check(isRightOf(withId(R.id.text1)));
+
+        TextView textView1 = (TextView) activity.findViewById(R.id.text1);
+        TextView textView2 = (TextView) activity.findViewById(R.id.text2);
+        TextView textView3 = (TextView) activity.findViewById(R.id.text3);
+        assertThat(textView2.getVisibility(), is(View.GONE));
+        assertThat(textView3.getWidth(), is(flexboxLayout.getWidth() - textView1.getWidth()));
+    }
+
+    @Test
+    @FlakyTest(tolerance = TOLERANCE)
     public void testAlignContent_stretch() throws Throwable {
         final FlexboxTestActivity activity = mActivityRule.getActivity();
         mActivityRule.runOnUiThread(new Runnable() {
@@ -2185,6 +2213,69 @@ public class FlexboxAndroidTest {
         // errors in calculating the percent lengths.
         assertTrue(totalHeight >= flexboxLayout.getHeight() - 3 ||
                 totalHeight <= flexboxLayout.getHeight() + 3);
+    }
+
+    @Test
+    @FlakyTest(tolerance = TOLERANCE)
+    public void testView_visibility_gone() throws Throwable {
+        final FlexboxTestActivity activity = mActivityRule.getActivity();
+        mActivityRule.runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                activity.setContentView(R.layout.activity_views_visibility_gone);
+            }
+        });
+        FlexboxLayout flexboxLayout = (FlexboxLayout) activity.findViewById(R.id.flexbox_layout);
+
+        // The text1 and text2's visibility are gone, so the visible view starts from text3
+        assertThat(flexboxLayout.getFlexWrap(), is(FlexboxLayout.FLEX_WRAP_WRAP));
+        assertThat(flexboxLayout.getFlexDirection(), is(FlexboxLayout.FLEX_DIRECTION_ROW));
+        onView(withId(R.id.text3)).check(isTopAlignedWith(withId(R.id.flexbox_layout)));
+        onView(withId(R.id.text3)).check(isLeftAlignedWith(withId(R.id.flexbox_layout)));
+        onView(withId(R.id.text4)).check(isTopAlignedWith(withId(R.id.flexbox_layout)));
+        onView(withId(R.id.text4)).check(isRightOf(withId(R.id.text3)));
+        onView(withId(R.id.text5)).check(isLeftAlignedWith(withId(R.id.flexbox_layout)));
+        onView(withId(R.id.text5)).check(isBelow(withId(R.id.text3)));
+
+        TextView textView1 = (TextView) activity.findViewById(R.id.text1);
+        TextView textView2 = (TextView) activity.findViewById(R.id.text2);
+        TextView textView3 = (TextView) activity.findViewById(R.id.text3);
+        TextView textView4 = (TextView) activity.findViewById(R.id.text4);
+        TextView textView5 = (TextView) activity.findViewById(R.id.text5);
+        assertThat(textView1.getVisibility(), is(View.GONE));
+        assertThat(textView2.getVisibility(), is(View.GONE));
+        assertThat(textView4.getLeft(), is(textView3.getRight()));
+        assertThat(textView5.getTop(), is(textView3.getBottom()));
+    }
+
+    @Test
+    @FlakyTest(tolerance = TOLERANCE)
+    public void testView_visibility_invisible() throws Throwable {
+        final FlexboxTestActivity activity = mActivityRule.getActivity();
+        mActivityRule.runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                activity.setContentView(R.layout.activity_views_visibility_invisible);
+            }
+        });
+        FlexboxLayout flexboxLayout = (FlexboxLayout) activity.findViewById(R.id.flexbox_layout);
+
+        // The text1 and text2's visibility are invisible, these views take space like visible views
+        assertThat(flexboxLayout.getFlexWrap(), is(FlexboxLayout.FLEX_WRAP_WRAP));
+        assertThat(flexboxLayout.getFlexDirection(), is(FlexboxLayout.FLEX_DIRECTION_ROW));
+        onView(withId(R.id.text1)).check(isTopAlignedWith(withId(R.id.flexbox_layout)));
+        onView(withId(R.id.text1)).check(isLeftAlignedWith(withId(R.id.flexbox_layout)));
+        onView(withId(R.id.text2)).check(isTopAlignedWith(withId(R.id.flexbox_layout)));
+        onView(withId(R.id.text2)).check(isRightOf(withId(R.id.text1)));
+        onView(withId(R.id.text3)).check(isLeftAlignedWith(withId(R.id.flexbox_layout)));
+        onView(withId(R.id.text3)).check(isBelow(withId(R.id.text1)));
+
+        TextView textView1 = (TextView) activity.findViewById(R.id.text1);
+        TextView textView2 = (TextView) activity.findViewById(R.id.text2);
+        TextView textView3 = (TextView) activity.findViewById(R.id.text3);
+        assertThat(textView1.getVisibility(), is(View.INVISIBLE));
+        assertThat(textView2.getVisibility(), is(View.INVISIBLE));
+        assertThat(textView3.getTop(), is(textView1.getBottom()));
     }
 
     private TextView createTextView(Context context, String text, int order) {

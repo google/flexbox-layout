@@ -297,7 +297,10 @@ public class FlexboxLayout extends ViewGroup {
             flexLine.mainSize = paddingStart;
             for (int i = 0; i < childCount; i++) {
                 View child = getReorderedChildAt(i);
-                if (child == null || child.getVisibility() == View.GONE) {
+                if (child == null) {
+                    continue;
+                } else if (child.getVisibility() == View.GONE) {
+                    flexLine.itemCount++;
                     continue;
                 }
 
@@ -437,7 +440,10 @@ public class FlexboxLayout extends ViewGroup {
         flexLine.mainSize = paddingTop;
         for (int i = 0; i < childCount; i++) {
             View child = getReorderedChildAt(i);
-            if (child == null || child.getVisibility() == View.GONE) {
+            if (child == null) {
+                continue;
+            } else if (child.getVisibility() == View.GONE) {
+                flexLine.itemCount++;
                 continue;
             }
 
@@ -587,7 +593,9 @@ public class FlexboxLayout extends ViewGroup {
         float accumulatedRoundError = 0;
         for (int i = 0; i < flexLine.itemCount; i++) {
             View child = getReorderedChildAt(startIndex);
-            if (child == null || child.getVisibility() == View.GONE) {
+            if (child == null) {
+                continue;
+            } else if (child.getVisibility() == View.GONE) {
                 startIndex++;
                 continue;
             }
@@ -668,7 +676,9 @@ public class FlexboxLayout extends ViewGroup {
         flexLine.mainSize = paddingAlongMainAxis;
         for (int i = 0; i < flexLine.itemCount; i++) {
             View child = getReorderedChildAt(childIndex);
-            if (child == null || child.getVisibility() == View.GONE) {
+            if (child == null) {
+                continue;
+            } else if(child.getVisibility() == View.GONE) {
                 childIndex++;
                 continue;
             }
@@ -1227,7 +1237,9 @@ public class FlexboxLayout extends ViewGroup {
 
             for (int i = 0; i < flexLine.itemCount; i++) {
                 View child = getReorderedChildAt(currentViewIndex);
-                if (child == null || child.getVisibility() == View.GONE) {
+                if (child == null) {
+                    continue;
+                } else if (child.getVisibility() == View.GONE) {
                     currentViewIndex++;
                     continue;
                 }
@@ -1426,7 +1438,9 @@ public class FlexboxLayout extends ViewGroup {
 
             for (int i = 0; i < flexLine.itemCount; i++) {
                 View child = getReorderedChildAt(currentViewIndex);
-                if (child == null || child.getVisibility() == View.GONE) {
+                if (child == null) {
+                    continue;
+                } else if (child.getVisibility() == View.GONE) {
                     currentViewIndex++;
                     continue;
                 }
