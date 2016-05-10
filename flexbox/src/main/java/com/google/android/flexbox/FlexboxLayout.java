@@ -113,7 +113,7 @@ public class FlexboxLayout extends ViewGroup {
      * <ul>
      *     <li>{@link #FLEX_WRAP_NOWRAP}: The flex container is single-line.</li>
      *     <li>{@link #FLEX_WRAP_WRAP}: The flex container is multi-line.</li>
-     *     <li>{@link #FLEX_WRAP_NOWRAP}: The flex container is multi-line. The direction of the
+     *     <li>{@link #FLEX_WRAP_WRAP_REVERSE}: The flex container is multi-line. The direction of the
      *     cross axis is opposed to the direction as the {@link #FLEX_WRAP_WRAP}</li>
      * </ul>
      * The default value is {@link #FLEX_WRAP_NOWRAP}.
