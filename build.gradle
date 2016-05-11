@@ -49,3 +49,18 @@ allprojects {
 task clean(type: Delete) {
     delete rootProject.buildDir
 }
+
+// This allows to disable pre dexing. If not disabled, it makes each CI build slow
+// See https://circleci.com/docs/android/#disable-pre-dexing-to-improve-build-performance
+//     http://tools.android.com/tech-docs/new-build-system/tips#TOC-Improving-Build-Server-performance
+project.ext.preDexLibs = !project.hasProperty('disablePreDex')
+
+subprojects {
+    project.plugins.whenPluginAdded { plugin ->
+        if ("com.android.build.gradle.AppPlugin".equals(plugin.class.name)) {
+            project.android.dexOptions.preDexLibraries = rootProject.ext.preDexLibs
+        } else if ("com.android.build.gradle.LibraryPlugin".equals(plugin.class.name)) {
+            project.android.dexOptions.preDexLibraries = rootProject.ext.preDexLibs
+        }
+    }
+}
