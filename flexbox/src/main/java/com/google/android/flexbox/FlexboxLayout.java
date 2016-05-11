@@ -321,10 +321,10 @@ public class FlexboxLayout extends ViewGroup {
                     // is set to wrap_content)
                 }
                 int childWidthMeasureSpec = getChildMeasureSpec(widthMeasureSpec,
-                        child.getPaddingLeft() + child.getPaddingRight() + lp.leftMargin
+                        getPaddingLeft() + getPaddingRight() + lp.leftMargin
                                 + lp.rightMargin, childWidth);
                 int childHeightMeasureSpec = getChildMeasureSpec(heightMeasureSpec,
-                        child.getPaddingTop() + child.getPaddingBottom() + lp.topMargin
+                        getPaddingTop() + getPaddingBottom() + lp.topMargin
                                 + lp.bottomMargin, lp.height);
                 child.measure(childWidthMeasureSpec, childHeightMeasureSpec);
                 childState = combineMeasuredStates(childState, child.getMeasuredState());
@@ -464,10 +464,10 @@ public class FlexboxLayout extends ViewGroup {
             }
 
             int childWidthMeasureSpec = getChildMeasureSpec(widthMeasureSpec,
-                    child.getPaddingLeft() + child.getPaddingRight() + lp.leftMargin
+                    getPaddingLeft() + getPaddingRight() + lp.leftMargin
                             + lp.rightMargin, lp.width);
             int childHeightMeasureSpec = getChildMeasureSpec(heightMeasureSpec,
-                    child.getPaddingTop() + child.getPaddingBottom() + lp.topMargin
+                    getPaddingTop() + getPaddingBottom() + lp.topMargin
                             + lp.bottomMargin, childHeight);
             child.measure(childWidthMeasureSpec, childHeightMeasureSpec);
             childState = combineMeasuredStates(childState, child.getMeasuredState());
