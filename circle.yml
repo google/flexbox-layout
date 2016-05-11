@@ -1,16 +1,38 @@
 machine:
+    environment:
+        CLOUDSDK_CORE_DISABLE_PROMPTS: 1
+        CLOUDSDK_PYTHON_SITEPACKAGES: 1
+        CLOUDSDK_INSTALL_DIR: /tmp
     java:
         version: oraclejdk8
 
 dependencies:
     pre:
         - echo y | android update sdk --no-ui --all --filter "build-tools-23.0.3"
+        # For some reasons, there is an issue with the pre-installed gcloud that
+        # PyOpenSSL is not available when trying to activate the service account.
+        # Re-installing the gcloud worked as a workaround.
+        # See https://discuss.circleci.com/t/deployment-to-appengine-fails-pyopenssl-not-available/2154
+        - sudo apt-get remove python-virtualenv python-openssl python3-openssl
+        - sudo apt-get update
+        - sudo apt-get install python-openssl python3-openssl
+        - sudo rm -rf /opt/google-cloud-sdk/
+        - curl https://sdk.cloud.google.com | bash
+        - source ~/.bashrc
     cache_directories:
         - ~/.android
     override:
         - ./gradlew dependencies
+    post:
+        - echo ${GCLOUD_SERVICE_KEY} | base64 --decode > ${HOME}/client-secret.json
+        - /tmp/google-cloud-sdk/bin/gcloud config set project ${GCLOUD_PROJECT}
+        - /tmp/google-cloud-sdk/bin/gcloud --quiet components update
+        - /tmp/google-cloud-sdk/bin/gcloud --quiet components install beta
+        - /tmp/google-cloud-sdk/bin/gcloud auth activate-service-account ${GCLOUD_SERVICE_ACCOUNT} --key-file ${HOME}/client-secret.json
 
 test:
     override:
-        # TODO: Enable connectedAndroidTest
-        - ./gradlew build
+        - ./gradlew build assembleAndroidTest
+        - echo "y" | /tmp/google-cloud-sdk/bin/gcloud beta test android run --type instrumentation --app app/build/outputs/apk/app-debug.apk --test flexbox/build/outputs/apk/flexbox-debug-androidTest-unaligned.apk --device-ids hammerhead,flounder,condor_umts --os-version-ids 19,21,23 --locales en,ar_SS --orientations portrait,landscape --results-bucket ${GCLOUD_TEST_BUCKET_LIBRARY} --timeout 180s
+    post:
+        - /tmp/google-cloud-sdk/bin/gsutil -m cp -r -U `/tmp/google-cloud-sdk/bin/gsutil ls gs://${GCLOUD_TEST_BUCKET_LIBRARY} | tail -1` $CIRCLE_ARTIFACTS/ | true
