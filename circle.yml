@@ -13,26 +13,34 @@ dependencies:
         # PyOpenSSL is not available when trying to activate the service account.
         # Re-installing the gcloud worked as a workaround.
         # See https://discuss.circleci.com/t/deployment-to-appengine-fails-pyopenssl-not-available/2154
-        - sudo apt-get remove python-virtualenv python-openssl python3-openssl
-        - sudo apt-get update
-        - sudo apt-get install python-openssl python3-openssl
-        - sudo rm -rf /opt/google-cloud-sdk/
-        - curl https://sdk.cloud.google.com | bash
-        - source ~/.bashrc
+
+        # Suppress the gcloud installation if the PR is from a forked repository
+        # Because environment variables configures from the Circle CI UI are not
+        # visible for the PRs from forked repositories.
+        - >
+            if [ -n "$GCLOUD_SERVICE_KEY" ]; then sudo apt-get remove python-virtualenv python-openssl python3-openssl ;
+                sudo apt-get update;
+                sudo apt-get install python-openssl python3-openssl ;
+                sudo rm -rf /opt/google-cloud-sdk/ ;
+                curl https://sdk.cloud.google.com | bash ;
+                source ~/.bashrc ;
+            fi
     cache_directories:
         - ~/.android
     override:
         - ./gradlew dependencies
     post:
-        - echo ${GCLOUD_SERVICE_KEY} | base64 --decode > ${HOME}/client-secret.json
-        - /tmp/google-cloud-sdk/bin/gcloud config set project ${GCLOUD_PROJECT}
-        - /tmp/google-cloud-sdk/bin/gcloud --quiet components update
-        - /tmp/google-cloud-sdk/bin/gcloud --quiet components install beta
-        - /tmp/google-cloud-sdk/bin/gcloud auth activate-service-account ${GCLOUD_SERVICE_ACCOUNT} --key-file ${HOME}/client-secret.json
+        - >
+            if [ -n "$GCLOUD_SERVICE_KEY" ]; then echo ${GCLOUD_SERVICE_KEY} | base64 --decode > ${HOME}/client-secret.json ;
+                /tmp/google-cloud-sdk/bin/gcloud config set project ${GCLOUD_PROJECT} ;
+                /tmp/google-cloud-sdk/bin/gcloud --quiet components update ;
+                /tmp/google-cloud-sdk/bin/gcloud --quiet components install beta ;
+                /tmp/google-cloud-sdk/bin/gcloud auth activate-service-account ${GCLOUD_SERVICE_ACCOUNT} --key-file ${HOME}/client-secret.json ;
+            fi
 
 test:
     override:
         - ./gradlew build assembleAndroidTest
-        - echo "y" | /tmp/google-cloud-sdk/bin/gcloud beta test android run --type instrumentation --app app/build/outputs/apk/app-debug.apk --test flexbox/build/outputs/apk/flexbox-debug-androidTest-unaligned.apk --device-ids hammerhead,flounder,condor_umts --os-version-ids 19,21,23 --locales en,ar_SS --orientations portrait,landscape --results-bucket ${GCLOUD_TEST_BUCKET_LIBRARY} --timeout 180s
+        - if [ -n "$GCLOUD_SERVICE_KEY" ]; then echo "y" | /tmp/google-cloud-sdk/bin/gcloud beta test android run --type instrumentation --app app/build/outputs/apk/app-debug.apk --test flexbox/build/outputs/apk/flexbox-debug-androidTest-unaligned.apk --device-ids hammerhead,flounder,condor_umts --os-version-ids 19,21,23 --locales en,ar_SS --orientations portrait,landscape --results-bucket ${GCLOUD_TEST_BUCKET_LIBRARY} --timeout 180s ; fi
     post:
-        - /tmp/google-cloud-sdk/bin/gsutil -m cp -r -U `/tmp/google-cloud-sdk/bin/gsutil ls gs://${GCLOUD_TEST_BUCKET_LIBRARY} | tail -1` $CIRCLE_ARTIFACTS/ | true
+        - if [ -n "$GCLOUD_SERVICE_KEY" ]; then /tmp/google-cloud-sdk/bin/gsutil -m cp -r -U `/tmp/google-cloud-sdk/bin/gsutil ls gs://${GCLOUD_TEST_BUCKET_LIBRARY} | tail -1` $CIRCLE_ARTIFACTS/ | true ; fi
