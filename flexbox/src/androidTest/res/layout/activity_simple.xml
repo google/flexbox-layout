@@ -1,5 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
-<!--
+<?xml version="1.0" encoding="utf-8"?><!--
   Copyright 2016 Google Inc. All rights reserved.
 
   Licensed under the Apache License, Version 2.0 (the "License");
@@ -15,8 +14,7 @@
   limitations under the License.
   -->
 
-<com.google.android.flexbox.FlexboxLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<com.google.android.flexbox.FlexboxLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:id="@+id/flexbox_layout"
     android:layout_width="match_parent"
@@ -24,14 +22,12 @@
     app:flexDirection="row_reverse"
     app:justifyContent="center"
     app:alignContent="center"
-    app:alignItems="center"
-    >
+    app:alignItems="center">
 
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         app:layout_order="2"
         app:layout_flexGrow="1"
-        app:layout_alignSelf="stretch"
-        />
+        app:layout_alignSelf="stretch" />
 </com.google.android.flexbox.FlexboxLayout>

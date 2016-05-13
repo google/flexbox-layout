@@ -50,13 +50,19 @@ public class FlexItemEditFragment extends DialogFragment {
     private static final String FLEX_ITEM_KEY = "flex_item";
 
     private String ALIGN_SELF_AUTO;
+
     private String ALIGN_SELF_FLEX_START;
+
     private String ALIGN_SELF_FLEX_END;
+
     private String ALIGN_SELF_CENTER;
+
     private String ALIGN_SELF_BASELINE;
+
     private String ALIGN_SELF_STRETCH;
 
     private FlexItem mFlexItem;
+
     private FlexItemChangedListener mFlexItemChangedListener;
 
     public static FlexItemEditFragment newInstance(FlexItem flexItem) {
@@ -234,7 +240,9 @@ public class FlexItemEditFragment extends DialogFragment {
     private class FlexEditTextWatcher implements TextWatcher {
 
         TextInputLayout mTextInputLayout;
+
         InputValidator mInputValidator;
+
         int mErrorMessageId;
 
         FlexEditTextWatcher(TextInputLayout textInputLayout, InputValidator inputValidator,
@@ -305,6 +313,7 @@ public class FlexItemEditFragment extends DialogFragment {
      * A listener that listens to the change of a flex item
      */
     public interface FlexItemChangedListener {
+
         void onFlexItemChanged(FlexItem flexItem);
     }
 }

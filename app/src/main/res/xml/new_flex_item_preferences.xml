@@ -16,7 +16,7 @@ limitations under the License.
 <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
     <PreferenceCategory
         android:title="@string/new_flex_items_default"
-        android:key="@string/new_flex_items_default_key" >
+        android:key="@string/new_flex_items_default_key">
         <EditTextPreference
             android:key="@string/new_flex_item_order_key"
             android:title="@string/hint_order"

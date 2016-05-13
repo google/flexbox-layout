@@ -1,5 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
-<!--
+<?xml version="1.0" encoding="utf-8"?><!--
 Copyright 2016 Google Inc. All rights reserved.
 
 Licensed under the Apache License, Version 2.0 (the "License");
@@ -23,7 +22,7 @@ limitations under the License.
             <enum name="column_reverse" value="3" />
         </attr>
 
-        <attr name="flexWrap" >
+        <attr name="flexWrap">
             <enum name="nowrap" value="0" />
             <enum name="wrap" value="1" />
             <enum name="wrap_reverse" value="2" />
@@ -35,7 +34,7 @@ limitations under the License.
             want to use the flex-flow similar way to the web.
          -->
 
-        <attr name="justifyContent" >
+        <attr name="justifyContent">
             <enum name="flex_start" value="0" />
             <enum name="flex_end" value="1" />
             <enum name="center" value="2" />
@@ -43,7 +42,7 @@ limitations under the License.
             <enum name="space_around" value="4" />
         </attr>
 
-        <attr name="alignItems" >
+        <attr name="alignItems">
             <enum name="flex_start" value="0" />
             <enum name="flex_end" value="1" />
             <enum name="center" value="2" />
@@ -51,7 +50,7 @@ limitations under the License.
             <enum name="stretch" value="4" />
         </attr>
 
-        <attr name="alignContent" >
+        <attr name="alignContent">
             <enum name="flex_start" value="0" />
             <enum name="flex_end" value="1" />
             <enum name="center" value="2" />
@@ -91,7 +90,7 @@ limitations under the License.
             and layout_percentInParent (flex-basis in the original CSS spec).
         -->
 
-        <attr name="layout_alignSelf" >
+        <attr name="layout_alignSelf">
             <enum name="auto" value="-1" />
             <!-- The values below need to match the values of alignItems -->
             <enum name="flex_start" value="0" />

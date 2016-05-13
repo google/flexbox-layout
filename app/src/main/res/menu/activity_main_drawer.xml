@@ -1,5 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
-<!--
+<?xml version="1.0" encoding="utf-8"?><!--
 Copyright 2016 Google Inc. All rights reserved.
 
 Licensed under the Apache License, Version 2.0 (the "License");
@@ -15,33 +14,27 @@ See the License for the specific language governing permissions and
 limitations under the License.
 -->
 <menu xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    >
+    xmlns:app="http://schemas.android.com/apk/res-auto">
     <group android:checkableBehavior="none">
         <item
             android:id="@+id/menu_item_flex_direction"
             android:title="@string/flex_direction"
-            app:actionLayout="@layout/spinner_flex_direction"
-            />
+            app:actionLayout="@layout/spinner_flex_direction" />
         <item
             android:id="@+id/menu_item_flex_wrap"
             android:title="@string/flex_wrap"
-            app:actionLayout="@layout/spinner_flex_wrap"
-            />
+            app:actionLayout="@layout/spinner_flex_wrap" />
         <item
             android:id="@+id/menu_item_justify_content"
             android:title="@string/justify_content"
-            app:actionLayout="@layout/spinner_justify_content"
-            />
+            app:actionLayout="@layout/spinner_justify_content" />
         <item
             android:id="@+id/menu_item_align_items"
             android:title="@string/align_items"
-            app:actionLayout="@layout/spinner_align_items"
-            />
+            app:actionLayout="@layout/spinner_align_items" />
         <item
             android:id="@+id/menu_item_align_content"
             android:title="@string/align_content"
-            app:actionLayout="@layout/spinner_align_content"
-            />
+            app:actionLayout="@layout/spinner_align_content" />
     </group>
 </menu>

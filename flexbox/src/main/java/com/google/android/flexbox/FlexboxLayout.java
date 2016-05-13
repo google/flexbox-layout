@@ -42,21 +42,21 @@ import java.util.TreeSet;
  *
  * The supported attributes that you can use are:
  * <ul>
- *     <li>{@code flexDirection}</li>
- *     <li>{@code flexWrap}</li>
- *     <li>{@code justifyContent}</li>
- *     <li>{@code alignItems}</li>
- *     <li>{@code alignContent}</li>
+ * <li>{@code flexDirection}</li>
+ * <li>{@code flexWrap}</li>
+ * <li>{@code justifyContent}</li>
+ * <li>{@code alignItems}</li>
+ * <li>{@code alignContent}</li>
  * </ul>
  * for the FlexboxLayout.
  *
  * And for the children of the FlexboxLayout, you can use:
  * <ul>
- *     <li>{@code layout_order}</li>
- *     <li>{@code layout_flexGrow}</li>
- *     <li>{@code layout_flexShrink}</li>
- *     <li>{@code layout_flexBasisPercent}</li>
- *     <li>{@code layout_alignSelf}</li>
+ * <li>{@code layout_order}</li>
+ * <li>{@code layout_flexGrow}</li>
+ * <li>{@code layout_flexShrink}</li>
+ * <li>{@code layout_flexBasisPercent}</li>
+ * <li>{@code layout_alignSelf}</li>
  * </ul>
  */
 public class FlexboxLayout extends ViewGroup {
@@ -64,36 +64,42 @@ public class FlexboxLayout extends ViewGroup {
     @IntDef({FLEX_DIRECTION_ROW, FLEX_DIRECTION_ROW_REVERSE, FLEX_DIRECTION_COLUMN,
             FLEX_DIRECTION_COLUMN_REVERSE})
     @Retention(RetentionPolicy.SOURCE)
-    public @interface FlexDirection {}
+    public @interface FlexDirection {
+
+    }
+
     public static final int FLEX_DIRECTION_ROW = 0;
-    public static final int FLEX_DIRECTION_ROW_REVERSE  = 1;
+
+    public static final int FLEX_DIRECTION_ROW_REVERSE = 1;
+
     public static final int FLEX_DIRECTION_COLUMN = 2;
-    public static final int FLEX_DIRECTION_COLUMN_REVERSE  = 3;
+
+    public static final int FLEX_DIRECTION_COLUMN_REVERSE = 3;
 
     /**
      * The direction children items are placed inside the Flexbox layout, it determines the
      * direction of the main axis (and the cross axis, perpendicular to the main axis).
      * <ul>
-     *      <li>
-     *          {@link #FLEX_DIRECTION_ROW}: Main axis direction -> horizontal. Main start to
-     *          main end -> Left to right (in LTR languages).
-     *          Cross start to cross end -> Top to bottom
-     *      </li>
-     *      <li>
-     *          {@link #FLEX_DIRECTION_ROW_REVERSE}: Main axis direction -> horizontal. Main start
-     *          to main end -> Right to left (in LTR languages). Cross start to cross end ->
-     *          Top to bottom.
-     *      </li>
-     *      <li>
-     *          {@link #FLEX_DIRECTION_COLUMN}: Main axis direction -> vertical. Main start
-     *          to main end -> Top to bottom. Cross start to cross end ->
-     *          Left to right (In LTR languages).
-     *      </li>
-     *      <li>
-     *          {@link #FLEX_DIRECTION_COLUMN_REVERSE}: Main axis direction -> vertical. Main start
-     *          to main end -> Bottom to top. Cross start to cross end -> Left to right
-     *          (In LTR languages)
-     *      </li>
+     * <li>
+     * {@link #FLEX_DIRECTION_ROW}: Main axis direction -> horizontal. Main start to
+     * main end -> Left to right (in LTR languages).
+     * Cross start to cross end -> Top to bottom
+     * </li>
+     * <li>
+     * {@link #FLEX_DIRECTION_ROW_REVERSE}: Main axis direction -> horizontal. Main start
+     * to main end -> Right to left (in LTR languages). Cross start to cross end ->
+     * Top to bottom.
+     * </li>
+     * <li>
+     * {@link #FLEX_DIRECTION_COLUMN}: Main axis direction -> vertical. Main start
+     * to main end -> Top to bottom. Cross start to cross end ->
+     * Left to right (In LTR languages).
+     * </li>
+     * <li>
+     * {@link #FLEX_DIRECTION_COLUMN_REVERSE}: Main axis direction -> vertical. Main start
+     * to main end -> Bottom to top. Cross start to cross end -> Left to right
+     * (In LTR languages)
+     * </li>
      * </ul>
      * The default value is {@link #FLEX_DIRECTION_ROW}.
      */
@@ -102,19 +108,24 @@ public class FlexboxLayout extends ViewGroup {
 
     @IntDef({FLEX_WRAP_NOWRAP, FLEX_WRAP_WRAP, FLEX_WRAP_WRAP_REVERSE})
     @Retention(RetentionPolicy.SOURCE)
-    public @interface FlexWrap {}
+    public @interface FlexWrap {
+
+    }
+
     public static final int FLEX_WRAP_NOWRAP = 0;
-    public static final int FLEX_WRAP_WRAP  = 1;
+
+    public static final int FLEX_WRAP_WRAP = 1;
+
     public static final int FLEX_WRAP_WRAP_REVERSE = 2;
 
     /**
      * This attribute controls whether the flex container is single-line or multi-line, and the
      * direction of the cross axis.
      * <ul>
-     *     <li>{@link #FLEX_WRAP_NOWRAP}: The flex container is single-line.</li>
-     *     <li>{@link #FLEX_WRAP_WRAP}: The flex container is multi-line.</li>
-     *     <li>{@link #FLEX_WRAP_WRAP_REVERSE}: The flex container is multi-line. The direction of the
-     *     cross axis is opposed to the direction as the {@link #FLEX_WRAP_WRAP}</li>
+     * <li>{@link #FLEX_WRAP_NOWRAP}: The flex container is single-line.</li>
+     * <li>{@link #FLEX_WRAP_WRAP}: The flex container is multi-line.</li>
+     * <li>{@link #FLEX_WRAP_WRAP_REVERSE}: The flex container is multi-line. The direction of the
+     * cross axis is opposed to the direction as the {@link #FLEX_WRAP_WRAP}</li>
      * </ul>
      * The default value is {@link #FLEX_WRAP_NOWRAP}.
      */
@@ -124,11 +135,18 @@ public class FlexboxLayout extends ViewGroup {
     @IntDef({JUSTIFY_CONTENT_FLEX_START, JUSTIFY_CONTENT_FLEX_END, JUSTIFY_CONTENT_CENTER,
             JUSTIFY_CONTENT_SPACE_BETWEEN, JUSTIFY_CONTENT_SPACE_AROUND})
     @Retention(RetentionPolicy.SOURCE)
-    public @interface JustifyContent {}
+    public @interface JustifyContent {
+
+    }
+
     public static final int JUSTIFY_CONTENT_FLEX_START = 0;
+
     public static final int JUSTIFY_CONTENT_FLEX_END = 1;
+
     public static final int JUSTIFY_CONTENT_CENTER = 2;
+
     public static final int JUSTIFY_CONTENT_SPACE_BETWEEN = 3;
+
     public static final int JUSTIFY_CONTENT_SPACE_AROUND = 4;
 
     /**
@@ -141,11 +159,18 @@ public class FlexboxLayout extends ViewGroup {
     @IntDef({ALIGN_ITEMS_FLEX_START, ALIGN_ITEMS_FLEX_END, ALIGN_ITEMS_CENTER,
             ALIGN_ITEMS_BASELINE, ALIGN_ITEMS_STRETCH})
     @Retention(RetentionPolicy.SOURCE)
-    public @interface AlignItems {}
+    public @interface AlignItems {
+
+    }
+
     public static final int ALIGN_ITEMS_FLEX_START = 0;
+
     public static final int ALIGN_ITEMS_FLEX_END = 1;
+
     public static final int ALIGN_ITEMS_CENTER = 2;
+
     public static final int ALIGN_ITEMS_BASELINE = 3;
+
     public static final int ALIGN_ITEMS_STRETCH = 4;
 
     /**
@@ -158,12 +183,20 @@ public class FlexboxLayout extends ViewGroup {
     @IntDef({ALIGN_CONTENT_FLEX_START, ALIGN_CONTENT_FLEX_END, ALIGN_CONTENT_CENTER,
             ALIGN_CONTENT_SPACE_BETWEEN, ALIGN_CONTENT_SPACE_AROUND, ALIGN_CONTENT_STRETCH})
     @Retention(RetentionPolicy.SOURCE)
-    public @interface AlignContent {}
+    public @interface AlignContent {
+
+    }
+
     public static final int ALIGN_CONTENT_FLEX_START = 0;
+
     public static final int ALIGN_CONTENT_FLEX_END = 1;
+
     public static final int ALIGN_CONTENT_CENTER = 2;
+
     public static final int ALIGN_CONTENT_SPACE_BETWEEN = 3;
+
     public static final int ALIGN_CONTENT_SPACE_AROUND = 4;
+
     public static final int ALIGN_CONTENT_STRETCH = 5;
 
     /**
@@ -228,8 +261,8 @@ public class FlexboxLayout extends ViewGroup {
      *
      * @param index the index of the view
      * @return the reordered view, which {@link LayoutParams@order} is taken into account.
-     *         If the index is negative or out of bounds of the number of contained views,
-     *         returns {@code null}.
+     * If the index is negative or out of bounds of the number of contained views,
+     * returns {@code null}.
      */
     public View getReorderedChildAt(int index) {
         if (index < 0 || index >= mReorderedIndices.length) {
@@ -269,9 +302,8 @@ public class FlexboxLayout extends ViewGroup {
      * Sub method for {@link #onMeasure(int, int)}, when the main axis direction is horizontal
      * (either left to right or right to left).
      *
-     * @param widthMeasureSpec horizontal space requirements as imposed by the parent
+     * @param widthMeasureSpec  horizontal space requirements as imposed by the parent
      * @param heightMeasureSpec vertical space requirements as imposed by the parent
-     *
      * @see #onMeasure(int, int)
      * @see #setFlexDirection(int)
      * @see #setFlexWrap(int)
@@ -413,9 +445,8 @@ public class FlexboxLayout extends ViewGroup {
      * Sub method for {@link #onMeasure(int, int)} when the main axis direction is vertical
      * (either from top to bottom or bottom to top).
      *
-     * @param widthMeasureSpec horizontal space requirements as imposed by the parent
+     * @param widthMeasureSpec  horizontal space requirements as imposed by the parent
      * @param heightMeasureSpec vertical space requirements as imposed by the parent
-     *
      * @see #onMeasure(int, int)
      * @see #setFlexDirection(int)
      * @see #setFlexWrap(int)
@@ -516,10 +547,9 @@ public class FlexboxLayout extends ViewGroup {
      * an individual child in each flex line if any children's flexGrow (or flexShrink if remaining
      * space is negative) properties are set to non-zero.
      *
-     * @param flexDirection the value of the flex direction
-     * @param widthMeasureSpec horizontal space requirements as imposed by the parent
+     * @param flexDirection     the value of the flex direction
+     * @param widthMeasureSpec  horizontal space requirements as imposed by the parent
      * @param heightMeasureSpec vertical space requirements as imposed by the parent
-     *
      * @see #setFlexDirection(int)
      * @see #getFlexDirection()
      */
@@ -569,15 +599,15 @@ public class FlexboxLayout extends ViewGroup {
     /**
      * Expand the flex items along the main axis based on the individual flexGrow attribute.
      *
-     * @param flexLine the flex line to which flex items belong
-     * @param flexDirection the flexDirection value for this FlexboxLayout
-     * @param maxMainSize the maximum main size. Expanded main size will be this size
+     * @param flexLine             the flex line to which flex items belong
+     * @param flexDirection        the flexDirection value for this FlexboxLayout
+     * @param maxMainSize          the maximum main size. Expanded main size will be this size
      * @param paddingAlongMainAxis the padding value along the main axis
-     * @param startIndex the start index of the children views to be expanded. This index needs to
-     *                   be an absolute index in the flex container (FlexboxLayout),
-     *                   not the relative index in the flex line.
+     * @param startIndex           the start index of the children views to be expanded. This index
+     *                             needs to
+     *                             be an absolute index in the flex container (FlexboxLayout),
+     *                             not the relative index in the flex line.
      * @return the next index, the next flex line's first flex item starts from the returned index
-     *
      * @see #getFlexDirection()
      * @see #setFlexDirection(int)
      * @see LayoutParams#flexGrow
@@ -649,15 +679,15 @@ public class FlexboxLayout extends ViewGroup {
     /**
      * Shrink the flex items along the main axis based on the individual flexShrink attribute.
      *
-     * @param flexLine the flex line to which flex items belong
-     * @param flexDirection the flexDirection value for this FlexboxLayout
-     * @param maxMainSize the maximum main size. Shrank main size will be this size
+     * @param flexLine             the flex line to which flex items belong
+     * @param flexDirection        the flexDirection value for this FlexboxLayout
+     * @param maxMainSize          the maximum main size. Shrank main size will be this size
      * @param paddingAlongMainAxis the padding value along the main axis
-     * @param startIndex the start index of the children views to be shrank. This index needs to
-     *                   be an absolute index in the flex container (FlexboxLayout),
-     *                   not the relative index in the flex line.
+     * @param startIndex           the start index of the children views to be shrank. This index
+     *                             needs to
+     *                             be an absolute index in the flex container (FlexboxLayout),
+     *                             not the relative index in the flex line.
      * @return the next index, the next flex line's first flex item starts from the returned index
-     *
      * @see #getFlexDirection()
      * @see #setFlexDirection(int)
      * @see LayoutParams#flexShrink
@@ -678,7 +708,7 @@ public class FlexboxLayout extends ViewGroup {
             View child = getReorderedChildAt(childIndex);
             if (child == null) {
                 continue;
-            } else if(child.getVisibility() == View.GONE) {
+            } else if (child.getVisibility() == View.GONE) {
                 childIndex++;
                 continue;
             }
@@ -724,7 +754,7 @@ public class FlexboxLayout extends ViewGroup {
                 if (newHeight < 0) {
                     // Need to invoke this method again like the case flex direction is vertical
                     needsReshrink = true;
-                    newHeight  = 0;
+                    newHeight = 0;
                 } else {
                     accumulatedRoundError += (rawCalculatedHeight - newHeight);
                     if (accumulatedRoundError > 1.0) {
@@ -756,16 +786,16 @@ public class FlexboxLayout extends ViewGroup {
      * Expand the cross size only if the height mode is MeasureSpec.EXACTLY, otherwise
      * use the sum of cross sizes of all flex lines.
      *
-     * @param flexDirection the flex direction attribute
-     * @param widthMeasureSpec horizontal space requirements as imposed by the parent
+     * @param flexDirection     the flex direction attribute
+     * @param widthMeasureSpec  horizontal space requirements as imposed by the parent
      * @param heightMeasureSpec vertical space requirements as imposed by the parent
-     *
      * @see #getFlexDirection()
      * @see #setFlexDirection(int)
      * @see #getAlignContent()
      * @see #setAlignContent(int)
      */
-    private void determineCrossSize(int flexDirection, int widthMeasureSpec, int heightMeasureSpec) {
+    private void determineCrossSize(int flexDirection, int widthMeasureSpec,
+            int heightMeasureSpec) {
         // The MeasureSpec mode along the cross axis
         int mode;
         // The MeasureSpec size along the cross axis
@@ -905,8 +935,7 @@ public class FlexboxLayout extends ViewGroup {
      * or {@link LayoutParams#ALIGN_SELF_STRETCH} is set to an individual child view.
      *
      * @param flexDirection the flex direction attribute
-     * @param alignItems the align items attribute
-     *
+     * @param alignItems    the align items attribute
      * @see #getFlexDirection()
      * @see #setFlexDirection(int)
      * @see #getAlignItems()
@@ -963,7 +992,8 @@ public class FlexboxLayout extends ViewGroup {
 
     /**
      * Expand the view vertically to the size of the crossSize (considering the view margins)
-     * @param view the View to be stretched
+     *
+     * @param view      the View to be stretched
      * @param crossSize the cross size
      */
     private void stretchViewVertically(View view, int crossSize) {
@@ -977,7 +1007,8 @@ public class FlexboxLayout extends ViewGroup {
 
     /**
      * Expand the view horizontally to the size of the crossSize (considering the view margins)
-     * @param view the View to be stretched
+     *
+     * @param view      the View to be stretched
      * @param crossSize the cross size
      */
     private void stretchViewHorizontally(View view, int crossSize) {
@@ -993,11 +1024,10 @@ public class FlexboxLayout extends ViewGroup {
      * Set this FlexboxLayouts' width and height depending on the calculated size of main axis and
      * cross axis.
      *
-     * @param flexDirection the value of the flex direction
-     * @param widthMeasureSpec horizontal space requirements as imposed by the parent
+     * @param flexDirection     the value of the flex direction
+     * @param widthMeasureSpec  horizontal space requirements as imposed by the parent
      * @param heightMeasureSpec vertical space requirements as imposed by the parent
-     * @param childState the child state of the View
-     *
+     * @param childState        the child state of the View
      * @see #getFlexDirection()
      * @see #setFlexDirection(int)
      */
@@ -1086,13 +1116,12 @@ public class FlexboxLayout extends ViewGroup {
     /**
      * Determine if a wrap is required (add a new flex line).
      *
-     * @param flexWrap the flexWrap attribute
-     * @param mode the width or height mode along the main axis direction
-     * @param maxSize the max size along the main axis direction
+     * @param flexWrap      the flexWrap attribute
+     * @param mode          the width or height mode along the main axis direction
+     * @param maxSize       the max size along the main axis direction
      * @param currentLength the accumulated current length
-     * @param childLength the length of a child view which is to be collected to the flex line
+     * @param childLength   the length of a child view which is to be collected to the flex line
      * @return {@code true} if a wrap is required, {@code false} otherwise
-     *
      * @see #getFlexWrap()
      * @see #setFlexWrap(int)
      */
@@ -1166,13 +1195,12 @@ public class FlexboxLayout extends ViewGroup {
      * {@link #mFlexDirection} is either {@link #FLEX_DIRECTION_ROW} or
      * {@link #FLEX_DIRECTION_ROW_REVERSE}.
      *
-     * @param isRtl {@code true} if the horizontal layout direction is right to left, {@code false}
-     *              otherwise.
-     * @param left the left position of this View
-     * @param top the top position of this View
-     * @param right the right position of this View
+     * @param isRtl  {@code true} if the horizontal layout direction is right to left, {@code
+     *               false} otherwise.
+     * @param left   the left position of this View
+     * @param top    the top position of this View
+     * @param right  the right position of this View
      * @param bottom the bottom position of this View
-     *
      * @see #getFlexWrap()
      * @see #setFlexWrap(int)
      * @see #getJustifyContent()
@@ -1283,20 +1311,20 @@ public class FlexboxLayout extends ViewGroup {
      * Place a single View when the layout direction is horizontal ({@link #mFlexDirection} is
      * either {@link #FLEX_DIRECTION_ROW} or {@link #FLEX_DIRECTION_ROW_REVERSE}).
      *
-     * @param view the View to be placed
-     * @param flexLine the {@link FlexLine} where the View belongs to
-     * @param flexWrap the flex wrap attribute of this FlexboxLayout
+     * @param view       the View to be placed
+     * @param flexLine   the {@link FlexLine} where the View belongs to
+     * @param flexWrap   the flex wrap attribute of this FlexboxLayout
      * @param alignItems the align items attribute of this FlexboxLayout
-     * @param left the left position of the View, which the View's margin is already taken into
-     *             account
-     * @param top the top position of the flex line where the View belongs to. The actual View's
-     *            top position is shifted depending on the flexWrap and alignItems attributes
-     * @param right the right position of the View, which the View's margin is already taken into
-     *              account
-     * @param bottom the bottom position of the flex line where the View belongs to. The actual
-     *               View's bottom position is shifted depending on the flexWrap and alignItems
-     *               attributes
-     *
+     * @param left       the left position of the View, which the View's margin is already taken
+     *                   into account
+     * @param top        the top position of the flex line where the View belongs to. The actual
+     *                   View's top position is shifted depending on the flexWrap and alignItems
+     *                   attributes
+     * @param right      the right position of the View, which the View's margin is already taken
+     *                   into account
+     * @param bottom     the bottom position of the flex line where the View belongs to. The actual
+     *                   View's bottom position is shifted depending on the flexWrap and alignItems
+     *                   attributes
      * @see #getAlignItems()
      * @see #setAlignItems(int)
      * @see LayoutParams#alignSelf
@@ -1363,15 +1391,15 @@ public class FlexboxLayout extends ViewGroup {
      * {@link #mFlexDirection} is either {@link #FLEX_DIRECTION_COLUMN} or
      * {@link #FLEX_DIRECTION_COLUMN_REVERSE}.
      *
-     * @param isRtl {@code true} if the horizontal layout direction is right to left, {@code false}
-     *              otherwise
+     * @param isRtl           {@code true} if the horizontal layout direction is right to left,
+     *                        {@code false}
+     *                        otherwise
      * @param fromBottomToTop {@code true} if the layout direction is bottom to top, {@code false}
      *                        otherwise
-     * @param left the left position of this View
-     * @param top the top position of this View
-     * @param right the right position of this View
-     * @param bottom the bottom position of this View
-     *
+     * @param left            the left position of this View
+     * @param top             the top position of this View
+     * @param right           the right position of this View
+     * @param bottom          the bottom position of this View
      * @see #getFlexWrap()
      * @see #setFlexWrap(int)
      * @see #getJustifyContent()
@@ -1465,7 +1493,8 @@ public class FlexboxLayout extends ViewGroup {
                                 childLeft + child.getMeasuredWidth(), Math.round(childBottom));
                     } else {
                         layoutSingleChildVertical(child, flexLine, false, mAlignItems,
-                                childLeft, Math.round(childTop), childLeft + child.getMeasuredWidth(),
+                                childLeft, Math.round(childTop),
+                                childLeft + child.getMeasuredWidth(),
                                 Math.round(childTop) + child.getMeasuredHeight());
                     }
                 }
@@ -1482,19 +1511,21 @@ public class FlexboxLayout extends ViewGroup {
      * Place a single View when the layout direction is vertical ({@link #mFlexDirection} is
      * either {@link #FLEX_DIRECTION_COLUMN} or {@link #FLEX_DIRECTION_COLUMN_REVERSE}).
      *
-     * @param view the View to be placed
-     * @param flexLine the {@link FlexLine} where the View belongs to
-     * @param isRtl {@code true} if the layout direction is right to left, {@code false} otherwise
+     * @param view       the View to be placed
+     * @param flexLine   the {@link FlexLine} where the View belongs to
+     * @param isRtl      {@code true} if the layout direction is right to left, {@code false}
+     *                   otherwise
      * @param alignItems the align items attribute of this FlexboxLayout
-     * @param left the left position of the flex line where the View belongs to. The actual View's
-     *             left position is shifted depending on the isRtl and alignItems attributes
-     * @param top the top position of the View, which the View's margin is already taken into
-     *            account
-     * @param right the right position of the flex line where the View belongs to. The actual View's
-     *              right position is shifted depending on the isRtl and alignItems attributes
-     * @param bottom the bottom position of the View, which the View's margin is already taken into
-     *               account
-     *
+     * @param left       the left position of the flex line where the View belongs to. The actual
+     *                   View's left position is shifted depending on the isRtl and alignItems
+     *                   attributes
+     * @param top        the top position of the View, which the View's margin is already taken
+     *                   into account
+     * @param right      the right position of the flex line where the View belongs to. The actual
+     *                   View's right position is shifted depending on the isRtl and alignItems
+     *                   attributes
+     * @param bottom     the bottom position of the View, which the View's margin is already taken
+     *                   into account
      * @see #getAlignItems()
      * @see #setAlignItems(int)
      * @see LayoutParams#alignSelf
@@ -1627,15 +1658,23 @@ public class FlexboxLayout extends ViewGroup {
     public static class LayoutParams extends ViewGroup.MarginLayoutParams {
 
         private static final int ORDER_DEFAULT = 1;
+
         private static final float FLEX_GROW_DEFAULT = 0f;
+
         private static final float FLEX_SHRINK_DEFAULT = 1f;
+
         public static final float FLEX_BASIS_PERCENT_DEFAULT = -1f;
 
         public static final int ALIGN_SELF_AUTO = -1;
+
         public static final int ALIGN_SELF_FLEX_START = ALIGN_ITEMS_FLEX_START;
+
         public static final int ALIGN_SELF_FLEX_END = ALIGN_ITEMS_FLEX_END;
+
         public static final int ALIGN_SELF_CENTER = ALIGN_ITEMS_CENTER;
+
         public static final int ALIGN_SELF_BASELINE = ALIGN_ITEMS_BASELINE;
+
         public static final int ALIGN_SELF_STRETCH = ALIGN_ITEMS_STRETCH;
 
         /**
@@ -1665,8 +1704,8 @@ public class FlexboxLayout extends ViewGroup {
          * {@link #mAlignItems} in the parent, but if this is set to other than
          * {@link #ALIGN_SELF_AUTO}, the cross axis alignment is overridden for this child.
          * The value needs to be one of the values in ({@link #ALIGN_SELF_AUTO},
-         * {@link #ALIGN_SELF_STRETCH}, {@link #ALIGN_SELF_FLEX_START}, {@link #ALIGN_SELF_FLEX_END}
-         * , {@link #ALIGN_SELF_CENTER}, or {@link #ALIGN_SELF_BASELINE}).
+         * {@link #ALIGN_SELF_STRETCH}, {@link #ALIGN_SELF_FLEX_START}, {@link
+         * #ALIGN_SELF_FLEX_END}, {@link #ALIGN_SELF_CENTER}, or {@link #ALIGN_SELF_BASELINE}).
          * If not specified, {@link #ALIGN_SELF_AUTO} is set as a default value.
          */
         public int alignSelf = ALIGN_SELF_AUTO;
@@ -1711,12 +1750,14 @@ public class FlexboxLayout extends ViewGroup {
     }
 
     /**
-     * A class that is used for calculating the view order which view's indices and order properties
-     * from Flexbox are taken into account.
+     * A class that is used for calculating the view order which view's indices and order
+     * properties from Flexbox are taken into account.
      */
     private static class Order implements Comparable<Order> {
+
         /** {@link View}'s index */
         int index;
+
         /** order property in the Flexbox */
         int order;
 

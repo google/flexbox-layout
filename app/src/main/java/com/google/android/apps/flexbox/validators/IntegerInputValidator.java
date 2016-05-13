@@ -22,6 +22,7 @@ import android.text.TextUtils;
  * Validator for the integers.
  */
 public class IntegerInputValidator implements InputValidator {
+
     @Override
     public boolean isValidInput(CharSequence charSequence) {
         if (TextUtils.isEmpty(charSequence)) {

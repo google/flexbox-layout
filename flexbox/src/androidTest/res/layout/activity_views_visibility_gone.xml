@@ -1,5 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
-<!--
+<?xml version="1.0" encoding="utf-8"?><!--
   Copyright 2016 Google Inc. All rights reserved.
 
   Licensed under the Apache License, Version 2.0 (the "License");
@@ -14,50 +13,43 @@
   See the License for the specific language governing permissions and
   limitations under the License.
   -->
-<com.google.android.flexbox.FlexboxLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<com.google.android.flexbox.FlexboxLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:id="@+id/flexbox_layout"
     android:layout_width="360dp"
     android:layout_height="300dp"
     app:flexDirection="row"
-    app:flexWrap="wrap"
-    >
+    app:flexWrap="wrap">
 
     <TextView
         android:id="@+id/text1"
         android:layout_width="160dp"
         android:layout_height="120dp"
         android:text="1"
-        android:visibility="gone"
-        />
+        android:visibility="gone" />
 
     <TextView
         android:id="@+id/text2"
         android:layout_width="160dp"
         android:layout_height="120dp"
         android:text="2"
-        android:visibility="gone"
-        />
+        android:visibility="gone" />
 
     <TextView
         android:id="@+id/text3"
         android:layout_width="160dp"
         android:layout_height="120dp"
-        android:text="3"
-        />
+        android:text="3" />
 
     <TextView
         android:id="@+id/text4"
         android:layout_width="160dp"
         android:layout_height="120dp"
-        android:text="4"
-        />
+        android:text="4" />
 
     <TextView
         android:id="@+id/text5"
         android:layout_width="160dp"
         android:layout_height="120dp"
-        android:text="5"
-        />
+        android:text="5" />
 </com.google.android.flexbox.FlexboxLayout>
