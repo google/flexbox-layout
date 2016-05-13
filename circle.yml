@@ -15,7 +15,7 @@ dependencies:
         # See https://discuss.circleci.com/t/deployment-to-appengine-fails-pyopenssl-not-available/2154
 
         # Suppress the gcloud installation if the PR is from a forked repository
-        # Because environment variables configures from the Circle CI UI are not
+        # Because environment variables configured from the Circle CI UI are not
         # visible for the PRs from forked repositories.
         - >
             if [ -n "$GCLOUD_SERVICE_KEY" ]; then sudo apt-get remove python-virtualenv python-openssl python3-openssl ;
