@@ -17,6 +17,22 @@
 package com.google.android.flexbox.test;
 
 
+import com.google.android.flexbox.FlexboxLayout;
+
+import org.junit.Rule;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+
+import android.content.Context;
+import android.support.test.InstrumentationRegistry;
+import android.support.test.filters.MediumTest;
+import android.support.test.rule.ActivityTestRule;
+import android.support.test.runner.AndroidJUnit4;
+import android.test.FlakyTest;
+import android.view.View;
+import android.view.ViewGroup;
+import android.widget.TextView;
+
 import static android.support.test.espresso.Espresso.onView;
 import static android.support.test.espresso.assertion.PositionAssertions.isAbove;
 import static android.support.test.espresso.assertion.PositionAssertions.isBelow;
@@ -32,22 +48,6 @@ import static org.hamcrest.core.Is.is;
 import static org.hamcrest.core.IsNot.not;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertThat;
-
-import com.google.android.flexbox.FlexboxLayout;
-
-import android.content.Context;
-import android.support.test.InstrumentationRegistry;
-import android.support.test.filters.MediumTest;
-import android.support.test.rule.ActivityTestRule;
-import android.support.test.runner.AndroidJUnit4;
-import android.test.FlakyTest;
-import android.view.View;
-import android.view.ViewGroup;
-import android.widget.TextView;
-
-import org.junit.Rule;
-import org.junit.Test;
-import org.junit.runner.RunWith;
 
 /**
  * Integration tests for {@link FlexboxLayout}.
@@ -528,7 +528,7 @@ public class FlexboxAndroidTest {
         int space = flexboxLayout.getWidth() - textView1.getWidth() - textView2.getWidth() -
                 textView3.getWidth();
         space = space / 2;
-        assertTrue(space -1 <= textView1.getLeft() && textView1.getLeft() <= space + 1);
+        assertTrue(space - 1 <= textView1.getLeft() && textView1.getLeft() <= space + 1);
         assertTrue(space - 1 <= flexboxLayout.getRight() - textView3.getRight()
                 && flexboxLayout.getRight() - textView3.getRight() <= space + 1);
     }
@@ -1189,7 +1189,7 @@ public class FlexboxAndroidTest {
                 flexboxLayout.setAlignContent(FlexboxLayout.ALIGN_CONTENT_SPACE_AROUND);
             }
         });
-        FlexboxLayout flexboxLayout = (FlexboxLayout) activity .findViewById(R.id.flexbox_layout);
+        FlexboxLayout flexboxLayout = (FlexboxLayout) activity.findViewById(R.id.flexbox_layout);
 
         assertThat(flexboxLayout.getAlignContent(), is(FlexboxLayout.ALIGN_CONTENT_SPACE_AROUND));
         onView(withId(R.id.text1)).check(isLeftAlignedWith(withId(R.id.flexbox_layout)));
@@ -1412,7 +1412,7 @@ public class FlexboxAndroidTest {
                 flexboxLayout.setFlexDirection(FlexboxLayout.FLEX_DIRECTION_COLUMN);
             }
         });
-        FlexboxLayout flexboxLayout = (FlexboxLayout) activity .findViewById(R.id.flexbox_layout);
+        FlexboxLayout flexboxLayout = (FlexboxLayout) activity.findViewById(R.id.flexbox_layout);
 
         assertThat(flexboxLayout.getAlignContent(), is(FlexboxLayout.ALIGN_CONTENT_SPACE_AROUND));
         assertThat(flexboxLayout.getFlexDirection(), is(FlexboxLayout.FLEX_DIRECTION_COLUMN));

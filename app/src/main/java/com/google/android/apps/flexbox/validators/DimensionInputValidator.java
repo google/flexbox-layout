@@ -22,6 +22,7 @@ import android.text.TextUtils;
  * Validator for dimension values.
  */
 public class DimensionInputValidator implements InputValidator {
+
     @Override
     public boolean isValidInput(CharSequence charSequence) {
         // -1 represents match_parent, -2 represents wrap_content

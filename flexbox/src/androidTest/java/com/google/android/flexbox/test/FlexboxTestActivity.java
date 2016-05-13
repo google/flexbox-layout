@@ -24,4 +24,5 @@ import android.app.Activity;
  * Activity for testing the {@link FlexboxLayout}.
  */
 public class FlexboxTestActivity extends Activity {
+
 }

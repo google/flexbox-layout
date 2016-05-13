@@ -22,6 +22,7 @@ import android.text.TextUtils;
  * Validator for non negative integers.
  */
 public class NonNegativeDecimalInputValidator implements InputValidator {
+
     @Override
     public boolean isValidInput(CharSequence charSequence) {
         try {

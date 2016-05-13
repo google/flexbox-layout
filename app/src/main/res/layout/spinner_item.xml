@@ -1,5 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
-<!--
+<?xml version="1.0" encoding="utf-8"?><!--
 Copyright 2016 Google Inc. All rights reserved.
 
 Licensed under the Apache License, Version 2.0 (the "License");
@@ -25,5 +24,4 @@ limitations under the License.
     android:paddingStart="@dimen/margin_tiny"
     android:paddingLeft="@dimen/margin_tiny"
     android:paddingEnd="@dimen/margin_tiny"
-    android:paddingRight="@dimen/margin_tiny"
-    />
+    android:paddingRight="@dimen/margin_tiny" />

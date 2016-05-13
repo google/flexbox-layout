@@ -45,26 +45,43 @@ public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
 
     private static final String FLEX_ITEMS_KEY = "flex_items";
+
     private static final String EDIT_DIALOG_TAG = "edit_dialog_tag";
+
     private static final String DEFAULT_WIDTH = "120";
+
     private static final String DEFAULT_HEIGHT = "80";
 
     private String ROW;
+
     private String COLUMN;
+
     private String ROW_REVERSE;
+
     private String COLUMN_REVERSE;
+
     private String NOWRAP;
+
     private String WRAP;
+
     private String WRAP_REVERSE;
+
     private String FLEX_START;
+
     private String FLEX_END;
+
     private String CENTER;
+
     private String BASELINE;
+
     private String STRETCH;
+
     private String SPACE_BETWEEN;
+
     private String SPACE_AROUND;
 
     private FlexboxLayout mFlexboxLayout;
+
     private SharedPreferences mSharedPreferences;
 
     @Override
@@ -524,6 +541,7 @@ public class MainActivity extends AppCompatActivity
      * Converter for converting an int value for Flexbox properties to a String.
      */
     private interface ValueToStringConverter {
+
         String asString(int value);
     }
 }
