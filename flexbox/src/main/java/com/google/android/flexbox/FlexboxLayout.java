@@ -57,6 +57,8 @@ import java.util.TreeSet;
  * <li>{@code layout_flexShrink}</li>
  * <li>{@code layout_flexBasisPercent}</li>
  * <li>{@code layout_alignSelf}</li>
+ * <li>{@code layout_minWidth}</li>
+ * <li>{@code layout_minHeight}</li>
  * </ul>
  */
 public class FlexboxLayout extends ViewGroup {
@@ -212,6 +214,13 @@ public class FlexboxLayout extends ViewGroup {
 
     private List<FlexLine> mFlexLines = new ArrayList<>();
 
+    /**
+     * Holds the 'frozen' state of children during measure. If a view is frozen it will no longer
+     * expand or shrink regardless of flexGrow/flexShrink. Items are indexed by the child's 
+     * reordered index.
+     */
+    private boolean[] mFrozenChildren;
+
     public FlexboxLayout(Context context) {
         this(context, null);
     }
@@ -238,6 +247,7 @@ public class FlexboxLayout extends ViewGroup {
     protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
         super.onMeasure(widthMeasureSpec, heightMeasureSpec);
         mReorderedIndices = createReorderedIndices();
+        mFrozenChildren = new boolean[getChildCount()];
         // TODO: Only calculate the children views which are affected from the last measure.
 
         switch (mFlexDirection) {
@@ -614,64 +624,91 @@ public class FlexboxLayout extends ViewGroup {
      */
     private int expandFlexItems(FlexLine flexLine, @FlexDirection int flexDirection,
             int maxMainSize, int paddingAlongMainAxis, int startIndex) {
+        int childIndex = startIndex;
+        int sizeBeforeExpand = flexLine.mainSize;
         if (flexLine.totalFlexGrow <= 0 || maxMainSize < flexLine.mainSize) {
-            startIndex += flexLine.itemCount;
-            return startIndex;
+            childIndex += flexLine.itemCount;
+            return childIndex;
         }
+        boolean needsReshrink = false;
         float unitSpace = (maxMainSize - flexLine.mainSize) / flexLine.totalFlexGrow;
         flexLine.mainSize = paddingAlongMainAxis;
         float accumulatedRoundError = 0;
         for (int i = 0; i < flexLine.itemCount; i++) {
-            View child = getReorderedChildAt(startIndex);
+            View child = getReorderedChildAt(childIndex);
             if (child == null) {
                 continue;
             } else if (child.getVisibility() == View.GONE) {
-                startIndex++;
+                childIndex++;
                 continue;
             }
             LayoutParams lp = (LayoutParams) child.getLayoutParams();
             if (flexDirection == FLEX_DIRECTION_ROW
                     || flexDirection == FLEX_DIRECTION_ROW_REVERSE) {
-                float rawCalculatedWidth = child.getMeasuredWidth() + unitSpace * lp.flexGrow;
-                if (i == flexLine.itemCount - 1) {
-                    rawCalculatedWidth += accumulatedRoundError;
-                    accumulatedRoundError = 0;
+                if (!mFrozenChildren[childIndex]) {
+                    float rawCalculatedWidth = child.getMeasuredWidth() + unitSpace * lp.flexGrow;
+                    if (i == flexLine.itemCount - 1) {
+                        rawCalculatedWidth += accumulatedRoundError;
+                        accumulatedRoundError = 0;
+                    }
+                    int newWidth = Math.round(rawCalculatedWidth);
+                    if (newWidth < lp.minWidth) {
+                        needsReshrink = true;
+                        newWidth = lp.minWidth;
+                        mFrozenChildren[childIndex] = true;
+                        flexLine.totalFlexShrink -= lp.flexShrink;
+                    } else {
+                        accumulatedRoundError += (rawCalculatedWidth - newWidth);
+                        if (accumulatedRoundError > 1.0) {
+                            newWidth += 1;
+                            accumulatedRoundError -= 1.0;
+                        } else if (accumulatedRoundError < -1.0) {
+                            newWidth -= 1;
+                            accumulatedRoundError += 1.0;
+                        }
+                    }
+                    child.measure(MeasureSpec.makeMeasureSpec(newWidth, MeasureSpec.EXACTLY),
+                            MeasureSpec
+                                    .makeMeasureSpec(child.getMeasuredHeight(),
+                                            MeasureSpec.EXACTLY));
                 }
-                int newWidth = Math.round(rawCalculatedWidth);
-                accumulatedRoundError += (rawCalculatedWidth - newWidth);
-                if (accumulatedRoundError > 1.0) {
-                    newWidth += 1;
-                    accumulatedRoundError -= 1.0;
-                } else if (accumulatedRoundError < -1.0) {
-                    newWidth -= 1;
-                    accumulatedRoundError += 1.0;
-                }
-                child.measure(MeasureSpec.makeMeasureSpec(newWidth, MeasureSpec.EXACTLY),
-                        MeasureSpec
-                                .makeMeasureSpec(child.getMeasuredHeight(),
-                                        MeasureSpec.EXACTLY));
                 flexLine.mainSize += child.getMeasuredWidth() + lp.leftMargin + lp.rightMargin;
             } else {
-                float rawCalculatedHeight = child.getMeasuredHeight() + unitSpace * lp.flexGrow;
-                if (i == flexLine.itemCount - 1) {
-                    rawCalculatedHeight += accumulatedRoundError;
-                    accumulatedRoundError = 0;
+                if (!mFrozenChildren[childIndex]) {
+                    float rawCalculatedHeight = child.getMeasuredHeight() + unitSpace * lp.flexGrow;
+                    if (i == flexLine.itemCount - 1) {
+                        rawCalculatedHeight += accumulatedRoundError;
+                        accumulatedRoundError = 0;
+                    }
+                    int newHeight = Math.round(rawCalculatedHeight);
+                    if (newHeight < lp.minHeight) {
+                        needsReshrink = true;
+                        newHeight = lp.minHeight;
+                        mFrozenChildren[childIndex] = true;
+                        flexLine.totalFlexShrink -= lp.flexShrink;
+                    } else {
+                        accumulatedRoundError += (rawCalculatedHeight - newHeight);
+                        if (accumulatedRoundError > 1.0) {
+                            newHeight += 1;
+                            accumulatedRoundError -= 1.0;
+                        } else if (accumulatedRoundError < -1.0) {
+                            newHeight -= 1;
+                            accumulatedRoundError += 1.0;
+                        }
+                    }
+                    child.measure(MeasureSpec.makeMeasureSpec(child.getMeasuredWidth(),
+                            MeasureSpec.EXACTLY),
+                            MeasureSpec.makeMeasureSpec(newHeight, MeasureSpec.EXACTLY));
                 }
-                int newHeight = Math.round(rawCalculatedHeight);
-                accumulatedRoundError += (rawCalculatedHeight - newHeight);
-                if (accumulatedRoundError > 1.0) {
-                    newHeight += 1;
-                    accumulatedRoundError -= 1.0;
-                } else if (accumulatedRoundError < -1.0) {
-                    newHeight -= 1;
-                    accumulatedRoundError += 1.0;
-                }
-                child.measure(MeasureSpec.makeMeasureSpec(child.getMeasuredWidth(),
-                        MeasureSpec.EXACTLY),
-                        MeasureSpec.makeMeasureSpec(newHeight, MeasureSpec.EXACTLY));
                 flexLine.mainSize += child.getMeasuredHeight() + lp.topMargin + lp.bottomMargin;
             }
-            startIndex++;
+            childIndex++;
+        }
+
+        if (needsReshrink && sizeBeforeExpand != flexLine.mainSize) {
+            // After expanding we may have negative free space if some of the items were clamped to
+            // a min size.
+            shrinkFlexItems(flexLine, flexDirection, maxMainSize, paddingAlongMainAxis, startIndex);
         }
         return startIndex;
     }
@@ -715,59 +752,67 @@ public class FlexboxLayout extends ViewGroup {
             LayoutParams lp = (LayoutParams) child.getLayoutParams();
             if (flexDirection == FLEX_DIRECTION_ROW
                     || flexDirection == FLEX_DIRECTION_ROW_REVERSE) {
-                float rawCalculatedWidth = child.getMeasuredWidth() - unitShrink * lp.flexShrink;
-                if (i == flexLine.itemCount - 1) {
-                    rawCalculatedWidth += accumulatedRoundError;
-                    accumulatedRoundError = 0;
-                }
-                int newWidth = Math.round(rawCalculatedWidth);
-                if (newWidth < 0) {
-                    // This means the child doesn't have enough space to distribute the negative
-                    // free space. To adjust the flex line length down to the maxMainSize, remaining
-                    // negative free space needs to be re-distributed to other flex items
-                    // (children views). In that case, invoke this method again with the same
-                    // startIndex.
-                    needsReshrink = true;
-                    newWidth = 0;
-                } else {
-                    accumulatedRoundError += (rawCalculatedWidth - newWidth);
-                    if (accumulatedRoundError > 1.0) {
-                        newWidth += 1;
-                        accumulatedRoundError -= 1;
-                    } else if (accumulatedRoundError < -1.0) {
-                        newWidth -= 1;
-                        accumulatedRoundError += 1;
+                if (!mFrozenChildren[childIndex]) {
+                    float rawCalculatedWidth = child.getMeasuredWidth() - unitShrink * lp.flexShrink;
+                    if (i == flexLine.itemCount - 1) {
+                        rawCalculatedWidth += accumulatedRoundError;
+                        accumulatedRoundError = 0;
                     }
+                    int newWidth = Math.round(rawCalculatedWidth);
+                    if (newWidth < lp.minWidth) {
+                        // This means the child doesn't have enough space to distribute the negative
+                        // free space. To adjust the flex line length down to the maxMainSize, remaining
+                        // negative free space needs to be re-distributed to other flex items
+                        // (children views). In that case, invoke this method again with the same
+                        // startIndex.
+                        needsReshrink = true;
+                        newWidth = lp.minWidth;
+                        mFrozenChildren[childIndex] = true;
+                        flexLine.totalFlexShrink -= lp.flexShrink;
+                    } else {
+                        accumulatedRoundError += (rawCalculatedWidth - newWidth);
+                        if (accumulatedRoundError > 1.0) {
+                            newWidth += 1;
+                            accumulatedRoundError -= 1;
+                        } else if (accumulatedRoundError < -1.0) {
+                            newWidth -= 1;
+                            accumulatedRoundError += 1;
+                        }
+                    }
+                    child.measure(MeasureSpec.makeMeasureSpec(newWidth, MeasureSpec.EXACTLY),
+                            MeasureSpec
+                                    .makeMeasureSpec(child.getMeasuredHeight(),
+                                            MeasureSpec.EXACTLY));
                 }
-                child.measure(MeasureSpec.makeMeasureSpec(newWidth, MeasureSpec.EXACTLY),
-                        MeasureSpec
-                                .makeMeasureSpec(child.getMeasuredHeight(),
-                                        MeasureSpec.EXACTLY));
                 flexLine.mainSize += child.getMeasuredWidth() + lp.leftMargin + lp.rightMargin;
             } else {
-                float rawCalculatedHeight = child.getMeasuredHeight() - unitShrink * lp.flexShrink;
-                if (i == flexLine.itemCount - 1) {
-                    rawCalculatedHeight += accumulatedRoundError;
-                    accumulatedRoundError = 0;
-                }
-                int newHeight = Math.round(rawCalculatedHeight);
-                if (newHeight < 0) {
-                    // Need to invoke this method again like the case flex direction is vertical
-                    needsReshrink = true;
-                    newHeight = 0;
-                } else {
-                    accumulatedRoundError += (rawCalculatedHeight - newHeight);
-                    if (accumulatedRoundError > 1.0) {
-                        newHeight += 1;
-                        accumulatedRoundError -= 1;
-                    } else if (accumulatedRoundError < -1.0) {
-                        newHeight -= 1;
-                        accumulatedRoundError += 1;
+                if (!mFrozenChildren[childIndex]) {
+                    float rawCalculatedHeight = child.getMeasuredHeight() - unitShrink * lp.flexShrink;
+                    if (i == flexLine.itemCount - 1) {
+                        rawCalculatedHeight += accumulatedRoundError;
+                        accumulatedRoundError = 0;
                     }
+                    int newHeight = Math.round(rawCalculatedHeight);
+                    if (newHeight < lp.minHeight) {
+                        // Need to invoke this method again like the case flex direction is vertical
+                        needsReshrink = true;
+                        newHeight = lp.minHeight;
+                        mFrozenChildren[childIndex] = true;
+                        flexLine.totalFlexShrink -= lp.flexShrink;
+                    } else {
+                        accumulatedRoundError += (rawCalculatedHeight - newHeight);
+                        if (accumulatedRoundError > 1.0) {
+                            newHeight += 1;
+                            accumulatedRoundError -= 1;
+                        } else if (accumulatedRoundError < -1.0) {
+                            newHeight -= 1;
+                            accumulatedRoundError += 1;
+                        }
+                    }
+                    child.measure(MeasureSpec.makeMeasureSpec(child.getMeasuredWidth(),
+                            MeasureSpec.EXACTLY),
+                            MeasureSpec.makeMeasureSpec(newHeight, MeasureSpec.EXACTLY));
                 }
-                child.measure(MeasureSpec.makeMeasureSpec(child.getMeasuredWidth(),
-                        MeasureSpec.EXACTLY),
-                        MeasureSpec.makeMeasureSpec(newHeight, MeasureSpec.EXACTLY));
                 flexLine.mainSize += child.getMeasuredHeight() + lp.topMargin + lp.bottomMargin;
             }
             childIndex++;
@@ -1722,6 +1767,16 @@ public class FlexboxLayout extends ViewGroup {
          */
         public float flexBasisPercent = FLEX_BASIS_PERCENT_DEFAULT;
 
+        /**
+         * This attribute determines the minimum width the child can shrink to.
+         */
+        public int minWidth;
+
+        /**
+         * This attribute determines the minimum height the child can shrink to.
+         */
+        public int minHeight;
+
         public LayoutParams(Context context, AttributeSet attrs) {
             super(context, attrs);
 
@@ -1737,6 +1792,9 @@ public class FlexboxLayout extends ViewGroup {
             flexBasisPercent = a
                     .getFraction(R.styleable.FlexboxLayout_Layout_layout_flexBasisPercent, 1, 1,
                             FLEX_BASIS_PERCENT_DEFAULT);
+            minWidth = a.getDimensionPixelSize(R.styleable.FlexboxLayout_Layout_layout_minWidth, 0);
+            minHeight = a
+                    .getDimensionPixelSize(R.styleable.FlexboxLayout_Layout_layout_minHeight, 0);
             a.recycle();
         }
 

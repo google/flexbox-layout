@@ -19,12 +19,16 @@ package com.google.android.flexbox.test;
 
 import com.google.android.flexbox.FlexboxLayout;
 
+import org.hamcrest.Description;
+import org.hamcrest.TypeSafeMatcher;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import android.content.Context;
 import android.support.test.InstrumentationRegistry;
+import android.support.test.espresso.ViewAssertion;
+import android.support.test.espresso.assertion.ViewAssertions;
 import android.support.test.filters.MediumTest;
 import android.support.test.rule.ActivityTestRule;
 import android.support.test.runner.AndroidJUnit4;
@@ -2217,6 +2221,44 @@ public class FlexboxAndroidTest {
 
     @Test
     @FlakyTest(tolerance = TOLERANCE)
+    public void testMinWidth() throws Throwable {
+        final FlexboxTestActivity activity = mActivityRule.getActivity();
+        mActivityRule.runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                activity.setContentView(R.layout.activity_minwidth_test);
+            }
+        });
+
+        FlexboxLayout flexboxLayout = (FlexboxLayout) activity.findViewById(R.id.flexbox_layout);
+        TextView textView1 = (TextView) activity.findViewById(R.id.text1);
+        int minWidth = ((FlexboxLayout.LayoutParams) textView1.getLayoutParams()).minWidth;
+
+        onView(withId(R.id.text1)).check(hasWidth(minWidth));
+        onView(withId(R.id.text2)).check(hasWidth(flexboxLayout.getWidth() - minWidth));
+    }
+
+    @Test
+    @FlakyTest(tolerance = TOLERANCE)
+    public void testMinHeight() throws Throwable {
+        final FlexboxTestActivity activity = mActivityRule.getActivity();
+        mActivityRule.runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                activity.setContentView(R.layout.activity_minheight_test);
+            }
+        });
+
+        FlexboxLayout flexboxLayout = (FlexboxLayout) activity.findViewById(R.id.flexbox_layout);
+        TextView textView1 = (TextView) activity.findViewById(R.id.text1);
+        int minHeight = ((FlexboxLayout.LayoutParams) textView1.getLayoutParams()).minHeight;
+
+        onView(withId(R.id.text1)).check(hasHeight(minHeight));
+        onView(withId(R.id.text2)).check(hasHeight(flexboxLayout.getHeight() - minHeight));
+    }
+
+    @Test
+    @FlakyTest(tolerance = TOLERANCE)
     public void testView_visibility_gone() throws Throwable {
         final FlexboxTestActivity activity = mActivityRule.getActivity();
         mActivityRule.runOnUiThread(new Runnable() {
@@ -2286,5 +2328,43 @@ public class FlexboxAndroidTest {
         lp.order = order;
         textView.setLayoutParams(lp);
         return textView;
+    }
+
+    private ViewAssertion hasWidth(final int width) {
+        return ViewAssertions.matches(new TypeSafeMatcher<View>() {
+            @Override
+            public void describeTo(Description description) {
+                description.appendText("expected width: " + width);
+            }
+
+            @Override
+            protected void describeMismatchSafely(View item, Description mismatchDescription) {
+                mismatchDescription.appendText("actual width: " + item.getWidth());
+            }
+
+            @Override
+            protected boolean matchesSafely(View item) {
+                return item.getWidth() == width;
+            }
+        });
+    }
+
+    private ViewAssertion hasHeight(final int height) {
+        return ViewAssertions.matches(new TypeSafeMatcher<View>() {
+            @Override
+            public void describeTo(Description description) {
+                description.appendText("expected height: " + height);
+            }
+
+            @Override
+            protected void describeMismatchSafely(View item, Description mismatchDescription) {
+                mismatchDescription.appendText("actual height: " + item.getHeight());
+            }
+
+            @Override
+            protected boolean matchesSafely(View item) {
+                return item.getHeight() == height;
+            }
+        });
     }
 }
