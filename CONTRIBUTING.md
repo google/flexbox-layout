@@ -33,3 +33,15 @@ accept your pull requests.
 1. Ensure that your code has an appropriate set of unit tests which all pass.
 1. Submit a pull request.
 
+## Code Style
+
+This repository follows the official Android code style.
+When you send a patch, please try to follow that.
+Here are the example steps to follow:
+
+1. Save the [AndroidStyle.xml](https://android.googlesource.com/platform/development.git/+/master/ide/intellij/codestyles/AndroidStyle.xml) file to the directory where your code style files are in (e.g. ~/Library/Preferences/AndroidStudio2.1/codestyles)
+1. Restart the Android Studio
+1. Navigate to Android Studio > Preferences
+1. Navigate to Code Style > Java
+1. Select the name of the imported code style ('AndroidStyle' if you saved it as AndroidStyle.xml) from the Scheme drop down
+1. Click OK
