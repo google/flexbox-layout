@@ -3,6 +3,7 @@ machine:
         CLOUDSDK_CORE_DISABLE_PROMPTS: 1
         CLOUDSDK_PYTHON_SITEPACKAGES: 1
         CLOUDSDK_INSTALL_DIR: /tmp
+        MAX_RETRY: 4
     java:
         version: oraclejdk8
 
@@ -41,6 +42,16 @@ dependencies:
 test:
     override:
         - ./gradlew build assembleAndroidTest
-        - if [ -n "$GCLOUD_SERVICE_KEY" ]; then echo "y" | /tmp/google-cloud-sdk/bin/gcloud beta test android run --type instrumentation --app app/build/outputs/apk/app-debug.apk --test flexbox/build/outputs/apk/flexbox-debug-androidTest-unaligned.apk --device-ids hammerhead,flounder,condor_umts --os-version-ids 19,21,23 --locales en,ar_SS --orientations portrait,landscape --results-bucket ${GCLOUD_TEST_BUCKET_LIBRARY} --timeout 180s ; fi
+        - >
+            if [ -n "$GCLOUD_SERVICE_KEY" ]; then set +e ;
+                counter=0 ;
+                result=1 ;
+                while [ $result != 0 -a $counter -lt $MAX_RETRY ]; do
+                    /tmp/google-cloud-sdk/bin/gcloud beta test android run --type instrumentation --app app/build/outputs/apk/app-debug.apk --test flexbox/build/outputs/apk/flexbox-debug-androidTest-unaligned.apk --device-ids hammerhead,flounder,condor_umts --os-version-ids 19,21,23 --locales en --orientations portrait,landscape --results-bucket ${GCLOUD_TEST_BUCKET_LIBRARY} --timeout 180s ;
+                    result=$? ;
+                    let counter=counter+1 ;
+                done
+                exit $result ;
+            fi
     post:
         - if [ -n "$GCLOUD_SERVICE_KEY" ]; then /tmp/google-cloud-sdk/bin/gsutil -m cp -r -U `/tmp/google-cloud-sdk/bin/gsutil ls gs://${GCLOUD_TEST_BUCKET_LIBRARY} | tail -1` $CIRCLE_ARTIFACTS/ | true ; fi
