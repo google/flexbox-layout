@@ -480,6 +480,29 @@ public class FlexboxAndroidTest {
 
     @Test
     @FlakyTest(tolerance = TOLERANCE)
+    public void testJustifyContent_flexStart_withParentPadding() throws Throwable {
+        final FlexboxTestActivity activity = mActivityRule.getActivity();
+        mActivityRule.runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                activity.setContentView(R.layout.activity_justify_content_with_parent_padding);
+            }
+        });
+        FlexboxLayout flexboxLayout = (FlexboxLayout) activity.findViewById(R.id.flexbox_layout);
+
+        assertThat(flexboxLayout.getJustifyContent(), is(FlexboxLayout.JUSTIFY_CONTENT_FLEX_START));
+        onView(withId(R.id.text2)).check(isRightOf(withId(R.id.text1)));
+        onView(withId(R.id.text3)).check(isRightOf(withId(R.id.text2)));
+        TextView text1 = (TextView) activity.findViewById(R.id.text1);
+        // Both the parent FrameLayout and the FlexboxLayout have different padding values
+        // but the text1.getLeft should be the padding value for the FlexboxLayout, not including
+        // the parent's padding value
+        assertThat(text1.getLeft(), is(flexboxLayout.getPaddingLeft()));
+        assertThat(text1.getTop(), is(flexboxLayout.getPaddingTop()));
+    }
+
+    @Test
+    @FlakyTest(tolerance = TOLERANCE)
     public void testJustifyContent_flexEnd() throws Throwable {
         final FlexboxTestActivity activity = mActivityRule.getActivity();
         mActivityRule.runOnUiThread(new Runnable() {
@@ -498,6 +521,32 @@ public class FlexboxAndroidTest {
         onView(withId(R.id.text3)).check(isRightAlignedWith(withId(R.id.flexbox_layout)));
         onView(withId(R.id.text2)).check(isLeftOf(withId(R.id.text3)));
         onView(withId(R.id.text1)).check(isLeftOf(withId(R.id.text2)));
+    }
+
+    @Test
+    @FlakyTest(tolerance = TOLERANCE)
+    public void testJustifyContent_flexEnd_withParentPadding() throws Throwable {
+        final FlexboxTestActivity activity = mActivityRule.getActivity();
+        mActivityRule.runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                activity.setContentView(R.layout.activity_justify_content_with_parent_padding);
+                FlexboxLayout flexboxLayout = (FlexboxLayout) activity
+                        .findViewById(R.id.flexbox_layout);
+                flexboxLayout.setJustifyContent(FlexboxLayout.JUSTIFY_CONTENT_FLEX_END);
+            }
+        });
+        FlexboxLayout flexboxLayout = (FlexboxLayout) activity.findViewById(R.id.flexbox_layout);
+
+        assertThat(flexboxLayout.getJustifyContent(), is(FlexboxLayout.JUSTIFY_CONTENT_FLEX_END));
+        onView(withId(R.id.text2)).check(isLeftOf(withId(R.id.text3)));
+        onView(withId(R.id.text1)).check(isLeftOf(withId(R.id.text2)));
+        TextView text3 = (TextView) activity.findViewById(R.id.text3);
+        // Both the parent FrameLayout and the FlexboxLayout have different padding values
+        // but the text3.getRight should be the padding value for the FlexboxLayout, not including
+        // the parent's padding value
+        assertThat(flexboxLayout.getWidth() - text3.getRight(), is(flexboxLayout.getPaddingRight()));
+        assertThat(text3.getTop(), is(flexboxLayout.getPaddingTop()));
     }
 
     @Test
@@ -531,6 +580,39 @@ public class FlexboxAndroidTest {
         assertTrue(space - 1 <= textView1.getLeft() && textView1.getLeft() <= space + 1);
         assertTrue(space - 1 <= flexboxLayout.getRight() - textView3.getRight()
                 && flexboxLayout.getRight() - textView3.getRight() <= space + 1);
+    }
+
+    @Test
+    @FlakyTest(tolerance = TOLERANCE)
+    public void testJustifyContent_center_withParentPadding() throws Throwable {
+        final FlexboxTestActivity activity = mActivityRule.getActivity();
+        mActivityRule.runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                activity.setContentView(R.layout.activity_justify_content_with_parent_padding);
+                FlexboxLayout flexboxLayout = (FlexboxLayout) activity
+                        .findViewById(R.id.flexbox_layout);
+                flexboxLayout.setJustifyContent(FlexboxLayout.JUSTIFY_CONTENT_CENTER);
+            }
+        });
+        FlexboxLayout flexboxLayout = (FlexboxLayout) activity.findViewById(R.id.flexbox_layout);
+        assertThat(flexboxLayout.getJustifyContent(), is(FlexboxLayout.JUSTIFY_CONTENT_CENTER));
+        onView(withId(R.id.text2)).check(isRightOf(withId(R.id.text1)));
+        onView(withId(R.id.text3)).check(isRightOf(withId(R.id.text2)));
+
+        TextView textView1 = (TextView) activity.findViewById(R.id.text1);
+        TextView textView2 = (TextView) activity.findViewById(R.id.text2);
+        TextView textView3 = (TextView) activity.findViewById(R.id.text3);
+        int space = flexboxLayout.getWidth() - textView1.getWidth() - textView2.getWidth() -
+                textView3.getWidth() - flexboxLayout.getPaddingLeft() -
+                flexboxLayout.getPaddingRight();
+        space = space / 2;
+        assertTrue(space - 1 <= textView1.getLeft() - flexboxLayout.getPaddingLeft()
+                && textView1.getLeft() - flexboxLayout.getPaddingLeft() <= space + 1);
+        assertTrue(space - 1 <= flexboxLayout.getWidth() - textView3.getRight()
+                - flexboxLayout.getPaddingRight()
+                && flexboxLayout.getWidth() - textView3.getRight() - flexboxLayout.getPaddingRight()
+                <= space + 1);
     }
 
     @Test
