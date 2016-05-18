@@ -1218,6 +1218,7 @@ public class FlexboxLayout extends ViewGroup {
         int currentViewIndex = 0;
 
         int height = bottom - top;
+        int width = right - left;
         // childBottom is used if the mFlexWrap is FLEX_WRAP_WRAP_REVERSE otherwise
         // childTop is used to align the vertical position of the children views.
         int childBottom = height - getPaddingBottom();
@@ -1231,31 +1232,29 @@ public class FlexboxLayout extends ViewGroup {
             float spaceBetweenItem = 0f;
             switch (mJustifyContent) {
                 case JUSTIFY_CONTENT_FLEX_START:
-                    childLeft = left + paddingLeft;
-                    childRight = right - paddingRight;
+                    childLeft = paddingLeft;
+                    childRight = width - paddingRight;
                     break;
                 case JUSTIFY_CONTENT_FLEX_END:
-                    childLeft = right - paddingRight - flexLine.mainSize;
-                    childRight = left + paddingLeft + flexLine.mainSize;
+                    childLeft = width - flexLine.mainSize + paddingRight;
+                    childRight = flexLine.mainSize - paddingLeft;
                     break;
                 case JUSTIFY_CONTENT_CENTER:
-                    childLeft = paddingLeft + (right - left - flexLine.mainSize) / 2f;
-                    childRight = right - paddingRight - (right - left - flexLine.mainSize) / 2f;
+                    childLeft = paddingLeft + (width - flexLine.mainSize) / 2f;
+                    childRight = width - paddingRight - (width - flexLine.mainSize) / 2f;
                     break;
                 case JUSTIFY_CONTENT_SPACE_AROUND:
                     if (flexLine.itemCount != 0) {
-                        spaceBetweenItem = (right - left - flexLine.mainSize)
-                                / (float) flexLine.itemCount;
+                        spaceBetweenItem = (width - flexLine.mainSize) / (float) flexLine.itemCount;
                     }
-                    childLeft = left + paddingLeft + spaceBetweenItem / 2f;
-                    childRight = right - paddingRight - spaceBetweenItem / 2f;
+                    childLeft = paddingLeft + spaceBetweenItem / 2f;
+                    childRight = width - paddingRight - spaceBetweenItem / 2f;
                     break;
                 case JUSTIFY_CONTENT_SPACE_BETWEEN:
-                    childLeft = left + paddingLeft;
+                    childLeft = paddingLeft;
                     float denominator = flexLine.itemCount != 1 ? flexLine.itemCount - 1 : 1f;
-                    spaceBetweenItem =
-                            (right - left - flexLine.mainSize) / denominator;
-                    childRight = right - paddingRight;
+                    spaceBetweenItem = (width - flexLine.mainSize) / denominator;
+                    childRight = width - paddingRight;
                     break;
                 default:
                     throw new IllegalStateException(
@@ -1437,8 +1436,8 @@ public class FlexboxLayout extends ViewGroup {
                     childBottom = height - paddingBottom;
                     break;
                 case JUSTIFY_CONTENT_FLEX_END:
-                    childTop = height - paddingBottom - flexLine.mainSize;
-                    childBottom = paddingTop + flexLine.mainSize;
+                    childTop = height - flexLine.mainSize + paddingBottom;
+                    childBottom = flexLine.mainSize - paddingTop;
                     break;
                 case JUSTIFY_CONTENT_CENTER:
                     childTop = paddingTop + (height - flexLine.mainSize) / 2f;
