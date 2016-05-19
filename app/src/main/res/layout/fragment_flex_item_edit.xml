@@ -21,8 +21,8 @@ limitations under the License.
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="vertical"
-        android:paddingStart="@dimen/activity_horizontal_margin"
-        android:paddingEnd="@dimen/activity_horizontal_margin">
+        android:paddingEnd="@dimen/activity_horizontal_margin"
+        android:paddingStart="@dimen/activity_horizontal_margin">
 
         <android.support.design.widget.TextInputLayout
             android:id="@+id/input_layout_order"
@@ -33,10 +33,10 @@ limitations under the License.
                 android:id="@+id/edit_text_order"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:lines="1"
-                android:singleLine="true"
+                android:hint="@string/hint_order"
                 android:inputType="numberSigned"
-                android:hint="@string/hint_order" />
+                android:lines="1"
+                android:singleLine="true" />
         </android.support.design.widget.TextInputLayout>
 
         <android.support.design.widget.TextInputLayout
@@ -48,10 +48,10 @@ limitations under the License.
                 android:id="@+id/edit_text_flex_grow"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:lines="1"
-                android:singleLine="true"
+                android:hint="@string/hint_flex_grow"
                 android:inputType="numberDecimal"
-                android:hint="@string/hint_flex_grow" />
+                android:lines="1"
+                android:singleLine="true" />
         </android.support.design.widget.TextInputLayout>
 
         <android.support.design.widget.TextInputLayout
@@ -63,10 +63,10 @@ limitations under the License.
                 android:id="@+id/edit_text_flex_shrink"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:lines="1"
-                android:singleLine="true"
+                android:hint="@string/hint_flex_shrink"
                 android:inputType="numberDecimal"
-                android:hint="@string/hint_flex_shrink" />
+                android:lines="1"
+                android:singleLine="true" />
         </android.support.design.widget.TextInputLayout>
 
         <android.support.design.widget.TextInputLayout
@@ -78,10 +78,10 @@ limitations under the License.
                 android:id="@+id/edit_text_flex_basis_percent"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:lines="1"
-                android:singleLine="true"
+                android:hint="@string/hint_flex_basis_percent"
                 android:inputType="numberSigned"
-                android:hint="@string/hint_flex_basis_percent" />
+                android:lines="1"
+                android:singleLine="true" />
         </android.support.design.widget.TextInputLayout>
 
         <android.support.design.widget.TextInputLayout
@@ -93,10 +93,10 @@ limitations under the License.
                 android:id="@+id/edit_text_width"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:lines="1"
-                android:singleLine="true"
+                android:hint="@string/hint_width"
                 android:inputType="numberSigned"
-                android:hint="@string/hint_width" />
+                android:lines="1"
+                android:singleLine="true" />
         </android.support.design.widget.TextInputLayout>
 
         <android.support.design.widget.TextInputLayout
@@ -108,10 +108,10 @@ limitations under the License.
                 android:id="@+id/edit_text_height"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:lines="1"
-                android:singleLine="true"
+                android:hint="@string/hint_height"
                 android:inputType="numberSigned"
-                android:hint="@string/hint_height" />
+                android:lines="1"
+                android:singleLine="true" />
         </android.support.design.widget.TextInputLayout>
 
         <LinearLayout
@@ -122,17 +122,17 @@ limitations under the License.
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:paddingStart="@dimen/margin_tiny"
-                android:paddingLeft="@dimen/margin_tiny"
                 android:paddingEnd="@dimen/margin_tiny"
+                android:paddingLeft="@dimen/margin_tiny"
                 android:paddingRight="@dimen/margin_tiny"
+                android:paddingStart="@dimen/margin_tiny"
                 android:text="@string/hint_align_self" />
 
             <Spinner
                 android:id="@+id/spinner_align_self"
                 android:layout_width="0dp"
-                android:layout_weight="1"
                 android:layout_height="wrap_content"
+                android:layout_weight="1"
                 android:gravity="end" />
         </LinearLayout>
 
@@ -140,11 +140,10 @@ limitations under the License.
             android:id="@+id/button_panel"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            android:paddingTop="@dimen/margin_small"
-            android:paddingBottom="@dimen/margin_small"
             android:gravity="bottom"
-            style="?android:attr/buttonBarStyle">
+            android:orientation="horizontal"
+            android:paddingBottom="@dimen/margin_small"
+            android:paddingTop="@dimen/margin_small">
 
             <View
                 android:id="@+id/spacer"
@@ -155,14 +154,14 @@ limitations under the License.
 
             <Button
                 android:id="@+id/button_cancel"
-                style="?android:attr/buttonBarStyle"
+                style="@style/DialogButton"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="@string/cancel" />
 
             <Button
                 android:id="@+id/button_ok"
-                style="?android:attr/buttonBarStyle"
+                style="@style/DialogButton"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="@string/ok" />
