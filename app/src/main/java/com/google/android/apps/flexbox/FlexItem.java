@@ -64,6 +64,10 @@ public class FlexItem implements Parcelable {
 
     public float flexBasisPercent;
 
+    public int minWidth;
+
+    public int minHeight;
+
     public FlexItem() {
     }
 
@@ -90,6 +94,8 @@ public class FlexItem implements Parcelable {
         dest.writeFloat(this.flexShrink);
         dest.writeInt(this.alignSelf);
         dest.writeFloat(this.flexBasisPercent);
+        dest.writeInt(this.minWidth);
+        dest.writeInt(this.minHeight);
     }
 
     protected FlexItem(Parcel in) {
@@ -109,6 +115,8 @@ public class FlexItem implements Parcelable {
         this.flexShrink = in.readFloat();
         this.alignSelf = in.readInt();
         this.flexBasisPercent = in.readFloat();
+        this.minWidth = in.readInt();
+        this.minHeight = in.readInt();
     }
 
     public FlexboxLayout.LayoutParams toLayoutParams(Context context) {
@@ -124,6 +132,8 @@ public class FlexItem implements Parcelable {
         MarginLayoutParamsCompat.setMarginStart(lp, startMargin);
         MarginLayoutParamsCompat.setMarginEnd(lp, endMargin);
         lp.bottomMargin = bottomMargin;
+        lp.minWidth = minWidth;
+        lp.minHeight = minHeight;
         return lp;
     }
 
@@ -146,6 +156,8 @@ public class FlexItem implements Parcelable {
         flexItem.paddingStart = ViewCompat.getPaddingStart(view);
         flexItem.paddingEnd = ViewCompat.getPaddingEnd(view);
         flexItem.paddingBottom = view.getPaddingBottom();
+        flexItem.minWidth = lp.minWidth;
+        flexItem.minHeight = lp.minHeight;
         return flexItem;
     }
 
