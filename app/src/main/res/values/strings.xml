@@ -100,8 +100,11 @@ limitations under the License.
     <string name="hint_align_self">Align Self</string>
     <string name="hint_width">Width (-1: match_parent, -2: wrap_content)</string>
     <string name="hint_height">Height (-1: match_parent, -2: wrap_content)</string>
+    <string name="hint_min_width">Min Width</string>
+    <string name="hint_min_height">Min Height</string>
 
     <string name="must_be_non_negative_float">Must be a non-negative float value</string>
+    <string name="must_be_non_negative_integer">Must a non-negative integer value</string>
     <string name="must_be_minus_one_or_minus_two_or_non_negative_integer">Must be -1 or -2 or a non-negative integer value</string>
     <string name="must_be_integer">Must be an integer value</string>
     <string name="must_be_minus_one_or_non_negative_integer">Must be -1 or a non-negative integer value</string>
