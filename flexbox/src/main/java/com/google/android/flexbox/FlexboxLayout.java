@@ -359,7 +359,8 @@ public class FlexboxLayout extends ViewGroup {
                         getPaddingTop() + getPaddingBottom() + lp.topMargin
                                 + lp.bottomMargin, lp.height);
                 child.measure(childWidthMeasureSpec, childHeightMeasureSpec);
-                childState = combineMeasuredStates(childState, child.getMeasuredState());
+                childState = ViewCompat
+                        .combineMeasuredStates(childState, ViewCompat.getMeasuredState(child));
                 largestHeightInRow = Math.max(largestHeightInRow,
                         child.getMeasuredHeight() + lp.topMargin + lp.bottomMargin);
 
@@ -501,7 +502,8 @@ public class FlexboxLayout extends ViewGroup {
                     getPaddingTop() + getPaddingBottom() + lp.topMargin
                             + lp.bottomMargin, childHeight);
             child.measure(childWidthMeasureSpec, childHeightMeasureSpec);
-            childState = combineMeasuredStates(childState, child.getMeasuredState());
+            childState = ViewCompat
+                    .combineMeasuredStates(childState, ViewCompat.getMeasuredState(child));
             largestWidthInColumn = Math.max(largestWidthInColumn,
                     child.getMeasuredWidth() + lp.leftMargin + lp.rightMargin);
 
@@ -1058,24 +1060,26 @@ public class FlexboxLayout extends ViewGroup {
         switch (widthMode) {
             case MeasureSpec.EXACTLY:
                 if (widthSize < calculatedMaxWidth) {
-                    childState = combineMeasuredStates(childState, MEASURED_STATE_TOO_SMALL);
+                    childState = ViewCompat
+                            .combineMeasuredStates(childState, ViewCompat.MEASURED_STATE_TOO_SMALL);
                 }
-                widthSizeAndState = resolveSizeAndState(widthSize, widthMeasureSpec,
+                widthSizeAndState = ViewCompat.resolveSizeAndState(widthSize, widthMeasureSpec,
                         childState);
                 break;
             case MeasureSpec.AT_MOST: {
                 if (widthSize < calculatedMaxWidth) {
-                    childState = combineMeasuredStates(childState, MEASURED_STATE_TOO_SMALL);
+                    childState = ViewCompat
+                            .combineMeasuredStates(childState, ViewCompat.MEASURED_STATE_TOO_SMALL);
                 } else {
                     widthSize = calculatedMaxWidth;
                 }
-                widthSizeAndState = resolveSizeAndState(widthSize, widthMeasureSpec,
+                widthSizeAndState = ViewCompat.resolveSizeAndState(widthSize, widthMeasureSpec,
                         childState);
                 break;
             }
             case MeasureSpec.UNSPECIFIED: {
-                widthSizeAndState = resolveSizeAndState(calculatedMaxWidth, widthMeasureSpec,
-                        childState);
+                widthSizeAndState = ViewCompat
+                        .resolveSizeAndState(calculatedMaxWidth, widthMeasureSpec, childState);
                 break;
             }
             default:
@@ -1085,25 +1089,27 @@ public class FlexboxLayout extends ViewGroup {
         switch (heightMode) {
             case MeasureSpec.EXACTLY:
                 if (heightSize < calculatedMaxHeight) {
-                    childState = combineMeasuredStates(childState,
-                            MEASURED_STATE_TOO_SMALL >> MEASURED_HEIGHT_STATE_SHIFT);
+                    childState = ViewCompat.combineMeasuredStates(childState,
+                            ViewCompat.MEASURED_STATE_TOO_SMALL
+                                    >> ViewCompat.MEASURED_HEIGHT_STATE_SHIFT);
                 }
-                heightSizeAndState = resolveSizeAndState(heightSize, heightMeasureSpec,
+                heightSizeAndState = ViewCompat.resolveSizeAndState(heightSize, heightMeasureSpec,
                         childState);
                 break;
             case MeasureSpec.AT_MOST: {
                 if (heightSize < calculatedMaxHeight) {
-                    childState = combineMeasuredStates(childState,
-                            MEASURED_STATE_TOO_SMALL >> MEASURED_HEIGHT_STATE_SHIFT);
+                    childState = ViewCompat.combineMeasuredStates(childState,
+                            ViewCompat.MEASURED_STATE_TOO_SMALL
+                                    >> ViewCompat.MEASURED_HEIGHT_STATE_SHIFT);
                 } else {
                     heightSize = calculatedMaxHeight;
                 }
-                heightSizeAndState = resolveSizeAndState(heightSize, heightMeasureSpec,
+                heightSizeAndState = ViewCompat.resolveSizeAndState(heightSize, heightMeasureSpec,
                         childState);
                 break;
             }
             case MeasureSpec.UNSPECIFIED: {
-                heightSizeAndState = resolveSizeAndState(calculatedMaxHeight,
+                heightSizeAndState = ViewCompat.resolveSizeAndState(calculatedMaxHeight,
                         heightMeasureSpec, childState);
                 break;
             }

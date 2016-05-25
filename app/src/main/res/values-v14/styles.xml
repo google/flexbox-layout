@@ -15,12 +15,12 @@ limitations under the License.
 -->
 <resources>
 
-    <style name="AppTheme.NoActionBar">
-        <item name="windowActionBar">false</item>
-        <item name="windowNoTitle">true</item>
-        <item name="android:windowDrawsSystemBarBackgrounds">true</item>
-        <item name="android:statusBarColor">@android:color/transparent</item>
+    <style name="AppTheme" parent="AppThemeBase">
+        <!--
+            This is needed to make the app work with the preference-v7 library while keeping
+            material theme on API level 14+.
+            See http://stackoverflow.com/questions/32070670/preferencefragmentcompat-requires-preferencetheme-to-be-set
+        -->
+        <item name="preferenceTheme">@style/PreferenceThemeOverlay.v14.Material</item>
     </style>
-
-    <style name="DialogButton" parent="@android:style/Widget.Material.Button.Borderless.Colored" />
 </resources>
