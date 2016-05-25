@@ -99,5 +99,8 @@ limitations under the License.
             <enum name="baseline" value="3" />
             <enum name="stretch" value="4" />
         </attr>
+
+        <attr name="layout_minWidth" format="dimension" />
+        <attr name="layout_minHeight" format="dimension" />
     </declare-styleable>
 </resources>

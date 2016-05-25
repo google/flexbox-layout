@@ -19,16 +19,12 @@ package com.google.android.apps.flexbox.validators;
 import android.text.TextUtils;
 
 /**
- * Validator for dimension values including match_parent and wrap_content.
+ * Validator for dimension values.
  */
-public class DimensionInputValidator implements InputValidator {
+public class FixedDimensionInputValidator implements InputValidator {
 
     @Override
     public boolean isValidInput(CharSequence charSequence) {
-        // -1 represents match_parent, -2 represents wrap_content
-        return !TextUtils.isEmpty(charSequence) &&
-                (TextUtils.isDigitsOnly(charSequence) ||
-                        charSequence.toString().equals("-1") ||
-                        charSequence.toString().equals("-2"));
+        return !TextUtils.isEmpty(charSequence) && TextUtils.isDigitsOnly(charSequence);
     }
 }
