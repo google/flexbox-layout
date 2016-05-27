@@ -22,6 +22,7 @@ import android.support.annotation.IntDef;
 import android.support.annotation.NonNull;
 import android.support.v4.view.ViewCompat;
 import android.util.AttributeSet;
+import android.util.SparseIntArray;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.LinearLayout;
@@ -30,9 +31,8 @@ import android.widget.RelativeLayout;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
-import java.util.SortedSet;
-import java.util.TreeSet;
 
 /**
  * A layout that arranges its children in a way its attributes can be specified like the
@@ -210,6 +210,13 @@ public class FlexboxLayout extends ViewGroup {
      */
     private int[] mReorderedIndices;
 
+    /**
+     * Caches the {@link LayoutParams#order} attributes for children views.
+     * Key: the index of the view ({@link #mReorderedIndices} isn't taken into account)
+     * Value: the value for the order attribute
+     */
+    private SparseIntArray mOrderCache;
+
     private List<FlexLine> mFlexLines = new ArrayList<>();
 
     public FlexboxLayout(Context context) {
@@ -237,7 +244,9 @@ public class FlexboxLayout extends ViewGroup {
     @Override
     protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
         super.onMeasure(widthMeasureSpec, heightMeasureSpec);
-        mReorderedIndices = createReorderedIndices();
+        if (isOrderChangedFromLastMeasurement()) {
+            mReorderedIndices = createReorderedIndices();
+        }
         // TODO: Only calculate the children views which are affected from the last measure.
 
         switch (mFlexDirection) {
@@ -271,31 +280,122 @@ public class FlexboxLayout extends ViewGroup {
         return getChildAt(mReorderedIndices[index]);
     }
 
+    @Override
+    public void addView(View child, int index, ViewGroup.LayoutParams params) {
+        // Create an array for the reordered indices before the View is added in the parent
+        // ViewGroup since otherwise reordered indices won't be in effect before the
+        // FlexboxLayout's onMeasure is called.
+        // Because requestLayout is requested in the super.addView method.
+        mReorderedIndices = createReorderedIndices(child, index, params);
+        super.addView(child, index, params);
+    }
+
+    /**
+     * Create an array, which indicates the reordered indices that {@link LayoutParams#order}
+     * attributes are taken into account. This method takes a View before that is added as the
+     * parent ViewGroup's children.
+     *
+     * @param viewBeforeAdded          the View instance before added to the array of children
+     *                                 Views of the parent ViewGroup
+     * @param indexForViewBeforeAdded  the index for the View before added to the array of the
+     *                                 parent ViewGroup
+     * @param paramsForViewBeforeAdded the layout parameters for the View before added to the array
+     *                                 of the parent ViewGroup
+     * @return an array which have the reordered indices
+     */
+    private int[] createReorderedIndices(View viewBeforeAdded, int indexForViewBeforeAdded,
+            ViewGroup.LayoutParams paramsForViewBeforeAdded) {
+        int childCount = getChildCount();
+        List<Order> orders = createOrders(childCount);
+        Order orderForViewToBeAdded = new Order();
+        if (viewBeforeAdded != null
+                && paramsForViewBeforeAdded instanceof FlexboxLayout.LayoutParams) {
+            orderForViewToBeAdded.order = ((LayoutParams) paramsForViewBeforeAdded).order;
+        } else {
+            orderForViewToBeAdded.order = LayoutParams.ORDER_DEFAULT;
+        }
+
+        if (indexForViewBeforeAdded == -1 || indexForViewBeforeAdded == childCount) {
+            orderForViewToBeAdded.index = childCount;
+        } else if (indexForViewBeforeAdded < getChildCount()) {
+            orderForViewToBeAdded.index = indexForViewBeforeAdded;
+            for (int i = indexForViewBeforeAdded; i < childCount; i++) {
+                orders.get(i).index++;
+            }
+        } else {
+            // This path is not expected since OutOfBoundException will be thrown in the ViewGroup
+            // But setting the index for fail-safe
+            orderForViewToBeAdded.index = childCount;
+        }
+        orders.add(orderForViewToBeAdded);
+
+        return sortOrdersIntoReorderedIndices(childCount + 1, orders);
+    }
+
     /**
      * Create an array, which indicates the reordered indices that {@link LayoutParams#order}
      * attributes are taken into account.
      *
-     * @return an array which have the reordered indices
+     * @return @return an array which have the reordered indices
      */
     private int[] createReorderedIndices() {
-        int[] reorderedIndex = new int[getChildCount()];
-        int count = getChildCount();
-        SortedSet<Order> orderSet = new TreeSet<>();
-        for (int i = 0; i < count; i++) {
+        int childCount = getChildCount();
+        List<Order> orders = createOrders(childCount);
+        return sortOrdersIntoReorderedIndices(childCount, orders);
+    }
+
+    private int[] sortOrdersIntoReorderedIndices(int childCount, List<Order> orders) {
+        Collections.sort(orders);
+        if (mOrderCache == null) {
+            mOrderCache = new SparseIntArray(childCount);
+        }
+        mOrderCache.clear();
+        int[] reorderedIndices = new int[childCount];
+        int i = 0;
+        for (Order order : orders) {
+            reorderedIndices[i] = order.index;
+            mOrderCache.append(i, order.order);
+            i++;
+        }
+        return reorderedIndices;
+    }
+
+    @NonNull
+    private List<Order> createOrders(int childCount) {
+        List<Order> orders = new ArrayList<>();
+        for (int i = 0; i < childCount; i++) {
             View child = getChildAt(i);
             LayoutParams params = (LayoutParams) child.getLayoutParams();
             Order order = new Order();
             order.order = params.order;
             order.index = i;
-            orderSet.add(order);
+            orders.add(order);
         }
+        return orders;
+    }
 
-        int i = 0;
-        for (Order order : orderSet) {
-            reorderedIndex[i] = order.index;
-            i++;
+    /**
+     * Returns if any of the children's {@link LayoutParams#order} attributes are changed
+     * from the last measurement.
+     *
+     * @return {@code true} if changed from the last measurement, {@code false} otherwise.
+     */
+    private boolean isOrderChangedFromLastMeasurement() {
+        int childCount = getChildCount();
+        if (mOrderCache.size() != childCount) {
+            return true;
         }
-        return reorderedIndex;
+        for (int i = 0; i < childCount; i++) {
+            View view = getChildAt(i);
+            if (view == null) {
+                continue;
+            }
+            LayoutParams lp = (LayoutParams) view.getLayoutParams();
+            if (lp.order != mOrderCache.get(i)) {
+                return true;
+            }
+        }
+        return false;
     }
 
     /**

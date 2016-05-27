@@ -532,8 +532,6 @@ public class MainActivity extends AppCompatActivity
             View view = mFlexboxLayout.getChildAt(flexItem.index);
             FlexboxLayout.LayoutParams lp = flexItem.toLayoutParams(MainActivity.this);
             view.setLayoutParams(lp);
-            // TODO: Update the layout only related views
-            mFlexboxLayout.requestLayout();
         }
     }
 
