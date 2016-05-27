@@ -159,6 +159,60 @@ public class FlexboxAndroidTest {
 
     @Test
     @FlakyTest(tolerance = TOLERANCE)
+    public void testChangeOrder_fromChildSetLayoutParams() throws Throwable {
+        final FlexboxTestActivity activity = mActivityRule.getActivity();
+        mActivityRule.runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                activity.setContentView(R.layout.activity_order_test);
+            }
+        });
+        InstrumentationRegistry.getInstrumentation().waitForIdleSync();
+
+        final FlexboxLayout flexboxLayout = (FlexboxLayout) activity
+                .findViewById(R.id.flexbox_layout);
+        assertThat(flexboxLayout.getChildCount(), is(4));
+        // order: -1, index 1
+        assertThat(((TextView) flexboxLayout.getReorderedChildAt(0)).getText().toString(),
+                is(String.valueOf(2)));
+        // order: 0, index 2
+        assertThat(((TextView) flexboxLayout.getReorderedChildAt(1)).getText().toString(),
+                is(String.valueOf(3)));
+        // order: 1, index 3
+        assertThat(((TextView) flexboxLayout.getReorderedChildAt(2)).getText().toString(),
+                is(String.valueOf(4)));
+        // order: 2, index 0
+        assertThat(((TextView) flexboxLayout.getReorderedChildAt(3)).getText().toString(),
+                is(String.valueOf(1)));
+
+        // By changing the order and calling the setLayoutParams, the reordered array in the
+        // FlexboxLayout (mReordereredIndices) will be recreated without adding a new View.
+        mActivityRule.runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                View view1 = flexboxLayout.getChildAt(0);
+                FlexboxLayout.LayoutParams lp = (FlexboxLayout.LayoutParams)
+                        view1.getLayoutParams();
+                lp.order = -3;
+                view1.setLayoutParams(lp);
+            }
+        });
+        // order: -3, index 0
+        assertThat(((TextView) flexboxLayout.getReorderedChildAt(3)).getText().toString(),
+                is(String.valueOf(1)));
+        // order: -1, index 1
+        assertThat(((TextView) flexboxLayout.getReorderedChildAt(0)).getText().toString(),
+                is(String.valueOf(2)));
+        // order: 0, index 2
+        assertThat(((TextView) flexboxLayout.getReorderedChildAt(1)).getText().toString(),
+                is(String.valueOf(3)));
+        // order: 1, index 3
+        assertThat(((TextView) flexboxLayout.getReorderedChildAt(2)).getText().toString(),
+                is(String.valueOf(4)));
+    }
+
+    @Test
+    @FlakyTest(tolerance = TOLERANCE)
     public void testFlexWrap_wrap() throws Throwable {
         final FlexboxTestActivity activity = mActivityRule.getActivity();
         mActivityRule.runOnUiThread(new Runnable() {
