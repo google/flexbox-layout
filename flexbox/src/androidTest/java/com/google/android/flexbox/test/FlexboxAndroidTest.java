@@ -250,6 +250,64 @@ public class FlexboxAndroidTest {
 
     @Test
     @FlakyTest(tolerance = TOLERANCE)
+    public void testOrderAttribute_removeLastView() throws Throwable {
+        final FlexboxTestActivity activity = mActivityRule.getActivity();
+        mActivityRule.runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                activity.setContentView(R.layout.activity_order_test);
+                FlexboxLayout flexboxLayout = (FlexboxLayout) activity
+                        .findViewById(R.id.flexbox_layout);
+                flexboxLayout.removeViewAt(flexboxLayout.getChildCount() - 1);
+            }
+        });
+        FlexboxLayout flexboxLayout = (FlexboxLayout) activity.findViewById(R.id.flexbox_layout);
+        InstrumentationRegistry.getInstrumentation().waitForIdleSync();
+
+        assertNotNull(flexboxLayout);
+        assertThat(flexboxLayout.getChildCount(), is(3));
+        // order: -1, index 1
+        assertThat(((TextView) flexboxLayout.getReorderedChildAt(0)).getText().toString(),
+                is(String.valueOf(2)));
+        // order: 0, index 2
+        assertThat(((TextView) flexboxLayout.getReorderedChildAt(1)).getText().toString(),
+                is(String.valueOf(3)));
+        // order: 2, index 0
+        assertThat(((TextView) flexboxLayout.getReorderedChildAt(2)).getText().toString(),
+                is(String.valueOf(1)));
+    }
+
+    @Test
+    @FlakyTest(tolerance = TOLERANCE)
+    public void testOrderAttribute_removeViewInMiddle() throws Throwable {
+        final FlexboxTestActivity activity = mActivityRule.getActivity();
+        mActivityRule.runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                activity.setContentView(R.layout.activity_order_test);
+                FlexboxLayout flexboxLayout = (FlexboxLayout) activity
+                        .findViewById(R.id.flexbox_layout);
+                flexboxLayout.removeViewAt(2);
+            }
+        });
+        FlexboxLayout flexboxLayout = (FlexboxLayout) activity.findViewById(R.id.flexbox_layout);
+        InstrumentationRegistry.getInstrumentation().waitForIdleSync();
+
+        assertNotNull(flexboxLayout);
+        assertThat(flexboxLayout.getChildCount(), is(3));
+        // order: -1, index 1
+        assertThat(((TextView) flexboxLayout.getReorderedChildAt(0)).getText().toString(),
+                is(String.valueOf(2)));
+        // order: 0, index 3
+        assertThat(((TextView) flexboxLayout.getReorderedChildAt(1)).getText().toString(),
+                is(String.valueOf(4)));
+        // order: 2, index 0
+        assertThat(((TextView) flexboxLayout.getReorderedChildAt(2)).getText().toString(),
+                is(String.valueOf(1)));
+    }
+
+    @Test
+    @FlakyTest(tolerance = TOLERANCE)
     public void testFlexWrap_wrap() throws Throwable {
         final FlexboxTestActivity activity = mActivityRule.getActivity();
         mActivityRule.runOnUiThread(new Runnable() {
