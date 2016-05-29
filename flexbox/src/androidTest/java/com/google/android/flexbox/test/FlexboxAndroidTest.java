@@ -178,7 +178,7 @@ public class FlexboxAndroidTest {
         // order: 0, index 2
         assertThat(((TextView) flexboxLayout.getReorderedChildAt(1)).getText().toString(),
                 is(String.valueOf(3)));
-        // order: 1, index 3
+        // order: 0, index 3
         assertThat(((TextView) flexboxLayout.getReorderedChildAt(2)).getText().toString(),
                 is(String.valueOf(4)));
         // order: 2, index 0
@@ -209,6 +209,43 @@ public class FlexboxAndroidTest {
         // order: 1, index 3
         assertThat(((TextView) flexboxLayout.getReorderedChildAt(2)).getText().toString(),
                 is(String.valueOf(4)));
+    }
+
+    @Test
+    @FlakyTest(tolerance = TOLERANCE)
+    public void testOrderAttribute_addViewInMiddle() throws Throwable {
+        final FlexboxTestActivity activity = mActivityRule.getActivity();
+        mActivityRule.runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                activity.setContentView(R.layout.activity_order_test);
+                FlexboxLayout flexboxLayout = (FlexboxLayout) activity
+                        .findViewById(R.id.flexbox_layout);
+                TextView fifth = createTextView(activity, String.valueOf(5), 0);
+                // Add the new TextView in the middle of the indices
+                flexboxLayout.addView(fifth, 2);
+            }
+        });
+        FlexboxLayout flexboxLayout = (FlexboxLayout) activity.findViewById(R.id.flexbox_layout);
+        InstrumentationRegistry.getInstrumentation().waitForIdleSync();
+
+        assertNotNull(flexboxLayout);
+        assertThat(flexboxLayout.getChildCount(), is(5));
+        // order: -1, index 1
+        assertThat(((TextView) flexboxLayout.getReorderedChildAt(0)).getText().toString(),
+                is(String.valueOf(2)));
+        // order: 0, index 2
+        assertThat(((TextView) flexboxLayout.getReorderedChildAt(1)).getText().toString(),
+                is(String.valueOf(5)));
+        // order: 0, index 3
+        assertThat(((TextView) flexboxLayout.getReorderedChildAt(2)).getText().toString(),
+                is(String.valueOf(3)));
+        // order: 0, index 4
+        assertThat(((TextView) flexboxLayout.getReorderedChildAt(3)).getText().toString(),
+                is(String.valueOf(4)));
+        // order: 2, index 0
+        assertThat(((TextView) flexboxLayout.getReorderedChildAt(4)).getText().toString(),
+                is(String.valueOf(1)));
     }
 
     @Test
