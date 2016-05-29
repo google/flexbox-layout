@@ -88,7 +88,7 @@ public class MainActivity extends AppCompatActivity
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        initializeStringResrouces();
+        initializeStringResources();
 
         mFlexboxLayout = (FlexboxLayout) findViewById(R.id.flexbox_layout);
         mSharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
@@ -164,7 +164,7 @@ public class MainActivity extends AppCompatActivity
         }
     }
 
-    private void initializeStringResrouces() {
+    private void initializeStringResources() {
         ROW = getString(R.string.row);
         COLUMN = getString(R.string.column);
         ROW_REVERSE = getString(R.string.row_reverse);
