@@ -64,8 +64,10 @@ public class FlexItem implements Parcelable {
 
     public float flexBasisPercent;
 
+    /** Minimum with in DP */
     public int minWidth;
 
+    /** Minimum height in DP */
     public int minHeight;
 
     public FlexItem() {
@@ -132,8 +134,8 @@ public class FlexItem implements Parcelable {
         MarginLayoutParamsCompat.setMarginStart(lp, startMargin);
         MarginLayoutParamsCompat.setMarginEnd(lp, endMargin);
         lp.bottomMargin = bottomMargin;
-        lp.minWidth = minWidth;
-        lp.minHeight = minHeight;
+        lp.minWidth = Util.dpToPixel(context, minWidth);
+        lp.minHeight = Util.dpToPixel(context, minHeight);
         return lp;
     }
 
@@ -156,8 +158,8 @@ public class FlexItem implements Parcelable {
         flexItem.paddingStart = ViewCompat.getPaddingStart(view);
         flexItem.paddingEnd = ViewCompat.getPaddingEnd(view);
         flexItem.paddingBottom = view.getPaddingBottom();
-        flexItem.minWidth = lp.minWidth;
-        flexItem.minHeight = lp.minHeight;
+        flexItem.minWidth = Util.pixelToDp(view.getContext(), lp.minWidth);
+        flexItem.minHeight = Util.pixelToDp(view.getContext(), lp.minHeight);
         return flexItem;
     }
 

@@ -47,6 +47,7 @@ import static android.support.test.espresso.assertion.PositionAssertions.isRight
 import static android.support.test.espresso.assertion.PositionAssertions.isRightOf;
 import static android.support.test.espresso.assertion.PositionAssertions.isTopAlignedWith;
 import static android.support.test.espresso.matcher.ViewMatchers.withId;
+import static junit.framework.Assert.assertEquals;
 import static junit.framework.Assert.assertTrue;
 import static org.hamcrest.core.Is.is;
 import static org.hamcrest.core.IsNot.not;
@@ -698,7 +699,8 @@ public class FlexboxAndroidTest {
         // Both the parent FrameLayout and the FlexboxLayout have different padding values
         // but the text3.getRight should be the padding value for the FlexboxLayout, not including
         // the parent's padding value
-        assertThat(flexboxLayout.getWidth() - text3.getRight(), is(flexboxLayout.getPaddingRight()));
+        assertThat(flexboxLayout.getWidth() - text3.getRight(),
+                is(flexboxLayout.getPaddingRight()));
         assertThat(text3.getTop(), is(flexboxLayout.getPaddingTop()));
     }
 
@@ -2452,7 +2454,7 @@ public class FlexboxAndroidTest {
 
     @Test
     @FlakyTest(tolerance = TOLERANCE)
-    public void testMinWidth() throws Throwable {
+    public void testMinWidth_initial_width_less_than_minWidth() throws Throwable {
         final FlexboxTestActivity activity = mActivityRule.getActivity();
         mActivityRule.runOnUiThread(new Runnable() {
             @Override
@@ -2461,6 +2463,10 @@ public class FlexboxAndroidTest {
             }
         });
 
+        // This test case verifies if the minWidth attribute works as a minimum constraint
+        // If the initial view width is less than the value of minWidth.
+        // The textView1's layout_width is set to wrap_content and its text is "1" apparently
+        // the initial measured width is less than the value of layout_minWidth (100dp)
         FlexboxLayout flexboxLayout = (FlexboxLayout) activity.findViewById(R.id.flexbox_layout);
         TextView textView1 = (TextView) activity.findViewById(R.id.text1);
         int minWidth = ((FlexboxLayout.LayoutParams) textView1.getLayoutParams()).minWidth;
@@ -2471,7 +2477,33 @@ public class FlexboxAndroidTest {
 
     @Test
     @FlakyTest(tolerance = TOLERANCE)
-    public void testMinHeight() throws Throwable {
+    public void testMinWidth_works_as_lower_bound_shrink_to() throws Throwable {
+        final FlexboxTestActivity activity = mActivityRule.getActivity();
+        mActivityRule.runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                activity.setContentView(R.layout.activity_minwidth_lower_bound_test);
+            }
+        });
+
+        // This test case verifies if the minWidth attribute works as a lower bound
+        // when the view would shrink less than the minWidth if the minWidth weren't set
+        FlexboxLayout flexboxLayout = (FlexboxLayout) activity.findViewById(R.id.flexbox_layout);
+        TextView textView1 = (TextView) activity.findViewById(R.id.text1);
+        TextView textView2 = (TextView) activity.findViewById(R.id.text2);
+        TextView textView3 = (TextView) activity.findViewById(R.id.text3);
+        TextView textView4 = (TextView) activity.findViewById(R.id.text4);
+        int minWidth = ((FlexboxLayout.LayoutParams) textView1.getLayoutParams()).minWidth;
+
+        onView(withId(R.id.text1)).check(hasWidth(minWidth));
+        assertEquals(flexboxLayout.getWidth(),
+                textView1.getWidth() + textView2.getWidth() + textView3.getWidth() + textView4
+                        .getWidth());
+    }
+
+    @Test
+    @FlakyTest(tolerance = TOLERANCE)
+    public void testMinHeight_initial_height_less_than_minHeight() throws Throwable {
         final FlexboxTestActivity activity = mActivityRule.getActivity();
         mActivityRule.runOnUiThread(new Runnable() {
             @Override
@@ -2480,12 +2512,42 @@ public class FlexboxAndroidTest {
             }
         });
 
+        // This test case verifies if the minHeight attribute works as a minimum constraint
+        // If the initial view height is less than the value of minHeight.
+        // The textView1's layout_height is set to wrap_content and its text is "1" apparently
+        // the initial measured height is less than the value of layout_minHeight (100dp)
         FlexboxLayout flexboxLayout = (FlexboxLayout) activity.findViewById(R.id.flexbox_layout);
         TextView textView1 = (TextView) activity.findViewById(R.id.text1);
         int minHeight = ((FlexboxLayout.LayoutParams) textView1.getLayoutParams()).minHeight;
 
         onView(withId(R.id.text1)).check(hasHeight(minHeight));
         onView(withId(R.id.text2)).check(hasHeight(flexboxLayout.getHeight() - minHeight));
+    }
+
+    @Test
+    @FlakyTest(tolerance = TOLERANCE)
+    public void testMinHeight_works_as_lower_bound_shrink_to() throws Throwable {
+        final FlexboxTestActivity activity = mActivityRule.getActivity();
+        mActivityRule.runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                activity.setContentView(R.layout.activity_minheight_lower_bound_test);
+            }
+        });
+
+        // This test case verifies if the minHeight attribute works as a lower bound
+        // when the view would shrink less than the minHeight if the minHeight weren't set
+        FlexboxLayout flexboxLayout = (FlexboxLayout) activity.findViewById(R.id.flexbox_layout);
+        TextView textView1 = (TextView) activity.findViewById(R.id.text1);
+        TextView textView2 = (TextView) activity.findViewById(R.id.text2);
+        TextView textView3 = (TextView) activity.findViewById(R.id.text3);
+        TextView textView4 = (TextView) activity.findViewById(R.id.text4);
+        int minHeight = ((FlexboxLayout.LayoutParams) textView1.getLayoutParams()).minHeight;
+
+        onView(withId(R.id.text1)).check(hasHeight(minHeight));
+        assertEquals(flexboxLayout.getHeight(),
+                textView1.getHeight() + textView2.getHeight() + textView3.getHeight()
+                        + textView4.getHeight());
     }
 
     @Test

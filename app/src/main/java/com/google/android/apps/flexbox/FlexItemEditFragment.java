@@ -218,7 +218,8 @@ public class FlexItemEditFragment extends DialogFragment {
             public void onClick(View v) {
                 if (orderTextInput.isErrorEnabled() || flexGrowInput.isErrorEnabled() ||
                         flexBasisPercentInput.isErrorEnabled() || widthInput.isErrorEnabled() ||
-                        heightInput.isErrorEnabled()) {
+                        heightInput.isErrorEnabled() || minWidthInput.isErrorEnabled() ||
+                        minHeightInput.isErrorEnabled()) {
                     Toast.makeText(getActivity(), R.string.invalid_values_exist, Toast.LENGTH_SHORT)
                             .show();
                     return;
