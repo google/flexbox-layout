@@ -442,9 +442,11 @@ public class FlexboxLayout extends ViewGroup {
             for (int i = 0; i < childCount; i++) {
                 View child = getReorderedChildAt(i);
                 if (child == null) {
+                    addFlexLineIfLastFlexItem(i, childCount, paddingEnd, flexLine);
                     continue;
                 } else if (child.getVisibility() == View.GONE) {
                     flexLine.itemCount++;
+                    addFlexLineIfLastFlexItem(i, childCount, paddingEnd, flexLine);
                     continue;
                 }
 
@@ -519,11 +521,7 @@ public class FlexboxLayout extends ViewGroup {
                                     child.getMeasuredHeight() - child.getBaseline()
                                             + lp.bottomMargin);
                 }
-                if (i == childCount - 1 && flexLine.itemCount != 0) {
-                    // Add the flex line if this item is the last item
-                    flexLine.mainSize += paddingEnd;
-                    mFlexLines.add(flexLine);
-                }
+                addFlexLineIfLastFlexItem(i, childCount, paddingEnd, flexLine);
             }
         }
 
@@ -595,9 +593,11 @@ public class FlexboxLayout extends ViewGroup {
         for (int i = 0; i < childCount; i++) {
             View child = getReorderedChildAt(i);
             if (child == null) {
+                addFlexLineIfLastFlexItem(i, childCount, paddingBottom, flexLine);
                 continue;
             } else if (child.getVisibility() == View.GONE) {
                 flexLine.itemCount++;
+                addFlexLineIfLastFlexItem(i, childCount, paddingBottom, flexLine);
                 continue;
             }
 
@@ -660,11 +660,7 @@ public class FlexboxLayout extends ViewGroup {
             // later
             flexLine.crossSize = Math.max(flexLine.crossSize, largestWidthInColumn);
 
-            if (i == childCount - 1 && flexLine.itemCount != 0) {
-                // Add the flex line if this item is the last item
-                flexLine.mainSize += paddingBottom;
-                mFlexLines.add(flexLine);
-            }
+            addFlexLineIfLastFlexItem(i, childCount, paddingBottom, flexLine);
         }
 
         determineMainSize(mFlexDirection, widthMeasureSpec, heightMeasureSpec);
@@ -674,6 +670,15 @@ public class FlexboxLayout extends ViewGroup {
         stretchViews(mFlexDirection, mAlignItems);
         setMeasuredDimensionForFlex(mFlexDirection, widthMeasureSpec, heightMeasureSpec,
                 childState);
+    }
+
+    private void addFlexLineIfLastFlexItem(int childIndex, int childCount, int paddingToAdd,
+            FlexLine flexLine) {
+        if (childIndex == childCount - 1 && flexLine.itemCount != 0) {
+            // Add the flex line if this item is the last item
+            flexLine.mainSize += paddingToAdd;
+            mFlexLines.add(flexLine);
+        }
     }
 
     /**

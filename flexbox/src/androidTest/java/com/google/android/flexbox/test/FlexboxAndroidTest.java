@@ -2585,6 +2585,64 @@ public class FlexboxAndroidTest {
 
     @Test
     @FlakyTest(tolerance = TOLERANCE)
+    public void testView_visibility_gone_first_item_in_flex_line_horizontal() throws Throwable {
+        // This test verifies if the FlexboxLayout is visible when the visibility of the first
+        // flex item in the second flex line (or arbitrary flex lines other than the first flex line)
+        // is set to "gone"
+        // There was an issue reported for that
+        // https://github.com/google/flexbox-layout/issues/47
+        final FlexboxTestActivity activity = mActivityRule.getActivity();
+        mActivityRule.runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                activity.setContentView(
+                        R.layout.activity_visibility_gone_first_item_in_flex_line_row);
+            }
+        });
+        InstrumentationRegistry.getInstrumentation().waitForIdleSync();
+
+        FlexboxLayout flexboxLayout = (FlexboxLayout) activity.findViewById(R.id.flexbox_layout);
+
+        assertThat(flexboxLayout.getFlexWrap(), is(FlexboxLayout.FLEX_WRAP_WRAP));
+        assertThat(flexboxLayout.getFlexDirection(), is(FlexboxLayout.FLEX_DIRECTION_ROW));
+        TextView textView1 = (TextView) activity.findViewById(R.id.text1);
+        TextView textView3 = (TextView) activity.findViewById(R.id.text3);
+
+        assertTrue(flexboxLayout.getHeight() > 0);
+        assertThat(flexboxLayout.getHeight(), is(textView1.getHeight() + textView3.getHeight()));
+    }
+
+    @Test
+    @FlakyTest(tolerance = TOLERANCE)
+    public void testView_visibility_gone_first_item_in_flex_line_vertical() throws Throwable {
+        // This test verifies if the FlexboxLayout is visible when the visibility of the first
+        // flex item in the second flex line (or arbitrary flex lines other than the first flex line)
+        // is set to "gone"
+        // There was an issue reported for that
+        // https://github.com/google/flexbox-layout/issues/47
+        final FlexboxTestActivity activity = mActivityRule.getActivity();
+        mActivityRule.runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                activity.setContentView(
+                        R.layout.activity_visibility_gone_first_item_in_flex_line_column);
+            }
+        });
+        InstrumentationRegistry.getInstrumentation().waitForIdleSync();
+
+        FlexboxLayout flexboxLayout = (FlexboxLayout) activity.findViewById(R.id.flexbox_layout);
+
+        assertThat(flexboxLayout.getFlexWrap(), is(FlexboxLayout.FLEX_WRAP_WRAP));
+        assertThat(flexboxLayout.getFlexDirection(), is(FlexboxLayout.FLEX_DIRECTION_COLUMN));
+        TextView textView1 = (TextView) activity.findViewById(R.id.text1);
+        TextView textView3 = (TextView) activity.findViewById(R.id.text3);
+
+        assertTrue(flexboxLayout.getWidth() > 0);
+        assertThat(flexboxLayout.getWidth(), is(textView1.getWidth() + textView3.getWidth()));
+    }
+
+    @Test
+    @FlakyTest(tolerance = TOLERANCE)
     public void testView_visibility_invisible() throws Throwable {
         final FlexboxTestActivity activity = mActivityRule.getActivity();
         mActivityRule.runOnUiThread(new Runnable() {
