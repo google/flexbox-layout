@@ -16,6 +16,7 @@
 
 package com.google.android.apps.flexbox;
 
+import com.google.android.apps.flexbox.validators.FixedDimensionInputValidator;
 import com.google.android.apps.flexbox.validators.FlexBasisPercentInputValidator;
 import com.google.android.apps.flexbox.validators.InputValidator;
 import com.google.android.apps.flexbox.validators.IntegerInputValidator;
@@ -156,6 +157,23 @@ public class FlexItemEditFragment extends DialogFragment {
                 new FlexEditTextWatcher(heightInput, new DimensionInputValidator(),
                         R.string.must_be_minus_one_or_minus_two_or_non_negative_integer));
 
+        final TextInputLayout minWidthInput = (TextInputLayout) view
+                .findViewById(R.id.input_layout_min_width);
+        EditText minWidthEdit = (EditText) view.findViewById(R.id.edit_text_min_width);
+        minWidthEdit.setText(String.valueOf(mFlexItem.minWidth));
+        minWidthEdit.addTextChangedListener(
+                new FlexEditTextWatcher(minWidthInput, new FixedDimensionInputValidator(),
+                        R.string.must_be_non_negative_integer));
+
+        final TextInputLayout minHeightInput = (TextInputLayout) view
+                .findViewById(R.id.input_layout_min_height);
+        EditText minHeightEdit = (EditText) view.findViewById(
+                R.id.edit_text_min_height);
+        minHeightEdit.setText(String.valueOf(mFlexItem.minHeight));
+        minHeightEdit.addTextChangedListener(
+                new FlexEditTextWatcher(minHeightInput, new FixedDimensionInputValidator(),
+                        R.string.must_be_non_negative_integer));
+
         Spinner alignSelfSpinner = (Spinner) view.findViewById(
                 R.id.spinner_align_self);
         ArrayAdapter<CharSequence> arrayAdapter = ArrayAdapter.createFromResource(getActivity(),
@@ -200,7 +218,8 @@ public class FlexItemEditFragment extends DialogFragment {
             public void onClick(View v) {
                 if (orderTextInput.isErrorEnabled() || flexGrowInput.isErrorEnabled() ||
                         flexBasisPercentInput.isErrorEnabled() || widthInput.isErrorEnabled() ||
-                        heightInput.isErrorEnabled()) {
+                        heightInput.isErrorEnabled() || minWidthInput.isErrorEnabled() ||
+                        minHeightInput.isErrorEnabled()) {
                     Toast.makeText(getActivity(), R.string.invalid_values_exist, Toast.LENGTH_SHORT)
                             .show();
                     return;
@@ -304,6 +323,12 @@ public class FlexItemEditFragment extends DialogFragment {
                         mFlexItem.flexBasisPercent
                                 = FlexboxLayout.LayoutParams.FLEX_BASIS_PERCENT_DEFAULT;
                     }
+                    break;
+                case R.id.input_layout_min_width:
+                    mFlexItem.minWidth = intValue;
+                    break;
+                case R.id.input_layout_min_height:
+                    mFlexItem.minHeight = intValue;
                     break;
             }
         }
