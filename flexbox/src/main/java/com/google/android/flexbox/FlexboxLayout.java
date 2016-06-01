@@ -31,6 +31,7 @@ import android.widget.RelativeLayout;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
@@ -258,8 +259,9 @@ public class FlexboxLayout extends ViewGroup {
         if (isOrderChangedFromLastMeasurement()) {
             mReorderedIndices = createReorderedIndices();
         }
-        // TODO: Move the object allocation to other methods instead of onMeasure
-        mChildrenFrozen = new boolean[getChildCount()];
+        if (mChildrenFrozen == null || mChildrenFrozen.length < getChildCount()) {
+            mChildrenFrozen = new boolean[getChildCount()];
+        }
 
         // TODO: Only calculate the children views which are affected from the last measure.
 
@@ -276,6 +278,8 @@ public class FlexboxLayout extends ViewGroup {
                 throw new IllegalStateException(
                         "Invalid value for the flex direction is set: " + mFlexDirection);
         }
+
+        Arrays.fill(mChildrenFrozen, false);
     }
 
     /**
