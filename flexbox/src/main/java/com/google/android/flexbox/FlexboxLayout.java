@@ -59,6 +59,8 @@ import java.util.List;
  * <li>{@code layout_alignSelf}</li>
  * <li>{@code layout_minWidth}</li>
  * <li>{@code layout_minHeight}</li>
+ * <li>{@code layout_maxWidth}</li>
+ * <li>{@code layout_maxHeight}</li>
  * </ul>
  */
 public class FlexboxLayout extends ViewGroup {
@@ -482,6 +484,10 @@ public class FlexboxLayout extends ViewGroup {
                     child.measure(MeasureSpec.makeMeasureSpec(lp.minWidth, MeasureSpec.EXACTLY),
                             MeasureSpec.makeMeasureSpec(child.getMeasuredHeight(),
                                     MeasureSpec.EXACTLY));
+                } else if (child.getMeasuredWidth() > lp.maxWidth) {
+                    child.measure(MeasureSpec.makeMeasureSpec(lp.maxWidth, MeasureSpec.EXACTLY),
+                            MeasureSpec.makeMeasureSpec(child.getMeasuredHeight(),
+                                    MeasureSpec.EXACTLY));
                 }
                 childState = ViewCompat
                         .combineMeasuredStates(childState, ViewCompat.getMeasuredState(child));
@@ -633,6 +639,10 @@ public class FlexboxLayout extends ViewGroup {
                 child.measure(
                         MeasureSpec.makeMeasureSpec(child.getMeasuredWidth(), MeasureSpec.EXACTLY),
                         MeasureSpec.makeMeasureSpec(lp.minHeight, MeasureSpec.EXACTLY));
+            } else if (child.getMeasuredHeight() > lp.maxHeight) {
+                child.measure(
+                        MeasureSpec.makeMeasureSpec(child.getMeasuredWidth(), MeasureSpec.EXACTLY),
+                        MeasureSpec.makeMeasureSpec(lp.maxHeight, MeasureSpec.EXACTLY));
             }
             childState = ViewCompat
                     .combineMeasuredStates(childState, ViewCompat.getMeasuredState(child));
@@ -753,66 +763,106 @@ public class FlexboxLayout extends ViewGroup {
      */
     private int expandFlexItems(FlexLine flexLine, @FlexDirection int flexDirection,
             int maxMainSize, int paddingAlongMainAxis, int startIndex) {
+        int childIndex = startIndex;
         if (flexLine.totalFlexGrow <= 0 || maxMainSize < flexLine.mainSize) {
-            startIndex += flexLine.itemCount;
-            return startIndex;
+            childIndex += flexLine.itemCount;
+            return childIndex;
         }
+        int sizeBeforeExpand = flexLine.mainSize;
+        boolean needsReexpand = false;
         float unitSpace = (maxMainSize - flexLine.mainSize) / flexLine.totalFlexGrow;
         flexLine.mainSize = paddingAlongMainAxis;
         float accumulatedRoundError = 0;
         for (int i = 0; i < flexLine.itemCount; i++) {
-            View child = getReorderedChildAt(startIndex);
+            View child = getReorderedChildAt(childIndex);
             if (child == null) {
                 continue;
             } else if (child.getVisibility() == View.GONE) {
-                startIndex++;
+                childIndex++;
                 continue;
             }
             LayoutParams lp = (LayoutParams) child.getLayoutParams();
             if (flexDirection == FLEX_DIRECTION_ROW
                     || flexDirection == FLEX_DIRECTION_ROW_REVERSE) {
-                float rawCalculatedWidth = child.getMeasuredWidth() + unitSpace * lp.flexGrow;
-                if (i == flexLine.itemCount - 1) {
-                    rawCalculatedWidth += accumulatedRoundError;
-                    accumulatedRoundError = 0;
+                // The direction of the main axis is horizontal
+                if (!mChildrenFrozen[childIndex]) {
+                    float rawCalculatedWidth = child.getMeasuredWidth() + unitSpace * lp.flexGrow;
+                    if (i == flexLine.itemCount - 1) {
+                        rawCalculatedWidth += accumulatedRoundError;
+                        accumulatedRoundError = 0;
+                    }
+                    int newWidth = Math.round(rawCalculatedWidth);
+                    if (newWidth > lp.maxWidth) {
+                        // This means the child can't expand beyond the value of the maxWidth attribute.
+                        // To adjust the flex line length to the size of maxMainSize, remaining
+                        // positive free space needs to be re-distributed to other flex items
+                        // (children views). In that case, invoke this method again with the same
+                        // startIndex.
+                        needsReexpand = true;
+                        newWidth = lp.maxWidth;
+                        mChildrenFrozen[childIndex] = true;
+                        flexLine.totalFlexGrow -= lp.flexGrow;
+                    } else {
+                        accumulatedRoundError += (rawCalculatedWidth - newWidth);
+                        if (accumulatedRoundError > 1.0) {
+                            newWidth += 1;
+                            accumulatedRoundError -= 1.0;
+                        } else if (accumulatedRoundError < -1.0) {
+                            newWidth -= 1;
+                            accumulatedRoundError += 1.0;
+                        }
+                    }
+                    child.measure(MeasureSpec.makeMeasureSpec(newWidth, MeasureSpec.EXACTLY),
+                            MeasureSpec
+                                    .makeMeasureSpec(child.getMeasuredHeight(),
+                                            MeasureSpec.EXACTLY));
                 }
-                int newWidth = Math.round(rawCalculatedWidth);
-                accumulatedRoundError += (rawCalculatedWidth - newWidth);
-                if (accumulatedRoundError > 1.0) {
-                    newWidth += 1;
-                    accumulatedRoundError -= 1.0;
-                } else if (accumulatedRoundError < -1.0) {
-                    newWidth -= 1;
-                    accumulatedRoundError += 1.0;
-                }
-                child.measure(MeasureSpec.makeMeasureSpec(newWidth, MeasureSpec.EXACTLY),
-                        MeasureSpec
-                                .makeMeasureSpec(child.getMeasuredHeight(),
-                                        MeasureSpec.EXACTLY));
                 flexLine.mainSize += child.getMeasuredWidth() + lp.leftMargin + lp.rightMargin;
             } else {
-                float rawCalculatedHeight = child.getMeasuredHeight() + unitSpace * lp.flexGrow;
-                if (i == flexLine.itemCount - 1) {
-                    rawCalculatedHeight += accumulatedRoundError;
-                    accumulatedRoundError = 0;
+                // The direction of the main axis is vertical
+                if (!mChildrenFrozen[childIndex]) {
+                    float rawCalculatedHeight = child.getMeasuredHeight() + unitSpace * lp.flexGrow;
+                    if (i == flexLine.itemCount - 1) {
+                        rawCalculatedHeight += accumulatedRoundError;
+                        accumulatedRoundError = 0;
+                    }
+                    int newHeight = Math.round(rawCalculatedHeight);
+                    if (newHeight > lp.maxHeight) {
+                        // This means the child can't expand beyond the value of the maxHeight
+                        // attribute.
+                        // To adjust the flex line length to the size of maxMainSize, remaining
+                        // positive free space needs to be re-distributed to other flex items
+                        // (children views). In that case, invoke this method again with the same
+                        // startIndex.
+                        needsReexpand = true;
+                        newHeight = lp.maxHeight;
+                        mChildrenFrozen[childIndex] = true;
+                        flexLine.totalFlexGrow -= lp.flexGrow;
+                    } else {
+                        accumulatedRoundError += (rawCalculatedHeight - newHeight);
+                        if (accumulatedRoundError > 1.0) {
+                            newHeight += 1;
+                            accumulatedRoundError -= 1.0;
+                        } else if (accumulatedRoundError < -1.0) {
+                            newHeight -= 1;
+                            accumulatedRoundError += 1.0;
+                        }
+                    }
+                    child.measure(MeasureSpec.makeMeasureSpec(child.getMeasuredWidth(),
+                            MeasureSpec.EXACTLY),
+                            MeasureSpec.makeMeasureSpec(newHeight, MeasureSpec.EXACTLY));
                 }
-                int newHeight = Math.round(rawCalculatedHeight);
-                accumulatedRoundError += (rawCalculatedHeight - newHeight);
-                if (accumulatedRoundError > 1.0) {
-                    newHeight += 1;
-                    accumulatedRoundError -= 1.0;
-                } else if (accumulatedRoundError < -1.0) {
-                    newHeight -= 1;
-                    accumulatedRoundError += 1.0;
-                }
-                child.measure(MeasureSpec.makeMeasureSpec(child.getMeasuredWidth(),
-                        MeasureSpec.EXACTLY),
-                        MeasureSpec.makeMeasureSpec(newHeight, MeasureSpec.EXACTLY));
                 flexLine.mainSize += child.getMeasuredHeight() + lp.topMargin + lp.bottomMargin;
             }
-            startIndex++;
+            childIndex++;
         }
-        return startIndex;
+
+        if (needsReexpand && sizeBeforeExpand != flexLine.mainSize) {
+            // Re-invoke the method with the same startIndex to distribute the positive free space
+            // that wasn't fully distributed (because of maximum length constraint)
+            expandFlexItems(flexLine, flexDirection, maxMainSize, paddingAlongMainAxis, startIndex);
+        }
+        return childIndex;
     }
 
     /**
@@ -1885,6 +1935,16 @@ public class FlexboxLayout extends ViewGroup {
          */
         public int minHeight;
 
+        /**
+         * This attribute determines the maximum width the child can expand to.
+         */
+        public int maxWidth = Integer.MAX_VALUE;
+
+        /**
+         * This attribute determines the maximum height the child can expand to.
+         */
+        public int maxHeight = Integer.MAX_VALUE;
+
         public LayoutParams(Context context, AttributeSet attrs) {
             super(context, attrs);
 
@@ -1903,6 +1963,10 @@ public class FlexboxLayout extends ViewGroup {
             minWidth = a.getDimensionPixelSize(R.styleable.FlexboxLayout_Layout_layout_minWidth, 0);
             minHeight = a
                     .getDimensionPixelSize(R.styleable.FlexboxLayout_Layout_layout_minHeight, 0);
+            maxWidth = a.getDimensionPixelSize(R.styleable.FlexboxLayout_Layout_layout_maxWidth,
+                    Integer.MAX_VALUE);
+            maxHeight = a.getDimensionPixelSize(R.styleable.FlexboxLayout_Layout_layout_maxHeight,
+                    Integer.MAX_VALUE);
             a.recycle();
         }
 
