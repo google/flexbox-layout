@@ -480,19 +480,14 @@ public class FlexboxLayout extends ViewGroup {
                                 + lp.bottomMargin, lp.height);
                 child.measure(childWidthMeasureSpec, childHeightMeasureSpec);
 
-                // Check the minimum constraint after the first measurement for the child
-                // To prevent the child's width becomes less than the value of minWidth
+                // Check the size constraint after the first measurement for the child
+                // To prevent the child's width/height violate the size constraints imposed by the
+                // {@link LayoutParams#minWidth}, {@link LayoutParams#minHeight},
+                // {@link LayoutParams#maxWidth} and {@link LayoutParams#maxHeight} attributes.
                 // E.g. When the child's layout_width is wrap_content the measured width may be
                 // less than the min width after the first measurement.
-                if (child.getMeasuredWidth() < lp.minWidth) {
-                    child.measure(MeasureSpec.makeMeasureSpec(lp.minWidth, MeasureSpec.EXACTLY),
-                            MeasureSpec.makeMeasureSpec(child.getMeasuredHeight(),
-                                    MeasureSpec.EXACTLY));
-                } else if (child.getMeasuredWidth() > lp.maxWidth) {
-                    child.measure(MeasureSpec.makeMeasureSpec(lp.maxWidth, MeasureSpec.EXACTLY),
-                            MeasureSpec.makeMeasureSpec(child.getMeasuredHeight(),
-                                    MeasureSpec.EXACTLY));
-                }
+                checkSizeConstraints(child);
+
                 childState = ViewCompat
                         .combineMeasuredStates(childState, ViewCompat.getMeasuredState(child));
                 largestHeightInRow = Math.max(largestHeightInRow,
@@ -572,6 +567,7 @@ public class FlexboxLayout extends ViewGroup {
                 childState);
     }
 
+
     /**
      * Sub method for {@link #onMeasure(int, int)} when the main axis direction is vertical
      * (either from top to bottom or bottom to top).
@@ -635,19 +631,14 @@ public class FlexboxLayout extends ViewGroup {
                             + lp.bottomMargin, childHeight);
             child.measure(childWidthMeasureSpec, childHeightMeasureSpec);
 
-            // Check the minimum constraint after the first measurement for the child
-            // To prevent the child's height becomes less than the value of minHeight
+            // Check the size constraint after the first measurement for the child
+            // To prevent the child's width/height violate the size constraints imposed by the
+            // {@link LayoutParams#minWidth}, {@link LayoutParams#minHeight},
+            // {@link LayoutParams#maxWidth} and {@link LayoutParams#maxHeight} attributes.
             // E.g. When the child's layout_height is wrap_content the measured height may be
             // less than the min height after the first measurement.
-            if (child.getMeasuredHeight() < lp.minHeight) {
-                child.measure(
-                        MeasureSpec.makeMeasureSpec(child.getMeasuredWidth(), MeasureSpec.EXACTLY),
-                        MeasureSpec.makeMeasureSpec(lp.minHeight, MeasureSpec.EXACTLY));
-            } else if (child.getMeasuredHeight() > lp.maxHeight) {
-                child.measure(
-                        MeasureSpec.makeMeasureSpec(child.getMeasuredWidth(), MeasureSpec.EXACTLY),
-                        MeasureSpec.makeMeasureSpec(lp.maxHeight, MeasureSpec.EXACTLY));
-            }
+            checkSizeConstraints(child);
+
             childState = ViewCompat
                     .combineMeasuredStates(childState, ViewCompat.getMeasuredState(child));
             largestWidthInColumn = Math.max(largestWidthInColumn,
@@ -684,6 +675,40 @@ public class FlexboxLayout extends ViewGroup {
         stretchViews(mFlexDirection, mAlignItems);
         setMeasuredDimensionForFlex(mFlexDirection, widthMeasureSpec, heightMeasureSpec,
                 childState);
+    }
+
+    /**
+     * Checks if the view's width/height don't violate the minimum/maximum size constraints imposed
+     * by the {@link LayoutParams#minWidth}, {@link LayoutParams#minHeight},
+     * {@link LayoutParams#maxWidth} and {@link LayoutParams#maxHeight} attributes.
+     *
+     * @param view the view to be checked
+     */
+    private void checkSizeConstraints(View view) {
+        boolean needsMeasure = false;
+        LayoutParams lp = (LayoutParams) view.getLayoutParams();
+        int childWidth = view.getMeasuredWidth();
+        int childHeight = view.getMeasuredHeight();
+
+        if (view.getMeasuredWidth() < lp.minWidth) {
+            needsMeasure = true;
+            childWidth = lp.minWidth;
+        } else if (view.getMeasuredWidth() > lp.maxWidth) {
+            needsMeasure = true;
+            childWidth = lp.maxWidth;
+        }
+
+        if (childHeight < lp.minHeight) {
+            needsMeasure = true;
+            childHeight = lp.minHeight;
+        } else if (childHeight > lp.maxHeight) {
+            needsMeasure = true;
+            childHeight = lp.maxHeight;
+        }
+        if (needsMeasure) {
+            view.measure(MeasureSpec.makeMeasureSpec(childWidth, MeasureSpec.EXACTLY),
+                    MeasureSpec.makeMeasureSpec(childHeight, MeasureSpec.EXACTLY));
+        }
     }
 
     private void addFlexLineIfLastFlexItem(int childIndex, int childCount, int paddingToAdd,
