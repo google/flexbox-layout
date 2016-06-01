@@ -1884,6 +1884,8 @@ public class FlexboxLayout extends ViewGroup {
 
         public static final int ALIGN_SELF_STRETCH = ALIGN_ITEMS_STRETCH;
 
+        private static final int MAX_SIZE = Integer.MAX_VALUE & ViewCompat.MEASURED_SIZE_MASK;
+
         /**
          * This attribute can change the ordering of the children views are laid out.
          * By default, children are displayed and laid out in the same order as they appear in the
@@ -1942,12 +1944,12 @@ public class FlexboxLayout extends ViewGroup {
         /**
          * This attribute determines the maximum width the child can expand to.
          */
-        public int maxWidth = Integer.MAX_VALUE;
+        public int maxWidth = MAX_SIZE;
 
         /**
          * This attribute determines the maximum height the child can expand to.
          */
-        public int maxHeight = Integer.MAX_VALUE;
+        public int maxHeight = MAX_SIZE;
 
         public LayoutParams(Context context, AttributeSet attrs) {
             super(context, attrs);
@@ -1968,9 +1970,9 @@ public class FlexboxLayout extends ViewGroup {
             minHeight = a
                     .getDimensionPixelSize(R.styleable.FlexboxLayout_Layout_layout_minHeight, 0);
             maxWidth = a.getDimensionPixelSize(R.styleable.FlexboxLayout_Layout_layout_maxWidth,
-                    Integer.MAX_VALUE);
+                    MAX_SIZE);
             maxHeight = a.getDimensionPixelSize(R.styleable.FlexboxLayout_Layout_layout_maxHeight,
-                    Integer.MAX_VALUE);
+                    MAX_SIZE);
             a.recycle();
         }
 
