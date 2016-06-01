@@ -154,6 +154,18 @@ Also you can specify the following attributes for the children of a FlexboxLayou
   This attribute is only effective when the parent's length is definite (MeasureSpec mode is
   `MeasureSpec.EXACTLY`). The default value is `-1`, which means not set.
 
+* layout_minWidth / layout_minHeight
+  * These attributes impose minimum size constraints for the children of FlexboxLayout.
+  A child view won't be shrank less than the value of these attributes (varies based on the
+  `flexDirection` attribute as to which attribute imposes the size constraint along the
+  main axis) regardless of the `layout_flexShrink` attribute.
+
+* layout_maxWidth / layout_maxHeight
+  * These attributes impose maximum size constraints for the children of FlexboxLayout.
+  A child view won't be expanded more than the value of these attributes (varies based on the
+  `flexDirection` attribute as to which attribute imposes the size constraint along the
+  main axis) regardless of the `layout_flexGrow` attribute.
+
 ## Known differences from the original CSS specification
 This library tries to achieve the same capabilities of the original
 [Flexible Box specification](https://www.w3.org/TR/css-flexbox-1) as much as possible,
@@ -181,9 +193,6 @@ equivalent attribute
   developers want to achieve the same effect as 'content'. Thus, `layout_flexBasisPercent` only
   accepts percentage values, which can't be done through layout_width (or layout_height) for
   simplicity.
-
-(4) min-width and min-height can't be specified
-  * Which isn't implemented just yet.
 
 ## How to make contributions
 Please read and follow the steps in [CONTRIBUTING.md](https://github.com/google/flexbox-layout/blob/master/CONTRIBUTING.md)
