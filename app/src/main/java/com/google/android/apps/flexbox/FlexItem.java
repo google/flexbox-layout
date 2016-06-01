@@ -64,11 +64,17 @@ public class FlexItem implements Parcelable {
 
     public float flexBasisPercent;
 
-    /** Minimum with in DP */
+    /** Minimum width in DP */
     public int minWidth;
 
     /** Minimum height in DP */
     public int minHeight;
+
+    /** Maximum width in DP */
+    public int maxWidth;
+
+    /** Maximum height in DP */
+    public int maxHeight;
 
     public FlexItem() {
     }
@@ -98,6 +104,8 @@ public class FlexItem implements Parcelable {
         dest.writeFloat(this.flexBasisPercent);
         dest.writeInt(this.minWidth);
         dest.writeInt(this.minHeight);
+        dest.writeInt(this.maxWidth);
+        dest.writeInt(this.maxHeight);
     }
 
     protected FlexItem(Parcel in) {
@@ -119,6 +127,8 @@ public class FlexItem implements Parcelable {
         this.flexBasisPercent = in.readFloat();
         this.minWidth = in.readInt();
         this.minHeight = in.readInt();
+        this.maxWidth = in.readInt();
+        this.maxHeight = in.readInt();
     }
 
     public FlexboxLayout.LayoutParams toLayoutParams(Context context) {
@@ -136,6 +146,8 @@ public class FlexItem implements Parcelable {
         lp.bottomMargin = bottomMargin;
         lp.minWidth = Util.dpToPixel(context, minWidth);
         lp.minHeight = Util.dpToPixel(context, minHeight);
+        lp.maxWidth = Util.dpToPixel(context, maxWidth);
+        lp.maxHeight = Util.dpToPixel(context, maxHeight);
         return lp;
     }
 
@@ -160,6 +172,8 @@ public class FlexItem implements Parcelable {
         flexItem.paddingBottom = view.getPaddingBottom();
         flexItem.minWidth = Util.pixelToDp(view.getContext(), lp.minWidth);
         flexItem.minHeight = Util.pixelToDp(view.getContext(), lp.minHeight);
+        flexItem.maxWidth = Util.pixelToDp(view.getContext(), lp.maxWidth);
+        flexItem.maxHeight = Util.pixelToDp(view.getContext(), lp.maxHeight);
         return flexItem;
     }
 

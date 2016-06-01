@@ -102,5 +102,7 @@ limitations under the License.
 
         <attr name="layout_minWidth" format="dimension" />
         <attr name="layout_minHeight" format="dimension" />
+        <attr name="layout_maxWidth" format="dimension" />
+        <attr name="layout_maxHeight" format="dimension" />
     </declare-styleable>
 </resources>

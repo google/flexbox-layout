@@ -2552,6 +2552,92 @@ public class FlexboxAndroidTest {
 
     @Test
     @FlakyTest(tolerance = TOLERANCE)
+    public void testMaxWidth_initial_width_more_than_maxWidth() throws Throwable {
+        final FlexboxTestActivity activity = mActivityRule.getActivity();
+        mActivityRule.runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                activity.setContentView(R.layout.activity_maxwidth_test);
+            }
+        });
+
+        // This test case verifies if the maxWidth attribute works as a maximum constraint
+        // ff the initial view width is more than the value of maxWidth.
+        FlexboxLayout flexboxLayout = (FlexboxLayout) activity.findViewById(R.id.flexbox_layout);
+        TextView textView1 = (TextView) activity.findViewById(R.id.text1);
+        int maxWidth = ((FlexboxLayout.LayoutParams) textView1.getLayoutParams()).maxWidth;
+
+        onView(withId(R.id.text1)).check(hasWidth(maxWidth));
+        onView(withId(R.id.text2)).check(hasWidth(flexboxLayout.getWidth() - maxWidth));
+    }
+
+    @Test
+    @FlakyTest(tolerance = TOLERANCE)
+    public void testMaxWidth_works_as_upper_bound_expand_to() throws Throwable {
+        final FlexboxTestActivity activity = mActivityRule.getActivity();
+        mActivityRule.runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                activity.setContentView(R.layout.activity_maxwidth_upper_bound_test);
+            }
+        });
+
+        // This test case verifies if the maxWidth attribute works as a upper bound
+        // when the view would expand more than the maxWidth if the maxWidth weren't set
+        FlexboxLayout flexboxLayout = (FlexboxLayout) activity.findViewById(R.id.flexbox_layout);
+        TextView textView1 = (TextView) activity.findViewById(R.id.text1);
+        TextView textView2 = (TextView) activity.findViewById(R.id.text2);
+        int maxWidth = ((FlexboxLayout.LayoutParams) textView1.getLayoutParams()).maxWidth;
+
+        onView(withId(R.id.text1)).check(hasWidth(maxWidth));
+        assertEquals(flexboxLayout.getWidth(), textView1.getWidth() + textView2.getWidth());
+    }
+
+    @Test
+    @FlakyTest(tolerance = TOLERANCE)
+    public void testMaxHeight_initial_height_more_than_maxHeight() throws Throwable {
+        final FlexboxTestActivity activity = mActivityRule.getActivity();
+        mActivityRule.runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                activity.setContentView(R.layout.activity_maxheight_test);
+            }
+        });
+
+        // This test case verifies if the maxHeight attribute works as a maximum constraint
+        // ff the initial view height is more than the value of maxHeight.
+        FlexboxLayout flexboxLayout = (FlexboxLayout) activity.findViewById(R.id.flexbox_layout);
+        TextView textView1 = (TextView) activity.findViewById(R.id.text1);
+        int maxHeight = ((FlexboxLayout.LayoutParams) textView1.getLayoutParams()).maxHeight;
+
+        onView(withId(R.id.text1)).check(hasHeight(maxHeight));
+        onView(withId(R.id.text2)).check(hasHeight(flexboxLayout.getHeight() - maxHeight));
+    }
+
+    @Test
+    @FlakyTest(tolerance = TOLERANCE)
+    public void testMaxHeight_works_as_lower_bound_expand_to() throws Throwable {
+        final FlexboxTestActivity activity = mActivityRule.getActivity();
+        mActivityRule.runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                activity.setContentView(R.layout.activity_maxheight_upper_bound_test);
+            }
+        });
+
+        // This test case verifies if the maxHeight attribute works as a upper bound
+        // when the view would expand more than the maxHeight if the maxHeight weren't set
+        FlexboxLayout flexboxLayout = (FlexboxLayout) activity.findViewById(R.id.flexbox_layout);
+        TextView textView1 = (TextView) activity.findViewById(R.id.text1);
+        TextView textView2 = (TextView) activity.findViewById(R.id.text2);
+        int maxHeight = ((FlexboxLayout.LayoutParams) textView1.getLayoutParams()).maxHeight;
+
+        onView(withId(R.id.text1)).check(hasHeight(maxHeight));
+        assertEquals(flexboxLayout.getHeight(), textView1.getHeight() + textView2.getHeight());
+    }
+
+    @Test
+    @FlakyTest(tolerance = TOLERANCE)
     public void testView_visibility_gone() throws Throwable {
         final FlexboxTestActivity activity = mActivityRule.getActivity();
         mActivityRule.runOnUiThread(new Runnable() {
