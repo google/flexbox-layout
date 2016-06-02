@@ -264,6 +264,10 @@ public class FlexItemEditFragment extends DialogFragment {
     }
 
     private void setNextFocusesOnEnterDown(final TextView... textViews) {
+        // This can be done by setting android:nextFocus* as in 
+        // https://developer.android.com/training/keyboard-input/navigation.html
+        // But it requires API level 11 as a minimum sdk version. To support the lower level devices,
+        // doing it programatically.
         for (int i = 0; i < textViews.length; i++) {
             final int index = i;
             textViews[index].setOnEditorActionListener(new TextView.OnEditorActionListener() {
