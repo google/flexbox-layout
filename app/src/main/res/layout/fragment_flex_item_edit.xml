@@ -14,20 +14,27 @@ See the License for the specific language governing permissions and
 limitations under the License.
 -->
 <ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content">
+    android:layout_height="match_parent"
+    android:layout_marginEnd="@dimen/activity_horizontal_margin"
+    android:layout_marginStart="@dimen/activity_horizontal_margin"
+    android:layout_marginTop="@dimen/activity_vertical_margin"
+    android:layout_marginBottom="@dimen/activity_vertical_margin" >
 
-    <LinearLayout
+    <com.google.android.flexbox.FlexboxLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="vertical"
-        android:paddingEnd="@dimen/activity_horizontal_margin"
-        android:paddingStart="@dimen/activity_horizontal_margin">
+        android:paddingEnd="@dimen/margin_medium"
+        android:paddingStart="@dimen/margin_medium"
+        app:flexWrap="wrap">
 
         <android.support.design.widget.TextInputLayout
             android:id="@+id/input_layout_order"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content">
+            android:layout_width="100dp"
+            android:layout_height="wrap_content"
+            app:layout_flexGrow="1"
+            app:layout_flexBasisPercent="30%">
 
             <EditText
                 android:id="@+id/edit_text_order"
@@ -41,8 +48,10 @@ limitations under the License.
 
         <android.support.design.widget.TextInputLayout
             android:id="@+id/input_layout_flex_grow"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content">
+            android:layout_width="100dp"
+            android:layout_height="wrap_content"
+            app:layout_flexGrow="1"
+            app:layout_flexBasisPercent="30%">
 
             <EditText
                 android:id="@+id/edit_text_flex_grow"
@@ -56,8 +65,10 @@ limitations under the License.
 
         <android.support.design.widget.TextInputLayout
             android:id="@+id/input_layout_flex_shrink"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content">
+            android:layout_width="100dp"
+            android:layout_height="wrap_content"
+            app:layout_flexGrow="1"
+            app:layout_flexBasisPercent="30%">
 
             <EditText
                 android:id="@+id/edit_text_flex_shrink"
@@ -71,8 +82,10 @@ limitations under the License.
 
         <android.support.design.widget.TextInputLayout
             android:id="@+id/input_layout_flex_basis_percent"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content">
+            android:layout_width="150dp"
+            android:layout_height="wrap_content"
+            app:layout_flexGrow="1"
+            app:layout_flexBasisPercent="90%">
 
             <EditText
                 android:id="@+id/edit_text_flex_basis_percent"
@@ -86,8 +99,9 @@ limitations under the License.
 
         <android.support.design.widget.TextInputLayout
             android:id="@+id/input_layout_width"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content">
+            android:layout_width="300dp"
+            android:layout_height="wrap_content"
+            app:layout_flexGrow="1">
 
             <EditText
                 android:id="@+id/edit_text_width"
@@ -101,8 +115,9 @@ limitations under the License.
 
         <android.support.design.widget.TextInputLayout
             android:id="@+id/input_layout_height"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content">
+            android:layout_width="300dp"
+            android:layout_height="wrap_content"
+            app:layout_flexGrow="1">
 
             <EditText
                 android:id="@+id/edit_text_height"
@@ -116,8 +131,9 @@ limitations under the License.
 
         <android.support.design.widget.TextInputLayout
             android:id="@+id/input_layout_min_width"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content">
+            android:layout_width="150dp"
+            android:layout_height="wrap_content"
+            app:layout_flexGrow="1">
 
             <EditText
                 android:id="@+id/edit_text_min_width"
@@ -131,8 +147,9 @@ limitations under the License.
 
         <android.support.design.widget.TextInputLayout
             android:id="@+id/input_layout_min_height"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content">
+            android:layout_width="150dp"
+            android:layout_height="wrap_content"
+            app:layout_flexGrow="1">
 
             <EditText
                 android:id="@+id/edit_text_min_height"
@@ -142,6 +159,38 @@ limitations under the License.
                 android:singleLine="true"
                 android:inputType="number"
                 android:hint="@string/hint_min_height" />
+        </android.support.design.widget.TextInputLayout>
+
+        <android.support.design.widget.TextInputLayout
+            android:id="@+id/input_layout_max_width"
+            android:layout_width="150dp"
+            android:layout_height="wrap_content"
+            app:layout_flexGrow="1">
+
+            <EditText
+                android:id="@+id/edit_text_max_width"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:lines="1"
+                android:singleLine="true"
+                android:inputType="number"
+                android:hint="@string/hint_max_width" />
+        </android.support.design.widget.TextInputLayout>
+
+        <android.support.design.widget.TextInputLayout
+            android:id="@+id/input_layout_max_height"
+            android:layout_width="150dp"
+            android:layout_height="wrap_content"
+            app:layout_flexGrow="1">
+
+            <EditText
+                android:id="@+id/edit_text_max_height"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:lines="1"
+                android:singleLine="true"
+                android:inputType="number"
+                android:hint="@string/hint_max_height" />
         </android.support.design.widget.TextInputLayout>
 
         <LinearLayout
@@ -196,5 +245,5 @@ limitations under the License.
                 android:layout_height="wrap_content"
                 android:text="@string/ok" />
         </LinearLayout>
-    </LinearLayout>
+    </com.google.android.flexbox.FlexboxLayout>
 </ScrollView>
