@@ -2757,6 +2757,83 @@ public class FlexboxAndroidTest {
         assertThat(textView3.getTop(), is(textView1.getBottom()));
     }
 
+    @Test
+    @FlakyTest(tolerance = TOLERANCE)
+    public void testWrapBefore() throws Throwable {
+        final FlexboxTestActivity activity = mActivityRule.getActivity();
+        mActivityRule.runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                activity.setContentView(R.layout.activity_wrap_before_test);
+            }
+        });
+        FlexboxLayout flexboxLayout = (FlexboxLayout) activity.findViewById(R.id.flexbox_layout);
+
+        // layout_wrapBefore for the text2 and text3 are set to true, the text2 and text3 should
+        // be the first item for each flex line.
+        assertThat(flexboxLayout.getFlexWrap(), is(FlexboxLayout.FLEX_WRAP_WRAP));
+        assertThat(flexboxLayout.getFlexDirection(), is(FlexboxLayout.FLEX_DIRECTION_ROW));
+        onView(withId(R.id.text1)).check(isTopAlignedWith(withId(R.id.flexbox_layout)));
+        onView(withId(R.id.text1)).check(isLeftAlignedWith(withId(R.id.flexbox_layout)));
+        onView(withId(R.id.text2)).check(isLeftAlignedWith(withId(R.id.flexbox_layout)));
+        onView(withId(R.id.text2)).check(isBelow(withId(R.id.text1)));
+        onView(withId(R.id.text3)).check(isLeftAlignedWith(withId(R.id.flexbox_layout)));
+        onView(withId(R.id.text3)).check(isBelow(withId(R.id.text2)));
+        TextView textView1 = (TextView) activity.findViewById(R.id.text1);
+        final TextView textView2 = (TextView) activity.findViewById(R.id.text2);
+        TextView textView3 = (TextView) activity.findViewById(R.id.text3);
+        assertThat(flexboxLayout.getHeight(), is(textView1.getHeight() + textView2.getHeight() +
+                textView3.getHeight()));
+
+        mActivityRule.runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                FlexboxLayout.LayoutParams lp2 = (FlexboxLayout.LayoutParams)
+                        textView2.getLayoutParams();
+                lp2.wrapBefore = false;
+                textView2.setLayoutParams(lp2);
+            }
+        });
+
+        onView(withId(R.id.text1)).check(isTopAlignedWith(withId(R.id.flexbox_layout)));
+        onView(withId(R.id.text1)).check(isLeftAlignedWith(withId(R.id.flexbox_layout)));
+        onView(withId(R.id.text2)).check(isTopAlignedWith(withId(R.id.flexbox_layout)));
+        onView(withId(R.id.text2)).check(isRightOf(withId(R.id.text1)));
+        onView(withId(R.id.text3)).check(isLeftAlignedWith(withId(R.id.flexbox_layout)));
+        onView(withId(R.id.text3)).check(isBelow(withId(R.id.text1)));
+        onView(withId(R.id.text3)).check(isBelow(withId(R.id.text2)));
+        assertThat(flexboxLayout.getHeight(), is(textView1.getHeight() + textView3.getHeight()));
+    }
+
+    @Test
+    @FlakyTest(tolerance = TOLERANCE)
+    public void testWrapBefore_nowrap() throws Throwable {
+        final FlexboxTestActivity activity = mActivityRule.getActivity();
+        mActivityRule.runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                activity.setContentView(R.layout.activity_wrap_before_test);
+                FlexboxLayout flexboxLayout = (FlexboxLayout) activity.findViewById(R.id.flexbox_layout);
+                flexboxLayout.setFlexWrap(FlexboxLayout.FLEX_WRAP_NOWRAP);
+            }
+        });
+        FlexboxLayout flexboxLayout = (FlexboxLayout) activity.findViewById(R.id.flexbox_layout);
+
+        // layout_wrapBefore for the text2 and text3 are set to true, but the flexWrap is set to
+        // FLEX_WRAP_NOWRAP, three text views should not be wrapped.
+        assertThat(flexboxLayout.getFlexWrap(), is(FlexboxLayout.FLEX_WRAP_NOWRAP));
+        assertThat(flexboxLayout.getFlexDirection(), is(FlexboxLayout.FLEX_DIRECTION_ROW));
+        onView(withId(R.id.text1)).check(isTopAlignedWith(withId(R.id.flexbox_layout)));
+        onView(withId(R.id.text1)).check(isLeftAlignedWith(withId(R.id.flexbox_layout)));
+        onView(withId(R.id.text1)).check(isBottomAlignedWith(withId(R.id.flexbox_layout)));
+        onView(withId(R.id.text2)).check(isTopAlignedWith(withId(R.id.flexbox_layout)));
+        onView(withId(R.id.text2)).check(isRightOf(withId(R.id.text1)));
+        onView(withId(R.id.text2)).check(isBottomAlignedWith(withId(R.id.flexbox_layout)));
+        onView(withId(R.id.text3)).check(isTopAlignedWith(withId(R.id.flexbox_layout)));
+        onView(withId(R.id.text3)).check(isRightOf(withId(R.id.text2)));
+        onView(withId(R.id.text3)).check(isBottomAlignedWith(withId(R.id.flexbox_layout)));
+    }
+
     private TextView createTextView(Context context, String text, int order) {
         TextView textView = new TextView(context);
         textView.setText(text);

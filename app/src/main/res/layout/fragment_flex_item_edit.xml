@@ -20,7 +20,7 @@ limitations under the License.
     android:layout_marginEnd="@dimen/activity_horizontal_margin"
     android:layout_marginStart="@dimen/activity_horizontal_margin"
     android:layout_marginTop="@dimen/activity_vertical_margin"
-    android:layout_marginBottom="@dimen/activity_vertical_margin" >
+    android:layout_marginBottom="@dimen/activity_vertical_margin">
 
     <com.google.android.flexbox.FlexboxLayout
         android:layout_width="match_parent"
@@ -33,8 +33,7 @@ limitations under the License.
             android:id="@+id/input_layout_order"
             android:layout_width="100dp"
             android:layout_height="wrap_content"
-            app:layout_flexGrow="1"
-            app:layout_flexBasisPercent="30%">
+            app:layout_flexGrow="1">
 
             <EditText
                 android:id="@+id/edit_text_order"
@@ -50,8 +49,7 @@ limitations under the License.
             android:id="@+id/input_layout_flex_grow"
             android:layout_width="100dp"
             android:layout_height="wrap_content"
-            app:layout_flexGrow="1"
-            app:layout_flexBasisPercent="30%">
+            app:layout_flexGrow="1">
 
             <EditText
                 android:id="@+id/edit_text_flex_grow"
@@ -67,8 +65,7 @@ limitations under the License.
             android:id="@+id/input_layout_flex_shrink"
             android:layout_width="100dp"
             android:layout_height="wrap_content"
-            app:layout_flexGrow="1"
-            app:layout_flexBasisPercent="30%">
+            app:layout_flexGrow="1">
 
             <EditText
                 android:id="@+id/edit_text_flex_shrink"
@@ -82,10 +79,9 @@ limitations under the License.
 
         <android.support.design.widget.TextInputLayout
             android:id="@+id/input_layout_flex_basis_percent"
-            android:layout_width="150dp"
+            android:layout_width="200dp"
             android:layout_height="wrap_content"
-            app:layout_flexGrow="1"
-            app:layout_flexBasisPercent="90%">
+            app:layout_flexGrow="1">
 
             <EditText
                 android:id="@+id/edit_text_flex_basis_percent"
@@ -101,6 +97,7 @@ limitations under the License.
             android:id="@+id/input_layout_width"
             android:layout_width="300dp"
             android:layout_height="wrap_content"
+            app:layout_wrapBefore="true"
             app:layout_flexGrow="1">
 
             <EditText
@@ -133,6 +130,7 @@ limitations under the License.
             android:id="@+id/input_layout_min_width"
             android:layout_width="150dp"
             android:layout_height="wrap_content"
+            app:layout_wrapBefore="true"
             app:layout_flexGrow="1">
 
             <EditText
@@ -193,18 +191,23 @@ limitations under the License.
                 android:hint="@string/hint_max_height" />
         </android.support.design.widget.TextInputLayout>
 
+        <CheckBox
+            android:id="@+id/checkbox_wrap_before"
+            android:layout_width="150dp"
+            android:layout_height="wrap_content"
+            android:text="@string/hint_wrap_before"
+            app:layout_wrapBefore="true"
+            app:layout_flexGrow="1" />
+
         <LinearLayout
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:orientation="horizontal">
+            android:orientation="horizontal"
+            app:layout_flexGrow="1">
 
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:paddingEnd="@dimen/margin_tiny"
-                android:paddingLeft="@dimen/margin_tiny"
-                android:paddingRight="@dimen/margin_tiny"
-                android:paddingStart="@dimen/margin_tiny"
                 android:text="@string/hint_align_self" />
 
             <Spinner
@@ -214,6 +217,7 @@ limitations under the License.
                 android:layout_weight="1"
                 android:gravity="end" />
         </LinearLayout>
+
 
         <LinearLayout
             android:id="@+id/button_panel"

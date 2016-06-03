@@ -76,6 +76,8 @@ public class FlexItem implements Parcelable {
     /** Maximum height in DP */
     public int maxHeight;
 
+    public boolean wrapBefore;
+
     public FlexItem() {
     }
 
@@ -106,6 +108,7 @@ public class FlexItem implements Parcelable {
         dest.writeInt(this.minHeight);
         dest.writeInt(this.maxWidth);
         dest.writeInt(this.maxHeight);
+        dest.writeByte((byte) (wrapBefore ? 1 : 0));
     }
 
     protected FlexItem(Parcel in) {
@@ -129,6 +132,7 @@ public class FlexItem implements Parcelable {
         this.minHeight = in.readInt();
         this.maxWidth = in.readInt();
         this.maxHeight = in.readInt();
+        this.wrapBefore = in.readByte() != 0;
     }
 
     public FlexboxLayout.LayoutParams toLayoutParams(Context context) {
@@ -148,6 +152,7 @@ public class FlexItem implements Parcelable {
         lp.minHeight = Util.dpToPixel(context, minHeight);
         lp.maxWidth = Util.dpToPixel(context, maxWidth);
         lp.maxHeight = Util.dpToPixel(context, maxHeight);
+        lp.wrapBefore = wrapBefore;
         return lp;
     }
 
@@ -174,6 +179,7 @@ public class FlexItem implements Parcelable {
         flexItem.minHeight = Util.pixelToDp(view.getContext(), lp.minHeight);
         flexItem.maxWidth = Util.pixelToDp(view.getContext(), lp.maxWidth);
         flexItem.maxHeight = Util.pixelToDp(view.getContext(), lp.maxHeight);
+        flexItem.wrapBefore = lp.wrapBefore;
         return flexItem;
     }
 
