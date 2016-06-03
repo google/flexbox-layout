@@ -166,6 +166,16 @@ Also you can specify the following attributes for the children of a FlexboxLayou
   `flexDirection` attribute as to which attribute imposes the size constraint along the
   main axis) regardless of the `layout_flexGrow` attribute.
 
+* layout_wrapBefore
+  * This attribute forces a flex line wrapping. i.e. if this is set to `true` for a
+  flex item, the item will become the first item of a flex line. (A wrapping happens
+  regardless of the flex items being processed in the the previous flex line)
+  This attribute is ignored if the `flex_wrap` attribute is set to `nowrap`.
+  The equivalent attribute isn't defined in the original CSS Flexible Box Module
+  specification, but having this attribute is useful for Android developers to flatten
+  the layouts when building a grid like layout or for a situation where developers want
+  to put a new flex line to make a semantic difference from the previous one, etc.
+
 ## Known differences from the original CSS specification
 This library tries to achieve the same capabilities of the original
 [Flexible Box specification](https://www.w3.org/TR/css-flexbox-1) as much as possible,
@@ -193,6 +203,11 @@ equivalent attribute
   developers want to achieve the same effect as 'content'. Thus, `layout_flexBasisPercent` only
   accepts percentage values, which can't be done through layout_width (or layout_height) for
   simplicity.
+
+(4) `layout_wrapBefore` is introduced.
+  * The equivalent attribute doesn't exist in the CSS Flexible Box Module speicification,
+  but as explained above, Android developers will benefit by having this attribute for having
+  more control over when a wrapping happens.
 
 ## How to make contributions
 Please read and follow the steps in [CONTRIBUTING.md](https://github.com/google/flexbox-layout/blob/master/CONTRIBUTING.md)

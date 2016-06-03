@@ -104,6 +104,7 @@ limitations under the License.
     <string name="hint_min_height">Min Height</string>
     <string name="hint_max_width">Max Width</string>
     <string name="hint_max_height">Max Height</string>
+    <string name="hint_wrap_before">Wrap Before</string>
 
     <string name="must_be_non_negative_float">Must be a non-negative float value</string>
     <string name="must_be_non_negative_integer">Must be a non-negative integer value</string>

@@ -43,6 +43,8 @@ import android.view.inputmethod.InputMethodManager;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
+import android.widget.CheckBox;
+import android.widget.CompoundButton;
 import android.widget.EditText;
 import android.widget.Spinner;
 import android.widget.TextView;
@@ -226,6 +228,15 @@ public class FlexItemEditFragment extends DialogFragment {
             @Override
             public void onNothingSelected(AdapterView<?> parent) {
                 // No op
+            }
+        });
+
+        CheckBox wrapBeforeCheckBox = (CheckBox) view.findViewById(R.id.checkbox_wrap_before);
+        wrapBeforeCheckBox.setChecked(mFlexItem.wrapBefore);
+        wrapBeforeCheckBox.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                mFlexItem.wrapBefore = isChecked;
             }
         });
         int alignSelfPosition = arrayAdapter.getPosition(alignSelfAsString(mFlexItem.alignSelf));

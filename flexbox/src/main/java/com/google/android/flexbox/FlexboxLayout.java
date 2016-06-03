@@ -494,7 +494,7 @@ public class FlexboxLayout extends ViewGroup {
                         child.getMeasuredHeight() + lp.topMargin + lp.bottomMargin);
 
                 if (isWrapRequired(mFlexWrap, widthMode, widthSize, flexLine.mainSize,
-                        child.getMeasuredWidth())) {
+                        child.getMeasuredWidth(), lp)) {
                     flexLine.mainSize += paddingEnd;
                     mFlexLines.add(flexLine);
 
@@ -645,7 +645,7 @@ public class FlexboxLayout extends ViewGroup {
                     child.getMeasuredWidth() + lp.leftMargin + lp.rightMargin);
 
             if (isWrapRequired(mFlexWrap, heightMode, heightSize, flexLine.mainSize,
-                    child.getMeasuredHeight())) {
+                    child.getMeasuredHeight(), lp)) {
                 flexLine.mainSize += paddingBottom;
                 mFlexLines.add(flexLine);
 
@@ -1354,14 +1354,21 @@ public class FlexboxLayout extends ViewGroup {
      * @param maxSize       the max size along the main axis direction
      * @param currentLength the accumulated current length
      * @param childLength   the length of a child view which is to be collected to the flex line
+     * @param lp            the LayoutParams for the view being determined whether a new flex line
+     *                      is needed
      * @return {@code true} if a wrap is required, {@code false} otherwise
      * @see #getFlexWrap()
      * @see #setFlexWrap(int)
      */
     private boolean isWrapRequired(int flexWrap, int mode, int maxSize,
-            int currentLength, int childLength) {
-        return flexWrap != FLEX_WRAP_NOWRAP &&
-                (mode == MeasureSpec.EXACTLY || mode == MeasureSpec.AT_MOST) &&
+            int currentLength, int childLength, LayoutParams lp) {
+        if (flexWrap == FLEX_WRAP_NOWRAP) {
+            return false;
+        }
+        if (lp.wrapBefore) {
+            return true;
+        }
+        return (mode == MeasureSpec.EXACTLY || mode == MeasureSpec.AT_MOST) &&
                 maxSize < currentLength + childLength;
     }
 
@@ -1976,6 +1983,18 @@ public class FlexboxLayout extends ViewGroup {
          */
         public int maxHeight = MAX_SIZE;
 
+        /**
+         * This attribute forces a flex line wrapping. i.e. if this is set to {@code true} for a
+         * flex item, the item will become the first item of the new flex line. (A wrapping happens
+         * regardless of the flex items being processed in the the previous flex line)
+         * This attribute is ignored if the flex_wrap attribute is set as nowrap.
+         * The equivalent attribute isn't defined in the original CSS Flexible Box Module
+         * specification, but having this attribute is useful for Android developers to flatten
+         * the layouts when building a grid like layout or for a situation where developers want
+         * to put a new flex line to make a semantic difference from the previous one, etc.
+         */
+        public boolean wrapBefore;
+
         public LayoutParams(Context context, AttributeSet attrs) {
             super(context, attrs);
 
@@ -1998,6 +2017,7 @@ public class FlexboxLayout extends ViewGroup {
                     MAX_SIZE);
             maxHeight = a.getDimensionPixelSize(R.styleable.FlexboxLayout_Layout_layout_maxHeight,
                     MAX_SIZE);
+            wrapBefore = a.getBoolean(R.styleable.FlexboxLayout_Layout_layout_wrapBefore, false);
             a.recycle();
         }
 
