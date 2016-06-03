@@ -400,6 +400,9 @@ public class FlexboxLayout extends ViewGroup {
      */
     private boolean isOrderChangedFromLastMeasurement() {
         int childCount = getChildCount();
+        if (mOrderCache == null) {
+            mOrderCache = new SparseIntArray(childCount);
+        }
         if (mOrderCache.size() != childCount) {
             return true;
         }
