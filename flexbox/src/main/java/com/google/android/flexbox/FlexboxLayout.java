@@ -497,7 +497,7 @@ public class FlexboxLayout extends ViewGroup {
                         child.getMeasuredHeight() + lp.topMargin + lp.bottomMargin);
 
                 if (isWrapRequired(mFlexWrap, widthMode, widthSize, flexLine.mainSize,
-                        child.getMeasuredWidth(), lp)) {
+                        child.getMeasuredWidth(), lp,true)) {
                     flexLine.mainSize += paddingEnd;
                     mFlexLines.add(flexLine);
 
@@ -648,7 +648,7 @@ public class FlexboxLayout extends ViewGroup {
                     child.getMeasuredWidth() + lp.leftMargin + lp.rightMargin);
 
             if (isWrapRequired(mFlexWrap, heightMode, heightSize, flexLine.mainSize,
-                    child.getMeasuredHeight(), lp)) {
+                    child.getMeasuredHeight(), lp,false)) {
                 flexLine.mainSize += paddingBottom;
                 mFlexLines.add(flexLine);
 
@@ -1359,20 +1359,28 @@ public class FlexboxLayout extends ViewGroup {
      * @param childLength   the length of a child view which is to be collected to the flex line
      * @param lp            the LayoutParams for the view being determined whether a new flex line
      *                      is needed
+     * @param isHorizontal  the direction of the layout
      * @return {@code true} if a wrap is required, {@code false} otherwise
      * @see #getFlexWrap()
      * @see #setFlexWrap(int)
      */
     private boolean isWrapRequired(int flexWrap, int mode, int maxSize,
-            int currentLength, int childLength, LayoutParams lp) {
+                                   int currentLength, int childLength, LayoutParams lp, boolean isHorizontal) {
         if (flexWrap == FLEX_WRAP_NOWRAP) {
             return false;
         }
         if (lp.wrapBefore) {
             return true;
         }
-        return (mode == MeasureSpec.EXACTLY || mode == MeasureSpec.AT_MOST) &&
-                maxSize < currentLength + childLength;
+
+        // the text wrap issue is come from here, because it didn't take margins into account
+        // so i add the margin into the calculation to fix the bug
+        if (isHorizontal)
+            return (mode == MeasureSpec.EXACTLY || mode == MeasureSpec.AT_MOST) &&
+                    maxSize < currentLength + childLength + lp.leftMargin + lp.rightMargin;
+        else
+            return (mode == MeasureSpec.EXACTLY || mode == MeasureSpec.AT_MOST) &&
+                    maxSize < currentLength + childLength + lp.topMargin + lp.bottomMargin;
     }
 
     /**
