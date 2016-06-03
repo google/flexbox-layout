@@ -118,22 +118,22 @@ You can specify the following attributes for the FlexboxLayout:
 
 Also you can specify the following attributes for the children of a FlexboxLayout.
 
-* layout_order
+* layout_order (integer)
   * This attribute can change how the ordering of the children views are laid out.
   By default, children are displayed and laid out in the same order as they appear in the
   layout XML. If not specified, `1` is set as a default value.
 
-* layout_flexGrow
+* layout_flexGrow (float)
   * This attribute determines how much this child will grow if positive free space is
   distributed relative to the rest of other flex items included in the same flex line.
   If not specified, `0` is set as a default value.
 
-* layout_flexShrink
+* layout_flexShrink (float)
   * This attribute determines how much this child will shrink if negative free space is
   distributed relative to the rest of other flex items included in the same flex line.
   If not specified, `1` is set as a default value.
 
-* layout_alignSelf
+* layout_alignSelf 
   * This attribute determines the alignment along the cross axis (perpendicular to the
   main axis). The alignment in the same direction can be determined by the
   `alignItems` in the parent, but if this is set to other than
@@ -145,7 +145,7 @@ Also you can specify the following attributes for the children of a FlexboxLayou
     * baseline
     * stretch
 
-* layout_flexBasisPercent
+* layout_flexBasisPercent (fraction)
   * The initial flex item length in a fraction format relative to its parent.
   The initial main size of this child view is trying to be expanded as the specified
   fraction against the parent main size.
@@ -154,20 +154,21 @@ Also you can specify the following attributes for the children of a FlexboxLayou
   This attribute is only effective when the parent's length is definite (MeasureSpec mode is
   `MeasureSpec.EXACTLY`). The default value is `-1`, which means not set.
 
-* layout_minWidth / layout_minHeight
+* layout_minWidth / layout_minHeight (dimension)
   * These attributes impose minimum size constraints for the children of FlexboxLayout.
   A child view won't be shrank less than the value of these attributes (varies based on the
   `flexDirection` attribute as to which attribute imposes the size constraint along the
   main axis) regardless of the `layout_flexShrink` attribute.
 
-* layout_maxWidth / layout_maxHeight
+* layout_maxWidth / layout_maxHeight (dimension)
   * These attributes impose maximum size constraints for the children of FlexboxLayout.
   A child view won't be expanded more than the value of these attributes (varies based on the
   `flexDirection` attribute as to which attribute imposes the size constraint along the
   main axis) regardless of the `layout_flexGrow` attribute.
 
-* layout_wrapBefore
-  * This attribute forces a flex line wrapping. i.e. if this is set to `true` for a
+* layout_wrapBefore (boolean)
+  * This attribute forces a flex line wrapping, the default value is `false`. 
+  i.e. if this is set to `true` for a
   flex item, the item will become the first item of a flex line. (A wrapping happens
   regardless of the flex items being processed in the the previous flex line)
   This attribute is ignored if the `flex_wrap` attribute is set to `nowrap`.
