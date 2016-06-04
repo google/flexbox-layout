@@ -399,27 +399,24 @@ public class FlexboxLayout extends ViewGroup {
      * @return {@code true} if changed from the last measurement, {@code false} otherwise.
      */
     private boolean isOrderChangedFromLastMeasurement() {
-        int childCount = this.getChildCount();
-        // check null first in case of null exception occurs
-        if (this.mOrderCache == null) {
-            this.mOrderCache = new SparseIntArray(childCount);
+        int childCount = getChildCount();
+        if (mOrderCache == null) {
+            mOrderCache = new SparseIntArray(childCount);
         }
-
-        if (this.mOrderCache.size() != childCount) {
+        if (mOrderCache.size() != childCount) {
             return true;
-        } else {
-            for (int i = 0; i < childCount; ++i) {
-                View view = this.getChildAt(i);
-                if (view != null) {
-                    FlexboxLayout.LayoutParams lp = (FlexboxLayout.LayoutParams) view.getLayoutParams();
-                    if (lp.order != this.mOrderCache.get(i)) {
-                        return true;
-                    }
-                }
-            }
-
-            return false;
         }
+        for (int i = 0; i < childCount; i++) {
+            View view = getChildAt(i);
+            if (view == null) {
+                continue;
+            }
+            LayoutParams lp = (LayoutParams) view.getLayoutParams();
+            if (lp.order != mOrderCache.get(i)) {
+                return true;
+            }
+        }
+        return false;
     }
 
     /**
