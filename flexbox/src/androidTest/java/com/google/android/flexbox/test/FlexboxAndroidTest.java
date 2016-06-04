@@ -2834,6 +2834,21 @@ public class FlexboxAndroidTest {
         onView(withId(R.id.text3)).check(isBottomAlignedWith(withId(R.id.flexbox_layout)));
     }
 
+    @Test
+    @FlakyTest(tolerance = TOLERANCE)
+    public void testEmptyChildren() throws Throwable {
+        final FlexboxTestActivity activity = mActivityRule.getActivity();
+        mActivityRule.runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                activity.setContentView(R.layout.activity_empty_children);
+            }
+        });
+        FlexboxLayout flexboxLayout = (FlexboxLayout) activity.findViewById(R.id.flexbox_layout);
+
+        assertThat(flexboxLayout.getChildCount(), is(0));
+    }
+
     private TextView createTextView(Context context, String text, int order) {
         TextView textView = new TextView(context);
         textView.setText(text);
