@@ -322,7 +322,7 @@ public class FlexboxLayout extends ViewGroup {
      * @return an array which have the reordered indices
      */
     private int[] createReorderedIndices(View viewBeforeAdded, int indexForViewBeforeAdded,
-                                         ViewGroup.LayoutParams paramsForViewBeforeAdded) {
+            ViewGroup.LayoutParams paramsForViewBeforeAdded) {
         int childCount = getChildCount();
         List<Order> orders = createOrders(childCount);
         Order orderForViewToBeAdded = new Order();
@@ -715,7 +715,7 @@ public class FlexboxLayout extends ViewGroup {
     }
 
     private void addFlexLineIfLastFlexItem(int childIndex, int childCount, int paddingToAdd,
-                                           FlexLine flexLine) {
+            FlexLine flexLine) {
         if (childIndex == childCount - 1 && flexLine.itemCount != 0) {
             // Add the flex line if this item is the last item
             flexLine.mainSize += paddingToAdd;
@@ -735,7 +735,7 @@ public class FlexboxLayout extends ViewGroup {
      * @see #getFlexDirection()
      */
     private void determineMainSize(@FlexDirection int flexDirection, int widthMeasureSpec,
-                                   int heightMeasureSpec) {
+            int heightMeasureSpec) {
         int mainSize;
         int paddingAlongMainAxis;
         switch (flexDirection) {
@@ -794,7 +794,7 @@ public class FlexboxLayout extends ViewGroup {
      * @see LayoutParams#flexGrow
      */
     private int expandFlexItems(FlexLine flexLine, @FlexDirection int flexDirection,
-                                int maxMainSize, int paddingAlongMainAxis, int startIndex) {
+            int maxMainSize, int paddingAlongMainAxis, int startIndex) {
         int childIndex = startIndex;
         if (flexLine.totalFlexGrow <= 0 || maxMainSize < flexLine.mainSize) {
             childIndex += flexLine.itemCount;
@@ -914,7 +914,7 @@ public class FlexboxLayout extends ViewGroup {
      * @see LayoutParams#flexShrink
      */
     private int shrinkFlexItems(FlexLine flexLine, @FlexDirection int flexDirection,
-                                int maxMainSize, int paddingAlongMainAxis, int startIndex) {
+            int maxMainSize, int paddingAlongMainAxis, int startIndex) {
         int childIndex = startIndex;
         int sizeBeforeShrink = flexLine.mainSize;
         if (flexLine.totalFlexShrink <= 0 || maxMainSize > flexLine.mainSize) {
@@ -1027,7 +1027,7 @@ public class FlexboxLayout extends ViewGroup {
      * @see #setAlignContent(int)
      */
     private void determineCrossSize(int flexDirection, int widthMeasureSpec,
-                                    int heightMeasureSpec) {
+            int heightMeasureSpec) {
         // The MeasureSpec mode along the cross axis
         int mode;
         // The MeasureSpec size along the cross axis
@@ -1264,7 +1264,7 @@ public class FlexboxLayout extends ViewGroup {
      * @see #setFlexDirection(int)
      */
     private void setMeasuredDimensionForFlex(@FlexDirection int flexDirection, int widthMeasureSpec,
-                                             int heightMeasureSpec, int childState) {
+            int heightMeasureSpec, int childState) {
         int widthMode = MeasureSpec.getMode(widthMeasureSpec);
         int widthSize = MeasureSpec.getSize(widthMeasureSpec);
         int heightMode = MeasureSpec.getMode(heightMeasureSpec);
@@ -1364,7 +1364,7 @@ public class FlexboxLayout extends ViewGroup {
      * @see #setFlexWrap(int)
      */
     private boolean isWrapRequired(int flexWrap, int mode, int maxSize,
-                                   int currentLength, int childLength, LayoutParams lp) {
+            int currentLength, int childLength, LayoutParams lp) {
         if (flexWrap == FLEX_WRAP_NOWRAP) {
             return false;
         }
@@ -1372,7 +1372,7 @@ public class FlexboxLayout extends ViewGroup {
             return true;
         }
 
-        // the text wrap issue is come from here, because it didn't take margins into account
+        // the issue of text being cut in TextView with margin comes from here, because it didn't take margins into account
         // so i add the margin into the calculation to fix the bug
         if (mFlexDirection == FLEX_DIRECTION_ROW || mFlexDirection == FLEX_DIRECTION_ROW_REVERSE) {
             return (mode == MeasureSpec.EXACTLY || mode == MeasureSpec.AT_MOST) &&
@@ -1580,7 +1580,7 @@ public class FlexboxLayout extends ViewGroup {
      * @see LayoutParams#alignSelf
      */
     private void layoutSingleChildHorizontal(View view, FlexLine flexLine, @FlexWrap int flexWrap,
-                                             int alignItems, int left, int top, int right, int bottom) {
+            int alignItems, int left, int top, int right, int bottom) {
         LayoutParams lp = (LayoutParams) view.getLayoutParams();
         if (lp.alignSelf != LayoutParams.ALIGN_SELF_AUTO) {
             // Expecting the values for alignItems and alignSelf match except for ALIGN_SELF_AUTO.
@@ -1659,7 +1659,7 @@ public class FlexboxLayout extends ViewGroup {
      * @see LayoutParams#alignSelf
      */
     private void layoutVertical(boolean isRtl, boolean fromBottomToTop, int left, int top,
-                                int right, int bottom) {
+            int right, int bottom) {
         int paddingTop = getPaddingTop();
         int paddingBottom = getPaddingBottom();
 
@@ -1781,7 +1781,7 @@ public class FlexboxLayout extends ViewGroup {
      * @see LayoutParams#alignSelf
      */
     private void layoutSingleChildVertical(View view, FlexLine flexLine, boolean isRtl,
-                                           int alignItems, int left, int top, int right, int bottom) {
+            int alignItems, int left, int top, int right, int bottom) {
         LayoutParams lp = (LayoutParams) view.getLayoutParams();
         if (lp.alignSelf != LayoutParams.ALIGN_SELF_AUTO) {
             // Expecting the values for alignItems and alignSelf match except for ALIGN_SELF_AUTO.
