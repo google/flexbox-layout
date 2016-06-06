@@ -17,14 +17,6 @@
 package com.google.android.flexbox.test;
 
 
-import com.google.android.flexbox.FlexboxLayout;
-
-import org.hamcrest.Description;
-import org.hamcrest.TypeSafeMatcher;
-import org.junit.Rule;
-import org.junit.Test;
-import org.junit.runner.RunWith;
-
 import android.content.Context;
 import android.support.test.InstrumentationRegistry;
 import android.support.test.espresso.ViewAssertion;
@@ -36,6 +28,14 @@ import android.test.FlakyTest;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
+
+import com.google.android.flexbox.FlexboxLayout;
+
+import org.hamcrest.Description;
+import org.hamcrest.TypeSafeMatcher;
+import org.junit.Rule;
+import org.junit.Test;
+import org.junit.runner.RunWith;
 
 import static android.support.test.espresso.Espresso.onView;
 import static android.support.test.espresso.assertion.PositionAssertions.isAbove;
@@ -2877,6 +2877,55 @@ public class FlexboxAndroidTest {
         // The second TextView's height should be larger than the first one because otherwise the
         // text in the second one doesn't fit in the first flex line (because of parrent padding)
         assertTrue(text1.getHeight() < text2.getHeight());
+    }
+
+    @Test
+    @FlakyTest(tolerance = TOLERANCE)
+    public void testIsWrapRequired() throws Throwable {
+        final FlexboxTestActivity activity = mActivityRule.getActivity();
+        mActivityRule.runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                activity.setContentView(R.layout.activity_is_wrap_required_test);
+            }
+        });
+        FlexboxLayout flexboxLayout = (FlexboxLayout) activity.findViewById(R.id.flexbox_layout);
+
+        assertThat(flexboxLayout.getFlexWrap(), is(FlexboxLayout.FLEX_WRAP_WRAP));
+        assertThat(flexboxLayout.getFlexDirection(), is(FlexboxLayout.FLEX_DIRECTION_ROW));
+
+        // 1. get screen width as the width of flexbox_layout
+        int screenWidth = activity.getResources().getDisplayMetrics().widthPixels;
+        // 2. divided it into 3 parts, two for 2 child view, one for space
+        final int childWidth = screenWidth / 3;
+
+        // 3. set the marginRight larger than half childWidth
+        // here I set 0.8, so the width calculation will be:
+        // childWidth+0.8*childWidth+childWidth+0.8*childWidth=3.6*childWidth > screenWidth
+        // so it supposed to be wrapped.
+        int marginRight= (int) (childWidth * 0.8);
+        final TextView text1 = new TextView(activity);
+        final TextView text2 = new TextView(activity);
+
+        FlexboxLayout.LayoutParams params = new FlexboxLayout.LayoutParams(childWidth, ViewGroup.LayoutParams.WRAP_CONTENT);
+        params.rightMargin = marginRight;
+        text1.setLayoutParams(params);
+        text2.setLayoutParams(params);
+
+        text1.setText("111");
+        text2.setText("222");
+
+        flexboxLayout.addView(text1);
+        flexboxLayout.addView(text2);
+
+        flexboxLayout.post(new Runnable() {
+            @Override
+            public void run() {
+                // check the width between original childWidth and later text width
+                assertThat(text1.getWidth(),is(childWidth));
+                assertThat(text2.getWidth(),is(childWidth));
+            }
+        });
     }
 
     private TextView createTextView(Context context, String text, int order) {
