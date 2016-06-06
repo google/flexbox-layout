@@ -448,16 +448,15 @@ public class FlexboxLayout extends ViewGroup {
             int paddingEnd = ViewCompat.getPaddingEnd(this);
             int largestHeightInRow = Integer.MIN_VALUE;
             FlexLine flexLine = new FlexLine();
-            flexLine.mainSize = 0;
-            int heightUsed = getPaddingTop() + getPaddingBottom();
+            flexLine.mainSize = paddingStart;
             for (int i = 0; i < childCount; i++) {
                 View child = getReorderedChildAt(i);
                 if (child == null) {
-                    addFlexLineIfLastFlexItem(i, childCount, paddingStart + paddingEnd, flexLine);
+                    addFlexLineIfLastFlexItem(i, childCount, paddingEnd, flexLine);
                     continue;
                 } else if (child.getVisibility() == View.GONE) {
                     flexLine.itemCount++;
-                    addFlexLineIfLastFlexItem(i, childCount, paddingStart + paddingEnd, flexLine);
+                    addFlexLineIfLastFlexItem(i, childCount, paddingEnd, flexLine);
                     continue;
                 }
 
@@ -485,23 +484,6 @@ public class FlexboxLayout extends ViewGroup {
                                 + lp.bottomMargin, lp.height);
                 child.measure(childWidthMeasureSpec, childHeightMeasureSpec);
 
-                int totalWidthWithoutParentPadding = flexLine.mainSize + child.getMeasuredWidth();
-                if (lp.width == LayoutParams.WRAP_CONTENT
-                        && mFlexWrap != FLEX_WRAP_NOWRAP
-                        && totalWidthWithoutParentPadding < widthSize
-                        && totalWidthWithoutParentPadding + paddingEnd + paddingStart > widthSize) {
-                    // This is for the edge case where the child's width is WRAP_CONTENT and some
-                    // of the contents along the main axis would be truncated if parent's padding
-                    // is added (if this is the case, remeasure the child with accumulated width
-                    // taken into account to avoid some of the contents to be truncated).
-                    // Because accumulated width is not taken into account in the first
-                    // measurement of each child (because FlexboxLayout has the concept of wrapping,
-                    // at the first measurement of each child, we want the child to be big as it
-                    // wants even if there is not enough left over space)
-                    measureChildWithMargins(child, widthMeasureSpec, flexLine.mainSize,
-                            heightMeasureSpec, heightUsed);
-                }
-
                 // Check the size constraint after the first measurement for the child
                 // To prevent the child's width/height violate the size constraints imposed by the
                 // {@link LayoutParams#minWidth}, {@link LayoutParams#minHeight},
@@ -514,22 +496,21 @@ public class FlexboxLayout extends ViewGroup {
                         .combineMeasuredStates(childState, ViewCompat.getMeasuredState(child));
                 largestHeightInRow = Math.max(largestHeightInRow,
                         child.getMeasuredHeight() + lp.topMargin + lp.bottomMargin);
-                flexLine.crossSize = Math.max(flexLine.crossSize, largestHeightInRow);
 
                 if (isWrapRequired(mFlexWrap, widthMode, widthSize, flexLine.mainSize,
                         child.getMeasuredWidth(), lp)) {
-                    flexLine.mainSize += (paddingStart + paddingEnd);
+                    flexLine.mainSize += paddingEnd;
                     mFlexLines.add(flexLine);
-                    heightUsed += flexLine.crossSize;
 
                     flexLine = new FlexLine();
                     flexLine.itemCount = 1;
-                    flexLine.mainSize = 0;
+                    flexLine.mainSize = paddingStart;
                     largestHeightInRow = child.getMeasuredHeight() + lp.topMargin + lp.bottomMargin;
                 } else {
                     flexLine.itemCount++;
                 }
-                flexLine.mainSize += child.getMeasuredWidth() + lp.leftMargin + lp.rightMargin;
+                flexLine.mainSize += child.getMeasuredWidth() + lp.leftMargin
+                        + lp.rightMargin;
                 flexLine.totalFlexGrow += lp.flexGrow;
                 flexLine.totalFlexShrink += lp.flexShrink;
                 // Temporarily set the cross axis length as the largest child in the row
@@ -549,7 +530,7 @@ public class FlexboxLayout extends ViewGroup {
                                     child.getMeasuredHeight() - child.getBaseline()
                                             + lp.bottomMargin);
                 }
-                addFlexLineIfLastFlexItem(i, childCount, paddingStart + paddingEnd, flexLine);
+                addFlexLineIfLastFlexItem(i, childCount, paddingEnd, flexLine);
             }
         }
 
@@ -618,16 +599,15 @@ public class FlexboxLayout extends ViewGroup {
         int paddingBottom = getPaddingBottom();
         int largestWidthInColumn = Integer.MIN_VALUE;
         FlexLine flexLine = new FlexLine();
-        flexLine.mainSize = 0;
-        int widthUsed = getPaddingLeft() + getPaddingLeft();
+        flexLine.mainSize = paddingTop;
         for (int i = 0; i < childCount; i++) {
             View child = getReorderedChildAt(i);
             if (child == null) {
-                addFlexLineIfLastFlexItem(i, childCount, paddingTop + paddingBottom, flexLine);
+                addFlexLineIfLastFlexItem(i, childCount, paddingBottom, flexLine);
                 continue;
             } else if (child.getVisibility() == View.GONE) {
                 flexLine.itemCount++;
-                addFlexLineIfLastFlexItem(i, childCount, paddingTop + paddingBottom, flexLine);
+                addFlexLineIfLastFlexItem(i, childCount, paddingBottom, flexLine);
                 continue;
             }
 
@@ -655,23 +635,6 @@ public class FlexboxLayout extends ViewGroup {
                             + lp.bottomMargin, childHeight);
             child.measure(childWidthMeasureSpec, childHeightMeasureSpec);
 
-            int totalHeightWithoutParentPadding = flexLine.mainSize + child.getMeasuredWidth();
-            if (lp.height == LayoutParams.WRAP_CONTENT
-                    && mFlexWrap != FLEX_WRAP_NOWRAP
-                    && totalHeightWithoutParentPadding < heightSize
-                    && totalHeightWithoutParentPadding + paddingTop + paddingBottom > heightSize) {
-                // This is for the edge case where the child's height is WRAP_CONTENT and some
-                // of the contents along the main axis would be truncated if parent's padding
-                // is added (if this is the case, remeasure the child height with accumulated height
-                // taken into account to avoid some of the contents to be truncated).
-                // Because accumulated height is not taken into account in the first
-                // measurement of each child (because FlexboxLayout has the concept of wrapping,
-                // at the first measurement of each child, we want the child to be big as it
-                // wants even if there is not enough left over space)
-                measureChildWithMargins(child, widthMeasureSpec, widthUsed,
-                        heightMeasureSpec, flexLine.mainSize);
-            }
-
             // Check the size constraint after the first measurement for the child
             // To prevent the child's width/height violate the size constraints imposed by the
             // {@link LayoutParams#minWidth}, {@link LayoutParams#minHeight},
@@ -684,17 +647,15 @@ public class FlexboxLayout extends ViewGroup {
                     .combineMeasuredStates(childState, ViewCompat.getMeasuredState(child));
             largestWidthInColumn = Math.max(largestWidthInColumn,
                     child.getMeasuredWidth() + lp.leftMargin + lp.rightMargin);
-            flexLine.crossSize = Math.max(flexLine.crossSize, largestWidthInColumn);
 
             if (isWrapRequired(mFlexWrap, heightMode, heightSize, flexLine.mainSize,
                     child.getMeasuredHeight(), lp)) {
-                flexLine.mainSize += (paddingTop + paddingBottom);
+                flexLine.mainSize += paddingBottom;
                 mFlexLines.add(flexLine);
-                widthUsed += flexLine.crossSize;
 
                 flexLine = new FlexLine();
                 flexLine.itemCount = 1;
-                flexLine.mainSize = 0;
+                flexLine.mainSize = paddingTop;
                 largestWidthInColumn = child.getMeasuredWidth() + lp.leftMargin
                         + lp.rightMargin;
             } else {
@@ -708,7 +669,7 @@ public class FlexboxLayout extends ViewGroup {
             // later
             flexLine.crossSize = Math.max(flexLine.crossSize, largestWidthInColumn);
 
-            addFlexLineIfLastFlexItem(i, childCount, paddingTop + paddingBottom, flexLine);
+            addFlexLineIfLastFlexItem(i, childCount, paddingBottom, flexLine);
         }
 
         determineMainSize(mFlexDirection, widthMeasureSpec, heightMeasureSpec);
