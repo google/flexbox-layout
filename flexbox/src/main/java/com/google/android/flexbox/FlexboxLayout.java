@@ -62,6 +62,7 @@ import java.util.List;
  * <li>{@code layout_minHeight}</li>
  * <li>{@code layout_maxWidth}</li>
  * <li>{@code layout_maxHeight}</li>
+ * <li>{@code layout_wrapBefore}</li>
  * </ul>
  */
 public class FlexboxLayout extends ViewGroup {
