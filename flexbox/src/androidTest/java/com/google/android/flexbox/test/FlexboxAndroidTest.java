@@ -17,6 +17,14 @@
 package com.google.android.flexbox.test;
 
 
+import com.google.android.flexbox.FlexboxLayout;
+
+import org.hamcrest.Description;
+import org.hamcrest.TypeSafeMatcher;
+import org.junit.Rule;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+
 import android.content.Context;
 import android.support.test.InstrumentationRegistry;
 import android.support.test.espresso.ViewAssertion;
@@ -28,14 +36,6 @@ import android.test.FlakyTest;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
-
-import com.google.android.flexbox.FlexboxLayout;
-
-import org.hamcrest.Description;
-import org.hamcrest.TypeSafeMatcher;
-import org.junit.Rule;
-import org.junit.Test;
-import org.junit.runner.RunWith;
 
 import static android.support.test.espresso.Espresso.onView;
 import static android.support.test.espresso.assertion.PositionAssertions.isAbove;
