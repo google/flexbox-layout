@@ -497,7 +497,8 @@ public class FlexboxLayout extends ViewGroup {
                         child.getMeasuredHeight() + lp.topMargin + lp.bottomMargin);
 
                 if (isWrapRequired(mFlexWrap, widthMode, widthSize, flexLine.mainSize,
-                        child.getMeasuredWidth(), lp)) {
+                        child.getMeasuredWidth() + lp.leftMargin
+                                + lp.rightMargin, lp)) {
                     flexLine.mainSize += paddingEnd;
                     mFlexLines.add(flexLine);
 
@@ -648,7 +649,8 @@ public class FlexboxLayout extends ViewGroup {
                     child.getMeasuredWidth() + lp.leftMargin + lp.rightMargin);
 
             if (isWrapRequired(mFlexWrap, heightMode, heightSize, flexLine.mainSize,
-                    child.getMeasuredHeight(), lp)) {
+                    child.getMeasuredHeight() + lp.topMargin
+                                + lp.bottomMargin, lp)) {
                 flexLine.mainSize += paddingBottom;
                 mFlexLines.add(flexLine);
 
@@ -1371,16 +1373,8 @@ public class FlexboxLayout extends ViewGroup {
         if (lp.wrapBefore) {
             return true;
         }
-
-        // the issue of text being cut in TextView with margin comes from here, because it didn't take margins into account
-        // so i add the margin into the calculation to fix the bug
-        if (mFlexDirection == FLEX_DIRECTION_ROW || mFlexDirection == FLEX_DIRECTION_ROW_REVERSE) {
-            return (mode == MeasureSpec.EXACTLY || mode == MeasureSpec.AT_MOST) &&
-                    maxSize < currentLength + childLength + lp.leftMargin + lp.rightMargin;
-        } else {
-            return (mode == MeasureSpec.EXACTLY || mode == MeasureSpec.AT_MOST) &&
-                    maxSize < currentLength + childLength + lp.topMargin + lp.bottomMargin;
-        }
+        return (mode == MeasureSpec.EXACTLY || mode == MeasureSpec.AT_MOST) &&
+                maxSize < currentLength + childLength;
     }
 
     /**
