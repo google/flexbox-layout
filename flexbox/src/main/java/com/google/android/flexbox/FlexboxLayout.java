@@ -517,8 +517,9 @@ public class FlexboxLayout extends ViewGroup {
                 flexLine.crossSize = Math.max(flexLine.crossSize, largestHeightInRow);
 
                 if (isWrapRequired(mFlexWrap, widthMode, widthSize, flexLine.mainSize,
-                        child.getMeasuredWidth(), lp)) {
-                    flexLine.mainSize += (paddingStart + paddingEnd);
+                        child.getMeasuredWidth() + lp.leftMargin
+                                + lp.rightMargin, lp)) {
+                    flexLine.mainSize += paddingEnd;
                     mFlexLines.add(flexLine);
                     heightUsed += flexLine.crossSize;
 
@@ -687,8 +688,9 @@ public class FlexboxLayout extends ViewGroup {
             flexLine.crossSize = Math.max(flexLine.crossSize, largestWidthInColumn);
 
             if (isWrapRequired(mFlexWrap, heightMode, heightSize, flexLine.mainSize,
-                    child.getMeasuredHeight(), lp)) {
-                flexLine.mainSize += (paddingTop + paddingBottom);
+                    child.getMeasuredHeight() + lp.topMargin
+                                + lp.bottomMargin, lp)) {
+                flexLine.mainSize += paddingBottom;
                 mFlexLines.add(flexLine);
                 widthUsed += flexLine.crossSize;
 
@@ -1411,16 +1413,8 @@ public class FlexboxLayout extends ViewGroup {
         if (lp.wrapBefore) {
             return true;
         }
-
-        // the issue of text being cut in TextView with margin comes from here, because it didn't take margins into account
-        // so i add the margin into the calculation to fix the bug
-        if (mFlexDirection == FLEX_DIRECTION_ROW || mFlexDirection == FLEX_DIRECTION_ROW_REVERSE) {
-            return (mode == MeasureSpec.EXACTLY || mode == MeasureSpec.AT_MOST) &&
-                    maxSize < currentLength + childLength + lp.leftMargin + lp.rightMargin;
-        } else {
-            return (mode == MeasureSpec.EXACTLY || mode == MeasureSpec.AT_MOST) &&
-                    maxSize < currentLength + childLength + lp.topMargin + lp.bottomMargin;
-        }
+        return (mode == MeasureSpec.EXACTLY || mode == MeasureSpec.AT_MOST) &&
+                maxSize < currentLength + childLength;
     }
 
     /**
