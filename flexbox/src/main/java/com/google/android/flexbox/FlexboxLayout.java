@@ -517,8 +517,9 @@ public class FlexboxLayout extends ViewGroup {
                 flexLine.crossSize = Math.max(flexLine.crossSize, largestHeightInRow);
 
                 if (isWrapRequired(mFlexWrap, widthMode, widthSize, flexLine.mainSize,
-                        child.getMeasuredWidth(), lp)) {
-                    flexLine.mainSize += (paddingStart + paddingEnd);
+                        child.getMeasuredWidth() + lp.leftMargin
+                                + lp.rightMargin, lp)) {
+                    flexLine.mainSize += paddingEnd;
                     mFlexLines.add(flexLine);
                     heightUsed += flexLine.crossSize;
 
@@ -687,8 +688,9 @@ public class FlexboxLayout extends ViewGroup {
             flexLine.crossSize = Math.max(flexLine.crossSize, largestWidthInColumn);
 
             if (isWrapRequired(mFlexWrap, heightMode, heightSize, flexLine.mainSize,
-                    child.getMeasuredHeight(), lp)) {
-                flexLine.mainSize += (paddingTop + paddingBottom);
+                    child.getMeasuredHeight() + lp.topMargin
+                                + lp.bottomMargin, lp)) {
+                flexLine.mainSize += paddingBottom;
                 mFlexLines.add(flexLine);
                 widthUsed += flexLine.crossSize;
 
