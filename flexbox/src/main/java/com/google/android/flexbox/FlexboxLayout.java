@@ -562,7 +562,8 @@ public class FlexboxLayout extends ViewGroup {
             }
         }
 
-        determineCrossSize(mFlexDirection, widthMeasureSpec, heightMeasureSpec);
+        determineCrossSize(mFlexDirection, widthMeasureSpec, heightMeasureSpec,
+                getPaddingTop() + getPaddingBottom());
         // Now cross size for each flex line is determined.
         // Expand the views if alignItems (or alignSelf in each child view) is set to stretch
         stretchViews(mFlexDirection, mAlignItems);
@@ -671,7 +672,8 @@ public class FlexboxLayout extends ViewGroup {
         }
 
         determineMainSize(mFlexDirection, widthMeasureSpec, heightMeasureSpec);
-        determineCrossSize(mFlexDirection, widthMeasureSpec, heightMeasureSpec);
+        determineCrossSize(mFlexDirection, widthMeasureSpec, heightMeasureSpec,
+                getPaddingLeft() + getPaddingRight());
         // Now cross size for each flex line is determined.
         // Expand the views if alignItems (or alignSelf in each child view) is set to stretch
         stretchViews(mFlexDirection, mAlignItems);
@@ -1015,16 +1017,17 @@ public class FlexboxLayout extends ViewGroup {
      * Expand the cross size only if the height mode is MeasureSpec.EXACTLY, otherwise
      * use the sum of cross sizes of all flex lines.
      *
-     * @param flexDirection     the flex direction attribute
-     * @param widthMeasureSpec  horizontal space requirements as imposed by the parent
-     * @param heightMeasureSpec vertical space requirements as imposed by the parent
+     * @param flexDirection         the flex direction attribute
+     * @param widthMeasureSpec      horizontal space requirements as imposed by the parent
+     * @param heightMeasureSpec     vertical space requirements as imposed by the parent
+     * @param paddingAlongCrossAxis the padding value for the FlexboxLayout along the cross axis
      * @see #getFlexDirection()
      * @see #setFlexDirection(int)
      * @see #getAlignContent()
      * @see #setAlignContent(int)
      */
     private void determineCrossSize(int flexDirection, int widthMeasureSpec,
-            int heightMeasureSpec) {
+            int heightMeasureSpec, int paddingAlongCrossAxis) {
         // The MeasureSpec mode along the cross axis
         int mode;
         // The MeasureSpec size along the cross axis
@@ -1044,9 +1047,9 @@ public class FlexboxLayout extends ViewGroup {
                 throw new IllegalArgumentException("Invalid flex direction: " + flexDirection);
         }
         if (mode == MeasureSpec.EXACTLY) {
-            int totalCrossSize = getSumOfCrossSize();
+            int totalCrossSize = getSumOfCrossSize() + paddingAlongCrossAxis;
             if (mFlexLines.size() == 1) {
-                mFlexLines.get(0).crossSize = size;
+                mFlexLines.get(0).crossSize = size - paddingAlongCrossAxis;
                 // alignContent property is valid only if the Flexbox has at least two lines
             } else if (mFlexLines.size() >= 2 && totalCrossSize < size) {
                 switch (mAlignContent) {
