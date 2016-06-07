@@ -1336,6 +1336,58 @@ public class FlexboxAndroidTest {
 
     @Test
     @FlakyTest(tolerance = TOLERANCE)
+    public void testAlignContent_flexEnd_parentPadding() throws Throwable {
+        final FlexboxTestActivity activity = mActivityRule.getActivity();
+        mActivityRule.runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                activity.setContentView(R.layout.activity_align_content_test);
+                FlexboxLayout flexboxLayout = (FlexboxLayout) activity
+                        .findViewById(R.id.flexbox_layout);
+                flexboxLayout.setAlignContent(FlexboxLayout.ALIGN_CONTENT_FLEX_END);
+                flexboxLayout.setPadding(32, 32, 32, 32);
+            }
+        });
+        FlexboxLayout flexboxLayout = (FlexboxLayout) activity.findViewById(R.id.flexbox_layout);
+
+        assertThat(flexboxLayout.getAlignContent(), is(FlexboxLayout.ALIGN_CONTENT_FLEX_END));
+        onView(withId(R.id.text1)).check(isAbove(withId(R.id.text3)));
+        onView(withId(R.id.text2)).check(isAbove(withId(R.id.text3)));
+
+        TextView textView3 = (TextView) activity.findViewById(R.id.text3);
+        assertThat(textView3.getBottom(),
+                is(flexboxLayout.getBottom() - flexboxLayout.getPaddingBottom()));
+    }
+
+    @Test
+    @FlakyTest(tolerance = TOLERANCE)
+    public void testAlignContent_flexEnd_parentPadding_column() throws Throwable {
+        final FlexboxTestActivity activity = mActivityRule.getActivity();
+        mActivityRule.runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                activity.setContentView(R.layout.activity_align_content_test);
+                FlexboxLayout flexboxLayout = (FlexboxLayout) activity
+                        .findViewById(R.id.flexbox_layout);
+                flexboxLayout.setAlignContent(FlexboxLayout.ALIGN_CONTENT_FLEX_END);
+                flexboxLayout.setFlexDirection(FlexboxLayout.FLEX_DIRECTION_COLUMN);
+                flexboxLayout.setPadding(32, 32, 32, 32);
+            }
+        });
+        FlexboxLayout flexboxLayout = (FlexboxLayout) activity.findViewById(R.id.flexbox_layout);
+
+        assertThat(flexboxLayout.getAlignContent(), is(FlexboxLayout.ALIGN_CONTENT_FLEX_END));
+        assertThat(flexboxLayout.getFlexDirection(), is(FlexboxLayout.FLEX_DIRECTION_COLUMN));
+        onView(withId(R.id.text1)).check(isLeftOf(withId(R.id.text3)));
+        onView(withId(R.id.text2)).check(isLeftOf(withId(R.id.text3)));
+
+        TextView textView3 = (TextView) activity.findViewById(R.id.text3);
+        assertThat(textView3.getRight(),
+                is(flexboxLayout.getRight() - flexboxLayout.getPaddingRight()));
+    }
+
+    @Test
+    @FlakyTest(tolerance = TOLERANCE)
     public void testAlignContent_center() throws Throwable {
         final FlexboxTestActivity activity = mActivityRule.getActivity();
         mActivityRule.runOnUiThread(new Runnable() {
@@ -1877,6 +1929,60 @@ public class FlexboxAndroidTest {
         assertTrue(flexLineSize - 1 <= textView2.getBottom() &&
                 textView2.getBottom() <= flexLineSize + 1);
         assertThat(textView3.getBottom(), is(flexboxLayout.getBottom()));
+    }
+
+    @Test
+    @FlakyTest(tolerance = TOLERANCE)
+    public void testAlignItems_flexEnd_parentPadding() throws Throwable {
+        final FlexboxTestActivity activity = mActivityRule.getActivity();
+        mActivityRule.runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                activity.setContentView(R.layout.activity_align_items_parent_padding_test);
+                FlexboxLayout flexboxLayout = (FlexboxLayout) activity
+                        .findViewById(R.id.flexbox_layout);
+                flexboxLayout.setAlignItems(FlexboxLayout.ALIGN_ITEMS_FLEX_END);
+            }
+        });
+        FlexboxLayout flexboxLayout = (FlexboxLayout) activity.findViewById(R.id.flexbox_layout);
+
+        assertThat(flexboxLayout.getAlignItems(), is(FlexboxLayout.ALIGN_ITEMS_FLEX_END));
+        onView(withId(R.id.text2)).check(isRightOf(withId(R.id.text1)));
+
+        TextView textView1 = (TextView) activity.findViewById(R.id.text1);
+        TextView textView2 = (TextView) activity.findViewById(R.id.text2);
+        assertThat(textView1.getBottom(),
+                is(flexboxLayout.getBottom() - flexboxLayout.getPaddingBottom()));
+        assertThat(textView2.getBottom(),
+                is(flexboxLayout.getBottom() - flexboxLayout.getPaddingBottom()));
+    }
+
+    @Test
+    @FlakyTest(tolerance = TOLERANCE)
+    public void testAlignItems_flexEnd_parentPadding_column() throws Throwable {
+        final FlexboxTestActivity activity = mActivityRule.getActivity();
+        mActivityRule.runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                activity.setContentView(R.layout.activity_align_items_parent_padding_test);
+                FlexboxLayout flexboxLayout = (FlexboxLayout) activity
+                        .findViewById(R.id.flexbox_layout);
+                flexboxLayout.setAlignItems(FlexboxLayout.ALIGN_ITEMS_FLEX_END);
+                flexboxLayout.setFlexDirection(FlexboxLayout.FLEX_DIRECTION_COLUMN);
+            }
+        });
+        FlexboxLayout flexboxLayout = (FlexboxLayout) activity.findViewById(R.id.flexbox_layout);
+
+        assertThat(flexboxLayout.getAlignItems(), is(FlexboxLayout.ALIGN_ITEMS_FLEX_END));
+        assertThat(flexboxLayout.getFlexDirection(), is(FlexboxLayout.FLEX_DIRECTION_COLUMN));
+        onView(withId(R.id.text2)).check(isBelow(withId(R.id.text1)));
+
+        TextView textView1 = (TextView) activity.findViewById(R.id.text1);
+        TextView textView2 = (TextView) activity.findViewById(R.id.text2);
+        assertThat(textView1.getRight(),
+                is(flexboxLayout.getRight() - flexboxLayout.getPaddingRight()));
+        assertThat(textView2.getRight(),
+                is(flexboxLayout.getRight() - flexboxLayout.getPaddingRight()));
     }
 
     @Test
