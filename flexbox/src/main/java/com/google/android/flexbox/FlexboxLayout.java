@@ -2024,6 +2024,21 @@ public class FlexboxLayout extends ViewGroup {
             a.recycle();
         }
 
+        public LayoutParams(LayoutParams source) {
+            super(source);
+
+            order = source.order;
+            flexGrow = source.flexGrow;
+            flexShrink = source.flexShrink;
+            alignSelf = source.alignSelf;
+            flexBasisPercent = source.flexBasisPercent;
+            minWidth = source.minWidth;
+            minHeight = source.minHeight;
+            maxWidth = source.maxWidth;
+            maxHeight = source.maxHeight;
+            wrapBefore = source.wrapBefore;
+        }
+
         public LayoutParams(ViewGroup.LayoutParams source) {
             super(source);
         }
