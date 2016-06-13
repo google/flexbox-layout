@@ -123,15 +123,21 @@ Also you can specify the following attributes for the children of a FlexboxLayou
   By default, children are displayed and laid out in the same order as they appear in the
   layout XML. If not specified, `1` is set as a default value.
 
+    ![Order explanation](/assets/layout_order.gif)
+
 * layout_flexGrow (float)
   * This attribute determines how much this child will grow if positive free space is
   distributed relative to the rest of other flex items included in the same flex line.
   If not specified, `0` is set as a default value.
 
+    ![Flex Grow explanation](/assets/layout_flexGrow.gif)
+
 * layout_flexShrink (float)
   * This attribute determines how much this child will shrink if negative free space is
   distributed relative to the rest of other flex items included in the same flex line.
   If not specified, `1` is set as a default value.
+
+    ![Flex Shrink explanation](/assets/layout_flexShrink.gif)
 
 * layout_alignSelf 
   * This attribute determines the alignment along the cross axis (perpendicular to the
@@ -145,6 +151,8 @@ Also you can specify the following attributes for the children of a FlexboxLayou
     * baseline
     * stretch
 
+    ![Align Self explanation](/assets/layout_alignSelf.gif)
+
 * layout_flexBasisPercent (fraction)
   * The initial flex item length in a fraction format relative to its parent.
   The initial main size of this child view is trying to be expanded as the specified
@@ -154,11 +162,15 @@ Also you can specify the following attributes for the children of a FlexboxLayou
   This attribute is only effective when the parent's length is definite (MeasureSpec mode is
   `MeasureSpec.EXACTLY`). The default value is `-1`, which means not set.
 
+    ![Flex basis percent explanation](/assets/layout_flexBasisPercent.gif)
+
 * layout_minWidth / layout_minHeight (dimension)
   * These attributes impose minimum size constraints for the children of FlexboxLayout.
   A child view won't be shrank less than the value of these attributes (varies based on the
   `flexDirection` attribute as to which attribute imposes the size constraint along the
   main axis) regardless of the `layout_flexShrink` attribute.
+
+    ![Min width explanation](/assets/layout_minWidth.gif)
 
 * layout_maxWidth / layout_maxHeight (dimension)
   * These attributes impose maximum size constraints for the children of FlexboxLayout.
@@ -166,8 +178,10 @@ Also you can specify the following attributes for the children of a FlexboxLayou
   `flexDirection` attribute as to which attribute imposes the size constraint along the
   main axis) regardless of the `layout_flexGrow` attribute.
 
+    ![Max width explanation](/assets/layout_maxWidth.gif)
+
 * layout_wrapBefore (boolean)
-  * This attribute forces a flex line wrapping, the default value is `false`. 
+  * This attribute forces a flex line wrapping, the default value is `false`.
   i.e. if this is set to `true` for a
   flex item, the item will become the first item of a flex line. (A wrapping happens
   regardless of the flex items being processed in the the previous flex line)
@@ -176,6 +190,8 @@ Also you can specify the following attributes for the children of a FlexboxLayou
   specification, but having this attribute is useful for Android developers to flatten
   the layouts when building a grid like layout or for a situation where developers want
   to put a new flex line to make a semantic difference from the previous one, etc.
+
+    ![Wrap before explanation](/assets/layout_wrapBefore.gif)
 
 ## Known differences from the original CSS specification
 This library tries to achieve the same capabilities of the original
