@@ -63,7 +63,9 @@ view.setLayoutParams(lp);
 ```
 
 ## Supported attributes
-You can specify the following attributes for the FlexboxLayout:
+
+#### Attributes for the FlexboxLayout:
+
 * flexDirection
   * The direction children items are placed inside the Flexbox layout, it determines the
   direction of the main axis (and the cross axis, perpendicular to the main axis).
@@ -116,7 +118,8 @@ You can specify the following attributes for the FlexboxLayout:
 
     ![Align Content explanation](/assets/align-content.gif)
 
-Also you can specify the following attributes for the children of a FlexboxLayout.
+
+#### Attributes for the children of a FlexboxLayout
 
 * layout_order (integer)
   * This attribute can change how the ordering of the children views are laid out.
