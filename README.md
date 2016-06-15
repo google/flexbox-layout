@@ -233,7 +233,7 @@ equivalent attribute
 The `app` module works as a playground demo app for trying various values for the supported attributes.
 You can install it by
 ```
-./gradlew installDebug`
+./gradlew installDebug
 ```
 
 ## How to make contributions
