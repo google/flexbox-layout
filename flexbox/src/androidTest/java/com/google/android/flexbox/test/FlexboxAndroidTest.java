@@ -3020,6 +3020,72 @@ public class FlexboxAndroidTest {
 
     @Test
     @FlakyTest(tolerance = TOLERANCE)
+    public void testFirstItemLarge_horizontal() throws Throwable {
+        // This test verifies a empty flex line is not added when the first flex item is large
+        // and judged wrapping is required with the first item.
+        final FlexboxTestActivity activity = mActivityRule.getActivity();
+        mActivityRule.runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                activity.setContentView(R.layout.activity_first_item_large_horizontal_test);
+            }
+        });
+        FlexboxLayout flexboxLayout = (FlexboxLayout) activity.findViewById(R.id.flexbox_layout);
+
+        assertThat(flexboxLayout.getFlexWrap(), is(FlexboxLayout.FLEX_WRAP_WRAP));
+        assertThat(flexboxLayout.getFlexDirection(), is(FlexboxLayout.FLEX_DIRECTION_ROW));
+        assertThat(flexboxLayout.getAlignItems(), is(FlexboxLayout.ALIGN_ITEMS_STRETCH));
+        assertThat(flexboxLayout.getAlignContent(), is(FlexboxLayout.ALIGN_CONTENT_STRETCH));
+        // The sum of width of TextView1 and TextView2 is not enough for wrapping, but considering
+        // the margin for the TextView2, the second TextView should be wrapped
+        onView(withId(R.id.text1)).check(isTopAlignedWith(withId(R.id.flexbox_layout)));
+        onView(withId(R.id.text1)).check(isLeftAlignedWith(withId(R.id.flexbox_layout)));
+        onView(withId(R.id.text2)).check(isLeftAlignedWith(withId(R.id.flexbox_layout)));
+        onView(withId(R.id.text3)).check(isLeftAlignedWith(withId(R.id.flexbox_layout)));
+        onView(withId(R.id.text3)).check(isBottomAlignedWith(withId(R.id.flexbox_layout)));
+
+        TextView text1 = (TextView) activity.findViewById(R.id.text1);
+        TextView text2 = (TextView) activity.findViewById(R.id.text2);
+        TextView text3 = (TextView) activity.findViewById(R.id.text3);
+        assertThat(flexboxLayout.getHeight(),
+                is(text1.getHeight() + text2.getHeight() + text3.getHeight()));
+    }
+
+    @Test
+    @FlakyTest(tolerance = TOLERANCE)
+    public void testFirstItemLarge_vertical() throws Throwable {
+        // This test verifies a empty flex line is not added when the first flex item is large
+        // and judged wrapping is required with the first item.
+        final FlexboxTestActivity activity = mActivityRule.getActivity();
+        mActivityRule.runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                activity.setContentView(R.layout.activity_first_item_large_vertical_test);
+            }
+        });
+        FlexboxLayout flexboxLayout = (FlexboxLayout) activity.findViewById(R.id.flexbox_layout);
+
+        assertThat(flexboxLayout.getFlexWrap(), is(FlexboxLayout.FLEX_WRAP_WRAP));
+        assertThat(flexboxLayout.getFlexDirection(), is(FlexboxLayout.FLEX_DIRECTION_COLUMN));
+        assertThat(flexboxLayout.getAlignItems(), is(FlexboxLayout.ALIGN_ITEMS_STRETCH));
+        assertThat(flexboxLayout.getAlignContent(), is(FlexboxLayout.ALIGN_CONTENT_STRETCH));
+        // The sum of width of TextView1 and TextView2 is not enough for wrapping, but considering
+        // the margin for the TextView2, the second TextView should be wrapped
+        onView(withId(R.id.text1)).check(isTopAlignedWith(withId(R.id.flexbox_layout)));
+        onView(withId(R.id.text1)).check(isLeftAlignedWith(withId(R.id.flexbox_layout)));
+        onView(withId(R.id.text2)).check(isTopAlignedWith(withId(R.id.flexbox_layout)));
+        onView(withId(R.id.text3)).check(isTopAlignedWith(withId(R.id.flexbox_layout)));
+        onView(withId(R.id.text3)).check(isRightAlignedWith(withId(R.id.flexbox_layout)));
+
+        TextView text1 = (TextView) activity.findViewById(R.id.text1);
+        TextView text2 = (TextView) activity.findViewById(R.id.text2);
+        TextView text3 = (TextView) activity.findViewById(R.id.text3);
+        assertThat(flexboxLayout.getWidth(),
+                is(text1.getWidth() + text2.getWidth() + text3.getWidth()));
+    }
+
+    @Test
+    @FlakyTest(tolerance = TOLERANCE)
     public void testWrap_childMargin_vertical() throws Throwable {
         final FlexboxTestActivity activity = mActivityRule.getActivity();
         mActivityRule.runOnUiThread(new Runnable() {

@@ -499,7 +499,9 @@ public class FlexboxLayout extends ViewGroup {
 
                 if (isWrapRequired(mFlexWrap, widthMode, widthSize, flexLine.mainSize,
                         child.getMeasuredWidth() + lp.leftMargin + lp.rightMargin, lp)) {
-                    mFlexLines.add(flexLine);
+                    if (flexLine.itemCount > 0) {
+                        mFlexLines.add(flexLine);
+                    }
 
                     flexLine = new FlexLine();
                     flexLine.itemCount = 1;
@@ -650,7 +652,9 @@ public class FlexboxLayout extends ViewGroup {
 
             if (isWrapRequired(mFlexWrap, heightMode, heightSize, flexLine.mainSize,
                     child.getMeasuredHeight() + lp.topMargin + lp.bottomMargin, lp)) {
-                mFlexLines.add(flexLine);
+                if (flexLine.itemCount > 0) {
+                    mFlexLines.add(flexLine);
+                }
 
                 flexLine = new FlexLine();
                 flexLine.itemCount = 1;
