@@ -237,7 +237,7 @@ You can install it by
 ```
 
 ## How to make contributions
-Please read and follow the steps in [CONTRIBUTING.md](https://github.com/google/flexbox-layout/blob/master/CONTRIBUTING.md)
+Please read and follow the steps in [CONTRIBUTING.md](/CONTRIBUTING.md)
 
 ## License
-Please see [License](https://github.com/google/flexbox-layout/blob/master/LICENSE)
+Please see [LICENSE](/LICENSE)
