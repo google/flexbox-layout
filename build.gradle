@@ -31,10 +31,10 @@ buildscript {
 
 ext {
     minSdkVersion = 9
-    targetSdkVersion = 23
-    compileSdkVersion = 23
+    targetSdkVersion = 24
+    compileSdkVersion = 24
     buildToolsVersion = "23.0.3"
-    supportLibVersion = "23.3.0"
+    supportLibVersion = "24.0.0"
     espressoVersion = "2.2.2"
     testRunnerVersion = "0.5"
     junitVersion = "4.12"
