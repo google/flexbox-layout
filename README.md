@@ -67,8 +67,7 @@ view.setLayoutParams(lp);
 #### Attributes for the FlexboxLayout:
 
 * __flexDirection__
-  * The direction children items are placed inside the Flexbox layout, it determines the
-  direction of the main axis (and the cross axis, perpendicular to the main axis).
+  * This attribute determines the direction of the main axis (and the cross axis, perpendicular to the main axis).The direction children items are placed inside the Flexbox layout.
   Possible values are:
     * row (default)
     * row_reverse
