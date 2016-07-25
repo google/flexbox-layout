@@ -259,7 +259,7 @@ view.setLayoutParams(lp);
   regardless of the flex items being processed in the the previous flex line)
   This attribute is ignored if the `flex_wrap` attribute is set to `nowrap`.
   The equivalent attribute isn't defined in the original CSS Flexible Box Module
-  specification, but having this attribute is useful for Android developers to flatten
+  specification, but having this attribute is useful for Android developers. For example, to flatten
   the layouts when building a grid like layout or for a situation where developers want
   to put a new flex line to make a semantic difference from the previous one, etc.
 
