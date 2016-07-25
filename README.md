@@ -285,8 +285,8 @@ equivalent attribute
   * Both `layout_flexBasisPercent` in this library and `flex-basis` property in the CSS are used to
   determine the initial length of an individual flex item. The `flex-basis` property accepts width
   values such as `1em`, `10px`, and `content` as strings as well as percentage values such as
-  `10%` and `30%`, whereas `layout_flexBasisPercent` only accepts percentage values.
-  But specifying initial fixed width values can be done by specifying width (or height) values in
+  `10%` and `30%`. `layout_flexBasisPercent` only accepts percentage values.
+  However, specifying initial fixed width values can be done by specifying width (or height) values in
   layout_width (or layout_height, varies depending on the `flexDirection`). Also, the same
   effect can be done by specifying "wrap_content" in layout_width (or layout_height) if
   developers want to achieve the same effect as 'content'. Thus, `layout_flexBasisPercent` only
