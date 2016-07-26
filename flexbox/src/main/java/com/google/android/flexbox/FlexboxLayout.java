@@ -18,6 +18,8 @@ package com.google.android.flexbox;
 
 import android.content.Context;
 import android.content.res.TypedArray;
+import android.graphics.Canvas;
+import android.graphics.drawable.Drawable;
 import android.support.annotation.IntDef;
 import android.support.annotation.NonNull;
 import android.support.v4.view.ViewCompat;
@@ -48,6 +50,12 @@ import java.util.List;
  * <li>{@code justifyContent}</li>
  * <li>{@code alignItems}</li>
  * <li>{@code alignContent}</li>
+ * <li>{@code showDivider}</li>
+ * <li>{@code showDividerHorizontal}</li>
+ * <li>{@code showDividerVertical}</li>
+ * <li>{@code dividerDrawable}</li>
+ * <li>{@code dividerDrawableHorizontal}</li>
+ * <li>{@code dividerDrawableVertical}</li>
  * </ul>
  * for the FlexboxLayout.
  *
@@ -211,6 +219,52 @@ public class FlexboxLayout extends ViewGroup {
      */
     private int mAlignContent;
 
+    @IntDef(flag = true,
+            value = {
+                    SHOW_DIVIDER_NONE,
+                    SHOW_DIVIDER_BEGINNING,
+                    SHOW_DIVIDER_MIDDLE,
+                    SHOW_DIVIDER_END
+            })
+    @Retention(RetentionPolicy.SOURCE)
+    public @interface DividerMode {
+
+    }
+
+    public static final int SHOW_DIVIDER_NONE = 0;
+
+    public static final int SHOW_DIVIDER_BEGINNING = 1;
+
+    public static final int SHOW_DIVIDER_MIDDLE = 1 << 1;
+
+    public static final int SHOW_DIVIDER_END = 1 << 2;
+
+    private Drawable mDividerDrawableHorizontal;
+
+    private Drawable mDividerDrawableVertical;
+
+    /**
+     * Indicates the divider mode for the {@link #mDividerDrawableHorizontal}. The value needs to
+     * be the combination of the value of {@link #SHOW_DIVIDER_NONE},
+     * {@link #SHOW_DIVIDER_BEGINNING}, {@link #SHOW_DIVIDER_MIDDLE} and {@link #SHOW_DIVIDER_END}
+     */
+    private int mDividerModeHorizontal;
+
+    /**
+     * Indicates the divider mode for the {@link #mDividerDrawableVertical}. The value needs to
+     * be the combination of the value of {@link #SHOW_DIVIDER_NONE},
+     * {@link #SHOW_DIVIDER_BEGINNING}, {@link #SHOW_DIVIDER_MIDDLE} and {@link #SHOW_DIVIDER_END}
+     */
+    private int mDividerModeVertical;
+
+    private int mDividerHorizontalWidth;
+
+    private int mDividerHorizontalHeight;
+
+    private int mDividerVerticalWidth;
+
+    private int mDividerVerticalHeight;
+
     /**
      * Holds reordered indices, which {@link LayoutParams#order} parameters are taken into account
      */
@@ -251,6 +305,36 @@ public class FlexboxLayout extends ViewGroup {
                 .getInt(R.styleable.FlexboxLayout_justifyContent, JUSTIFY_CONTENT_FLEX_START);
         mAlignItems = a.getInt(R.styleable.FlexboxLayout_alignItems, ALIGN_ITEMS_STRETCH);
         mAlignContent = a.getInt(R.styleable.FlexboxLayout_alignContent, ALIGN_CONTENT_STRETCH);
+        Drawable drawable = a.getDrawable(R.styleable.FlexboxLayout_dividerDrawable);
+        if (drawable != null) {
+            setDividerDrawableHorizontal(drawable);
+            setDividerDrawableVertical(drawable);
+        }
+        Drawable drawableHorizontal = a
+                .getDrawable(R.styleable.FlexboxLayout_dividerDrawableHorizontal);
+        if (drawableHorizontal != null) {
+            setDividerDrawableHorizontal(drawableHorizontal);
+        }
+        Drawable drawableVertical = a
+                .getDrawable(R.styleable.FlexboxLayout_dividerDrawableVertical);
+        if (drawableVertical != null) {
+            setDividerDrawableVertical(drawableVertical);
+        }
+        int dividerMode = a.getInt(R.styleable.FlexboxLayout_showDivider, SHOW_DIVIDER_NONE);
+        if (dividerMode != SHOW_DIVIDER_NONE) {
+            mDividerModeVertical = dividerMode;
+            mDividerModeHorizontal = dividerMode;
+        }
+        int dividerModeVertical = a
+                .getInt(R.styleable.FlexboxLayout_showDividerVertical, SHOW_DIVIDER_NONE);
+        if (dividerModeVertical != SHOW_DIVIDER_NONE) {
+            mDividerModeVertical = dividerModeVertical;
+        }
+        int dividerModeHorizontal = a
+                .getInt(R.styleable.FlexboxLayout_showDividerHorizontal, SHOW_DIVIDER_NONE);
+        if (dividerModeHorizontal != SHOW_DIVIDER_NONE) {
+            mDividerModeHorizontal = dividerModeHorizontal;
+        }
         a.recycle();
     }
 
@@ -448,15 +532,18 @@ public class FlexboxLayout extends ViewGroup {
             int paddingEnd = ViewCompat.getPaddingEnd(this);
             int largestHeightInRow = Integer.MIN_VALUE;
             FlexLine flexLine = new FlexLine();
+
+            // The index of the view in a same flex line.
+            int indexInFlexLine = 0;
             flexLine.mainSize = paddingStart + paddingEnd;
             for (int i = 0; i < childCount; i++) {
                 View child = getReorderedChildAt(i);
                 if (child == null) {
-                    addFlexLineIfLastFlexItem(i, childCount, flexLine);
+                    addFlexLineIfLastFlexItem(i, childCount, flexLine, mFlexDirection);
                     continue;
                 } else if (child.getVisibility() == View.GONE) {
                     flexLine.itemCount++;
-                    addFlexLineIfLastFlexItem(i, childCount, flexLine);
+                    addFlexLineIfLastFlexItem(i, childCount, flexLine, mFlexDirection);
                     continue;
                 }
 
@@ -497,27 +584,35 @@ public class FlexboxLayout extends ViewGroup {
                 largestHeightInRow = Math.max(largestHeightInRow,
                         child.getMeasuredHeight() + lp.topMargin + lp.bottomMargin);
 
-                if (isWrapRequired(mFlexWrap, widthMode, widthSize, flexLine.mainSize,
-                        child.getMeasuredWidth() + lp.leftMargin + lp.rightMargin, lp)) {
+                if (isWrapRequired(widthMode, widthSize, flexLine.mainSize,
+                        child.getMeasuredWidth() + lp.leftMargin + lp.rightMargin, lp,
+                        i, indexInFlexLine)) {
                     if (flexLine.itemCount > 0) {
-                        mFlexLines.add(flexLine);
+                        addFlexLine(flexLine, mFlexDirection);
                     }
 
                     flexLine = new FlexLine();
                     flexLine.itemCount = 1;
                     flexLine.mainSize = paddingStart + paddingEnd;
                     largestHeightInRow = child.getMeasuredHeight() + lp.topMargin + lp.bottomMargin;
+                    indexInFlexLine = 0;
                 } else {
                     flexLine.itemCount++;
+                    indexInFlexLine++;
                 }
-                flexLine.mainSize += child.getMeasuredWidth() + lp.leftMargin
-                        + lp.rightMargin;
+                flexLine.mainSize += child.getMeasuredWidth() + lp.leftMargin + lp.rightMargin;
                 flexLine.totalFlexGrow += lp.flexGrow;
                 flexLine.totalFlexShrink += lp.flexShrink;
                 // Temporarily set the cross axis length as the largest child in the row
                 // Expand along the cross axis depending on the mAlignContent property if needed
                 // later
                 flexLine.crossSize = Math.max(flexLine.crossSize, largestHeightInRow);
+
+                // Check if the beginning or middle divider is required for the flex item
+                if (hasDividerBeforeChildAtAlongMainAxis(i, indexInFlexLine)) {
+                    flexLine.mainSize += mDividerVerticalWidth;
+                    flexLine.dividerLengthInMainSize += mDividerVerticalWidth;
+                }
 
                 if (mFlexWrap != FLEX_WRAP_WRAP_REVERSE) {
                     flexLine.maxBaseline = Math
@@ -531,7 +626,7 @@ public class FlexboxLayout extends ViewGroup {
                                     child.getMeasuredHeight() - child.getBaseline()
                                             + lp.bottomMargin);
                 }
-                addFlexLineIfLastFlexItem(i, childCount, flexLine);
+                addFlexLineIfLastFlexItem(i, childCount, flexLine, mFlexDirection);
             }
         }
 
@@ -573,7 +668,6 @@ public class FlexboxLayout extends ViewGroup {
                 childState);
     }
 
-
     /**
      * Sub method for {@link #onMeasure(int, int)} when the main axis direction is vertical
      * (either from top to bottom or bottom to top).
@@ -602,14 +696,16 @@ public class FlexboxLayout extends ViewGroup {
         int largestWidthInColumn = Integer.MIN_VALUE;
         FlexLine flexLine = new FlexLine();
         flexLine.mainSize = paddingTop + paddingBottom;
+        // The index of the view in a same flex line.
+        int indexInFlexLine = 0;
         for (int i = 0; i < childCount; i++) {
             View child = getReorderedChildAt(i);
             if (child == null) {
-                addFlexLineIfLastFlexItem(i, childCount, flexLine);
+                addFlexLineIfLastFlexItem(i, childCount, flexLine, mFlexDirection);
                 continue;
             } else if (child.getVisibility() == View.GONE) {
                 flexLine.itemCount++;
-                addFlexLineIfLastFlexItem(i, childCount, flexLine);
+                addFlexLineIfLastFlexItem(i, childCount, flexLine, mFlexDirection);
                 continue;
             }
 
@@ -650,19 +746,21 @@ public class FlexboxLayout extends ViewGroup {
             largestWidthInColumn = Math.max(largestWidthInColumn,
                     child.getMeasuredWidth() + lp.leftMargin + lp.rightMargin);
 
-            if (isWrapRequired(mFlexWrap, heightMode, heightSize, flexLine.mainSize,
-                    child.getMeasuredHeight() + lp.topMargin + lp.bottomMargin, lp)) {
+            if (isWrapRequired(heightMode, heightSize, flexLine.mainSize,
+                    child.getMeasuredHeight() + lp.topMargin + lp.bottomMargin, lp,
+                    i, indexInFlexLine)) {
                 if (flexLine.itemCount > 0) {
-                    mFlexLines.add(flexLine);
+                    addFlexLine(flexLine, mFlexDirection);
                 }
 
                 flexLine = new FlexLine();
                 flexLine.itemCount = 1;
                 flexLine.mainSize = paddingTop + paddingBottom;
-                largestWidthInColumn = child.getMeasuredWidth() + lp.leftMargin
-                        + lp.rightMargin;
+                largestWidthInColumn = child.getMeasuredWidth() + lp.leftMargin + lp.rightMargin;
+                indexInFlexLine = 0;
             } else {
                 flexLine.itemCount++;
+                indexInFlexLine++;
             }
             flexLine.mainSize += child.getMeasuredHeight() + lp.topMargin + lp.bottomMargin;
             flexLine.totalFlexGrow += lp.flexGrow;
@@ -672,7 +770,10 @@ public class FlexboxLayout extends ViewGroup {
             // later
             flexLine.crossSize = Math.max(flexLine.crossSize, largestWidthInColumn);
 
-            addFlexLineIfLastFlexItem(i, childCount, flexLine);
+            if (hasDividerBeforeChildAtAlongMainAxis(i, indexInFlexLine)) {
+                flexLine.mainSize += mDividerHorizontalHeight;
+            }
+            addFlexLineIfLastFlexItem(i, childCount, flexLine, mFlexDirection);
         }
 
         determineMainSize(mFlexDirection, widthMeasureSpec, heightMeasureSpec);
@@ -719,11 +820,29 @@ public class FlexboxLayout extends ViewGroup {
         }
     }
 
-    private void addFlexLineIfLastFlexItem(int childIndex, int childCount, FlexLine flexLine) {
+    private void addFlexLineIfLastFlexItem(int childIndex, int childCount, FlexLine flexLine,
+            @FlexDirection int flexDirection) {
         if (childIndex == childCount - 1 && flexLine.itemCount != 0) {
             // Add the flex line if this item is the last item
-            mFlexLines.add(flexLine);
+            addFlexLine(flexLine, flexDirection);
         }
+    }
+
+    private void addFlexLine(FlexLine flexLine, @FlexDirection int flexDirection) {
+        // The size of the end divider isn't added until the flexLine is added to the flex container
+        // take the divider width (or height) into account when adding the flex line.
+        if (isMainAxisDirectionHorizontal(flexDirection)) {
+            if ((mDividerModeVertical & SHOW_DIVIDER_END) > 0) {
+                flexLine.mainSize += mDividerVerticalWidth;
+                flexLine.dividerLengthInMainSize += mDividerVerticalWidth;
+            }
+        } else {
+            if ((mDividerModeHorizontal & SHOW_DIVIDER_END) > 0) {
+                flexLine.mainSize += mDividerHorizontalHeight;
+                flexLine.dividerLengthInMainSize += mDividerHorizontalHeight;
+            }
+        }
+        mFlexLines.add(flexLine);
     }
 
     /**
@@ -806,7 +925,7 @@ public class FlexboxLayout extends ViewGroup {
         int sizeBeforeExpand = flexLine.mainSize;
         boolean needsReexpand = false;
         float unitSpace = (maxMainSize - flexLine.mainSize) / flexLine.totalFlexGrow;
-        flexLine.mainSize = paddingAlongMainAxis;
+        flexLine.mainSize = paddingAlongMainAxis + flexLine.dividerLengthInMainSize;
         float accumulatedRoundError = 0;
         for (int i = 0; i < flexLine.itemCount; i++) {
             View child = getReorderedChildAt(childIndex);
@@ -817,8 +936,7 @@ public class FlexboxLayout extends ViewGroup {
                 continue;
             }
             LayoutParams lp = (LayoutParams) child.getLayoutParams();
-            if (flexDirection == FLEX_DIRECTION_ROW
-                    || flexDirection == FLEX_DIRECTION_ROW_REVERSE) {
+            if (isMainAxisDirectionHorizontal(flexDirection)) {
                 // The direction of the main axis is horizontal
                 if (!mChildrenFrozen[childIndex]) {
                     float rawCalculatedWidth = child.getMeasuredWidth() + unitSpace * lp.flexGrow;
@@ -927,7 +1045,7 @@ public class FlexboxLayout extends ViewGroup {
         boolean needsReshrink = false;
         float unitShrink = (flexLine.mainSize - maxMainSize) / flexLine.totalFlexShrink;
         float accumulatedRoundError = 0;
-        flexLine.mainSize = paddingAlongMainAxis;
+        flexLine.mainSize = paddingAlongMainAxis + flexLine.dividerLengthInMainSize;
         for (int i = 0; i < flexLine.itemCount; i++) {
             View child = getReorderedChildAt(childIndex);
             if (child == null) {
@@ -937,8 +1055,7 @@ public class FlexboxLayout extends ViewGroup {
                 continue;
             }
             LayoutParams lp = (LayoutParams) child.getLayoutParams();
-            if (flexDirection == FLEX_DIRECTION_ROW
-                    || flexDirection == FLEX_DIRECTION_ROW_REVERSE) {
+            if (isMainAxisDirectionHorizontal(flexDirection)) {
                 // The direction of main axis is horizontal
                 if (!mChildrenFrozen[childIndex]) {
                     float rawCalculatedWidth = child.getMeasuredWidth()
@@ -1051,7 +1168,9 @@ public class FlexboxLayout extends ViewGroup {
                 throw new IllegalArgumentException("Invalid flex direction: " + flexDirection);
         }
         if (mode == MeasureSpec.EXACTLY) {
-            int totalCrossSize = getSumOfCrossSize() + paddingAlongCrossAxis;
+            // The resize along the cross axis needs to be done without the lengths of dividers,
+            // thus passing false to the getSumOfCrossSize method
+            int totalCrossSize = getSumOfCrossSize(true) + paddingAlongCrossAxis;
             if (mFlexLines.size() == 1) {
                 mFlexLines.get(0).crossSize = size - paddingAlongCrossAxis;
                 // alignContent property is valid only if the Flexbox has at least two lines
@@ -1278,13 +1397,16 @@ public class FlexboxLayout extends ViewGroup {
         switch (flexDirection) {
             case FLEX_DIRECTION_ROW: // Intentional fall through
             case FLEX_DIRECTION_ROW_REVERSE:
-                calculatedMaxHeight = getSumOfCrossSize() + getPaddingTop() + getPaddingBottom();
+                // The flex container size along the cross axis is considered to include divider
+                // lengths along the cross axis, thus passing true to the getSumOfCrossSize method
+                calculatedMaxHeight = getSumOfCrossSize(true) + getPaddingTop()
+                        + getPaddingBottom();
                 calculatedMaxWidth = getLargestMainSize();
                 break;
             case FLEX_DIRECTION_COLUMN: // Intentional fall through
             case FLEX_DIRECTION_COLUMN_REVERSE:
                 calculatedMaxHeight = getLargestMainSize();
-                calculatedMaxWidth = getSumOfCrossSize() + getPaddingLeft() + getPaddingRight();
+                calculatedMaxWidth = getSumOfCrossSize(true) + getPaddingLeft() + getPaddingRight();
                 break;
             default:
                 throw new IllegalArgumentException("Invalid flex direction: " + flexDirection);
@@ -1356,7 +1478,6 @@ public class FlexboxLayout extends ViewGroup {
     /**
      * Determine if a wrap is required (add a new flex line).
      *
-     * @param flexWrap      the flexWrap attribute
      * @param mode          the width or height mode along the main axis direction
      * @param maxSize       the max size along the main axis direction
      * @param currentLength the accumulated current length
@@ -1367,13 +1488,30 @@ public class FlexboxLayout extends ViewGroup {
      * @see #getFlexWrap()
      * @see #setFlexWrap(int)
      */
-    private boolean isWrapRequired(int flexWrap, int mode, int maxSize,
-            int currentLength, int childLength, LayoutParams lp) {
-        if (flexWrap == FLEX_WRAP_NOWRAP) {
+    private boolean isWrapRequired(int mode, int maxSize, int currentLength, int childLength,
+            LayoutParams lp, int childAbsoluteIndex, int childRelativeIndexInFlexLine) {
+        if (mFlexWrap == FLEX_WRAP_NOWRAP) {
             return false;
         }
         if (lp.wrapBefore) {
             return true;
+        }
+        if (isMainAxisDirectionHorizontal(mFlexDirection)) {
+            if (hasDividerBeforeChildAtAlongMainAxis(childAbsoluteIndex,
+                    childRelativeIndexInFlexLine)) {
+                childLength += mDividerVerticalWidth;
+            }
+            if ((mDividerModeVertical & SHOW_DIVIDER_END) > 0) {
+                childLength += mDividerVerticalWidth;
+            }
+        } else {
+            if (hasDividerBeforeChildAtAlongMainAxis(childAbsoluteIndex,
+                    childRelativeIndexInFlexLine)) {
+                childLength += mDividerHorizontalHeight;
+            }
+            if ((mDividerModeHorizontal & SHOW_DIVIDER_END) > 0) {
+                childLength += mDividerHorizontalHeight;
+            }
         }
         return (mode == MeasureSpec.EXACTLY || mode == MeasureSpec.AT_MOST) &&
                 maxSize < currentLength + childLength;
@@ -1393,16 +1531,52 @@ public class FlexboxLayout extends ViewGroup {
     }
 
     /**
-     * Retrieve the sum of the cross sizes of all flex lines.
+     * Retrieve the sum of the cross sizes of all flex lines including divider lengths.
      *
+     * @param includeDividerLength When set to {@code true}, the result will include the sum of
+     *                             lengths of dividers along the cross axis.
      * @return the sum of the cross sizes
      */
-    private int getSumOfCrossSize() {
+    private int getSumOfCrossSize(boolean includeDividerLength) {
         int sum = 0;
-        for (FlexLine flexLine : mFlexLines) {
+        for (int i = 0; i < mFlexLines.size(); i++) {
+            FlexLine flexLine = mFlexLines.get(i);
+
+            if (includeDividerLength) {
+                // Judge if the beginning divider is required
+                if (i == 0) {
+                    sum = getSumOfCrossSizeIncludingDivider(sum, SHOW_DIVIDER_BEGINNING);
+                } else if (mFlexLines.size() > 1) {
+                    // Judge if the middle dividers are required between each flex line
+                    sum = getSumOfCrossSizeIncludingDivider(sum, SHOW_DIVIDER_MIDDLE);
+                }
+
+                // Judge if the end divider is required
+                if (i == mFlexLines.size() - 1) {
+                    sum = getSumOfCrossSizeIncludingDivider(sum, SHOW_DIVIDER_END);
+                }
+            }
             sum += flexLine.crossSize;
         }
         return sum;
+    }
+
+    private int getSumOfCrossSizeIncludingDivider(int sum, @DividerMode int dividerModeFilter) {
+        if (isMainAxisDirectionHorizontal(mFlexDirection)) {
+            if ((mDividerModeHorizontal & dividerModeFilter) > 0) {
+                sum += mDividerHorizontalHeight;
+            }
+        } else {
+            if ((mDividerModeVertical & dividerModeFilter) > 0) {
+                sum += mDividerVerticalWidth;
+            }
+        }
+        return sum;
+    }
+
+    private boolean isMainAxisDirectionHorizontal(@FlexDirection int flexDirection) {
+        return flexDirection == FLEX_DIRECTION_ROW
+                || flexDirection == FLEX_DIRECTION_ROW_REVERSE;
     }
 
     @Override
@@ -1475,7 +1649,12 @@ public class FlexboxLayout extends ViewGroup {
         // Use float to reduce the round error that may happen in when justifyContent ==
         // SPACE_BETWEEN or SPACE_AROUND
         float childRight;
-        for (FlexLine flexLine : mFlexLines) {
+        for (int i = 0; i < mFlexLines.size(); i++) {
+            FlexLine flexLine = mFlexLines.get(i);
+            if (hasDividerBeforeFlexLine(i)) {
+                childBottom -= mDividerHorizontalHeight;
+                childTop += mDividerHorizontalHeight;
+            }
             float spaceBetweenItem = 0f;
             switch (mJustifyContent) {
                 case JUSTIFY_CONTENT_FLEX_START:
@@ -1509,7 +1688,7 @@ public class FlexboxLayout extends ViewGroup {
             }
             spaceBetweenItem = Math.max(spaceBetweenItem, 0);
 
-            for (int i = 0; i < flexLine.itemCount; i++) {
+            for (int j = 0; j < flexLine.itemCount; j++) {
                 View child = getReorderedChildAt(currentViewIndex);
                 if (child == null) {
                     continue;
@@ -1520,6 +1699,11 @@ public class FlexboxLayout extends ViewGroup {
                 LayoutParams lp = ((LayoutParams) child.getLayoutParams());
                 childLeft += lp.leftMargin;
                 childRight -= lp.rightMargin;
+                if (hasDividerBeforeChildAtAlongMainAxis(currentViewIndex, j)) {
+                    childLeft += mDividerVerticalWidth;
+                    childRight -= mDividerVerticalWidth;
+                }
+
                 if (mFlexWrap == FLEX_WRAP_WRAP_REVERSE) {
                     if (isRtl) {
                         layoutSingleChildHorizontal(child, flexLine, mFlexWrap, mAlignItems,
@@ -1547,6 +1731,11 @@ public class FlexboxLayout extends ViewGroup {
                 childLeft += child.getMeasuredWidth() + spaceBetweenItem + lp.rightMargin;
                 childRight -= child.getMeasuredWidth() + spaceBetweenItem + lp.leftMargin;
                 currentViewIndex++;
+
+                flexLine.left = Math.min(flexLine.left, child.getLeft() - lp.leftMargin);
+                flexLine.top = Math.min(flexLine.top, child.getTop() - lp.topMargin);
+                flexLine.right = Math.max(flexLine.right, child.getRight() + lp.rightMargin);
+                flexLine.bottom = Math.max(flexLine.bottom, child.getBottom() + lp.bottomMargin);
             }
             childTop += flexLine.crossSize;
             childBottom -= flexLine.crossSize;
@@ -1675,7 +1864,13 @@ public class FlexboxLayout extends ViewGroup {
 
         // Used only for if the direction is from bottom to top
         float childBottom;
-        for (FlexLine flexLine : mFlexLines) {
+
+        for (int i = 0; i < mFlexLines.size(); i++) {
+            FlexLine flexLine = mFlexLines.get(i);
+            if (hasDividerBeforeFlexLine(i)) {
+                childLeft += mDividerVerticalWidth;
+                childRight -= mDividerVerticalWidth;
+            }
             float spaceBetweenItem = 0f;
             switch (mJustifyContent) {
                 case JUSTIFY_CONTENT_FLEX_START:
@@ -1710,7 +1905,7 @@ public class FlexboxLayout extends ViewGroup {
             }
             spaceBetweenItem = Math.max(spaceBetweenItem, 0);
 
-            for (int i = 0; i < flexLine.itemCount; i++) {
+            for (int j = 0; j < flexLine.itemCount; j++) {
                 View child = getReorderedChildAt(currentViewIndex);
                 if (child == null) {
                     continue;
@@ -1721,6 +1916,10 @@ public class FlexboxLayout extends ViewGroup {
                 LayoutParams lp = ((LayoutParams) child.getLayoutParams());
                 childTop += lp.topMargin;
                 childBottom -= lp.bottomMargin;
+                if (hasDividerBeforeChildAtAlongMainAxis(currentViewIndex, j)) {
+                    childTop += mDividerHorizontalHeight;
+                    childBottom -= mDividerHorizontalHeight;
+                }
                 if (isRtl) {
                     if (fromBottomToTop) {
                         layoutSingleChildVertical(child, flexLine, true, mAlignItems,
@@ -1747,6 +1946,11 @@ public class FlexboxLayout extends ViewGroup {
                 childTop += child.getMeasuredHeight() + spaceBetweenItem + lp.bottomMargin;
                 childBottom -= child.getMeasuredHeight() + spaceBetweenItem + lp.topMargin;
                 currentViewIndex++;
+
+                flexLine.left = Math.min(flexLine.left, child.getLeft() - lp.leftMargin);
+                flexLine.top = Math.min(flexLine.top, child.getTop() - lp.topMargin);
+                flexLine.right = Math.max(flexLine.right, child.getRight() + lp.rightMargin);
+                flexLine.bottom = Math.max(flexLine.bottom, child.getBottom() + lp.bottomMargin);
             }
             childLeft += flexLine.crossSize;
             childRight -= flexLine.crossSize;
@@ -1824,6 +2028,222 @@ public class FlexboxLayout extends ViewGroup {
     }
 
     @Override
+    protected void onDraw(Canvas canvas) {
+        if (mDividerDrawableVertical == null && mDividerDrawableHorizontal == null) {
+            return;
+        }
+
+        int layoutDirection = ViewCompat.getLayoutDirection(this);
+        boolean isRtl;
+        boolean fromBottomToTop = false;
+        switch (mFlexDirection) {
+            case FLEX_DIRECTION_ROW:
+                isRtl = layoutDirection == ViewCompat.LAYOUT_DIRECTION_RTL;
+                if (mFlexWrap == FLEX_WRAP_WRAP_REVERSE) {
+                    fromBottomToTop = true;
+                }
+                drawDividersHorizontal(canvas, isRtl, fromBottomToTop);
+                break;
+            case FLEX_DIRECTION_ROW_REVERSE:
+                isRtl = layoutDirection != ViewCompat.LAYOUT_DIRECTION_RTL;
+                if (mFlexWrap == FLEX_WRAP_WRAP_REVERSE) {
+                    fromBottomToTop = true;
+                }
+                drawDividersHorizontal(canvas, isRtl, fromBottomToTop);
+                break;
+            case FLEX_DIRECTION_COLUMN:
+                isRtl = layoutDirection == ViewCompat.LAYOUT_DIRECTION_RTL;
+                if (mFlexWrap == FLEX_WRAP_WRAP_REVERSE) {
+                    isRtl = !isRtl;
+                }
+                fromBottomToTop = false;
+                drawDividersVertical(canvas, isRtl, fromBottomToTop);
+                break;
+            case FLEX_DIRECTION_COLUMN_REVERSE:
+                isRtl = layoutDirection == ViewCompat.LAYOUT_DIRECTION_RTL;
+                if (mFlexWrap == FLEX_WRAP_WRAP_REVERSE) {
+                    isRtl = !isRtl;
+                }
+                fromBottomToTop = true;
+                drawDividersVertical(canvas, isRtl, fromBottomToTop);
+                break;
+        }
+    }
+
+    /**
+     * Sub method for {@link #onDraw(Canvas)} when the main axis direction is horizontal
+     * ({@link #mFlexDirection} is either of {@link #FLEX_DIRECTION_ROW} or
+     * {@link #FLEX_DIRECTION_ROW_REVERSE}.
+     *
+     * @param canvas          the canvas on which the background will be drawn
+     * @param isRtl           {@code true} when the horizontal layout direction is right to left,
+     *                        {@code false} otherwise
+     * @param fromBottomToTop {@code true} when the vertical layout direction is bottom to top,
+     *                        {@code false} otherwise
+     */
+    private void drawDividersHorizontal(Canvas canvas, boolean isRtl, boolean fromBottomToTop) {
+        if (mDividerDrawableHorizontal == null) {
+            return;
+        }
+        int currentViewIndex = 0;
+        int paddingLeft = getPaddingLeft();
+        int paddingRight = getPaddingRight();
+        int horizontalDividerLength = Math.max(0, getWidth() - paddingRight - paddingLeft);
+        for (int i = 0; i < mFlexLines.size(); i++) {
+            FlexLine flexLine = mFlexLines.get(i);
+            for (int j = 0; j < flexLine.itemCount; j++) {
+                View view = getReorderedChildAt(currentViewIndex);
+                LayoutParams lp = (LayoutParams) view.getLayoutParams();
+
+                // Judge if the beginning or middle divider is needed
+                if (hasDividerBeforeChildAtAlongMainAxis(currentViewIndex, j)) {
+                    int dividerLeft;
+                    if (isRtl) {
+                        dividerLeft = view.getRight() + lp.rightMargin;
+                    } else {
+                        dividerLeft = view.getLeft() - lp.leftMargin - mDividerVerticalWidth;
+                    }
+
+                    drawVerticalDivider(canvas, dividerLeft, flexLine.top, flexLine.crossSize);
+                }
+
+                // Judge if the end divider is needed
+                if (j == flexLine.itemCount - 1) {
+                    if ((mDividerModeVertical & SHOW_DIVIDER_END) > 0) {
+                        int dividerLeft;
+                        if (isRtl) {
+                            dividerLeft = view.getLeft() - lp.leftMargin - mDividerVerticalWidth;
+                        } else {
+                            dividerLeft = view.getRight() + lp.rightMargin;
+                        }
+
+                        drawVerticalDivider(canvas, dividerLeft, flexLine.top, flexLine.crossSize);
+                    }
+                }
+                currentViewIndex++;
+            }
+
+            // Judge if the beginning or middle dividers are needed before the flex line
+            if (hasDividerBeforeFlexLine(i)) {
+                int horizontalDividerTop;
+                if (fromBottomToTop) {
+                    horizontalDividerTop = flexLine.bottom;
+                } else {
+                    horizontalDividerTop = flexLine.top - mDividerHorizontalHeight;
+                }
+                drawHorizontalDivider(canvas, paddingLeft, horizontalDividerTop,
+                        horizontalDividerLength);
+            }
+            // Judge if the end divider is needed before the flex line
+            if (hasEndDividerAfterFlexLine(i)) {
+                if ((mDividerModeHorizontal & SHOW_DIVIDER_END) > 0) {
+                    int horizontalDividerTop;
+                    if (fromBottomToTop) {
+                        horizontalDividerTop = flexLine.top - mDividerHorizontalHeight;
+                    } else {
+                        horizontalDividerTop = flexLine.bottom;
+                    }
+                    drawHorizontalDivider(canvas, paddingLeft, horizontalDividerTop,
+                            horizontalDividerLength);
+                }
+            }
+        }
+    }
+
+    /**
+     * Sub method for {@link #onDraw(Canvas)} when the main axis direction is vertical
+     * ({@link #mFlexDirection} is either of {@link #FLEX_DIRECTION_COLUMN} or
+     * {@link #FLEX_DIRECTION_COLUMN_REVERSE}.
+     *
+     * @param canvas          the canvas on which the background will be drawn
+     * @param isRtl           {@code true} when the horizontal layout direction is right to left,
+     *                        {@code false} otherwise
+     * @param fromBottomToTop {@code true} when the vertical layout direction is bottom to top,
+     *                        {@code false} otherwise
+     */
+    private void drawDividersVertical(Canvas canvas, boolean isRtl, boolean fromBottomToTop) {
+        if (mDividerDrawableVertical == null) {
+            return;
+        }
+        int currentViewIndex = 0;
+        int paddingTop = getPaddingTop();
+        int paddingBottom = getPaddingBottom();
+        int verticalDividerLength = Math.max(0, getHeight() - paddingBottom - paddingTop);
+        for (int i = 0; i < mFlexLines.size(); i++) {
+            FlexLine flexLine = mFlexLines.get(i);
+
+            // Draw horizontal dividers if needed
+            for (int j = 0; j < flexLine.itemCount; j++) {
+                View view = getReorderedChildAt(currentViewIndex);
+                LayoutParams lp = (LayoutParams) view.getLayoutParams();
+
+                // Judge if the beginning or middle divider is needed
+                if (hasDividerBeforeChildAtAlongMainAxis(currentViewIndex, j)) {
+                    int dividerTop;
+                    if (fromBottomToTop) {
+                        dividerTop = view.getBottom() + lp.bottomMargin;
+                    } else {
+                        dividerTop = view.getTop() - lp.topMargin - mDividerHorizontalHeight;
+                    }
+
+                    drawHorizontalDivider(canvas, flexLine.left, dividerTop, flexLine.crossSize);
+                }
+
+                // Judge if the end divider is needed
+                if (j == flexLine.itemCount - 1) {
+                    if ((mDividerModeHorizontal & SHOW_DIVIDER_END) > 0) {
+                        int dividerTop;
+                        if (fromBottomToTop) {
+                            dividerTop = view.getTop() - lp.topMargin - mDividerHorizontalHeight;
+                        } else {
+                            dividerTop = view.getBottom() + lp.bottomMargin;
+                        }
+
+                        drawHorizontalDivider(canvas, flexLine.left, dividerTop,
+                                flexLine.crossSize);
+                    }
+                }
+                currentViewIndex++;
+            }
+
+            // Judge if the beginning or middle dividers are needed before the flex line
+            if (hasDividerBeforeFlexLine(i)) {
+                int verticalDividerLeft;
+                if (isRtl) {
+                    verticalDividerLeft = flexLine.right;
+                } else {
+                    verticalDividerLeft = flexLine.left - mDividerVerticalWidth;
+                }
+                drawVerticalDivider(canvas, verticalDividerLeft, paddingTop,
+                        verticalDividerLength);
+            }
+            if (hasEndDividerAfterFlexLine(i)) {
+                if ((mDividerModeVertical & SHOW_DIVIDER_END) > 0) {
+                    int verticalDividerLeft;
+                    if (isRtl) {
+                        verticalDividerLeft = flexLine.left - mDividerVerticalWidth;
+                    } else {
+                        verticalDividerLeft = flexLine.right;
+                    }
+                    drawVerticalDivider(canvas, verticalDividerLeft, paddingTop,
+                            verticalDividerLength);
+                }
+            }
+        }
+    }
+
+    private void drawVerticalDivider(Canvas canvas, int left, int top, int length) {
+        mDividerDrawableVertical.setBounds(left, top, left + mDividerVerticalWidth, top + length);
+        mDividerDrawableVertical.draw(canvas);
+    }
+
+    private void drawHorizontalDivider(Canvas canvas, int left, int top, int length) {
+        mDividerDrawableVertical
+                .setBounds(left, top, left + length, top + mDividerHorizontalHeight);
+        mDividerDrawableVertical.draw(canvas);
+    }
+
+    @Override
     protected boolean checkLayoutParams(ViewGroup.LayoutParams p) {
         return p instanceof FlexboxLayout.LayoutParams;
     }
@@ -1896,6 +2316,241 @@ public class FlexboxLayout extends ViewGroup {
             mAlignContent = alignContent;
             requestLayout();
         }
+    }
+
+    /**
+     * @return the horizontal divider drawable that will divide each item.
+     * @see #setDividerDrawable(Drawable)
+     * @see #setDividerDrawableHorizontal(Drawable)
+     */
+    public Drawable getDividerDrawableHorizontal() {
+        return mDividerDrawableHorizontal;
+    }
+
+    /**
+     * @return the vertical divider drawable that will divide each item.
+     * @see #setDividerDrawable(Drawable)
+     * @see #setDividerDrawableVertical(Drawable)
+     */
+    public Drawable getDividerDrawableVertical() {
+        return mDividerDrawableVertical;
+    }
+
+    /**
+     * Set a drawable to be used as a divider between items. The drawable is used for both
+     * horizontal and vertical dividers.
+     *
+     * @param divider Drawable that will divide each item for both horizontally and vertically.
+     * @see #setShowDivider(int)
+     */
+    public void setDividerDrawable(Drawable divider) {
+        setDividerDrawableHorizontal(divider);
+        setDividerDrawableVertical(divider);
+    }
+
+    /**
+     * Set a drawable to be used as a horizontal divider between items.
+     *
+     * @param divider Drawable that will divide each item.
+     * @see #setDividerDrawable(Drawable)
+     * @see #setShowDivider(int)
+     * @see #setShowDividerHorizontal(int)
+     */
+    public void setDividerDrawableHorizontal(Drawable divider) {
+        if (divider == mDividerDrawableHorizontal) {
+            return;
+        }
+        mDividerDrawableHorizontal = divider;
+        if (divider != null) {
+            mDividerHorizontalWidth = divider.getIntrinsicWidth();
+            mDividerHorizontalHeight = divider.getIntrinsicHeight();
+        } else {
+            mDividerHorizontalWidth = 0;
+            mDividerHorizontalHeight = 0;
+        }
+        setWillNotDrawFlag();
+        requestLayout();
+    }
+
+    /**
+     * Set a drawable to be used as a vertical divider between items.
+     *
+     * @param divider Drawable that will divide each item.
+     * @see #setDividerDrawable(Drawable)
+     * @see #setShowDivider(int)
+     * @see #setShowDividerVertical(int)
+     */
+    public void setDividerDrawableVertical(Drawable divider) {
+        if (divider == mDividerDrawableVertical) {
+            return;
+        }
+        mDividerDrawableVertical = divider;
+        if (divider != null) {
+            mDividerVerticalWidth = divider.getIntrinsicWidth();
+            mDividerVerticalHeight = divider.getIntrinsicHeight();
+        } else {
+            mDividerVerticalWidth = 0;
+            mDividerVerticalHeight = 0;
+        }
+        setWillNotDrawFlag();
+        requestLayout();
+    }
+
+    @FlexboxLayout.DividerMode
+    public int getShowDividerVertical() {
+        return mDividerModeVertical;
+    }
+
+    @FlexboxLayout.DividerMode
+    public int getShowDividerHorizontal() {
+        return mDividerModeHorizontal;
+    }
+
+    /**
+     * Set how dividers should be shown between items in this layout. This method sets the
+     * divider mode for both horizontally and vertically.
+     *
+     * @param dividerMode One or more of {@link #SHOW_DIVIDER_BEGINNING},
+     *                    {@link #SHOW_DIVIDER_MIDDLE}, or {@link #SHOW_DIVIDER_END},
+     *                    or {@link #SHOW_DIVIDER_NONE} to show no dividers.
+     * @see #setShowDividerVertical(int)
+     * @see #setShowDividerHorizontal(int)
+     */
+    public void setShowDivider(@DividerMode int dividerMode) {
+        setShowDividerVertical(dividerMode);
+        setShowDividerHorizontal(dividerMode);
+    }
+
+    /**
+     * Set how vertical dividers should be shown between items in this layout
+     *
+     * @param dividerMode One or more of {@link #SHOW_DIVIDER_BEGINNING},
+     *                    {@link #SHOW_DIVIDER_MIDDLE}, or {@link #SHOW_DIVIDER_END},
+     *                    or {@link #SHOW_DIVIDER_NONE} to show no dividers.
+     * @see #setShowDivider(int)
+     */
+    public void setShowDividerVertical(@DividerMode int dividerMode) {
+        if (dividerMode != mDividerModeVertical) {
+            mDividerModeVertical = dividerMode;
+            requestLayout();
+        }
+    }
+
+    /**
+     * Set how horizontal dividers should be shown between items in this layout.
+     *
+     * @param dividerMode One or more of {@link #SHOW_DIVIDER_BEGINNING},
+     *                    {@link #SHOW_DIVIDER_MIDDLE}, or {@link #SHOW_DIVIDER_END},
+     *                    or {@link #SHOW_DIVIDER_NONE} to show no dividers.
+     * @see #setShowDivider(int)
+     */
+    public void setShowDividerHorizontal(@DividerMode int dividerMode) {
+        if (dividerMode != mDividerModeHorizontal) {
+            mDividerModeHorizontal = dividerMode;
+            requestLayout();
+        }
+    }
+
+    private void setWillNotDrawFlag() {
+        if (mDividerDrawableHorizontal == null && mDividerDrawableVertical == null) {
+            setWillNotDraw(true);
+        } else {
+            setWillNotDraw(false);
+        }
+    }
+
+    /**
+     * Check if a divider is needed before the view whose indices are passed as arguments.
+     *
+     * @param childAbsoluteIndex           the absolute index of the view to be judged
+     * @param childRelativeIndexInFlexLine the relative index in the flex line where the view
+     *                                     belongs
+     * @return {@code true} if a divider is needed, {@code false} otherwise
+     */
+    private boolean hasDividerBeforeChildAtAlongMainAxis(int childAbsoluteIndex,
+            int childRelativeIndexInFlexLine) {
+        if (allViewsAreGoneBefore(childAbsoluteIndex, childRelativeIndexInFlexLine)) {
+            if (isMainAxisDirectionHorizontal(mFlexDirection)) {
+                return (mDividerModeVertical & SHOW_DIVIDER_BEGINNING) != 0;
+            } else {
+                return (mDividerModeHorizontal & SHOW_DIVIDER_BEGINNING) != 0;
+            }
+        } else {
+            if (isMainAxisDirectionHorizontal(mFlexDirection)) {
+                return (mDividerModeVertical & SHOW_DIVIDER_MIDDLE) != 0;
+            } else {
+                return (mDividerModeHorizontal & SHOW_DIVIDER_MIDDLE) != 0;
+            }
+        }
+    }
+
+    private boolean allViewsAreGoneBefore(int childAbsoluteIndex,
+            int childRelativeIndexInFlexLine) {
+        for (int i = 1; i <= childRelativeIndexInFlexLine; i++) {
+            View view = getReorderedChildAt(childAbsoluteIndex - i);
+            if (view != null && view.getVisibility() != View.GONE) {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    /**
+     * Check if a divider is needed before the flex line whose index is passed as an argument.
+     *
+     * @param flexLineIndex the index of the flex line to be checked
+     * @return {@code true} if a divider is needed, {@code false} otherwise
+     */
+    private boolean hasDividerBeforeFlexLine(int flexLineIndex) {
+        if (flexLineIndex < 0 || flexLineIndex >= mFlexLines.size()) {
+            return false;
+        }
+        if (allFlexLinesAreDummyBefore(flexLineIndex)) {
+            if (isMainAxisDirectionHorizontal(mFlexDirection)) {
+                return (mDividerModeHorizontal & SHOW_DIVIDER_BEGINNING) != 0;
+            } else {
+                return (mDividerModeVertical & SHOW_DIVIDER_BEGINNING) != 0;
+            }
+        } else {
+            if (isMainAxisDirectionHorizontal(mFlexDirection)) {
+                return (mDividerModeHorizontal & SHOW_DIVIDER_MIDDLE) != 0;
+            } else {
+                return (mDividerModeVertical & SHOW_DIVIDER_MIDDLE) != 0;
+            }
+        }
+    }
+
+    private boolean allFlexLinesAreDummyBefore(int flexLineIndex) {
+        for (int i = 0; i < flexLineIndex; i++) {
+            if (mFlexLines.get(i).itemCount > 0) {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    /**
+     * Check if a end divider is needed after the flex line whose index is passed as an argument.
+     *
+     * @param flexLineIndex the index of the flex line to be checked
+     * @return {@code true} if a divider is needed, {@code false} otherwise
+     */
+    private boolean hasEndDividerAfterFlexLine(int flexLineIndex) {
+        if (flexLineIndex < 0 || flexLineIndex >= mFlexLines.size()) {
+            return false;
+        }
+
+        for (int i = flexLineIndex + 1; i < mFlexLines.size(); i++) {
+            if (mFlexLines.get(i).itemCount > 0) {
+                return false;
+            }
+        }
+        if (isMainAxisDirectionHorizontal(mFlexDirection)) {
+            return (mDividerModeHorizontal & SHOW_DIVIDER_END) != 0;
+        } else {
+            return (mDividerModeVertical & SHOW_DIVIDER_END) != 0;
+        }
+
     }
 
     /**
@@ -2086,7 +2741,37 @@ public class FlexboxLayout extends ViewGroup {
      */
     private static class FlexLine {
 
+        /**
+         * The distance in pixels from the left edge of this view's parent
+         * to the left edge of this FlexLine.
+         */
+        int left = Integer.MAX_VALUE;
+
+        /**
+         * The distance in pixels from the top edge of this view's parent
+         * to the top edge of this FlexLine.
+         */
+        int top = Integer.MAX_VALUE;
+
+        /**
+         * The distance in pixels from the right edge of this view's parent
+         * to the right edge of this FlexLine.
+         */
+        int right = Integer.MIN_VALUE;
+
+        /**
+         * The distance in pixels from the bottom edge of this view's parent
+         * to the bottom edge of this FlexLine.
+         */
+        int bottom = Integer.MIN_VALUE;
+
         int mainSize;
+
+        /**
+         * The sum of the lengths of dividers along the main axis. This value should be lower or
+         * than than the value of {@link #mainSize}.
+         */
+        int dividerLengthInMainSize;
 
         int crossSize;
 
