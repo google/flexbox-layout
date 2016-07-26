@@ -2070,7 +2070,21 @@ public class FlexboxLayout extends ViewGroup {
         }
     }
 
+    /**
+     * Sub method for {@link #onDraw(Canvas)} when the main axis direction is horizontal
+     * ({@link #mFlexDirection} is either of {@link #FLEX_DIRECTION_ROW} or
+     * {@link #FLEX_DIRECTION_ROW_REVERSE}.
+     *
+     * @param canvas          the canvas on which the background will be drawn
+     * @param isRtl           {@code true} when the horizontal layout direction is right to left,
+     *                        {@code false} otherwise
+     * @param fromBottomToTop {@code true} when the vertical layout direction is bottom to top,
+     *                        {@code false} otherwise
+     */
     private void drawDividersHorizontal(Canvas canvas, boolean isRtl, boolean fromBottomToTop) {
+        if (mDividerDrawableHorizontal == null) {
+            return;
+        }
         int currentViewIndex = 0;
         int paddingLeft = getPaddingLeft();
         int paddingRight = getPaddingRight();
@@ -2136,7 +2150,21 @@ public class FlexboxLayout extends ViewGroup {
         }
     }
 
+    /**
+     * Sub method for {@link #onDraw(Canvas)} when the main axis direction is vertical
+     * ({@link #mFlexDirection} is either of {@link #FLEX_DIRECTION_COLUMN} or
+     * {@link #FLEX_DIRECTION_COLUMN_REVERSE}.
+     *
+     * @param canvas          the canvas on which the background will be drawn
+     * @param isRtl           {@code true} when the horizontal layout direction is right to left,
+     *                        {@code false} otherwise
+     * @param fromBottomToTop {@code true} when the vertical layout direction is bottom to top,
+     *                        {@code false} otherwise
+     */
     private void drawDividersVertical(Canvas canvas, boolean isRtl, boolean fromBottomToTop) {
+        if (mDividerDrawableVertical == null) {
+            return;
+        }
         int currentViewIndex = 0;
         int paddingTop = getPaddingTop();
         int paddingBottom = getPaddingBottom();
