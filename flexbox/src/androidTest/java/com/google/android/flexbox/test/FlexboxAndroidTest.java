@@ -335,6 +335,7 @@ public class FlexboxAndroidTest {
         onView(withId(R.id.text3)).check(isBelow(withId(R.id.text1)));
         onView(withId(R.id.text3)).check(isBelow(withId(R.id.text2)));
         onView(withId(R.id.text3)).check(isLeftAlignedWith(withId(R.id.flexbox_layout)));
+        assertThat(flexboxLayout.getFlexLines().size(), is(2));
     }
 
     @Test
@@ -363,6 +364,7 @@ public class FlexboxAndroidTest {
         // to the right of the second one and overflowing the parent FlexboxLayout.
         onView(withId(R.id.text3)).check(isRightOf(withId(R.id.text2)));
         onView(withId(R.id.text3)).check(isTopAlignedWith(withId(R.id.flexbox_layout)));
+        assertThat(flexboxLayout.getFlexLines().size(), is(1));
     }
 
     @Test
@@ -390,6 +392,7 @@ public class FlexboxAndroidTest {
         onView(withId(R.id.text3)).check(isAbove(withId(R.id.text1)));
         onView(withId(R.id.text3)).check(isAbove(withId(R.id.text2)));
         onView(withId(R.id.text3)).check(isLeftAlignedWith(withId(R.id.flexbox_layout)));
+        assertThat(flexboxLayout.getFlexLines().size(), is(2));
     }
 
     @Test
@@ -418,6 +421,7 @@ public class FlexboxAndroidTest {
         onView(withId(R.id.text3)).check(isRightOf(withId(R.id.text1)));
         onView(withId(R.id.text3)).check(isRightOf(withId(R.id.text2)));
         onView(withId(R.id.text3)).check(isTopAlignedWith(withId(R.id.flexbox_layout)));
+        assertThat(flexboxLayout.getFlexLines().size(), is(2));
     }
 
     @Test
@@ -448,6 +452,7 @@ public class FlexboxAndroidTest {
         // below the second one and overflowing the parent FlexboxLayout.
         onView(withId(R.id.text3)).check(isBelow(withId(R.id.text2)));
         onView(withId(R.id.text3)).check(isLeftAlignedWith(withId(R.id.flexbox_layout)));
+        assertThat(flexboxLayout.getFlexLines().size(), is(1));
     }
 
     @Test
@@ -478,6 +483,7 @@ public class FlexboxAndroidTest {
         onView(withId(R.id.text3)).check(isLeftOf(withId(R.id.text1)));
         onView(withId(R.id.text3)).check(isLeftOf(withId(R.id.text2)));
         onView(withId(R.id.text3)).check(isTopAlignedWith(withId(R.id.flexbox_layout)));
+        assertThat(flexboxLayout.getFlexLines().size(), is(2));
     }
 
     @Test
