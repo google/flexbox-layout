@@ -66,7 +66,7 @@ view.setLayoutParams(lp);
 
 #### Attributes for the FlexboxLayout:
 
-* flexDirection
+* __flexDirection__
   * The direction children items are placed inside the Flexbox layout, it determines the
   direction of the main axis (and the cross axis, perpendicular to the main axis).
   Possible values are:
@@ -77,7 +77,7 @@ view.setLayoutParams(lp);
 
     ![Flex Direction explanation](/assets/flex-direction.gif)
 
-* flexWrap
+* __flexWrap__
   * This attribute controls whether the flex container is single-line or multi-line, and the
   direction of the cross axis. Possible values are:
     * nowrap (default)
@@ -86,7 +86,7 @@ view.setLayoutParams(lp);
 
     ![Flex Wrap explanation](/assets/flex-wrap.gif)
 
-* justifyContent
+* __justifyContent__
   * This attribute controls the alignment along the main axis. Possible values are:
     * flex_start (default)
     * flex_end
@@ -96,7 +96,7 @@ view.setLayoutParams(lp);
 
     ![Justify Content explanation](/assets/justify-content.gif)
 
-* alignItems
+* __alignItems__
   * This attribute controls the alignment along the cross axis. Possible values are:
     * stretch (default)
     * flex_start
@@ -106,7 +106,7 @@ view.setLayoutParams(lp);
 
     ![Align Items explanation](/assets/align-items.gif)
 
-* alignContent
+* __alignContent__
   * This attribute controls the alignment of the flex lines in the flex container. Possible values
   are:
     * stretch (default)
@@ -118,18 +118,18 @@ view.setLayoutParams(lp);
 
     ![Align Content explanation](/assets/align-content.gif)
 
-* showDividerHorizontal (one or more of `none | beginning | middle | end`)
-* dividerDrawableHorizontal (reference to a drawable)
+* __showDividerHorizontal__ (one or more of `none | beginning | middle | end`)
+* __dividerDrawableHorizontal__ (reference to a drawable)
   * Puts horizontal dividers between flex lines (or flex items when flexDirection
   is set to `column` or `column_rebase`).
   
-* showDividerVertical (one or more of `none | beginning | middle | end`)
-* dividerDrawableVertical (reference to a drawable)
+* __showDividerVertical__ (one or more of `none | beginning | middle | end`)
+* __dividerDrawableVertical__ (reference to a drawable)
   * Puts vertical dividers between flex items (or flex lines when flexDirection
   is set to `column` or `column_rebase`).
 
-* showDivider (one or more of `none | beginning | middle | end`)
-* dividerDrawable (reference to a drawable)
+* __showDivider__ (one or more of `none | beginning | middle | end`)
+* __dividerDrawable__ (reference to a drawable)
   * Shorthand for setting both horizontal and vertical dividers. Note that if used with other attributes
   (such as `justifyContent="space_around"` or `alignContent="space_between"` ... etc) for putting 
   spaces between flex lines or flex items, you may see unexpected spaces. Please avoid using these
@@ -191,28 +191,28 @@ view.setLayoutParams(lp);
 
 #### Attributes for the children of a FlexboxLayout
 
-* layout_order (integer)
+* __layout_order__ (integer)
   * This attribute can change how the ordering of the children views are laid out.
   By default, children are displayed and laid out in the same order as they appear in the
   layout XML. If not specified, `1` is set as a default value.
 
     ![Order explanation](/assets/layout_order.gif)
 
-* layout_flexGrow (float)
+* __layout_flexGrow__ (float)
   * This attribute determines how much this child will grow if positive free space is
   distributed relative to the rest of other flex items included in the same flex line.
   If not specified, `0` is set as a default value.
 
     ![Flex Grow explanation](/assets/layout_flexGrow.gif)
 
-* layout_flexShrink (float)
+* __layout_flexShrink__ (float)
   * This attribute determines how much this child will shrink if negative free space is
   distributed relative to the rest of other flex items included in the same flex line.
   If not specified, `1` is set as a default value.
 
     ![Flex Shrink explanation](/assets/layout_flexShrink.gif)
 
-* layout_alignSelf 
+* __layout_alignSelf__
   * This attribute determines the alignment along the cross axis (perpendicular to the
   main axis). The alignment in the same direction can be determined by the
   `alignItems` in the parent, but if this is set to other than
@@ -226,7 +226,7 @@ view.setLayoutParams(lp);
 
     ![Align Self explanation](/assets/layout_alignSelf.gif)
 
-* layout_flexBasisPercent (fraction)
+* __layout_flexBasisPercent__ (fraction)
   * The initial flex item length in a fraction format relative to its parent.
   The initial main size of this child view is trying to be expanded as the specified
   fraction against the parent main size.
@@ -237,7 +237,7 @@ view.setLayoutParams(lp);
 
     ![Flex basis percent explanation](/assets/layout_flexBasisPercent.gif)
 
-* layout_minWidth / layout_minHeight (dimension)
+* __layout_minWidth__ / __layout_minHeight__ (dimension)
   * These attributes impose minimum size constraints for the children of FlexboxLayout.
   A child view won't be shrank less than the value of these attributes (varies based on the
   `flexDirection` attribute as to which attribute imposes the size constraint along the
@@ -245,7 +245,7 @@ view.setLayoutParams(lp);
 
     ![Min width explanation](/assets/layout_minWidth.gif)
 
-* layout_maxWidth / layout_maxHeight (dimension)
+* __layout_maxWidth__ / __layout_maxHeight__ (dimension)
   * These attributes impose maximum size constraints for the children of FlexboxLayout.
   A child view won't be expanded more than the value of these attributes (varies based on the
   `flexDirection` attribute as to which attribute imposes the size constraint along the
@@ -253,7 +253,7 @@ view.setLayoutParams(lp);
 
     ![Max width explanation](/assets/layout_maxWidth.gif)
 
-* layout_wrapBefore (boolean)
+* __layout_wrapBefore__ (boolean)
   * This attribute forces a flex line wrapping, the default value is `false`.
   i.e. if this is set to `true` for a
   flex item, the item will become the first item of a flex line. (A wrapping happens
