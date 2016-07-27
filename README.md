@@ -118,18 +118,18 @@ view.setLayoutParams(lp);
 
     ![Align Content explanation](/assets/align-content.gif)
 
-* showDividerHorizontal
-* dividerDrawableHorizontal
+* showDividerHorizontal (one or more of `none | beginning | middle | end`)
+* dividerDrawableHorizontal (reference to a drawable)
   * Puts horizontal dividers between flex lines (or flex items when flexDirection
   is set to `column` or `column_rebase`).
   
-* showDividerVertical
-* dividerDrawableVertical
+* showDividerVertical (one or more of `none | beginning | middle | end`)
+* dividerDrawableVertical (reference to a drawable)
   * Puts vertical dividers between flex items (or flex lines when flexDirection
   is set to `column` or `column_rebase`).
 
-* showDivider
-* dividerDrawable
+* showDivider (one or more of `none | beginning | middle | end`)
+* dividerDrawable (reference to a drawable)
   * Shorthand for setting both horizontal and vertical dividers. Note that if used with other attributes
   (such as `justifyContent="space_around"` or `alignContent="space_between"` ... etc) for putting 
   spaces between flex lines or flex items, you may see unexpected spaces. Please avoid using these
