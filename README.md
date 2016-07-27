@@ -118,6 +118,76 @@ view.setLayoutParams(lp);
 
     ![Align Content explanation](/assets/align-content.gif)
 
+* showDividerHorizontal
+* dividerDrawableHorizontal
+  * Puts horizontal dividers between flex lines (or flex items when flexDirection
+  is set to `column` or `column_rebase`).
+  
+* showDividerVertical
+* dividerDrawableVertical
+  * Puts vertical dividers between flex items (or flex lines when flexDirection
+  is set to `column` or `column_rebase`).
+
+* showDivider
+* dividerDrawable
+  * Shorthand for setting both horizontal and vertical dividers. Note that if used with other attributes
+  (such as `justifyContent="space_around"` or `alignContent="space_between"` ... etc) for putting 
+  spaces between flex lines or flex items, you may see unexpected spaces. Please avoid using these
+  at the same time.
+  
+  Example of putting both vertical and horizontal dividers.
+  
+  `res/drawable/divider.xml`
+  ```xml
+  <shape xmlns:android="http://schemas.android.com/apk/res/android">
+    <size
+        android:width="8dp"
+        android:height="12dp" />
+    <solid android:color="#44A444" />
+  </shape> 
+  ```
+  
+  `res/layout/content_main.xml`
+  ```xml
+  <com.google.android.flexbox.FlexboxLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    app:alignContent="flex_start"
+    app:alignItems="flex_start"
+    app:flexWrap="wrap"
+    app:showDivider="beginning|middle"
+    app:dividerDrawable="@drawable/divider" >
+
+    <TextView
+        style="@style/FlexItem"
+        android:layout_width="220dp"
+        android:layout_height="80dp"
+        android:text="1" />
+    <TextView
+        style="@style/FlexItem"
+        android:layout_width="120dp"
+        android:layout_height="80dp"
+        android:text="2" />
+    <TextView
+        style="@style/FlexItem"
+        android:layout_width="160dp"
+        android:layout_height="80dp"
+        android:text="3" />
+    <TextView
+        style="@style/FlexItem"
+        android:layout_width="80dp"
+        android:layout_height="80dp"
+        android:text="4" />
+    <TextView
+        style="@style/FlexItem"
+        android:layout_width="100dp"
+        android:layout_height="80dp"
+        android:text="5" />
+  ```
+  
+  ![Dividers beginning and middle](/assets/divider-beginning-middle.png)
+
 
 #### Attributes for the children of a FlexboxLayout
 
