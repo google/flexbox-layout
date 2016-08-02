@@ -62,21 +62,27 @@ public class FlexboxLayoutManager extends RecyclerView.LayoutManager {
 
     /**
      * Creates a default FlexboxLayoutManager.
-     *
-     * @param context Current context, will be used to access resources.
      */
-    public FlexboxLayoutManager(Context context) {
-        this(context, FlexDirection.ROW, FlexWrap.WRAP);
-    }
-
-    public FlexboxLayoutManager(Context context, @FlexDirection int flexDirection) {
-        this(context, flexDirection, FlexWrap.WRAP);
+    public FlexboxLayoutManager() {
+        this(FlexDirection.ROW, FlexWrap.WRAP);
     }
 
     /**
-     * @param context Current context, will be used to access resources.
+     * Creates a FlexboxLayoutManager with the flexDirection specified.
+     *
+     * @param flexDirection the flex direction attribute
      */
-    public FlexboxLayoutManager(Context context, @FlexDirection int flexDirection,
+    public FlexboxLayoutManager(@FlexDirection int flexDirection) {
+        this(flexDirection, FlexWrap.WRAP);
+    }
+
+    /**
+     * Creates a FlexboxLayoutManager with the flexDirection and flexWrap attributes specified.
+     *
+     * @param flexDirection the flex direction attribute
+     * @param flexWrap      the flex wrap attribute
+     */
+    public FlexboxLayoutManager(@FlexDirection int flexDirection,
             @FlexWrap int flexWrap) {
         setFlexDirection(flexDirection);
         setFlexWrap(flexWrap);
@@ -85,9 +91,9 @@ public class FlexboxLayoutManager extends RecyclerView.LayoutManager {
 
     /**
      * Constructor used when layout manager is set in XML by RecyclerView attribute
-     * "layoutManager". No corresponding the attributes for the {@code orientation},
+     * "layoutManager". No corresponding attributes for the {@code orientation},
      * {@code reverseLayout} and {@code stackFromEnd} exist in Flexbox, thus map the similar
-     * attributes fro Flexbox that behave similarly.
+     * attributes from Flexbox that behave similarly for each of them.
      */
     public FlexboxLayoutManager(Context context, AttributeSet attrs, int defStyleAttr,
             int defStyleRes) {
@@ -194,7 +200,7 @@ public class FlexboxLayoutManager extends RecyclerView.LayoutManager {
     }
 
     /**
-     * LayoutManager used by the FlexboxLayoutManager, which stores per-child information
+     * LayoutParams used by the {@link FlexboxLayoutManager}, which stores per-child information
      * required for the Flexbox.
      */
     public static class LayoutParams extends RecyclerView.LayoutParams {
@@ -258,6 +264,7 @@ public class FlexboxLayoutManager extends RecyclerView.LayoutManager {
 
         /**
          * This attribute determines the minimum height the child can shrink to.
+         *
          * @see FlexboxLayout.LayoutParams#minHeight
          */
         public int minHeight;
