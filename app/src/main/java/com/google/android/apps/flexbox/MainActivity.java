@@ -16,7 +16,12 @@
 
 package com.google.android.apps.flexbox;
 
+import com.google.android.flexbox.AlignContent;
+import com.google.android.flexbox.AlignItems;
+import com.google.android.flexbox.FlexDirection;
+import com.google.android.flexbox.FlexWrap;
 import com.google.android.flexbox.FlexboxLayout;
+import com.google.android.flexbox.JustifyContent;
 
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -264,16 +269,16 @@ public class MainActivity extends AppCompatActivity
                     @Override
                     public void onItemSelected(AdapterView<?> parent, View view, int position,
                             long id) {
-                        int flexDirection = FlexboxLayout.FLEX_DIRECTION_ROW;
+                        int flexDirection = FlexDirection.ROW;
                         String selected = parent.getItemAtPosition(position).toString();
                         if (selected.equals(ROW)) {
-                            flexDirection = FlexboxLayout.FLEX_DIRECTION_ROW;
+                            flexDirection = FlexDirection.ROW;
                         } else if (selected.equals(ROW_REVERSE)) {
-                            flexDirection = FlexboxLayout.FLEX_DIRECTION_ROW_REVERSE;
+                            flexDirection = FlexDirection.ROW_REVERSE;
                         } else if (selected.equals(COLUMN)) {
-                            flexDirection = FlexboxLayout.FLEX_DIRECTION_COLUMN;
+                            flexDirection = FlexDirection.COLUMN;
                         } else if (selected.equals(COLUMN_REVERSE)) {
-                            flexDirection = FlexboxLayout.FLEX_DIRECTION_COLUMN_REVERSE;
+                            flexDirection = FlexDirection.COLUMN_REVERSE;
                         }
                         mFlexboxLayout.setFlexDirection(flexDirection);
                     }
@@ -286,13 +291,13 @@ public class MainActivity extends AppCompatActivity
                     @Override
                     public String asString(int value) {
                         switch (value) {
-                            case FlexboxLayout.FLEX_DIRECTION_ROW:
+                            case FlexDirection.ROW:
                                 return ROW;
-                            case FlexboxLayout.FLEX_DIRECTION_ROW_REVERSE:
+                            case FlexDirection.ROW_REVERSE:
                                 return ROW_REVERSE;
-                            case FlexboxLayout.FLEX_DIRECTION_COLUMN:
+                            case FlexDirection.COLUMN:
                                 return COLUMN;
-                            case FlexboxLayout.FLEX_DIRECTION_COLUMN_REVERSE:
+                            case FlexDirection.COLUMN_REVERSE:
                                 return COLUMN_REVERSE;
                             default:
                                 return ROW;
@@ -308,14 +313,14 @@ public class MainActivity extends AppCompatActivity
                     @Override
                     public void onItemSelected(AdapterView<?> parent, View view, int position,
                             long id) {
-                        int flexWrap = FlexboxLayout.FLEX_WRAP_NOWRAP;
+                        int flexWrap = FlexWrap.NOWRAP;
                         String selected = parent.getItemAtPosition(position).toString();
                         if (selected.equals(NOWRAP)) {
-                            flexWrap = FlexboxLayout.FLEX_WRAP_NOWRAP;
+                            flexWrap = FlexWrap.NOWRAP;
                         } else if (selected.equals(WRAP)) {
-                            flexWrap = FlexboxLayout.FLEX_WRAP_WRAP;
+                            flexWrap = FlexWrap.WRAP;
                         } else if (selected.equals(WRAP_REVERSE)) {
-                            flexWrap = FlexboxLayout.FLEX_WRAP_WRAP_REVERSE;
+                            flexWrap = FlexWrap.WRAP_REVERSE;
                         }
                         mFlexboxLayout.setFlexWrap(flexWrap);
                     }
@@ -328,11 +333,11 @@ public class MainActivity extends AppCompatActivity
                     @Override
                     public String asString(int value) {
                         switch (value) {
-                            case FlexboxLayout.FLEX_WRAP_NOWRAP:
+                            case FlexWrap.NOWRAP:
                                 return NOWRAP;
-                            case FlexboxLayout.FLEX_WRAP_WRAP:
+                            case FlexWrap.WRAP:
                                 return WRAP;
-                            case FlexboxLayout.FLEX_WRAP_WRAP_REVERSE:
+                            case FlexWrap.WRAP_REVERSE:
                                 return WRAP_REVERSE;
                             default:
                                 return NOWRAP;
@@ -348,18 +353,18 @@ public class MainActivity extends AppCompatActivity
                     @Override
                     public void onItemSelected(AdapterView<?> parent, View view, int position,
                             long id) {
-                        int justifyContent = FlexboxLayout.JUSTIFY_CONTENT_FLEX_START;
+                        int justifyContent = JustifyContent.FLEX_START;
                         String selected = parent.getItemAtPosition(position).toString();
                         if (selected.equals(FLEX_START)) {
-                            justifyContent = FlexboxLayout.JUSTIFY_CONTENT_FLEX_START;
+                            justifyContent = JustifyContent.FLEX_START;
                         } else if (selected.equals(FLEX_END)) {
-                            justifyContent = FlexboxLayout.JUSTIFY_CONTENT_FLEX_END;
+                            justifyContent = JustifyContent.FLEX_END;
                         } else if (selected.equals(CENTER)) {
-                            justifyContent = FlexboxLayout.JUSTIFY_CONTENT_CENTER;
+                            justifyContent = JustifyContent.CENTER;
                         } else if (selected.equals(SPACE_BETWEEN)) {
-                            justifyContent = FlexboxLayout.JUSTIFY_CONTENT_SPACE_BETWEEN;
+                            justifyContent = JustifyContent.SPACE_BETWEEN;
                         } else if (selected.equals(SPACE_AROUND)) {
-                            justifyContent = FlexboxLayout.JUSTIFY_CONTENT_SPACE_AROUND;
+                            justifyContent = JustifyContent.SPACE_AROUND;
                         }
                         mFlexboxLayout.setJustifyContent(justifyContent);
                     }
@@ -372,15 +377,15 @@ public class MainActivity extends AppCompatActivity
                     @Override
                     public String asString(int value) {
                         switch (value) {
-                            case FlexboxLayout.JUSTIFY_CONTENT_FLEX_START:
+                            case JustifyContent.FLEX_START:
                                 return FLEX_START;
-                            case FlexboxLayout.JUSTIFY_CONTENT_FLEX_END:
+                            case JustifyContent.FLEX_END:
                                 return FLEX_END;
-                            case FlexboxLayout.JUSTIFY_CONTENT_CENTER:
+                            case JustifyContent.CENTER:
                                 return CENTER;
-                            case FlexboxLayout.JUSTIFY_CONTENT_SPACE_AROUND:
+                            case JustifyContent.SPACE_AROUND:
                                 return SPACE_AROUND;
-                            case FlexboxLayout.JUSTIFY_CONTENT_SPACE_BETWEEN:
+                            case JustifyContent.SPACE_BETWEEN:
                                 return SPACE_BETWEEN;
                             default:
                                 return FLEX_START;
@@ -396,18 +401,18 @@ public class MainActivity extends AppCompatActivity
                     @Override
                     public void onItemSelected(AdapterView<?> parent, View view, int position,
                             long id) {
-                        int alignItems = FlexboxLayout.ALIGN_ITEMS_STRETCH;
+                        int alignItems = AlignItems.STRETCH;
                         String selected = parent.getItemAtPosition(position).toString();
                         if (selected.equals(FLEX_START)) {
-                            alignItems = FlexboxLayout.ALIGN_ITEMS_FLEX_START;
+                            alignItems = AlignItems.FLEX_START;
                         } else if (selected.equals(FLEX_END)) {
-                            alignItems = FlexboxLayout.ALIGN_ITEMS_FLEX_END;
+                            alignItems = AlignItems.FLEX_END;
                         } else if (selected.equals(CENTER)) {
-                            alignItems = FlexboxLayout.ALIGN_ITEMS_CENTER;
+                            alignItems = AlignItems.CENTER;
                         } else if (selected.equals(BASELINE)) {
-                            alignItems = FlexboxLayout.ALIGN_ITEMS_BASELINE;
+                            alignItems = AlignItems.BASELINE;
                         } else if (selected.equals(STRETCH)) {
-                            alignItems = FlexboxLayout.ALIGN_ITEMS_STRETCH;
+                            alignItems = AlignItems.STRETCH;
                         }
                         mFlexboxLayout.setAlignItems(alignItems);
                     }
@@ -420,15 +425,15 @@ public class MainActivity extends AppCompatActivity
                     @Override
                     public String asString(int value) {
                         switch (value) {
-                            case FlexboxLayout.ALIGN_ITEMS_FLEX_START:
+                            case AlignItems.FLEX_START:
                                 return FLEX_START;
-                            case FlexboxLayout.ALIGN_ITEMS_FLEX_END:
+                            case AlignItems.FLEX_END:
                                 return FLEX_END;
-                            case FlexboxLayout.ALIGN_ITEMS_CENTER:
+                            case AlignItems.CENTER:
                                 return CENTER;
-                            case FlexboxLayout.ALIGN_ITEMS_BASELINE:
+                            case AlignItems.BASELINE:
                                 return BASELINE;
-                            case FlexboxLayout.ALIGN_ITEMS_STRETCH:
+                            case AlignItems.STRETCH:
                                 return STRETCH;
                             default:
                                 return STRETCH;
@@ -444,20 +449,20 @@ public class MainActivity extends AppCompatActivity
                     @Override
                     public void onItemSelected(AdapterView<?> parent, View view, int position,
                             long id) {
-                        int alignContent = FlexboxLayout.ALIGN_CONTENT_STRETCH;
+                        int alignContent = AlignContent.STRETCH;
                         String selected = parent.getItemAtPosition(position).toString();
                         if (selected.equals(FLEX_START)) {
-                            alignContent = FlexboxLayout.ALIGN_CONTENT_FLEX_START;
+                            alignContent = AlignContent.FLEX_START;
                         } else if (selected.equals(FLEX_END)) {
-                            alignContent = FlexboxLayout.ALIGN_CONTENT_FLEX_END;
+                            alignContent = AlignContent.FLEX_END;
                         } else if (selected.equals(CENTER)) {
-                            alignContent = FlexboxLayout.ALIGN_CONTENT_CENTER;
+                            alignContent = AlignContent.CENTER;
                         } else if (selected.equals(SPACE_BETWEEN)) {
-                            alignContent = FlexboxLayout.ALIGN_CONTENT_SPACE_BETWEEN;
+                            alignContent = AlignContent.SPACE_BETWEEN;
                         } else if (selected.equals(SPACE_AROUND)) {
-                            alignContent = FlexboxLayout.ALIGN_CONTENT_SPACE_AROUND;
+                            alignContent = AlignContent.SPACE_AROUND;
                         } else if (selected.equals(STRETCH)) {
-                            alignContent = FlexboxLayout.ALIGN_CONTENT_STRETCH;
+                            alignContent = AlignContent.STRETCH;
                         }
                         mFlexboxLayout.setAlignContent(alignContent);
                     }
@@ -470,17 +475,17 @@ public class MainActivity extends AppCompatActivity
                     @Override
                     public String asString(int value) {
                         switch (value) {
-                            case FlexboxLayout.ALIGN_CONTENT_FLEX_START:
+                            case AlignContent.FLEX_START:
                                 return FLEX_START;
-                            case FlexboxLayout.ALIGN_CONTENT_FLEX_END:
+                            case AlignContent.FLEX_END:
                                 return FLEX_END;
-                            case FlexboxLayout.ALIGN_CONTENT_CENTER:
+                            case AlignContent.CENTER:
                                 return CENTER;
-                            case FlexboxLayout.ALIGN_CONTENT_SPACE_BETWEEN:
+                            case AlignContent.SPACE_BETWEEN:
                                 return SPACE_BETWEEN;
-                            case FlexboxLayout.ALIGN_CONTENT_SPACE_AROUND:
+                            case AlignContent.SPACE_AROUND:
                                 return SPACE_AROUND;
-                            case FlexboxLayout.ALIGN_CONTENT_STRETCH:
+                            case AlignContent.STRETCH:
                                 return STRETCH;
                             default:
                                 return STRETCH;
