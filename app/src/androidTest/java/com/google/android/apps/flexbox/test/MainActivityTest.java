@@ -16,18 +16,18 @@
 
 package com.google.android.apps.flexbox.test;
 
-import static android.support.test.espresso.Espresso.onView;
-import static android.support.test.espresso.action.ViewActions.click;
-import static android.support.test.espresso.action.ViewActions.closeSoftKeyboard;
-import static android.support.test.espresso.action.ViewActions.replaceText;
-import static android.support.test.espresso.matcher.ViewMatchers.withId;
-import static junit.framework.Assert.assertNotNull;
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.core.Is.is;
-
 import com.google.android.apps.flexbox.MainActivity;
 import com.google.android.apps.flexbox.R;
+import com.google.android.flexbox.AlignContent;
+import com.google.android.flexbox.AlignItems;
+import com.google.android.flexbox.FlexDirection;
+import com.google.android.flexbox.FlexWrap;
 import com.google.android.flexbox.FlexboxLayout;
+import com.google.android.flexbox.JustifyContent;
+
+import org.junit.Rule;
+import org.junit.Test;
+import org.junit.runner.RunWith;
 
 import android.content.pm.ActivityInfo;
 import android.support.design.widget.NavigationView;
@@ -42,9 +42,14 @@ import android.widget.ArrayAdapter;
 import android.widget.Spinner;
 import android.widget.TextView;
 
-import org.junit.Rule;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import static android.support.test.espresso.Espresso.onView;
+import static android.support.test.espresso.action.ViewActions.click;
+import static android.support.test.espresso.action.ViewActions.closeSoftKeyboard;
+import static android.support.test.espresso.action.ViewActions.replaceText;
+import static android.support.test.espresso.matcher.ViewMatchers.withId;
+import static junit.framework.Assert.assertNotNull;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.core.Is.is;
 
 /**
  * Integration tests for {@link MainActivity}.
@@ -123,7 +128,7 @@ public class MainActivityTest {
             }
         });
         InstrumentationRegistry.getInstrumentation().waitForIdleSync();
-        assertThat(flexboxLayout.getFlexDirection(), is(FlexboxLayout.FLEX_DIRECTION_COLUMN));
+        assertThat(flexboxLayout.getFlexDirection(), is(FlexDirection.COLUMN));
 
         final int rowReversePosition = spinnerAdapter
                 .getPosition(activity.getString(R.string.row_reverse));
@@ -134,7 +139,7 @@ public class MainActivityTest {
             }
         });
         InstrumentationRegistry.getInstrumentation().waitForIdleSync();
-        assertThat(flexboxLayout.getFlexDirection(), is(FlexboxLayout.FLEX_DIRECTION_ROW_REVERSE));
+        assertThat(flexboxLayout.getFlexDirection(), is(FlexDirection.ROW_REVERSE));
     }
 
     @Test
@@ -161,7 +166,7 @@ public class MainActivityTest {
             }
         });
         InstrumentationRegistry.getInstrumentation().waitForIdleSync();
-        assertThat(flexboxLayout.getFlexWrap(), is(FlexboxLayout.FLEX_WRAP_WRAP_REVERSE));
+        assertThat(flexboxLayout.getFlexWrap(), is(FlexWrap.WRAP_REVERSE));
 
         final int noWrapPosition = spinnerAdapter
                 .getPosition(activity.getString(R.string.nowrap));
@@ -172,7 +177,7 @@ public class MainActivityTest {
             }
         });
         InstrumentationRegistry.getInstrumentation().waitForIdleSync();
-        assertThat(flexboxLayout.getFlexWrap(), is(FlexboxLayout.FLEX_WRAP_NOWRAP));
+        assertThat(flexboxLayout.getFlexWrap(), is(FlexWrap.NOWRAP));
     }
 
     @Test
@@ -200,7 +205,7 @@ public class MainActivityTest {
         });
         InstrumentationRegistry.getInstrumentation().waitForIdleSync();
         assertThat(flexboxLayout.getJustifyContent(),
-                is(FlexboxLayout.JUSTIFY_CONTENT_SPACE_BETWEEN));
+                is(JustifyContent.SPACE_BETWEEN));
 
         final int centerPosition = spinnerAdapter
                 .getPosition(activity.getString(R.string.center));
@@ -211,7 +216,7 @@ public class MainActivityTest {
             }
         });
         InstrumentationRegistry.getInstrumentation().waitForIdleSync();
-        assertThat(flexboxLayout.getJustifyContent(), is(FlexboxLayout.JUSTIFY_CONTENT_CENTER));
+        assertThat(flexboxLayout.getJustifyContent(), is(JustifyContent.CENTER));
     }
 
     @Test
@@ -239,7 +244,7 @@ public class MainActivityTest {
         });
         InstrumentationRegistry.getInstrumentation().waitForIdleSync();
         assertThat(flexboxLayout.getAlignItems(),
-                is(FlexboxLayout.ALIGN_ITEMS_BASELINE));
+                is(AlignItems.BASELINE));
 
         final int flexEndPosition = spinnerAdapter
                 .getPosition(activity.getString(R.string.flex_end));
@@ -250,7 +255,7 @@ public class MainActivityTest {
             }
         });
         InstrumentationRegistry.getInstrumentation().waitForIdleSync();
-        assertThat(flexboxLayout.getAlignItems(), is(FlexboxLayout.ALIGN_ITEMS_FLEX_END));
+        assertThat(flexboxLayout.getAlignItems(), is(AlignItems.FLEX_END));
     }
 
     @Test
@@ -278,7 +283,7 @@ public class MainActivityTest {
         });
         InstrumentationRegistry.getInstrumentation().waitForIdleSync();
         assertThat(flexboxLayout.getAlignContent(),
-                is(FlexboxLayout.ALIGN_CONTENT_SPACE_AROUND));
+                is(AlignContent.SPACE_AROUND));
 
         final int stretchPosition = spinnerAdapter
                 .getPosition(activity.getString(R.string.stretch));
@@ -289,7 +294,7 @@ public class MainActivityTest {
             }
         });
         InstrumentationRegistry.getInstrumentation().waitForIdleSync();
-        assertThat(flexboxLayout.getAlignContent(), is(FlexboxLayout.ALIGN_CONTENT_STRETCH));
+        assertThat(flexboxLayout.getAlignContent(), is(AlignContent.STRETCH));
     }
 
     @Test
