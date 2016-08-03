@@ -67,7 +67,7 @@ public class FlexLine {
      * if the {@link FlexboxLayout#mAlignItems} value is not {@link FlexboxLayout#ALIGN_ITEMS_BASELINE}
      * or the flex direction is vertical, this value is not used.
      * If the alignment direction is from the bottom to top,
-     * (e.g. flexWrap == FLEX_WRAP_WRAP_REVERSE and flexDirection == FLEX_DIRECTION_ROW)
+     * (e.g. flexWrap == WRAP_REVERSE and flexDirection == ROW)
      * store this value from the distance from the bottom of the view minus baseline.
      * (Calculated as view.getMeasuredHeight() - view.getBaseline - LayoutParams.bottomMargin)
      */
