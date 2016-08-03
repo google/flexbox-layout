@@ -17,6 +17,33 @@
 package com.google.android.flexbox.test;
 
 
+import com.google.android.flexbox.AlignContent;
+import com.google.android.flexbox.AlignItems;
+import com.google.android.flexbox.FlexDirection;
+import com.google.android.flexbox.FlexWrap;
+import com.google.android.flexbox.FlexboxLayout;
+import com.google.android.flexbox.JustifyContent;
+
+import org.hamcrest.Description;
+import org.hamcrest.TypeSafeMatcher;
+import org.junit.Rule;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+
+import android.content.Context;
+import android.graphics.drawable.Drawable;
+import android.support.annotation.LayoutRes;
+import android.support.test.InstrumentationRegistry;
+import android.support.test.espresso.ViewAssertion;
+import android.support.test.filters.FlakyTest;
+import android.support.test.filters.MediumTest;
+import android.support.test.rule.ActivityTestRule;
+import android.support.test.runner.AndroidJUnit4;
+import android.support.v4.content.res.ResourcesCompat;
+import android.view.View;
+import android.view.ViewGroup;
+import android.widget.TextView;
+
 import static android.support.test.espresso.Espresso.onView;
 import static android.support.test.espresso.assertion.PositionAssertions.isAbove;
 import static android.support.test.espresso.assertion.PositionAssertions.isBelow;
@@ -39,27 +66,6 @@ import static org.hamcrest.core.IsNot.not;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertThat;
 
-import android.content.Context;
-import android.graphics.drawable.Drawable;
-import android.support.annotation.LayoutRes;
-import android.support.test.InstrumentationRegistry;
-import android.support.test.espresso.ViewAssertion;
-import android.support.test.filters.FlakyTest;
-import android.support.test.filters.MediumTest;
-import android.support.test.rule.ActivityTestRule;
-import android.support.test.runner.AndroidJUnit4;
-import android.support.v4.content.res.ResourcesCompat;
-import android.view.View;
-import android.view.ViewGroup;
-import android.widget.TextView;
-
-import com.google.android.flexbox.FlexboxLayout;
-
-import org.hamcrest.Description;
-import org.hamcrest.TypeSafeMatcher;
-import org.junit.Rule;
-import org.junit.Test;
-import org.junit.runner.RunWith;
 
 /**
  * Integration tests for {@link FlexboxLayout}.
@@ -78,10 +84,10 @@ public class FlexboxAndroidTest {
         FlexboxLayout flexboxLayout = createFlexboxLayout(R.layout.activity_simple);
 
         assertNotNull(flexboxLayout);
-        assertThat(flexboxLayout.getFlexDirection(), is(FlexboxLayout.FLEX_DIRECTION_ROW_REVERSE));
-        assertThat(flexboxLayout.getJustifyContent(), is(FlexboxLayout.JUSTIFY_CONTENT_CENTER));
-        assertThat(flexboxLayout.getAlignContent(), is(FlexboxLayout.ALIGN_CONTENT_CENTER));
-        assertThat(flexboxLayout.getAlignItems(), is(FlexboxLayout.ALIGN_ITEMS_CENTER));
+        assertThat(flexboxLayout.getFlexDirection(), is(FlexDirection.ROW_REVERSE));
+        assertThat(flexboxLayout.getJustifyContent(), is(JustifyContent.CENTER));
+        assertThat(flexboxLayout.getAlignContent(), is(AlignContent.CENTER));
+        assertThat(flexboxLayout.getAlignItems(), is(AlignItems.CENTER));
         assertThat(flexboxLayout.getChildCount(), is(1));
 
         View child = flexboxLayout.getChildAt(0);
@@ -279,7 +285,7 @@ public class FlexboxAndroidTest {
     public void testFlexWrap_wrap() throws Throwable {
         FlexboxLayout flexboxLayout = createFlexboxLayout(R.layout.activity_flex_wrap_test);
 
-        assertThat(flexboxLayout.getFlexWrap(), is(FlexboxLayout.FLEX_WRAP_WRAP));
+        assertThat(flexboxLayout.getFlexWrap(), is(FlexWrap.WRAP));
         onView(withId(R.id.text1)).check(isLeftAlignedWith(withId(R.id.flexbox_layout)));
         onView(withId(R.id.text1)).check(isTopAlignedWith(withId(R.id.flexbox_layout)));
         onView(withId(R.id.text2)).check(isRightOf(withId(R.id.text1)));
@@ -299,17 +305,17 @@ public class FlexboxAndroidTest {
                 new Configuration() {
                     @Override
                     public void apply(FlexboxLayout flexboxLayout) {
-                        flexboxLayout.setFlexWrap(FlexboxLayout.FLEX_WRAP_NOWRAP);
+                        flexboxLayout.setFlexWrap(FlexWrap.NOWRAP);
                     }
                 });
 
-        assertThat(flexboxLayout.getFlexWrap(), is(FlexboxLayout.FLEX_WRAP_NOWRAP));
+        assertThat(flexboxLayout.getFlexWrap(), is(FlexWrap.NOWRAP));
         onView(withId(R.id.text1)).check(isLeftAlignedWith(withId(R.id.flexbox_layout)));
         onView(withId(R.id.text1)).check(isTopAlignedWith(withId(R.id.flexbox_layout)));
         onView(withId(R.id.text2)).check(isRightOf(withId(R.id.text1)));
         onView(withId(R.id.text2)).check(isTopAlignedWith(withId(R.id.flexbox_layout)));
         // The width of the FlexboxLayout is not enough for placing the three text views.
-        // But the flexWrap attribute is set to FLEX_WRAP_NOWRAP, the third text view is placed
+        // But the flexWrap attribute is set to NOWRAP, the third text view is placed
         // to the right of the second one and overflowing the parent FlexboxLayout.
         onView(withId(R.id.text3)).check(isRightOf(withId(R.id.text2)));
         onView(withId(R.id.text3)).check(isTopAlignedWith(withId(R.id.flexbox_layout)));
@@ -323,16 +329,16 @@ public class FlexboxAndroidTest {
                 new Configuration() {
                     @Override
                     public void apply(FlexboxLayout flexboxLayout) {
-                        flexboxLayout.setFlexWrap(FlexboxLayout.FLEX_WRAP_WRAP_REVERSE);
+                        flexboxLayout.setFlexWrap(FlexWrap.WRAP_REVERSE);
                     }
                 });
 
-        assertThat(flexboxLayout.getFlexWrap(), is(FlexboxLayout.FLEX_WRAP_WRAP_REVERSE));
+        assertThat(flexboxLayout.getFlexWrap(), is(FlexWrap.WRAP_REVERSE));
         onView(withId(R.id.text1)).check(isLeftAlignedWith(withId(R.id.flexbox_layout)));
         onView(withId(R.id.text2)).check(isRightOf(withId(R.id.text1)));
         // The width of the FlexboxLayout is not enough for placing the three text views.
-        // There should be two flex lines same as FLEX_WRAP_WRAP, but the layout starts from bottom
-        // to top in FLEX_WRAP_WRAP_REVERSE
+        // There should be two flex lines same as WRAP, but the layout starts from bottom
+        // to top in WRAP_REVERSE
         onView(withId(R.id.text3)).check(isAbove(withId(R.id.text1)));
         onView(withId(R.id.text3)).check(isAbove(withId(R.id.text2)));
         onView(withId(R.id.text3)).check(isLeftAlignedWith(withId(R.id.flexbox_layout)));
@@ -346,12 +352,12 @@ public class FlexboxAndroidTest {
                 new Configuration() {
                     @Override
                     public void apply(FlexboxLayout flexboxLayout) {
-                        flexboxLayout.setFlexDirection(FlexboxLayout.FLEX_DIRECTION_COLUMN);
+                        flexboxLayout.setFlexDirection(FlexDirection.COLUMN);
                     }
                 });
 
-        assertThat(flexboxLayout.getFlexWrap(), is(FlexboxLayout.FLEX_WRAP_WRAP));
-        assertThat(flexboxLayout.getFlexDirection(), is(FlexboxLayout.FLEX_DIRECTION_COLUMN));
+        assertThat(flexboxLayout.getFlexWrap(), is(FlexWrap.WRAP));
+        assertThat(flexboxLayout.getFlexDirection(), is(FlexDirection.COLUMN));
         onView(withId(R.id.text1)).check(isLeftAlignedWith(withId(R.id.flexbox_layout)));
         onView(withId(R.id.text1)).check(isTopAlignedWith(withId(R.id.flexbox_layout)));
         onView(withId(R.id.text2)).check(isBelow(withId(R.id.text1)));
@@ -371,19 +377,20 @@ public class FlexboxAndroidTest {
                 new Configuration() {
                     @Override
                     public void apply(FlexboxLayout flexboxLayout) {
-                        flexboxLayout.setFlexDirection(FlexboxLayout.FLEX_DIRECTION_COLUMN);
-                        flexboxLayout.setFlexWrap(FlexboxLayout.FLEX_WRAP_NOWRAP);
+                        flexboxLayout.setFlexDirection(FlexDirection.COLUMN);
+                        flexboxLayout.setFlexWrap(FlexWrap.NOWRAP);
                     }
                 });
 
-        assertThat(flexboxLayout.getFlexWrap(), is(FlexboxLayout.FLEX_WRAP_NOWRAP));
-        assertThat(flexboxLayout.getFlexDirection(), is(FlexboxLayout.FLEX_DIRECTION_COLUMN));
+        assertThat(flexboxLayout.getFlexWrap(), is(FlexWrap.NOWRAP));
+        assertThat(flexboxLayout.getFlexDirection(), is(FlexDirection.COLUMN));
+
         onView(withId(R.id.text1)).check(isLeftAlignedWith(withId(R.id.flexbox_layout)));
         onView(withId(R.id.text1)).check(isTopAlignedWith(withId(R.id.flexbox_layout)));
         onView(withId(R.id.text2)).check(isBelow(withId(R.id.text1)));
         onView(withId(R.id.text2)).check(isLeftAlignedWith(withId(R.id.flexbox_layout)));
         // The height of the FlexboxLayout is not enough for placing the three text views.
-        // But the flexWrap attribute is set to FLEX_WRAP_NOWRAP, the third text view is placed
+        // But the flexWrap attribute is set to NOWRAP, the third text view is placed
         // below the second one and overflowing the parent FlexboxLayout.
         onView(withId(R.id.text3)).check(isBelow(withId(R.id.text2)));
         onView(withId(R.id.text3)).check(isLeftAlignedWith(withId(R.id.flexbox_layout)));
@@ -397,19 +404,20 @@ public class FlexboxAndroidTest {
                 new Configuration() {
                     @Override
                     public void apply(FlexboxLayout flexboxLayout) {
-                        flexboxLayout.setFlexDirection(FlexboxLayout.FLEX_DIRECTION_COLUMN);
-                        flexboxLayout.setFlexWrap(FlexboxLayout.FLEX_WRAP_WRAP_REVERSE);
+                        flexboxLayout.setFlexDirection(FlexDirection.COLUMN);
+                        flexboxLayout.setFlexWrap(FlexWrap.WRAP_REVERSE);
                     }
                 });
 
-        assertThat(flexboxLayout.getFlexWrap(), is(FlexboxLayout.FLEX_WRAP_WRAP_REVERSE));
-        assertThat(flexboxLayout.getFlexDirection(), is(FlexboxLayout.FLEX_DIRECTION_COLUMN));
+        assertThat(flexboxLayout.getFlexWrap(), is(FlexWrap.WRAP_REVERSE));
+        assertThat(flexboxLayout.getFlexDirection(), is(FlexDirection.COLUMN));
+
         onView(withId(R.id.text1)).check(isTopAlignedWith(withId(R.id.flexbox_layout)));
         onView(withId(R.id.text1)).check(isRightAlignedWith(withId(R.id.flexbox_layout)));
         onView(withId(R.id.text2)).check(isBelow(withId(R.id.text1)));
         // The width of the FlexboxLayout is not enough for placing the three text views.
-        // There should be two flex lines same as FLEX_WRAP_WRAP, but the layout starts from right
-        // to left in FLEX_WRAP_WRAP_REVERSE
+        // There should be two flex lines same as WRAP, but the layout starts from right
+        // to left in WRAP_REVERSE
         onView(withId(R.id.text3)).check(isLeftOf(withId(R.id.text1)));
         onView(withId(R.id.text3)).check(isLeftOf(withId(R.id.text2)));
         onView(withId(R.id.text3)).check(isTopAlignedWith(withId(R.id.flexbox_layout)));
@@ -441,9 +449,10 @@ public class FlexboxAndroidTest {
                 new Configuration() {
                     @Override
                     public void apply(FlexboxLayout flexboxLayout) {
-                        flexboxLayout.setFlexDirection(FlexboxLayout.FLEX_DIRECTION_COLUMN);
+                        flexboxLayout.setFlexDirection(FlexDirection.COLUMN);
                     }
                 });
+
         TextView text1 = (TextView) activity.findViewById(R.id.text1);
         TextView text2 = (TextView) activity.findViewById(R.id.text2);
         TextView text3 = (TextView) activity.findViewById(R.id.text3);
@@ -531,7 +540,7 @@ public class FlexboxAndroidTest {
     public void testJustifyContent_flexStart() throws Throwable {
         FlexboxLayout flexboxLayout = createFlexboxLayout(R.layout.activity_justify_content_test);
 
-        assertThat(flexboxLayout.getJustifyContent(), is(FlexboxLayout.JUSTIFY_CONTENT_FLEX_START));
+        assertThat(flexboxLayout.getJustifyContent(), is(JustifyContent.FLEX_START));
         onView(withId(R.id.text1)).check(isTopAlignedWith(withId(R.id.flexbox_layout)));
         onView(withId(R.id.text1)).check(isLeftAlignedWith(withId(R.id.flexbox_layout)));
         onView(withId(R.id.text2)).check(isRightOf(withId(R.id.text1)));
@@ -545,7 +554,7 @@ public class FlexboxAndroidTest {
         FlexboxLayout flexboxLayout = createFlexboxLayout(
                 R.layout.activity_justify_content_with_parent_padding);
 
-        assertThat(flexboxLayout.getJustifyContent(), is(FlexboxLayout.JUSTIFY_CONTENT_FLEX_START));
+        assertThat(flexboxLayout.getJustifyContent(), is(JustifyContent.FLEX_START));
         onView(withId(R.id.text2)).check(isRightOf(withId(R.id.text1)));
         onView(withId(R.id.text3)).check(isRightOf(withId(R.id.text2)));
         TextView text1 = (TextView) activity.findViewById(R.id.text1);
@@ -563,11 +572,11 @@ public class FlexboxAndroidTest {
                 new Configuration() {
                     @Override
                     public void apply(FlexboxLayout flexboxLayout) {
-                        flexboxLayout.setJustifyContent(FlexboxLayout.JUSTIFY_CONTENT_FLEX_END);
+                        flexboxLayout.setJustifyContent(JustifyContent.FLEX_END);
                     }
                 });
 
-        assertThat(flexboxLayout.getJustifyContent(), is(FlexboxLayout.JUSTIFY_CONTENT_FLEX_END));
+        assertThat(flexboxLayout.getJustifyContent(), is(JustifyContent.FLEX_END));
         onView(withId(R.id.text3)).check(isTopAlignedWith(withId(R.id.flexbox_layout)));
         onView(withId(R.id.text3)).check(isRightAlignedWith(withId(R.id.flexbox_layout)));
         onView(withId(R.id.text2)).check(isLeftOf(withId(R.id.text3)));
@@ -583,11 +592,11 @@ public class FlexboxAndroidTest {
                 new Configuration() {
                     @Override
                     public void apply(FlexboxLayout flexboxLayout) {
-                        flexboxLayout.setJustifyContent(FlexboxLayout.JUSTIFY_CONTENT_FLEX_END);
+                        flexboxLayout.setJustifyContent(JustifyContent.FLEX_END);
                     }
                 });
 
-        assertThat(flexboxLayout.getJustifyContent(), is(FlexboxLayout.JUSTIFY_CONTENT_FLEX_END));
+        assertThat(flexboxLayout.getJustifyContent(), is(JustifyContent.FLEX_END));
         onView(withId(R.id.text2)).check(isLeftOf(withId(R.id.text3)));
         onView(withId(R.id.text1)).check(isLeftOf(withId(R.id.text2)));
         TextView text3 = (TextView) activity.findViewById(R.id.text3);
@@ -607,11 +616,12 @@ public class FlexboxAndroidTest {
                 new Configuration() {
                     @Override
                     public void apply(FlexboxLayout flexboxLayout) {
-                        flexboxLayout.setJustifyContent(FlexboxLayout.JUSTIFY_CONTENT_CENTER);
+                        flexboxLayout.setJustifyContent(JustifyContent.CENTER);
                     }
                 });
 
-        assertThat(flexboxLayout.getJustifyContent(), is(FlexboxLayout.JUSTIFY_CONTENT_CENTER));
+        assertThat(flexboxLayout.getJustifyContent(), is(JustifyContent.CENTER));
+
         onView(withId(R.id.text1)).check(isTopAlignedWith(withId(R.id.flexbox_layout)));
         onView(withId(R.id.text2)).check(isRightOf(withId(R.id.text1)));
         onView(withId(R.id.text2)).check(isTopAlignedWith(withId(R.id.flexbox_layout)));
@@ -637,11 +647,12 @@ public class FlexboxAndroidTest {
                 new Configuration() {
                     @Override
                     public void apply(FlexboxLayout flexboxLayout) {
-                        flexboxLayout.setJustifyContent(FlexboxLayout.JUSTIFY_CONTENT_CENTER);
+                        flexboxLayout.setJustifyContent(JustifyContent.CENTER);
                     }
                 });
 
-        assertThat(flexboxLayout.getJustifyContent(), is(FlexboxLayout.JUSTIFY_CONTENT_CENTER));
+        assertThat(flexboxLayout.getJustifyContent(), is(JustifyContent.CENTER));
+
         onView(withId(R.id.text2)).check(isRightOf(withId(R.id.text1)));
         onView(withId(R.id.text3)).check(isRightOf(withId(R.id.text2)));
 
@@ -667,12 +678,12 @@ public class FlexboxAndroidTest {
                     @Override
                     public void apply(FlexboxLayout flexboxLayout) {
                         flexboxLayout.setJustifyContent(
-                                FlexboxLayout.JUSTIFY_CONTENT_SPACE_BETWEEN);
+                                JustifyContent.SPACE_BETWEEN);
                     }
                 });
 
         assertThat(flexboxLayout.getJustifyContent(),
-                is(FlexboxLayout.JUSTIFY_CONTENT_SPACE_BETWEEN));
+                is(JustifyContent.SPACE_BETWEEN));
         onView(withId(R.id.text1)).check(isTopAlignedWith(withId(R.id.flexbox_layout)));
         onView(withId(R.id.text1)).check(isLeftAlignedWith(withId(R.id.flexbox_layout)));
         onView(withId(R.id.text2)).check(isTopAlignedWith(withId(R.id.flexbox_layout)));
@@ -699,13 +710,13 @@ public class FlexboxAndroidTest {
                     @Override
                     public void apply(FlexboxLayout flexboxLayout) {
                         flexboxLayout.setJustifyContent(
-                                FlexboxLayout.JUSTIFY_CONTENT_SPACE_BETWEEN);
+                                JustifyContent.SPACE_BETWEEN);
                         flexboxLayout.setPadding(padding, padding, padding, padding);
                     }
                 });
 
         assertThat(flexboxLayout.getJustifyContent(),
-                is(FlexboxLayout.JUSTIFY_CONTENT_SPACE_BETWEEN));
+                is(JustifyContent.SPACE_BETWEEN));
 
         TextView textView1 = (TextView) activity.findViewById(R.id.text1);
         TextView textView2 = (TextView) activity.findViewById(R.id.text2);
@@ -727,12 +738,12 @@ public class FlexboxAndroidTest {
                 new Configuration() {
                     @Override
                     public void apply(FlexboxLayout flexboxLayout) {
-                        flexboxLayout.setJustifyContent(FlexboxLayout.JUSTIFY_CONTENT_SPACE_AROUND);
+                        flexboxLayout.setJustifyContent(JustifyContent.SPACE_AROUND);
                     }
                 });
 
         assertThat(flexboxLayout.getJustifyContent(),
-                is(FlexboxLayout.JUSTIFY_CONTENT_SPACE_AROUND));
+                is(JustifyContent.SPACE_AROUND));
         onView(withId(R.id.text1)).check(isTopAlignedWith(withId(R.id.flexbox_layout)));
         onView(withId(R.id.text2)).check(isTopAlignedWith(withId(R.id.flexbox_layout)));
         onView(withId(R.id.text3)).check(isTopAlignedWith(withId(R.id.flexbox_layout)));
@@ -759,13 +770,13 @@ public class FlexboxAndroidTest {
                 new Configuration() {
                     @Override
                     public void apply(FlexboxLayout flexboxLayout) {
-                        flexboxLayout.setJustifyContent(FlexboxLayout.JUSTIFY_CONTENT_SPACE_AROUND);
+                        flexboxLayout.setJustifyContent(JustifyContent.SPACE_AROUND);
                         flexboxLayout.setPadding(padding, padding, padding, padding);
                     }
                 });
 
         assertThat(flexboxLayout.getJustifyContent(),
-                is(FlexboxLayout.JUSTIFY_CONTENT_SPACE_AROUND));
+                is(JustifyContent.SPACE_AROUND));
 
         TextView textView1 = (TextView) activity.findViewById(R.id.text1);
         TextView textView2 = (TextView) activity.findViewById(R.id.text2);
@@ -789,12 +800,12 @@ public class FlexboxAndroidTest {
                 new Configuration() {
                     @Override
                     public void apply(FlexboxLayout flexboxLayout) {
-                        flexboxLayout.setFlexDirection(FlexboxLayout.FLEX_DIRECTION_COLUMN);
+                        flexboxLayout.setFlexDirection(FlexDirection.COLUMN);
                     }
                 });
 
-        assertThat(flexboxLayout.getJustifyContent(), is(FlexboxLayout.JUSTIFY_CONTENT_FLEX_START));
-        assertThat(flexboxLayout.getFlexDirection(), is(FlexboxLayout.FLEX_DIRECTION_COLUMN));
+        assertThat(flexboxLayout.getJustifyContent(), is(JustifyContent.FLEX_START));
+        assertThat(flexboxLayout.getFlexDirection(), is(FlexDirection.COLUMN));
         onView(withId(R.id.text1)).check(isTopAlignedWith(withId(R.id.flexbox_layout)));
         onView(withId(R.id.text1)).check(isLeftAlignedWith(withId(R.id.flexbox_layout)));
         onView(withId(R.id.text2)).check(isBelow(withId(R.id.text1)));
@@ -810,13 +821,13 @@ public class FlexboxAndroidTest {
                 new Configuration() {
                     @Override
                     public void apply(FlexboxLayout flexboxLayout) {
-                        flexboxLayout.setJustifyContent(FlexboxLayout.JUSTIFY_CONTENT_FLEX_END);
-                        flexboxLayout.setFlexDirection(FlexboxLayout.FLEX_DIRECTION_COLUMN);
+                        flexboxLayout.setJustifyContent(JustifyContent.FLEX_END);
+                        flexboxLayout.setFlexDirection(FlexDirection.COLUMN);
                     }
                 });
 
-        assertThat(flexboxLayout.getJustifyContent(), is(FlexboxLayout.JUSTIFY_CONTENT_FLEX_END));
-        assertThat(flexboxLayout.getFlexDirection(), is(FlexboxLayout.FLEX_DIRECTION_COLUMN));
+        assertThat(flexboxLayout.getJustifyContent(), is(JustifyContent.FLEX_END));
+        assertThat(flexboxLayout.getFlexDirection(), is(FlexDirection.COLUMN));
         onView(withId(R.id.text3)).check(isBottomAlignedWith(withId(R.id.flexbox_layout)));
         onView(withId(R.id.text3)).check(isRightAlignedWith(withId(R.id.flexbox_layout)));
         onView(withId(R.id.text2)).check(isAbove(withId(R.id.text3)));
@@ -831,13 +842,13 @@ public class FlexboxAndroidTest {
                 new Configuration() {
                     @Override
                     public void apply(FlexboxLayout flexboxLayout) {
-                        flexboxLayout.setJustifyContent(FlexboxLayout.JUSTIFY_CONTENT_CENTER);
-                        flexboxLayout.setFlexDirection(FlexboxLayout.FLEX_DIRECTION_COLUMN);
+                        flexboxLayout.setJustifyContent(JustifyContent.CENTER);
+                        flexboxLayout.setFlexDirection(FlexDirection.COLUMN);
                     }
                 });
 
-        assertThat(flexboxLayout.getJustifyContent(), is(FlexboxLayout.JUSTIFY_CONTENT_CENTER));
-        assertThat(flexboxLayout.getFlexDirection(), is(FlexboxLayout.FLEX_DIRECTION_COLUMN));
+        assertThat(flexboxLayout.getJustifyContent(), is(JustifyContent.CENTER));
+        assertThat(flexboxLayout.getFlexDirection(), is(FlexDirection.COLUMN));
         onView(withId(R.id.text1)).check(isLeftAlignedWith(withId(R.id.flexbox_layout)));
         onView(withId(R.id.text2)).check(isBelow(withId(R.id.text1)));
         onView(withId(R.id.text2)).check(isLeftAlignedWith(withId(R.id.flexbox_layout)));
@@ -863,14 +874,14 @@ public class FlexboxAndroidTest {
                     @Override
                     public void apply(FlexboxLayout flexboxLayout) {
                         flexboxLayout.setJustifyContent(
-                                FlexboxLayout.JUSTIFY_CONTENT_SPACE_BETWEEN);
-                        flexboxLayout.setFlexDirection(FlexboxLayout.FLEX_DIRECTION_COLUMN);
+                                JustifyContent.SPACE_BETWEEN);
+                        flexboxLayout.setFlexDirection(FlexDirection.COLUMN);
                     }
                 });
 
         assertThat(flexboxLayout.getJustifyContent(),
-                is(FlexboxLayout.JUSTIFY_CONTENT_SPACE_BETWEEN));
-        assertThat(flexboxLayout.getFlexDirection(), is(FlexboxLayout.FLEX_DIRECTION_COLUMN));
+                is(JustifyContent.SPACE_BETWEEN));
+        assertThat(flexboxLayout.getFlexDirection(), is(FlexDirection.COLUMN));
         onView(withId(R.id.text1)).check(isTopAlignedWith(withId(R.id.flexbox_layout)));
         onView(withId(R.id.text1)).check(isLeftAlignedWith(withId(R.id.flexbox_layout)));
         onView(withId(R.id.text2)).check(isLeftAlignedWith(withId(R.id.flexbox_layout)));
@@ -898,15 +909,15 @@ public class FlexboxAndroidTest {
                     @Override
                     public void apply(FlexboxLayout flexboxLayout) {
                         flexboxLayout.setJustifyContent(
-                                FlexboxLayout.JUSTIFY_CONTENT_SPACE_BETWEEN);
-                        flexboxLayout.setFlexDirection(FlexboxLayout.FLEX_DIRECTION_COLUMN);
+                                JustifyContent.SPACE_BETWEEN);
+                        flexboxLayout.setFlexDirection(FlexDirection.COLUMN);
                         flexboxLayout.setPadding(padding, padding, padding, padding);
                     }
                 });
 
         assertThat(flexboxLayout.getJustifyContent(),
-                is(FlexboxLayout.JUSTIFY_CONTENT_SPACE_BETWEEN));
-        assertThat(flexboxLayout.getFlexDirection(), is(FlexboxLayout.FLEX_DIRECTION_COLUMN));
+                is(JustifyContent.SPACE_BETWEEN));
+        assertThat(flexboxLayout.getFlexDirection(), is(FlexDirection.COLUMN));
 
         TextView textView1 = (TextView) activity.findViewById(R.id.text1);
         TextView textView2 = (TextView) activity.findViewById(R.id.text2);
@@ -928,14 +939,14 @@ public class FlexboxAndroidTest {
                 new Configuration() {
                     @Override
                     public void apply(FlexboxLayout flexboxLayout) {
-                        flexboxLayout.setJustifyContent(FlexboxLayout.JUSTIFY_CONTENT_SPACE_AROUND);
-                        flexboxLayout.setFlexDirection(FlexboxLayout.FLEX_DIRECTION_COLUMN);
+                        flexboxLayout.setJustifyContent(JustifyContent.SPACE_AROUND);
+                        flexboxLayout.setFlexDirection(FlexDirection.COLUMN);
                     }
                 });
 
         assertThat(flexboxLayout.getJustifyContent(),
-                is(FlexboxLayout.JUSTIFY_CONTENT_SPACE_AROUND));
-        assertThat(flexboxLayout.getFlexDirection(), is(FlexboxLayout.FLEX_DIRECTION_COLUMN));
+                is(JustifyContent.SPACE_AROUND));
+        assertThat(flexboxLayout.getFlexDirection(), is(FlexDirection.COLUMN));
         onView(withId(R.id.text1)).check(isLeftAlignedWith(withId(R.id.flexbox_layout)));
         onView(withId(R.id.text2)).check(isLeftAlignedWith(withId(R.id.flexbox_layout)));
         onView(withId(R.id.text3)).check(isLeftAlignedWith(withId(R.id.flexbox_layout)));
@@ -962,15 +973,15 @@ public class FlexboxAndroidTest {
                 new Configuration() {
                     @Override
                     public void apply(FlexboxLayout flexboxLayout) {
-                        flexboxLayout.setJustifyContent(FlexboxLayout.JUSTIFY_CONTENT_SPACE_AROUND);
-                        flexboxLayout.setFlexDirection(FlexboxLayout.FLEX_DIRECTION_COLUMN);
+                        flexboxLayout.setJustifyContent(JustifyContent.SPACE_AROUND);
+                        flexboxLayout.setFlexDirection(FlexDirection.COLUMN);
                         flexboxLayout.setPadding(padding, padding, padding, padding);
                     }
                 });
 
         assertThat(flexboxLayout.getJustifyContent(),
-                is(FlexboxLayout.JUSTIFY_CONTENT_SPACE_AROUND));
-        assertThat(flexboxLayout.getFlexDirection(), is(FlexboxLayout.FLEX_DIRECTION_COLUMN));
+                is(JustifyContent.SPACE_AROUND));
+        assertThat(flexboxLayout.getFlexDirection(), is(FlexDirection.COLUMN));
 
         TextView textView1 = (TextView) activity.findViewById(R.id.text1);
         TextView textView2 = (TextView) activity.findViewById(R.id.text2);
@@ -995,13 +1006,13 @@ public class FlexboxAndroidTest {
                 new Configuration() {
                     @Override
                     public void apply(FlexboxLayout flexboxLayout) {
-                        flexboxLayout.setJustifyContent(FlexboxLayout.JUSTIFY_CONTENT_SPACE_AROUND);
+                        flexboxLayout.setJustifyContent(JustifyContent.SPACE_AROUND);
                     }
                 }
         );
 
         assertThat(flexboxLayout.getJustifyContent(),
-                is(FlexboxLayout.JUSTIFY_CONTENT_SPACE_AROUND));
+                is(JustifyContent.SPACE_AROUND));
 
         TextView textView1 = (TextView) activity.findViewById(R.id.text1);
         TextView textView3 = (TextView) activity.findViewById(R.id.text3);
@@ -1023,12 +1034,12 @@ public class FlexboxAndroidTest {
                     @Override
                     public void apply(FlexboxLayout flexboxLayout) {
                         flexboxLayout.setJustifyContent(
-                                FlexboxLayout.JUSTIFY_CONTENT_SPACE_BETWEEN);
+                                JustifyContent.SPACE_BETWEEN);
                     }
                 });
 
         assertThat(flexboxLayout.getJustifyContent(),
-                is(FlexboxLayout.JUSTIFY_CONTENT_SPACE_BETWEEN));
+                is(JustifyContent.SPACE_BETWEEN));
 
         onView(withId(R.id.text1)).check(isLeftAlignedWith(withId(R.id.flexbox_layout)));
         onView(withId(R.id.text3)).check(isRightAlignedWith(withId(R.id.flexbox_layout)));
@@ -1048,15 +1059,15 @@ public class FlexboxAndroidTest {
                 new Configuration() {
                     @Override
                     public void apply(FlexboxLayout flexboxLayout) {
-                        flexboxLayout.setFlexDirection(FlexboxLayout.FLEX_DIRECTION_COLUMN);
-                        flexboxLayout.setJustifyContent(FlexboxLayout.JUSTIFY_CONTENT_SPACE_AROUND);
+                        flexboxLayout.setFlexDirection(FlexDirection.COLUMN);
+                        flexboxLayout.setJustifyContent(JustifyContent.SPACE_AROUND);
                     }
                 });
 
         assertThat(flexboxLayout.getFlexDirection(),
-                is(FlexboxLayout.FLEX_DIRECTION_COLUMN));
+                is(FlexDirection.COLUMN));
         assertThat(flexboxLayout.getJustifyContent(),
-                is(FlexboxLayout.JUSTIFY_CONTENT_SPACE_AROUND));
+                is(JustifyContent.SPACE_AROUND));
 
         TextView textView1 = (TextView) activity.findViewById(R.id.text1);
         TextView textView3 = (TextView) activity.findViewById(R.id.text3);
@@ -1078,16 +1089,16 @@ public class FlexboxAndroidTest {
                 new Configuration() {
                     @Override
                     public void apply(FlexboxLayout flexboxLayout) {
-                        flexboxLayout.setFlexDirection(FlexboxLayout.FLEX_DIRECTION_COLUMN);
+                        flexboxLayout.setFlexDirection(FlexDirection.COLUMN);
                         flexboxLayout.setJustifyContent(
-                                FlexboxLayout.JUSTIFY_CONTENT_SPACE_BETWEEN);
+                                JustifyContent.SPACE_BETWEEN);
                     }
                 });
 
         assertThat(flexboxLayout.getFlexDirection(),
-                is(FlexboxLayout.FLEX_DIRECTION_COLUMN));
+                is(FlexDirection.COLUMN));
         assertThat(flexboxLayout.getJustifyContent(),
-                is(FlexboxLayout.JUSTIFY_CONTENT_SPACE_BETWEEN));
+                is(JustifyContent.SPACE_BETWEEN));
 
         onView(withId(R.id.text1)).check(isTopAlignedWith(withId(R.id.flexbox_layout)));
         onView(withId(R.id.text3)).check(isBottomAlignedWith(withId(R.id.flexbox_layout)));
@@ -1127,7 +1138,7 @@ public class FlexboxAndroidTest {
                 new Configuration() {
                     @Override
                     public void apply(FlexboxLayout flexboxLayout) {
-                        flexboxLayout.setFlexDirection(FlexboxLayout.FLEX_DIRECTION_COLUMN);
+                        flexboxLayout.setFlexDirection(FlexDirection.COLUMN);
                     }
                 });
 
@@ -1180,7 +1191,7 @@ public class FlexboxAndroidTest {
         final FlexboxTestActivity activity = mActivityRule.getActivity();
         FlexboxLayout flexboxLayout = createFlexboxLayout(R.layout.activity_align_content_test);
 
-        assertThat(flexboxLayout.getAlignContent(), is(FlexboxLayout.ALIGN_CONTENT_STRETCH));
+        assertThat(flexboxLayout.getAlignContent(), is(AlignContent.STRETCH));
         onView(withId(R.id.text1)).check(isTopAlignedWith(withId(R.id.flexbox_layout)));
         onView(withId(R.id.text1)).check(isLeftAlignedWith(withId(R.id.flexbox_layout)));
         onView(withId(R.id.text2)).check(isTopAlignedWith(withId(R.id.flexbox_layout)));
@@ -1205,11 +1216,12 @@ public class FlexboxAndroidTest {
                 new Configuration() {
                     @Override
                     public void apply(FlexboxLayout flexboxLayout) {
-                        flexboxLayout.setAlignContent(FlexboxLayout.ALIGN_CONTENT_FLEX_START);
+                        flexboxLayout.setAlignContent(AlignContent.FLEX_START);
                     }
                 });
 
-        assertThat(flexboxLayout.getAlignContent(), is(FlexboxLayout.ALIGN_CONTENT_FLEX_START));
+        assertThat(flexboxLayout.getAlignContent(), is(AlignContent.FLEX_START));
+
         onView(withId(R.id.text1)).check(isTopAlignedWith(withId(R.id.flexbox_layout)));
         onView(withId(R.id.text1)).check(isLeftAlignedWith(withId(R.id.flexbox_layout)));
         onView(withId(R.id.text2)).check(isTopAlignedWith(withId(R.id.flexbox_layout)));
@@ -1232,11 +1244,11 @@ public class FlexboxAndroidTest {
                 new Configuration() {
                     @Override
                     public void apply(FlexboxLayout flexboxLayout) {
-                        flexboxLayout.setAlignContent(FlexboxLayout.ALIGN_CONTENT_FLEX_END);
+                        flexboxLayout.setAlignContent(AlignContent.FLEX_END);
                     }
                 });
 
-        assertThat(flexboxLayout.getAlignContent(), is(FlexboxLayout.ALIGN_CONTENT_FLEX_END));
+        assertThat(flexboxLayout.getAlignContent(), is(AlignContent.FLEX_END));
         onView(withId(R.id.text3)).check(isLeftAlignedWith(withId(R.id.flexbox_layout)));
         onView(withId(R.id.text3)).check(isBottomAlignedWith(withId(R.id.flexbox_layout)));
         onView(withId(R.id.text1)).check(isAbove(withId(R.id.text3)));
@@ -1256,12 +1268,12 @@ public class FlexboxAndroidTest {
                 new Configuration() {
                     @Override
                     public void apply(FlexboxLayout flexboxLayout) {
-                        flexboxLayout.setAlignContent(FlexboxLayout.ALIGN_CONTENT_FLEX_END);
+                        flexboxLayout.setAlignContent(AlignContent.FLEX_END);
                         flexboxLayout.setPadding(32, 32, 32, 32);
                     }
                 });
 
-        assertThat(flexboxLayout.getAlignContent(), is(FlexboxLayout.ALIGN_CONTENT_FLEX_END));
+        assertThat(flexboxLayout.getAlignContent(), is(AlignContent.FLEX_END));
         onView(withId(R.id.text1)).check(isAbove(withId(R.id.text3)));
         onView(withId(R.id.text2)).check(isAbove(withId(R.id.text3)));
 
@@ -1278,14 +1290,14 @@ public class FlexboxAndroidTest {
                 new Configuration() {
                     @Override
                     public void apply(FlexboxLayout flexboxLayout) {
-                        flexboxLayout.setAlignContent(FlexboxLayout.ALIGN_CONTENT_FLEX_END);
-                        flexboxLayout.setFlexDirection(FlexboxLayout.FLEX_DIRECTION_COLUMN);
+                        flexboxLayout.setAlignContent(AlignContent.FLEX_END);
+                        flexboxLayout.setFlexDirection(FlexDirection.COLUMN);
                         flexboxLayout.setPadding(32, 32, 32, 32);
                     }
                 });
 
-        assertThat(flexboxLayout.getAlignContent(), is(FlexboxLayout.ALIGN_CONTENT_FLEX_END));
-        assertThat(flexboxLayout.getFlexDirection(), is(FlexboxLayout.FLEX_DIRECTION_COLUMN));
+        assertThat(flexboxLayout.getAlignContent(), is(AlignContent.FLEX_END));
+        assertThat(flexboxLayout.getFlexDirection(), is(FlexDirection.COLUMN));
         onView(withId(R.id.text1)).check(isLeftOf(withId(R.id.text3)));
         onView(withId(R.id.text2)).check(isLeftOf(withId(R.id.text3)));
 
@@ -1302,11 +1314,12 @@ public class FlexboxAndroidTest {
                 new Configuration() {
                     @Override
                     public void apply(FlexboxLayout flexboxLayout) {
-                        flexboxLayout.setAlignContent(FlexboxLayout.ALIGN_CONTENT_CENTER);
+                        flexboxLayout.setAlignContent(AlignContent.CENTER);
                     }
                 });
 
-        assertThat(flexboxLayout.getAlignContent(), is(FlexboxLayout.ALIGN_CONTENT_CENTER));
+        assertThat(flexboxLayout.getAlignContent(), is(AlignContent.CENTER));
+
         onView(withId(R.id.text1)).check(isLeftAlignedWith(withId(R.id.flexbox_layout)));
         onView(withId(R.id.text2)).check(isRightOf(withId(R.id.text1)));
         onView(withId(R.id.text3)).check(isBelow(withId(R.id.text1)));
@@ -1330,11 +1343,11 @@ public class FlexboxAndroidTest {
                 new Configuration() {
                     @Override
                     public void apply(FlexboxLayout flexboxLayout) {
-                        flexboxLayout.setAlignContent(FlexboxLayout.ALIGN_CONTENT_SPACE_BETWEEN);
+                        flexboxLayout.setAlignContent(AlignContent.SPACE_BETWEEN);
                     }
                 });
 
-        assertThat(flexboxLayout.getAlignContent(), is(FlexboxLayout.ALIGN_CONTENT_SPACE_BETWEEN));
+        assertThat(flexboxLayout.getAlignContent(), is(AlignContent.SPACE_BETWEEN));
         onView(withId(R.id.text1)).check(isLeftAlignedWith(withId(R.id.flexbox_layout)));
         onView(withId(R.id.text1)).check(isTopAlignedWith(withId(R.id.flexbox_layout)));
         onView(withId(R.id.text2)).check(isRightOf(withId(R.id.text1)));
@@ -1351,11 +1364,11 @@ public class FlexboxAndroidTest {
                 new Configuration() {
                     @Override
                     public void apply(FlexboxLayout flexboxLayout) {
-                        flexboxLayout.setAlignContent(FlexboxLayout.ALIGN_CONTENT_SPACE_BETWEEN);
+                        flexboxLayout.setAlignContent(AlignContent.SPACE_BETWEEN);
                     }
                 });
 
-        assertThat(flexboxLayout.getAlignContent(), is(FlexboxLayout.ALIGN_CONTENT_SPACE_BETWEEN));
+        assertThat(flexboxLayout.getAlignContent(), is(AlignContent.SPACE_BETWEEN));
         onView(withId(R.id.text1)).check(isLeftAlignedWith(withId(R.id.flexbox_layout)));
         onView(withId(R.id.text1)).check(isTopAlignedWith(withId(R.id.flexbox_layout)));
         onView(withId(R.id.text2)).check(isRightOf(withId(R.id.text1)));
@@ -1372,11 +1385,11 @@ public class FlexboxAndroidTest {
                 new Configuration() {
                     @Override
                     public void apply(FlexboxLayout flexboxLayout) {
-                        flexboxLayout.setAlignContent(FlexboxLayout.ALIGN_CONTENT_SPACE_AROUND);
+                        flexboxLayout.setAlignContent(AlignContent.SPACE_AROUND);
                     }
                 });
 
-        assertThat(flexboxLayout.getAlignContent(), is(FlexboxLayout.ALIGN_CONTENT_SPACE_AROUND));
+        assertThat(flexboxLayout.getAlignContent(), is(AlignContent.SPACE_AROUND));
         onView(withId(R.id.text1)).check(isLeftAlignedWith(withId(R.id.flexbox_layout)));
         onView(withId(R.id.text2)).check(isRightOf(withId(R.id.text1)));
         onView(withId(R.id.text3)).check(isLeftAlignedWith(withId(R.id.flexbox_layout)));
@@ -1406,7 +1419,7 @@ public class FlexboxAndroidTest {
                     }
                 });
 
-        assertThat(flexboxLayout.getAlignContent(), is(FlexboxLayout.ALIGN_CONTENT_STRETCH));
+        assertThat(flexboxLayout.getAlignContent(), is(AlignContent.STRETCH));
         onView(withId(R.id.text1)).check(isTopAlignedWith(withId(R.id.flexbox_layout)));
         onView(withId(R.id.text1)).check(isLeftAlignedWith(withId(R.id.flexbox_layout)));
         onView(withId(R.id.text2)).check(isTopAlignedWith(withId(R.id.flexbox_layout)));
@@ -1433,12 +1446,12 @@ public class FlexboxAndroidTest {
                 new Configuration() {
                     @Override
                     public void apply(FlexboxLayout flexboxLayout) {
-                        flexboxLayout.setFlexDirection(FlexboxLayout.FLEX_DIRECTION_COLUMN);
+                        flexboxLayout.setFlexDirection(FlexDirection.COLUMN);
                     }
                 });
 
-        assertThat(flexboxLayout.getAlignContent(), is(FlexboxLayout.ALIGN_CONTENT_STRETCH));
-        assertThat(flexboxLayout.getFlexDirection(), is(FlexboxLayout.FLEX_DIRECTION_COLUMN));
+        assertThat(flexboxLayout.getAlignContent(), is(AlignContent.STRETCH));
+        assertThat(flexboxLayout.getFlexDirection(), is(FlexDirection.COLUMN));
         onView(withId(R.id.text1)).check(isTopAlignedWith(withId(R.id.flexbox_layout)));
         onView(withId(R.id.text1)).check(isLeftAlignedWith(withId(R.id.flexbox_layout)));
         onView(withId(R.id.text2)).check(isLeftAlignedWith(withId(R.id.flexbox_layout)));
@@ -1463,13 +1476,14 @@ public class FlexboxAndroidTest {
                 new Configuration() {
                     @Override
                     public void apply(FlexboxLayout flexboxLayout) {
-                        flexboxLayout.setAlignContent(FlexboxLayout.ALIGN_CONTENT_FLEX_START);
-                        flexboxLayout.setFlexDirection(FlexboxLayout.FLEX_DIRECTION_COLUMN);
+                        flexboxLayout.setAlignContent(AlignContent.FLEX_START);
+                        flexboxLayout.setFlexDirection(FlexDirection.COLUMN);
                     }
                 });
 
-        assertThat(flexboxLayout.getAlignContent(), is(FlexboxLayout.ALIGN_CONTENT_FLEX_START));
-        assertThat(flexboxLayout.getFlexDirection(), is(FlexboxLayout.FLEX_DIRECTION_COLUMN));
+        assertThat(flexboxLayout.getAlignContent(), is(AlignContent.FLEX_START));
+        assertThat(flexboxLayout.getFlexDirection(), is(FlexDirection.COLUMN));
+
         onView(withId(R.id.text1)).check(isTopAlignedWith(withId(R.id.flexbox_layout)));
         onView(withId(R.id.text1)).check(isLeftAlignedWith(withId(R.id.flexbox_layout)));
         onView(withId(R.id.text2)).check(isLeftAlignedWith(withId(R.id.flexbox_layout)));
@@ -1492,13 +1506,13 @@ public class FlexboxAndroidTest {
                 new Configuration() {
                     @Override
                     public void apply(FlexboxLayout flexboxLayout) {
-                        flexboxLayout.setAlignContent(FlexboxLayout.ALIGN_CONTENT_FLEX_END);
-                        flexboxLayout.setFlexDirection(FlexboxLayout.FLEX_DIRECTION_COLUMN);
+                        flexboxLayout.setAlignContent(AlignContent.FLEX_END);
+                        flexboxLayout.setFlexDirection(FlexDirection.COLUMN);
                     }
                 });
 
-        assertThat(flexboxLayout.getAlignContent(), is(FlexboxLayout.ALIGN_CONTENT_FLEX_END));
-        assertThat(flexboxLayout.getFlexDirection(), is(FlexboxLayout.FLEX_DIRECTION_COLUMN));
+        assertThat(flexboxLayout.getAlignContent(), is(AlignContent.FLEX_END));
+        assertThat(flexboxLayout.getFlexDirection(), is(FlexDirection.COLUMN));
         onView(withId(R.id.text3)).check(isRightAlignedWith(withId(R.id.flexbox_layout)));
         onView(withId(R.id.text3)).check(isTopAlignedWith(withId(R.id.flexbox_layout)));
         onView(withId(R.id.text1)).check(isLeftOf(withId(R.id.text3)));
@@ -1518,13 +1532,14 @@ public class FlexboxAndroidTest {
                 new Configuration() {
                     @Override
                     public void apply(FlexboxLayout flexboxLayout) {
-                        flexboxLayout.setAlignContent(FlexboxLayout.ALIGN_CONTENT_CENTER);
-                        flexboxLayout.setFlexDirection(FlexboxLayout.FLEX_DIRECTION_COLUMN);
+                        flexboxLayout.setAlignContent(AlignContent.CENTER);
+                        flexboxLayout.setFlexDirection(FlexDirection.COLUMN);
                     }
                 });
 
-        assertThat(flexboxLayout.getAlignContent(), is(FlexboxLayout.ALIGN_CONTENT_CENTER));
-        assertThat(flexboxLayout.getFlexDirection(), is(FlexboxLayout.FLEX_DIRECTION_COLUMN));
+        assertThat(flexboxLayout.getAlignContent(), is(AlignContent.CENTER));
+        assertThat(flexboxLayout.getFlexDirection(), is(FlexDirection.COLUMN));
+
         onView(withId(R.id.text1)).check(isTopAlignedWith(withId(R.id.flexbox_layout)));
         onView(withId(R.id.text2)).check(isBelow(withId(R.id.text1)));
         onView(withId(R.id.text3)).check(isRightOf(withId(R.id.text1)));
@@ -1547,13 +1562,13 @@ public class FlexboxAndroidTest {
                 new Configuration() {
                     @Override
                     public void apply(FlexboxLayout flexboxLayout) {
-                        flexboxLayout.setAlignContent(FlexboxLayout.ALIGN_CONTENT_SPACE_BETWEEN);
-                        flexboxLayout.setFlexDirection(FlexboxLayout.FLEX_DIRECTION_COLUMN);
+                        flexboxLayout.setAlignContent(AlignContent.SPACE_BETWEEN);
+                        flexboxLayout.setFlexDirection(FlexDirection.COLUMN);
                     }
                 });
 
-        assertThat(flexboxLayout.getAlignContent(), is(FlexboxLayout.ALIGN_CONTENT_SPACE_BETWEEN));
-        assertThat(flexboxLayout.getFlexDirection(), is(FlexboxLayout.FLEX_DIRECTION_COLUMN));
+        assertThat(flexboxLayout.getAlignContent(), is(AlignContent.SPACE_BETWEEN));
+        assertThat(flexboxLayout.getFlexDirection(), is(FlexDirection.COLUMN));
         onView(withId(R.id.text1)).check(isLeftAlignedWith(withId(R.id.flexbox_layout)));
         onView(withId(R.id.text1)).check(isTopAlignedWith(withId(R.id.flexbox_layout)));
         onView(withId(R.id.text2)).check(isBelow(withId(R.id.text1)));
@@ -1570,13 +1585,13 @@ public class FlexboxAndroidTest {
                 new Configuration() {
                     @Override
                     public void apply(FlexboxLayout flexboxLayout) {
-                        flexboxLayout.setAlignContent(FlexboxLayout.ALIGN_CONTENT_SPACE_AROUND);
-                        flexboxLayout.setFlexDirection(FlexboxLayout.FLEX_DIRECTION_COLUMN);
+                        flexboxLayout.setAlignContent(AlignContent.SPACE_AROUND);
+                        flexboxLayout.setFlexDirection(FlexDirection.COLUMN);
                     }
                 });
 
-        assertThat(flexboxLayout.getAlignContent(), is(FlexboxLayout.ALIGN_CONTENT_SPACE_AROUND));
-        assertThat(flexboxLayout.getFlexDirection(), is(FlexboxLayout.FLEX_DIRECTION_COLUMN));
+        assertThat(flexboxLayout.getAlignContent(), is(AlignContent.SPACE_AROUND));
+        assertThat(flexboxLayout.getFlexDirection(), is(FlexDirection.COLUMN));
         onView(withId(R.id.text1)).check(isTopAlignedWith(withId(R.id.flexbox_layout)));
         onView(withId(R.id.text2)).check(isBelow(withId(R.id.text1)));
         onView(withId(R.id.text3)).check(isTopAlignedWith(withId(R.id.flexbox_layout)));
@@ -1602,12 +1617,12 @@ public class FlexboxAndroidTest {
                         ViewGroup.LayoutParams parentLp = flexboxLayout.getLayoutParams();
                         parentLp.width = ViewGroup.LayoutParams.WRAP_CONTENT;
                         flexboxLayout.setLayoutParams(parentLp);
-                        flexboxLayout.setFlexDirection(FlexboxLayout.FLEX_DIRECTION_COLUMN);
+                        flexboxLayout.setFlexDirection(FlexDirection.COLUMN);
                     }
                 });
 
-        assertThat(flexboxLayout.getAlignContent(), is(FlexboxLayout.ALIGN_CONTENT_STRETCH));
-        assertThat(flexboxLayout.getFlexDirection(), is(FlexboxLayout.FLEX_DIRECTION_COLUMN));
+        assertThat(flexboxLayout.getAlignContent(), is(AlignContent.STRETCH));
+        assertThat(flexboxLayout.getFlexDirection(), is(FlexDirection.COLUMN));
         onView(withId(R.id.text1)).check(isTopAlignedWith(withId(R.id.flexbox_layout)));
         onView(withId(R.id.text1)).check(isLeftAlignedWith(withId(R.id.flexbox_layout)));
         onView(withId(R.id.text2)).check(isLeftAlignedWith(withId(R.id.flexbox_layout)));
@@ -1633,11 +1648,11 @@ public class FlexboxAndroidTest {
                         new Configuration() {
                             @Override
                             public void apply(FlexboxLayout flexboxLayout) {
-                                flexboxLayout.setAlignContent(FlexboxLayout.ALIGN_CONTENT_FLEX_END);
-                                flexboxLayout.setFlexWrap(FlexboxLayout.FLEX_WRAP_WRAP_REVERSE);
+                                flexboxLayout.setAlignContent(AlignContent.FLEX_END);
+                                flexboxLayout.setFlexWrap(FlexWrap.WRAP_REVERSE);
                             }
                         });
-        assertThat(flexboxLayout.getAlignContent(), is(FlexboxLayout.ALIGN_CONTENT_FLEX_END));
+        assertThat(flexboxLayout.getAlignContent(), is(AlignContent.FLEX_END));
         onView(withId(R.id.text6)).check(isTopAlignedWith(withId(R.id.flexbox_layout)));
         onView(withId(R.id.text5)).check(isLeftOf(withId(R.id.text6)));
         onView(withId(R.id.text4)).check(isBelow(withId(R.id.text6)));
@@ -1652,11 +1667,11 @@ public class FlexboxAndroidTest {
                             @Override
                             public void apply(FlexboxLayout flexboxLayout) {
                                 flexboxLayout.setAlignContent(
-                                        FlexboxLayout.ALIGN_CONTENT_FLEX_START);
-                                flexboxLayout.setFlexWrap(FlexboxLayout.FLEX_WRAP_WRAP_REVERSE);
+                                        AlignContent.FLEX_START);
+                                flexboxLayout.setFlexWrap(FlexWrap.WRAP_REVERSE);
                             }
                         });
-        assertThat(flexboxLayout.getAlignContent(), is(FlexboxLayout.ALIGN_CONTENT_FLEX_START));
+        assertThat(flexboxLayout.getAlignContent(), is(AlignContent.FLEX_START));
         onView(withId(R.id.text1)).check(isBottomAlignedWith(withId(R.id.flexbox_layout)));
         onView(withId(R.id.text2)).check(isRightOf(withId(R.id.text1)));
         onView(withId(R.id.text3)).check(isAbove(withId(R.id.text1)));
@@ -1671,11 +1686,11 @@ public class FlexboxAndroidTest {
                             @Override
                             public void apply(FlexboxLayout flexboxLayout) {
                                 flexboxLayout.setAlignContent(
-                                        FlexboxLayout.ALIGN_CONTENT_SPACE_BETWEEN);
-                                flexboxLayout.setFlexWrap(FlexboxLayout.FLEX_WRAP_WRAP_REVERSE);
+                                        AlignContent.SPACE_BETWEEN);
+                                flexboxLayout.setFlexWrap(FlexWrap.WRAP_REVERSE);
                             }
                         });
-        assertThat(flexboxLayout.getAlignContent(), is(FlexboxLayout.ALIGN_CONTENT_SPACE_BETWEEN));
+        assertThat(flexboxLayout.getAlignContent(), is(AlignContent.SPACE_BETWEEN));
         onView(withId(R.id.text1)).check(isBottomAlignedWith(withId(R.id.flexbox_layout)));
         onView(withId(R.id.text2)).check(isRightOf(withId(R.id.text1)));
         onView(withId(R.id.text3)).check(isAbove(withId(R.id.text1)));
@@ -1715,11 +1730,11 @@ public class FlexboxAndroidTest {
                             @Override
                             public void apply(FlexboxLayout flexboxLayout) {
                                 flexboxLayout.setAlignContent(
-                                        FlexboxLayout.ALIGN_CONTENT_SPACE_AROUND);
-                                flexboxLayout.setFlexWrap(FlexboxLayout.FLEX_WRAP_WRAP_REVERSE);
+                                        AlignContent.SPACE_AROUND);
+                                flexboxLayout.setFlexWrap(FlexWrap.WRAP_REVERSE);
                             }
                         });
-        assertThat(flexboxLayout.getAlignContent(), is(FlexboxLayout.ALIGN_CONTENT_SPACE_AROUND));
+        assertThat(flexboxLayout.getAlignContent(), is(AlignContent.SPACE_AROUND));
         TextView textView6 = (TextView) activity.findViewById(R.id.text6);
         TextView textView4 = (TextView) activity.findViewById(R.id.text4);
         TextView textView2 = (TextView) activity.findViewById(R.id.text2);
@@ -1735,7 +1750,7 @@ public class FlexboxAndroidTest {
         final FlexboxTestActivity activity = mActivityRule.getActivity();
         FlexboxLayout flexboxLayout = createFlexboxLayout(R.layout.activity_stretch_test);
 
-        assertThat(flexboxLayout.getAlignItems(), is(FlexboxLayout.ALIGN_ITEMS_STRETCH));
+        assertThat(flexboxLayout.getAlignItems(), is(AlignItems.STRETCH));
         onView(withId(R.id.text1)).check(isTopAlignedWith(withId(R.id.flexbox_layout)));
         onView(withId(R.id.text1)).check(isLeftAlignedWith(withId(R.id.flexbox_layout)));
         onView(withId(R.id.text2)).check(isTopAlignedWith(withId(R.id.flexbox_layout)));
@@ -1788,7 +1803,7 @@ public class FlexboxAndroidTest {
                 new Configuration() {
                     @Override
                     public void apply(FlexboxLayout flexboxLayout) {
-                        flexboxLayout.setFlexDirection(FlexboxLayout.FLEX_DIRECTION_COLUMN);
+                        flexboxLayout.setFlexDirection(FlexDirection.COLUMN);
                     }
                 });
 
@@ -1817,7 +1832,7 @@ public class FlexboxAndroidTest {
         final FlexboxTestActivity activity = mActivityRule.getActivity();
         FlexboxLayout flexboxLayout = createFlexboxLayout(R.layout.activity_align_items_test);
 
-        assertThat(flexboxLayout.getAlignItems(), is(FlexboxLayout.ALIGN_ITEMS_FLEX_START));
+        assertThat(flexboxLayout.getAlignItems(), is(AlignItems.FLEX_START));
         onView(withId(R.id.text1)).check(isTopAlignedWith(withId(R.id.flexbox_layout)));
         onView(withId(R.id.text1)).check(isLeftAlignedWith(withId(R.id.flexbox_layout)));
         onView(withId(R.id.text2)).check(isTopAlignedWith(withId(R.id.flexbox_layout)));
@@ -1845,11 +1860,11 @@ public class FlexboxAndroidTest {
                 new Configuration() {
                     @Override
                     public void apply(FlexboxLayout flexboxLayout) {
-                        flexboxLayout.setAlignItems(FlexboxLayout.ALIGN_ITEMS_FLEX_END);
+                        flexboxLayout.setAlignItems(AlignItems.FLEX_END);
                     }
                 });
 
-        assertThat(flexboxLayout.getAlignItems(), is(FlexboxLayout.ALIGN_ITEMS_FLEX_END));
+        assertThat(flexboxLayout.getAlignItems(), is(AlignItems.FLEX_END));
         onView(withId(R.id.text1)).check(isLeftAlignedWith(withId(R.id.flexbox_layout)));
         onView(withId(R.id.text2)).check(isRightOf(withId(R.id.text1)));
         onView(withId(R.id.text3)).check(isLeftAlignedWith(withId(R.id.flexbox_layout)));
@@ -1879,11 +1894,11 @@ public class FlexboxAndroidTest {
                 new Configuration() {
                     @Override
                     public void apply(FlexboxLayout flexboxLayout) {
-                        flexboxLayout.setAlignItems(FlexboxLayout.ALIGN_ITEMS_FLEX_END);
+                        flexboxLayout.setAlignItems(AlignItems.FLEX_END);
                     }
                 });
 
-        assertThat(flexboxLayout.getAlignItems(), is(FlexboxLayout.ALIGN_ITEMS_FLEX_END));
+        assertThat(flexboxLayout.getAlignItems(), is(AlignItems.FLEX_END));
         onView(withId(R.id.text2)).check(isRightOf(withId(R.id.text1)));
 
         TextView textView1 = (TextView) activity.findViewById(R.id.text1);
@@ -1903,13 +1918,13 @@ public class FlexboxAndroidTest {
                 new Configuration() {
                     @Override
                     public void apply(FlexboxLayout flexboxLayout) {
-                        flexboxLayout.setAlignItems(FlexboxLayout.ALIGN_ITEMS_FLEX_END);
-                        flexboxLayout.setFlexDirection(FlexboxLayout.FLEX_DIRECTION_COLUMN);
+                        flexboxLayout.setAlignItems(AlignItems.FLEX_END);
+                        flexboxLayout.setFlexDirection(FlexDirection.COLUMN);
                     }
                 });
 
-        assertThat(flexboxLayout.getAlignItems(), is(FlexboxLayout.ALIGN_ITEMS_FLEX_END));
-        assertThat(flexboxLayout.getFlexDirection(), is(FlexboxLayout.FLEX_DIRECTION_COLUMN));
+        assertThat(flexboxLayout.getAlignItems(), is(AlignItems.FLEX_END));
+        assertThat(flexboxLayout.getFlexDirection(), is(FlexDirection.COLUMN));
         onView(withId(R.id.text2)).check(isBelow(withId(R.id.text1)));
 
         TextView textView1 = (TextView) activity.findViewById(R.id.text1);
@@ -1928,11 +1943,11 @@ public class FlexboxAndroidTest {
                 new Configuration() {
                     @Override
                     public void apply(FlexboxLayout flexboxLayout) {
-                        flexboxLayout.setAlignItems(FlexboxLayout.ALIGN_ITEMS_CENTER);
+                        flexboxLayout.setAlignItems(AlignItems.CENTER);
                     }
                 });
 
-        assertThat(flexboxLayout.getAlignItems(), is(FlexboxLayout.ALIGN_ITEMS_CENTER));
+        assertThat(flexboxLayout.getAlignItems(), is(AlignItems.CENTER));
         onView(withId(R.id.text1)).check(isLeftAlignedWith(withId(R.id.flexbox_layout)));
         onView(withId(R.id.text2)).check(isRightOf(withId(R.id.text1)));
         onView(withId(R.id.text3)).check(isLeftAlignedWith(withId(R.id.flexbox_layout)));
@@ -1963,13 +1978,13 @@ public class FlexboxAndroidTest {
                 new Configuration() {
                     @Override
                     public void apply(FlexboxLayout flexboxLayout) {
-                        flexboxLayout.setFlexWrap(FlexboxLayout.FLEX_WRAP_WRAP_REVERSE);
-                        flexboxLayout.setAlignItems(FlexboxLayout.ALIGN_ITEMS_FLEX_END);
+                        flexboxLayout.setFlexWrap(FlexWrap.WRAP_REVERSE);
+                        flexboxLayout.setAlignItems(AlignItems.FLEX_END);
                     }
                 });
 
-        assertThat(flexboxLayout.getAlignItems(), is(FlexboxLayout.ALIGN_ITEMS_FLEX_END));
-        assertThat(flexboxLayout.getFlexWrap(), is(FlexboxLayout.FLEX_WRAP_WRAP_REVERSE));
+        assertThat(flexboxLayout.getAlignItems(), is(AlignItems.FLEX_END));
+        assertThat(flexboxLayout.getFlexWrap(), is(FlexWrap.WRAP_REVERSE));
         onView(withId(R.id.text1)).check(isLeftAlignedWith(withId(R.id.flexbox_layout)));
         onView(withId(R.id.text2)).check(isRightOf(withId(R.id.text1)));
         onView(withId(R.id.text3)).check(isLeftAlignedWith(withId(R.id.flexbox_layout)));
@@ -1999,13 +2014,13 @@ public class FlexboxAndroidTest {
                 new Configuration() {
                     @Override
                     public void apply(FlexboxLayout flexboxLayout) {
-                        flexboxLayout.setFlexWrap(FlexboxLayout.FLEX_WRAP_WRAP_REVERSE);
-                        flexboxLayout.setAlignItems(FlexboxLayout.ALIGN_ITEMS_CENTER);
+                        flexboxLayout.setFlexWrap(FlexWrap.WRAP_REVERSE);
+                        flexboxLayout.setAlignItems(AlignItems.CENTER);
                     }
                 });
 
-        assertThat(flexboxLayout.getAlignItems(), is(FlexboxLayout.ALIGN_ITEMS_CENTER));
-        assertThat(flexboxLayout.getFlexWrap(), is(FlexboxLayout.FLEX_WRAP_WRAP_REVERSE));
+        assertThat(flexboxLayout.getAlignItems(), is(AlignItems.CENTER));
+        assertThat(flexboxLayout.getFlexWrap(), is(FlexWrap.WRAP_REVERSE));
         onView(withId(R.id.text1)).check(isLeftAlignedWith(withId(R.id.flexbox_layout)));
         onView(withId(R.id.text2)).check(isRightOf(withId(R.id.text1)));
         onView(withId(R.id.text3)).check(isLeftAlignedWith(withId(R.id.flexbox_layout)));
@@ -2038,12 +2053,12 @@ public class FlexboxAndroidTest {
                 new Configuration() {
                     @Override
                     public void apply(FlexboxLayout flexboxLayout) {
-                        flexboxLayout.setFlexDirection(FlexboxLayout.FLEX_DIRECTION_COLUMN);
+                        flexboxLayout.setFlexDirection(FlexDirection.COLUMN);
                     }
                 });
 
-        assertThat(flexboxLayout.getAlignItems(), is(FlexboxLayout.ALIGN_ITEMS_FLEX_START));
-        assertThat(flexboxLayout.getFlexDirection(), is(FlexboxLayout.FLEX_DIRECTION_COLUMN));
+        assertThat(flexboxLayout.getAlignItems(), is(AlignItems.FLEX_START));
+        assertThat(flexboxLayout.getFlexDirection(), is(FlexDirection.COLUMN));
         onView(withId(R.id.text1)).check(isTopAlignedWith(withId(R.id.flexbox_layout)));
         onView(withId(R.id.text1)).check(isLeftAlignedWith(withId(R.id.flexbox_layout)));
         onView(withId(R.id.text2)).check(isLeftAlignedWith(withId(R.id.flexbox_layout)));
@@ -2071,13 +2086,13 @@ public class FlexboxAndroidTest {
                 new Configuration() {
                     @Override
                     public void apply(FlexboxLayout flexboxLayout) {
-                        flexboxLayout.setAlignItems(FlexboxLayout.ALIGN_ITEMS_FLEX_END);
-                        flexboxLayout.setFlexDirection(FlexboxLayout.FLEX_DIRECTION_COLUMN);
+                        flexboxLayout.setAlignItems(AlignItems.FLEX_END);
+                        flexboxLayout.setFlexDirection(FlexDirection.COLUMN);
                     }
                 });
 
-        assertThat(flexboxLayout.getAlignItems(), is(FlexboxLayout.ALIGN_ITEMS_FLEX_END));
-        assertThat(flexboxLayout.getFlexDirection(), is(FlexboxLayout.FLEX_DIRECTION_COLUMN));
+        assertThat(flexboxLayout.getAlignItems(), is(AlignItems.FLEX_END));
+        assertThat(flexboxLayout.getFlexDirection(), is(FlexDirection.COLUMN));
         onView(withId(R.id.text1)).check(isTopAlignedWith(withId(R.id.flexbox_layout)));
         onView(withId(R.id.text2)).check(isBelow(withId(R.id.text1)));
         onView(withId(R.id.text3)).check(isTopAlignedWith(withId(R.id.flexbox_layout)));
@@ -2106,13 +2121,13 @@ public class FlexboxAndroidTest {
                 new Configuration() {
                     @Override
                     public void apply(FlexboxLayout flexboxLayout) {
-                        flexboxLayout.setAlignItems(FlexboxLayout.ALIGN_ITEMS_CENTER);
-                        flexboxLayout.setFlexDirection(FlexboxLayout.FLEX_DIRECTION_COLUMN);
+                        flexboxLayout.setAlignItems(AlignItems.CENTER);
+                        flexboxLayout.setFlexDirection(FlexDirection.COLUMN);
                     }
                 });
 
-        assertThat(flexboxLayout.getAlignItems(), is(FlexboxLayout.ALIGN_ITEMS_CENTER));
-        assertThat(flexboxLayout.getFlexDirection(), is(FlexboxLayout.FLEX_DIRECTION_COLUMN));
+        assertThat(flexboxLayout.getAlignItems(), is(AlignItems.CENTER));
+        assertThat(flexboxLayout.getFlexDirection(), is(FlexDirection.COLUMN));
         onView(withId(R.id.text1)).check(isTopAlignedWith(withId(R.id.flexbox_layout)));
         onView(withId(R.id.text2)).check(isBelow(withId(R.id.text1)));
         onView(withId(R.id.text3)).check(isTopAlignedWith(withId(R.id.flexbox_layout)));
@@ -2143,15 +2158,15 @@ public class FlexboxAndroidTest {
                 new Configuration() {
                     @Override
                     public void apply(FlexboxLayout flexboxLayout) {
-                        flexboxLayout.setFlexWrap(FlexboxLayout.FLEX_WRAP_WRAP_REVERSE);
-                        flexboxLayout.setAlignItems(FlexboxLayout.ALIGN_ITEMS_FLEX_END);
-                        flexboxLayout.setFlexDirection(FlexboxLayout.FLEX_DIRECTION_COLUMN);
+                        flexboxLayout.setFlexWrap(FlexWrap.WRAP_REVERSE);
+                        flexboxLayout.setAlignItems(AlignItems.FLEX_END);
+                        flexboxLayout.setFlexDirection(FlexDirection.COLUMN);
                     }
                 });
 
-        assertThat(flexboxLayout.getAlignItems(), is(FlexboxLayout.ALIGN_ITEMS_FLEX_END));
-        assertThat(flexboxLayout.getFlexWrap(), is(FlexboxLayout.FLEX_WRAP_WRAP_REVERSE));
-        assertThat(flexboxLayout.getFlexDirection(), is(FlexboxLayout.FLEX_DIRECTION_COLUMN));
+        assertThat(flexboxLayout.getAlignItems(), is(AlignItems.FLEX_END));
+        assertThat(flexboxLayout.getFlexWrap(), is(FlexWrap.WRAP_REVERSE));
+        assertThat(flexboxLayout.getFlexDirection(), is(FlexDirection.COLUMN));
         onView(withId(R.id.text1)).check(isTopAlignedWith(withId(R.id.flexbox_layout)));
         onView(withId(R.id.text2)).check(isBelow(withId(R.id.text1)));
         onView(withId(R.id.text3)).check(isLeftAlignedWith(withId(R.id.flexbox_layout)));
@@ -2181,15 +2196,15 @@ public class FlexboxAndroidTest {
                 new Configuration() {
                     @Override
                     public void apply(FlexboxLayout flexboxLayout) {
-                        flexboxLayout.setFlexWrap(FlexboxLayout.FLEX_WRAP_WRAP_REVERSE);
-                        flexboxLayout.setAlignItems(FlexboxLayout.ALIGN_ITEMS_CENTER);
-                        flexboxLayout.setFlexDirection(FlexboxLayout.FLEX_DIRECTION_COLUMN);
+                        flexboxLayout.setFlexWrap(FlexWrap.WRAP_REVERSE);
+                        flexboxLayout.setAlignItems(AlignItems.CENTER);
+                        flexboxLayout.setFlexDirection(FlexDirection.COLUMN);
                     }
                 });
 
-        assertThat(flexboxLayout.getAlignItems(), is(FlexboxLayout.ALIGN_ITEMS_CENTER));
-        assertThat(flexboxLayout.getFlexWrap(), is(FlexboxLayout.FLEX_WRAP_WRAP_REVERSE));
-        assertThat(flexboxLayout.getFlexDirection(), is(FlexboxLayout.FLEX_DIRECTION_COLUMN));
+        assertThat(flexboxLayout.getAlignItems(), is(AlignItems.CENTER));
+        assertThat(flexboxLayout.getFlexWrap(), is(FlexWrap.WRAP_REVERSE));
+        assertThat(flexboxLayout.getFlexDirection(), is(FlexDirection.COLUMN));
         onView(withId(R.id.text1)).check(isTopAlignedWith(withId(R.id.flexbox_layout)));
         onView(withId(R.id.text2)).check(isBelow(withId(R.id.text1)));
         onView(withId(R.id.text3)).check(isTopAlignedWith(withId(R.id.flexbox_layout)));
@@ -2237,8 +2252,8 @@ public class FlexboxAndroidTest {
         createFlexboxLayout(R.layout.activity_align_items_baseline_test, new Configuration() {
             @Override
             public void apply(FlexboxLayout flexboxLayout) {
-                flexboxLayout.setFlexWrap(FlexboxLayout.FLEX_WRAP_WRAP_REVERSE);
-            }
+                flexboxLayout.setFlexWrap(FlexWrap.WRAP_REVERSE);
+           }
         });
         TextView textView1 = (TextView) activity.findViewById(R.id.text1);
         TextView textView2 = (TextView) activity.findViewById(R.id.text2);
@@ -2258,11 +2273,12 @@ public class FlexboxAndroidTest {
                 new Configuration() {
                     @Override
                     public void apply(FlexboxLayout flexboxLayout) {
-                        flexboxLayout.setFlexDirection(FlexboxLayout.FLEX_DIRECTION_ROW_REVERSE);
+                        flexboxLayout.setFlexDirection(FlexDirection.ROW_REVERSE);
                     }
                 });
 
-        assertThat(flexboxLayout.getFlexDirection(), is(FlexboxLayout.FLEX_DIRECTION_ROW_REVERSE));
+        assertThat(flexboxLayout.getFlexDirection(), is(FlexDirection.ROW_REVERSE));
+
         // The layout direction should be right to left
         onView(withId(R.id.text1)).check(isTopAlignedWith(withId(R.id.flexbox_layout)));
         onView(withId(R.id.text1)).check(isRightAlignedWith(withId(R.id.flexbox_layout)));
@@ -2280,12 +2296,12 @@ public class FlexboxAndroidTest {
                 new Configuration() {
                     @Override
                     public void apply(FlexboxLayout flexboxLayout) {
-                        flexboxLayout.setFlexDirection(FlexboxLayout.FLEX_DIRECTION_COLUMN_REVERSE);
+                        flexboxLayout.setFlexDirection(FlexDirection.COLUMN_REVERSE);
                     }
                 });
 
         assertThat(flexboxLayout.getFlexDirection(),
-                is(FlexboxLayout.FLEX_DIRECTION_COLUMN_REVERSE));
+                is(FlexDirection.COLUMN_REVERSE));
         onView(withId(R.id.text1)).check(isBottomAlignedWith(withId(R.id.flexbox_layout)));
         onView(withId(R.id.text1)).check(isLeftAlignedWith(withId(R.id.flexbox_layout)));
         onView(withId(R.id.text2)).check(isLeftAlignedWith(withId(R.id.flexbox_layout)));
@@ -2302,9 +2318,9 @@ public class FlexboxAndroidTest {
         FlexboxLayout flexboxLayout = createFlexboxLayout(
                 R.layout.activity_flex_basis_percent_test);
 
-        // The text1 length is 50%, the text2 length is 60% and the wrap property is FLEX_WRAP_WRAP,
+        // The text1 length is 50%, the text2 length is 60% and the wrap property is WRAP,
         // the text2 should be on the second flex line.
-        assertThat(flexboxLayout.getFlexWrap(), is(FlexboxLayout.FLEX_WRAP_WRAP));
+        assertThat(flexboxLayout.getFlexWrap(), is(FlexWrap.WRAP));
         onView(withId(R.id.text1)).check(isTopAlignedWith(withId(R.id.flexbox_layout)));
         onView(withId(R.id.text1)).check(isLeftAlignedWith(withId(R.id.flexbox_layout)));
         onView(withId(R.id.text2)).check(isLeftAlignedWith(withId(R.id.flexbox_layout)));
@@ -2329,15 +2345,15 @@ public class FlexboxAndroidTest {
                 new Configuration() {
                     @Override
                     public void apply(FlexboxLayout flexboxLayout) {
-                        flexboxLayout.setFlexWrap(FlexboxLayout.FLEX_WRAP_NOWRAP);
+                        flexboxLayout.setFlexWrap(FlexWrap.NOWRAP);
                     }
                 });
 
         // The text1 length is 50%, the text2 length is 60% and the text3 has the fixed width,
-        // but the flex wrap attribute is FLEX_WRAP_NOWRAP, and flexShrink attributes for all
+        // but the flex wrap attribute is NOWRAP, and flexShrink attributes for all
         // children are the default value (1), three text views are shrank to fit in a single flex
         // line.
-        assertThat(flexboxLayout.getFlexWrap(), is(FlexboxLayout.FLEX_WRAP_NOWRAP));
+        assertThat(flexboxLayout.getFlexWrap(), is(FlexWrap.NOWRAP));
         onView(withId(R.id.text1)).check(isTopAlignedWith(withId(R.id.flexbox_layout)));
         onView(withId(R.id.text1)).check(isLeftAlignedWith(withId(R.id.flexbox_layout)));
         onView(withId(R.id.text2)).check(isTopAlignedWith(withId(R.id.flexbox_layout)));
@@ -2363,14 +2379,14 @@ public class FlexboxAndroidTest {
                 new Configuration() {
                     @Override
                     public void apply(FlexboxLayout flexboxLayout) {
-                        flexboxLayout.setFlexDirection(FlexboxLayout.FLEX_DIRECTION_COLUMN);
+                        flexboxLayout.setFlexDirection(FlexDirection.COLUMN);
                     }
                 });
 
-        // The text1 length is 50%, the text2 length is 60% and the wrap property is FLEX_WRAP_WRAP,
+        // The text1 length is 50%, the text2 length is 60% and the wrap property is WRAP,
         // the text2 should be on the second flex line.
-        assertThat(flexboxLayout.getFlexWrap(), is(FlexboxLayout.FLEX_WRAP_WRAP));
-        assertThat(flexboxLayout.getFlexDirection(), is(FlexboxLayout.FLEX_DIRECTION_COLUMN));
+        assertThat(flexboxLayout.getFlexWrap(), is(FlexWrap.WRAP));
+        assertThat(flexboxLayout.getFlexDirection(), is(FlexDirection.COLUMN));
         onView(withId(R.id.text1)).check(isTopAlignedWith(withId(R.id.flexbox_layout)));
         onView(withId(R.id.text1)).check(isLeftAlignedWith(withId(R.id.flexbox_layout)));
         onView(withId(R.id.text2)).check(isTopAlignedWith(withId(R.id.flexbox_layout)));
@@ -2395,17 +2411,17 @@ public class FlexboxAndroidTest {
                 new Configuration() {
                     @Override
                     public void apply(FlexboxLayout flexboxLayout) {
-                        flexboxLayout.setFlexWrap(FlexboxLayout.FLEX_WRAP_NOWRAP);
-                        flexboxLayout.setFlexDirection(FlexboxLayout.FLEX_DIRECTION_COLUMN);
+                        flexboxLayout.setFlexWrap(FlexWrap.NOWRAP);
+                        flexboxLayout.setFlexDirection(FlexDirection.COLUMN);
                     }
                 });
 
         // The text1 length is 50%, the text2 length is 60% and the text3 has the fixed height,
-        // but the flex wrap attribute is FLEX_WRAP_NOWRAP, and flexShrink attributes for all
+        // but the flex wrap attribute is NOWRAP, and flexShrink attributes for all
         // children are the default value (1), three text views are shrank to fit in a single
         // flex line.
-        assertThat(flexboxLayout.getFlexWrap(), is(FlexboxLayout.FLEX_WRAP_NOWRAP));
-        assertThat(flexboxLayout.getFlexDirection(), is(FlexboxLayout.FLEX_DIRECTION_COLUMN));
+        assertThat(flexboxLayout.getFlexWrap(), is(FlexWrap.NOWRAP));
+        assertThat(flexboxLayout.getFlexDirection(), is(FlexDirection.COLUMN));
         onView(withId(R.id.text1)).check(isTopAlignedWith(withId(R.id.flexbox_layout)));
         onView(withId(R.id.text1)).check(isLeftAlignedWith(withId(R.id.flexbox_layout)));
         onView(withId(R.id.text2)).check(isLeftAlignedWith(withId(R.id.flexbox_layout)));
@@ -2570,8 +2586,8 @@ public class FlexboxAndroidTest {
         FlexboxLayout flexboxLayout = createFlexboxLayout(R.layout.activity_views_visibility_gone);
 
         // The text1 and text2's visibility are gone, so the visible view starts from text3
-        assertThat(flexboxLayout.getFlexWrap(), is(FlexboxLayout.FLEX_WRAP_WRAP));
-        assertThat(flexboxLayout.getFlexDirection(), is(FlexboxLayout.FLEX_DIRECTION_ROW));
+        assertThat(flexboxLayout.getFlexWrap(), is(FlexWrap.WRAP));
+        assertThat(flexboxLayout.getFlexDirection(), is(FlexDirection.ROW));
         onView(withId(R.id.text3)).check(isTopAlignedWith(withId(R.id.flexbox_layout)));
         onView(withId(R.id.text3)).check(isLeftAlignedWith(withId(R.id.flexbox_layout)));
         onView(withId(R.id.text4)).check(isTopAlignedWith(withId(R.id.flexbox_layout)));
@@ -2603,8 +2619,8 @@ public class FlexboxAndroidTest {
         FlexboxLayout flexboxLayout = createFlexboxLayout(
                 R.layout.activity_visibility_gone_first_item_in_flex_line_row);
 
-        assertThat(flexboxLayout.getFlexWrap(), is(FlexboxLayout.FLEX_WRAP_WRAP));
-        assertThat(flexboxLayout.getFlexDirection(), is(FlexboxLayout.FLEX_DIRECTION_ROW));
+        assertThat(flexboxLayout.getFlexWrap(), is(FlexWrap.WRAP));
+        assertThat(flexboxLayout.getFlexDirection(), is(FlexDirection.ROW));
         TextView textView1 = (TextView) activity.findViewById(R.id.text1);
         TextView textView3 = (TextView) activity.findViewById(R.id.text3);
 
@@ -2625,8 +2641,8 @@ public class FlexboxAndroidTest {
         FlexboxLayout flexboxLayout = createFlexboxLayout(
                 R.layout.activity_visibility_gone_first_item_in_flex_line_column);
 
-        assertThat(flexboxLayout.getFlexWrap(), is(FlexboxLayout.FLEX_WRAP_WRAP));
-        assertThat(flexboxLayout.getFlexDirection(), is(FlexboxLayout.FLEX_DIRECTION_COLUMN));
+        assertThat(flexboxLayout.getFlexWrap(), is(FlexWrap.WRAP));
+        assertThat(flexboxLayout.getFlexDirection(), is(FlexDirection.COLUMN));
         TextView textView1 = (TextView) activity.findViewById(R.id.text1);
         TextView textView3 = (TextView) activity.findViewById(R.id.text3);
 
@@ -2642,8 +2658,8 @@ public class FlexboxAndroidTest {
                 R.layout.activity_views_visibility_invisible);
 
         // The text1 and text2's visibility are invisible, these views take space like visible views
-        assertThat(flexboxLayout.getFlexWrap(), is(FlexboxLayout.FLEX_WRAP_WRAP));
-        assertThat(flexboxLayout.getFlexDirection(), is(FlexboxLayout.FLEX_DIRECTION_ROW));
+        assertThat(flexboxLayout.getFlexWrap(), is(FlexWrap.WRAP));
+        assertThat(flexboxLayout.getFlexDirection(), is(FlexDirection.ROW));
         onView(withId(R.id.text1)).check(isTopAlignedWith(withId(R.id.flexbox_layout)));
         onView(withId(R.id.text1)).check(isLeftAlignedWith(withId(R.id.flexbox_layout)));
         onView(withId(R.id.text2)).check(isTopAlignedWith(withId(R.id.flexbox_layout)));
@@ -2667,8 +2683,8 @@ public class FlexboxAndroidTest {
 
         // layout_wrapBefore for the text2 and text3 are set to true, the text2 and text3 should
         // be the first item for each flex line.
-        assertThat(flexboxLayout.getFlexWrap(), is(FlexboxLayout.FLEX_WRAP_WRAP));
-        assertThat(flexboxLayout.getFlexDirection(), is(FlexboxLayout.FLEX_DIRECTION_ROW));
+        assertThat(flexboxLayout.getFlexWrap(), is(FlexWrap.WRAP));
+        assertThat(flexboxLayout.getFlexDirection(), is(FlexDirection.ROW));
         onView(withId(R.id.text1)).check(isTopAlignedWith(withId(R.id.flexbox_layout)));
         onView(withId(R.id.text1)).check(isLeftAlignedWith(withId(R.id.flexbox_layout)));
         onView(withId(R.id.text2)).check(isLeftAlignedWith(withId(R.id.flexbox_layout)));
@@ -2708,14 +2724,14 @@ public class FlexboxAndroidTest {
                 new Configuration() {
                     @Override
                     public void apply(FlexboxLayout flexboxLayout) {
-                        flexboxLayout.setFlexWrap(FlexboxLayout.FLEX_WRAP_NOWRAP);
+                        flexboxLayout.setFlexWrap(FlexWrap.NOWRAP);
                     }
                 });
 
         // layout_wrapBefore for the text2 and text3 are set to true, but the flexWrap is set to
-        // FLEX_WRAP_NOWRAP, three text views should not be wrapped.
-        assertThat(flexboxLayout.getFlexWrap(), is(FlexboxLayout.FLEX_WRAP_NOWRAP));
-        assertThat(flexboxLayout.getFlexDirection(), is(FlexboxLayout.FLEX_DIRECTION_ROW));
+        // NOWRAP, three text views should not be wrapped.
+        assertThat(flexboxLayout.getFlexWrap(), is(FlexWrap.NOWRAP));
+        assertThat(flexboxLayout.getFlexDirection(), is(FlexDirection.ROW));
         onView(withId(R.id.text1)).check(isTopAlignedWith(withId(R.id.flexbox_layout)));
         onView(withId(R.id.text1)).check(isLeftAlignedWith(withId(R.id.flexbox_layout)));
         onView(withId(R.id.text1)).check(isBottomAlignedWith(withId(R.id.flexbox_layout)));
@@ -2734,8 +2750,8 @@ public class FlexboxAndroidTest {
         FlexboxLayout flexboxLayout = createFlexboxLayout(
                 R.layout.activity_wrap_parent_padding_horizontal_test);
 
-        assertThat(flexboxLayout.getFlexWrap(), is(FlexboxLayout.FLEX_WRAP_WRAP));
-        assertThat(flexboxLayout.getFlexDirection(), is(FlexboxLayout.FLEX_DIRECTION_ROW));
+        assertThat(flexboxLayout.getFlexWrap(), is(FlexWrap.WRAP));
+        assertThat(flexboxLayout.getFlexDirection(), is(FlexDirection.ROW));
         // The sum of width of TextView1 and TextView2 is not enough for wrapping, but considering
         // parent padding, the second TextView should be wrapped
         onView(withId(R.id.text2)).check(isBelow(withId(R.id.text1)));
@@ -2755,8 +2771,8 @@ public class FlexboxAndroidTest {
         FlexboxLayout flexboxLayout = createFlexboxLayout(
                 R.layout.activity_wrap_parent_padding_vertical_test);
 
-        assertThat(flexboxLayout.getFlexWrap(), is(FlexboxLayout.FLEX_WRAP_WRAP));
-        assertThat(flexboxLayout.getFlexDirection(), is(FlexboxLayout.FLEX_DIRECTION_COLUMN));
+        assertThat(flexboxLayout.getFlexWrap(), is(FlexWrap.WRAP));
+        assertThat(flexboxLayout.getFlexDirection(), is(FlexDirection.COLUMN));
         // The sum of height of TextView1 and TextView2 is not enough for wrapping, but considering
         // parent padding, the second TextView should be wrapped
         onView(withId(R.id.text2)).check(isRightOf(withId(R.id.text1)));
@@ -2776,8 +2792,8 @@ public class FlexboxAndroidTest {
         FlexboxLayout flexboxLayout = createFlexboxLayout(
                 R.layout.activity_wrap_child_margin_horizontal_test);
 
-        assertThat(flexboxLayout.getFlexWrap(), is(FlexboxLayout.FLEX_WRAP_WRAP));
-        assertThat(flexboxLayout.getFlexDirection(), is(FlexboxLayout.FLEX_DIRECTION_ROW));
+        assertThat(flexboxLayout.getFlexWrap(), is(FlexWrap.WRAP));
+        assertThat(flexboxLayout.getFlexDirection(), is(FlexDirection.ROW));
         // The sum of width of TextView1 and TextView2 is not enough for wrapping, but considering
         // the margin for the TextView2, the second TextView should be wrapped
         onView(withId(R.id.text2)).check(isBelow(withId(R.id.text1)));
@@ -2799,10 +2815,10 @@ public class FlexboxAndroidTest {
         FlexboxLayout flexboxLayout = createFlexboxLayout(
                 R.layout.activity_first_item_large_horizontal_test);
 
-        assertThat(flexboxLayout.getFlexWrap(), is(FlexboxLayout.FLEX_WRAP_WRAP));
-        assertThat(flexboxLayout.getFlexDirection(), is(FlexboxLayout.FLEX_DIRECTION_ROW));
-        assertThat(flexboxLayout.getAlignItems(), is(FlexboxLayout.ALIGN_ITEMS_STRETCH));
-        assertThat(flexboxLayout.getAlignContent(), is(FlexboxLayout.ALIGN_CONTENT_STRETCH));
+        assertThat(flexboxLayout.getFlexWrap(), is(FlexWrap.WRAP));
+        assertThat(flexboxLayout.getFlexDirection(), is(FlexDirection.ROW));
+        assertThat(flexboxLayout.getAlignItems(), is(AlignItems.STRETCH));
+        assertThat(flexboxLayout.getAlignContent(), is(AlignContent.STRETCH));
         // The sum of width of TextView1 and TextView2 is not enough for wrapping, but considering
         // the margin for the TextView2, the second TextView should be wrapped
         onView(withId(R.id.text1)).check(isTopAlignedWith(withId(R.id.flexbox_layout)));
@@ -2827,10 +2843,10 @@ public class FlexboxAndroidTest {
         FlexboxLayout flexboxLayout = createFlexboxLayout(
                 R.layout.activity_first_item_large_vertical_test);
 
-        assertThat(flexboxLayout.getFlexWrap(), is(FlexboxLayout.FLEX_WRAP_WRAP));
-        assertThat(flexboxLayout.getFlexDirection(), is(FlexboxLayout.FLEX_DIRECTION_COLUMN));
-        assertThat(flexboxLayout.getAlignItems(), is(FlexboxLayout.ALIGN_ITEMS_STRETCH));
-        assertThat(flexboxLayout.getAlignContent(), is(FlexboxLayout.ALIGN_CONTENT_STRETCH));
+        assertThat(flexboxLayout.getFlexWrap(), is(FlexWrap.WRAP));
+        assertThat(flexboxLayout.getFlexDirection(), is(FlexDirection.COLUMN));
+        assertThat(flexboxLayout.getAlignItems(), is(AlignItems.STRETCH));
+        assertThat(flexboxLayout.getAlignContent(), is(AlignContent.STRETCH));
         // The sum of width of TextView1 and TextView2 is not enough for wrapping, but considering
         // the margin for the TextView2, the second TextView should be wrapped
         onView(withId(R.id.text1)).check(isTopAlignedWith(withId(R.id.flexbox_layout)));
@@ -2853,8 +2869,8 @@ public class FlexboxAndroidTest {
         FlexboxLayout flexboxLayout = createFlexboxLayout(
                 R.layout.activity_wrap_child_margin_vertical_test);
 
-        assertThat(flexboxLayout.getFlexWrap(), is(FlexboxLayout.FLEX_WRAP_WRAP));
-        assertThat(flexboxLayout.getFlexDirection(), is(FlexboxLayout.FLEX_DIRECTION_COLUMN));
+        assertThat(flexboxLayout.getFlexWrap(), is(FlexWrap.WRAP));
+        assertThat(flexboxLayout.getFlexDirection(), is(FlexDirection.COLUMN));
         // The sum of height of TextView1 and TextView2 is not enough for wrapping, but considering
         // the margin of the TextView2, the second TextView should be wrapped
         onView(withId(R.id.text2)).check(isRightOf(withId(R.id.text1)));
@@ -2881,8 +2897,8 @@ public class FlexboxAndroidTest {
         final FlexboxTestActivity activity = mActivityRule.getActivity();
         FlexboxLayout flexboxLayout = createFlexboxLayout(
                 R.layout.activity_divider_test_direction_row);
-        assertThat(flexboxLayout.getFlexWrap(), is(FlexboxLayout.FLEX_WRAP_WRAP));
-        assertThat(flexboxLayout.getFlexDirection(), is(FlexboxLayout.FLEX_DIRECTION_ROW));
+        assertThat(flexboxLayout.getFlexWrap(), is(FlexWrap.WRAP));
+        assertThat(flexboxLayout.getFlexDirection(), is(FlexDirection.ROW));
         assertThat(flexboxLayout.getShowDividerVertical(),
                 is(FlexboxLayout.SHOW_DIVIDER_BEGINNING));
 
@@ -2911,9 +2927,8 @@ public class FlexboxAndroidTest {
                     }
                 }
         );
-
-        assertThat(flexboxLayout.getFlexWrap(), is(FlexboxLayout.FLEX_WRAP_WRAP));
-        assertThat(flexboxLayout.getFlexDirection(), is(FlexboxLayout.FLEX_DIRECTION_ROW));
+        assertThat(flexboxLayout.getFlexWrap(), is(FlexWrap.WRAP));
+        assertThat(flexboxLayout.getFlexDirection(), is(FlexDirection.ROW));
         assertThat(flexboxLayout.getShowDividerVertical(), is(FlexboxLayout.SHOW_DIVIDER_MIDDLE));
 
         TextView text1 = (TextView) activity.findViewById(R.id.text1);
@@ -2944,8 +2959,8 @@ public class FlexboxAndroidTest {
                 }
         );
 
-        assertThat(flexboxLayout.getFlexWrap(), is(FlexboxLayout.FLEX_WRAP_WRAP));
-        assertThat(flexboxLayout.getFlexDirection(), is(FlexboxLayout.FLEX_DIRECTION_ROW));
+        assertThat(flexboxLayout.getFlexWrap(), is(FlexWrap.WRAP));
+        assertThat(flexboxLayout.getFlexDirection(), is(FlexDirection.ROW));
         assertThat(flexboxLayout.getShowDividerVertical(), is(FlexboxLayout.SHOW_DIVIDER_END));
 
         TextView text1 = (TextView) activity.findViewById(R.id.text1);
@@ -2979,8 +2994,8 @@ public class FlexboxAndroidTest {
                 }
         );
 
-        assertThat(flexboxLayout.getFlexWrap(), is(FlexboxLayout.FLEX_WRAP_WRAP));
-        assertThat(flexboxLayout.getFlexDirection(), is(FlexboxLayout.FLEX_DIRECTION_ROW));
+        assertThat(flexboxLayout.getFlexWrap(), is(FlexWrap.WRAP));
+        assertThat(flexboxLayout.getFlexDirection(), is(FlexDirection.ROW));
         assertThat(flexboxLayout.getShowDividerVertical(),
                 is(FlexboxLayout.SHOW_DIVIDER_BEGINNING | FlexboxLayout.SHOW_DIVIDER_MIDDLE |
                         FlexboxLayout.SHOW_DIVIDER_END));
@@ -3018,8 +3033,8 @@ public class FlexboxAndroidTest {
                 }
         );
 
-        assertThat(flexboxLayout.getFlexWrap(), is(FlexboxLayout.FLEX_WRAP_WRAP));
-        assertThat(flexboxLayout.getFlexDirection(), is(FlexboxLayout.FLEX_DIRECTION_ROW));
+        assertThat(flexboxLayout.getFlexWrap(), is(FlexWrap.WRAP));
+        assertThat(flexboxLayout.getFlexDirection(), is(FlexDirection.ROW));
         assertThat(flexboxLayout.getShowDividerHorizontal(),
                 is(FlexboxLayout.SHOW_DIVIDER_BEGINNING));
         assertThat(flexboxLayout.getShowDividerVertical(), is(FlexboxLayout.SHOW_DIVIDER_NONE));
@@ -3050,8 +3065,8 @@ public class FlexboxAndroidTest {
                 }
         );
 
-        assertThat(flexboxLayout.getFlexWrap(), is(FlexboxLayout.FLEX_WRAP_WRAP));
-        assertThat(flexboxLayout.getFlexDirection(), is(FlexboxLayout.FLEX_DIRECTION_ROW));
+        assertThat(flexboxLayout.getFlexWrap(), is(FlexWrap.WRAP));
+        assertThat(flexboxLayout.getFlexDirection(), is(FlexDirection.ROW));
         assertThat(flexboxLayout.getShowDividerHorizontal(), is(FlexboxLayout.SHOW_DIVIDER_MIDDLE));
         assertThat(flexboxLayout.getShowDividerVertical(), is(FlexboxLayout.SHOW_DIVIDER_NONE));
 
@@ -3083,8 +3098,8 @@ public class FlexboxAndroidTest {
                 }
         );
 
-        assertThat(flexboxLayout.getFlexWrap(), is(FlexboxLayout.FLEX_WRAP_WRAP));
-        assertThat(flexboxLayout.getFlexDirection(), is(FlexboxLayout.FLEX_DIRECTION_ROW));
+        assertThat(flexboxLayout.getFlexWrap(), is(FlexWrap.WRAP));
+        assertThat(flexboxLayout.getFlexDirection(), is(FlexDirection.ROW));
         assertThat(flexboxLayout.getShowDividerHorizontal(), is(FlexboxLayout.SHOW_DIVIDER_END));
         assertThat(flexboxLayout.getShowDividerVertical(), is(FlexboxLayout.SHOW_DIVIDER_NONE));
 
@@ -3119,8 +3134,8 @@ public class FlexboxAndroidTest {
                 }
         );
 
-        assertThat(flexboxLayout.getFlexWrap(), is(FlexboxLayout.FLEX_WRAP_WRAP));
-        assertThat(flexboxLayout.getFlexDirection(), is(FlexboxLayout.FLEX_DIRECTION_ROW));
+        assertThat(flexboxLayout.getFlexWrap(), is(FlexWrap.WRAP));
+        assertThat(flexboxLayout.getFlexDirection(), is(FlexDirection.ROW));
         assertThat(flexboxLayout.getShowDividerHorizontal(),
                 is(FlexboxLayout.SHOW_DIVIDER_BEGINNING | FlexboxLayout.SHOW_DIVIDER_MIDDLE |
                         FlexboxLayout.SHOW_DIVIDER_END));
@@ -3157,8 +3172,8 @@ public class FlexboxAndroidTest {
                 }
         );
 
-        assertThat(flexboxLayout.getFlexWrap(), is(FlexboxLayout.FLEX_WRAP_WRAP));
-        assertThat(flexboxLayout.getFlexDirection(), is(FlexboxLayout.FLEX_DIRECTION_ROW));
+        assertThat(flexboxLayout.getFlexWrap(), is(FlexWrap.WRAP));
+        assertThat(flexboxLayout.getFlexDirection(), is(FlexDirection.ROW));
         assertThat(flexboxLayout.getShowDividerVertical(),
                 is(FlexboxLayout.SHOW_DIVIDER_BEGINNING | FlexboxLayout.SHOW_DIVIDER_MIDDLE |
                         FlexboxLayout.SHOW_DIVIDER_END));
@@ -3185,8 +3200,8 @@ public class FlexboxAndroidTest {
         FlexboxLayout flexboxLayout = createFlexboxLayout(
                 R.layout.activity_divider_test_direction_column);
 
-        assertThat(flexboxLayout.getFlexWrap(), is(FlexboxLayout.FLEX_WRAP_WRAP));
-        assertThat(flexboxLayout.getFlexDirection(), is(FlexboxLayout.FLEX_DIRECTION_COLUMN));
+        assertThat(flexboxLayout.getFlexWrap(), is(FlexWrap.WRAP));
+        assertThat(flexboxLayout.getFlexDirection(), is(FlexDirection.COLUMN));
         assertThat(flexboxLayout.getShowDividerHorizontal(),
                 is(FlexboxLayout.SHOW_DIVIDER_BEGINNING));
 
@@ -3216,8 +3231,8 @@ public class FlexboxAndroidTest {
                 }
         );
 
-        assertThat(flexboxLayout.getFlexWrap(), is(FlexboxLayout.FLEX_WRAP_WRAP));
-        assertThat(flexboxLayout.getFlexDirection(), is(FlexboxLayout.FLEX_DIRECTION_COLUMN));
+        assertThat(flexboxLayout.getFlexWrap(), is(FlexWrap.WRAP));
+        assertThat(flexboxLayout.getFlexDirection(), is(FlexDirection.COLUMN));
         assertThat(flexboxLayout.getShowDividerHorizontal(), is(FlexboxLayout.SHOW_DIVIDER_MIDDLE));
 
         TextView text1 = (TextView) activity.findViewById(R.id.text1);
@@ -3246,8 +3261,8 @@ public class FlexboxAndroidTest {
                 }
         );
 
-        assertThat(flexboxLayout.getFlexWrap(), is(FlexboxLayout.FLEX_WRAP_WRAP));
-        assertThat(flexboxLayout.getFlexDirection(), is(FlexboxLayout.FLEX_DIRECTION_COLUMN));
+        assertThat(flexboxLayout.getFlexWrap(), is(FlexWrap.WRAP));
+        assertThat(flexboxLayout.getFlexDirection(), is(FlexDirection.COLUMN));
         assertThat(flexboxLayout.getShowDividerHorizontal(), is(FlexboxLayout.SHOW_DIVIDER_END));
 
         TextView text1 = (TextView) activity.findViewById(R.id.text1);
@@ -3279,8 +3294,8 @@ public class FlexboxAndroidTest {
                 }
         );
 
-        assertThat(flexboxLayout.getFlexWrap(), is(FlexboxLayout.FLEX_WRAP_WRAP));
-        assertThat(flexboxLayout.getFlexDirection(), is(FlexboxLayout.FLEX_DIRECTION_COLUMN));
+        assertThat(flexboxLayout.getFlexWrap(), is(FlexWrap.WRAP));
+        assertThat(flexboxLayout.getFlexDirection(), is(FlexDirection.COLUMN));
         assertThat(flexboxLayout.getShowDividerHorizontal(),
                 is(FlexboxLayout.SHOW_DIVIDER_BEGINNING | FlexboxLayout.SHOW_DIVIDER_MIDDLE |
                         FlexboxLayout.SHOW_DIVIDER_END));
@@ -3314,8 +3329,8 @@ public class FlexboxAndroidTest {
                     }
                 });
 
-        assertThat(flexboxLayout.getFlexWrap(), is(FlexboxLayout.FLEX_WRAP_WRAP));
-        assertThat(flexboxLayout.getFlexDirection(), is(FlexboxLayout.FLEX_DIRECTION_COLUMN));
+        assertThat(flexboxLayout.getFlexWrap(), is(FlexWrap.WRAP));
+        assertThat(flexboxLayout.getFlexDirection(), is(FlexDirection.COLUMN));
         assertThat(flexboxLayout.getShowDividerVertical(),
                 is(FlexboxLayout.SHOW_DIVIDER_BEGINNING));
         assertThat(flexboxLayout.getShowDividerHorizontal(), is(FlexboxLayout.SHOW_DIVIDER_NONE));
@@ -3347,8 +3362,8 @@ public class FlexboxAndroidTest {
                     }
                 });
 
-        assertThat(flexboxLayout.getFlexWrap(), is(FlexboxLayout.FLEX_WRAP_WRAP));
-        assertThat(flexboxLayout.getFlexDirection(), is(FlexboxLayout.FLEX_DIRECTION_COLUMN));
+        assertThat(flexboxLayout.getFlexWrap(), is(FlexWrap.WRAP));
+        assertThat(flexboxLayout.getFlexDirection(), is(FlexDirection.COLUMN));
         assertThat(flexboxLayout.getShowDividerVertical(), is(FlexboxLayout.SHOW_DIVIDER_MIDDLE));
         assertThat(flexboxLayout.getShowDividerHorizontal(), is(FlexboxLayout.SHOW_DIVIDER_NONE));
 
@@ -3379,8 +3394,8 @@ public class FlexboxAndroidTest {
                     }
                 });
 
-        assertThat(flexboxLayout.getFlexWrap(), is(FlexboxLayout.FLEX_WRAP_WRAP));
-        assertThat(flexboxLayout.getFlexDirection(), is(FlexboxLayout.FLEX_DIRECTION_COLUMN));
+        assertThat(flexboxLayout.getFlexWrap(), is(FlexWrap.WRAP));
+        assertThat(flexboxLayout.getFlexDirection(), is(FlexDirection.COLUMN));
         assertThat(flexboxLayout.getShowDividerVertical(), is(FlexboxLayout.SHOW_DIVIDER_END));
         assertThat(flexboxLayout.getShowDividerHorizontal(), is(FlexboxLayout.SHOW_DIVIDER_NONE));
 
@@ -3414,8 +3429,8 @@ public class FlexboxAndroidTest {
                     }
                 });
 
-        assertThat(flexboxLayout.getFlexWrap(), is(FlexboxLayout.FLEX_WRAP_WRAP));
-        assertThat(flexboxLayout.getFlexDirection(), is(FlexboxLayout.FLEX_DIRECTION_COLUMN));
+        assertThat(flexboxLayout.getFlexWrap(), is(FlexWrap.WRAP));
+        assertThat(flexboxLayout.getFlexDirection(), is(FlexDirection.COLUMN));
         assertThat(flexboxLayout.getShowDividerVertical(),
                 is(FlexboxLayout.SHOW_DIVIDER_BEGINNING | FlexboxLayout.SHOW_DIVIDER_MIDDLE |
                         FlexboxLayout.SHOW_DIVIDER_END));
@@ -3449,8 +3464,8 @@ public class FlexboxAndroidTest {
                     }
                 });
 
-        assertThat(flexboxLayout.getFlexWrap(), is(FlexboxLayout.FLEX_WRAP_WRAP));
-        assertThat(flexboxLayout.getFlexDirection(), is(FlexboxLayout.FLEX_DIRECTION_COLUMN));
+        assertThat(flexboxLayout.getFlexWrap(), is(FlexWrap.WRAP));
+        assertThat(flexboxLayout.getFlexDirection(), is(FlexDirection.COLUMN));
         assertThat(flexboxLayout.getShowDividerVertical(),
                 is(FlexboxLayout.SHOW_DIVIDER_BEGINNING | FlexboxLayout.SHOW_DIVIDER_MIDDLE |
                         FlexboxLayout.SHOW_DIVIDER_END));
@@ -3494,8 +3509,8 @@ public class FlexboxAndroidTest {
                     }
                 });
 
-        assertThat(flexboxLayout.getFlexWrap(), is(FlexboxLayout.FLEX_WRAP_WRAP));
-        assertThat(flexboxLayout.getFlexDirection(), is(FlexboxLayout.FLEX_DIRECTION_COLUMN));
+        assertThat(flexboxLayout.getFlexWrap(), is(FlexWrap.WRAP));
+        assertThat(flexboxLayout.getFlexDirection(), is(FlexDirection.COLUMN));
         assertThat(flexboxLayout.getShowDividerHorizontal(),
                 is(FlexboxLayout.SHOW_DIVIDER_BEGINNING | FlexboxLayout.SHOW_DIVIDER_MIDDLE |
                         FlexboxLayout.SHOW_DIVIDER_END));
@@ -3521,7 +3536,7 @@ public class FlexboxAndroidTest {
         final FlexboxTestActivity activity = mActivityRule.getActivity();
         FlexboxLayout flexboxLayout = createFlexboxLayout(
                 R.layout.activity_zero_width_positive_flexgrow);
-        assertThat(flexboxLayout.getFlexDirection(), is(FlexboxLayout.FLEX_DIRECTION_ROW));
+        assertThat(flexboxLayout.getFlexDirection(), is(FlexDirection.ROW));
 
         TextView text1 = (TextView) activity.findViewById(R.id.text1);
         TextView text2 = (TextView) activity.findViewById(R.id.text2);
@@ -3542,7 +3557,7 @@ public class FlexboxAndroidTest {
         final FlexboxTestActivity activity = mActivityRule.getActivity();
         FlexboxLayout flexboxLayout = createFlexboxLayout(
                 R.layout.activity_zero_height_positive_flexgrow);
-        assertThat(flexboxLayout.getFlexDirection(), is(FlexboxLayout.FLEX_DIRECTION_COLUMN));
+        assertThat(flexboxLayout.getFlexDirection(), is(FlexDirection.COLUMN));
 
         TextView text1 = (TextView) activity.findViewById(R.id.text1);
         TextView text2 = (TextView) activity.findViewById(R.id.text2);
@@ -3557,7 +3572,7 @@ public class FlexboxAndroidTest {
         final FlexboxTestActivity activity = mActivityRule.getActivity();
         FlexboxLayout flexboxLayout = createFlexboxLayout(
                 R.layout.activity_direction_row_align_items_center_margin_oneside);
-        assertThat(flexboxLayout.getFlexDirection(), is(FlexboxLayout.FLEX_DIRECTION_ROW));
+        assertThat(flexboxLayout.getFlexDirection(), is(FlexDirection.ROW));
 
         TextView text1 = (TextView) activity.findViewById(R.id.text1);
         assertThat(text1.getTop(), isEqualAllowingError(TestUtil.dpToPixel(activity, 30)));
@@ -3571,7 +3586,7 @@ public class FlexboxAndroidTest {
         final FlexboxTestActivity activity = mActivityRule.getActivity();
         FlexboxLayout flexboxLayout = createFlexboxLayout(
                 R.layout.activity_direction_column_align_items_center_margin_oneside);
-        assertThat(flexboxLayout.getFlexDirection(), is(FlexboxLayout.FLEX_DIRECTION_COLUMN));
+        assertThat(flexboxLayout.getFlexDirection(), is(FlexDirection.COLUMN));
 
         TextView text1 = (TextView) activity.findViewById(R.id.text1);
         assertThat(text1.getLeft(), isEqualAllowingError(TestUtil.dpToPixel(activity, 30)));
