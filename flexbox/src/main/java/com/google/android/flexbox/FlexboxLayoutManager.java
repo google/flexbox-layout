@@ -29,8 +29,6 @@ import android.util.AttributeSet;
  */
 public class FlexboxLayoutManager extends RecyclerView.LayoutManager {
 
-    private RecyclerView mRecyclerView;
-
     /**
      * The current value of the {@link FlexDirection}, the default value is {@link
      * FlexDirection#ROW}.
@@ -94,6 +92,18 @@ public class FlexboxLayoutManager extends RecyclerView.LayoutManager {
      * "layoutManager". No corresponding attributes for the {@code orientation},
      * {@code reverseLayout} and {@code stackFromEnd} exist in Flexbox, thus map the similar
      * attributes from Flexbox that behave similarly for each of them.
+     *
+     * {@code android:orientation} maps to the {@link FlexDirection},
+     * HORIZONTAL -> {@link FlexDirection#ROW}, VERTICAL -> {@link FlexDirection#COLUMN}.
+     *
+     * {@code android.support.v7.recyclerview:reverseLayout} reverses the direction of the
+     * {@link FlexDirection}, i.e. if reverseLayout is {@code true}, {@link FlexDirection#ROW} is
+     * changed to {@link FlexDirection#ROW_REVERSE}. Similarly {@link FlexDirection#COLUMN} is
+     * changed to {@link FlexDirection#COLUMN_REVERSE}.
+     *
+     * {@code android.support.v7.recyclerview:stackFromEnd} maps to the {@link FlexWrap},
+     * if stackFromEnd is set to {@code true} -> {@link FlexWrap#WRAP_REVERSE} otherwise ->
+     * {@link FlexWrap#WRAP}.
      */
     public FlexboxLayoutManager(Context context, AttributeSet attrs, int defStyleAttr,
             int defStyleRes) {
@@ -180,18 +190,6 @@ public class FlexboxLayoutManager extends RecyclerView.LayoutManager {
             mAlignContent = alignContent;
             requestLayout();
         }
-    }
-
-    @Override
-    public void onAttachedToWindow(RecyclerView recyclerView) {
-        super.onAttachedToWindow(recyclerView);
-        mRecyclerView = recyclerView;
-    }
-
-    @Override
-    public void onDetachedFromWindow(RecyclerView recyclerView, RecyclerView.Recycler recycler) {
-        super.onDetachedFromWindow(recyclerView, recycler);
-        mRecyclerView = null;
     }
 
     @Override
