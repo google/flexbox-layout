@@ -67,8 +67,7 @@ view.setLayoutParams(lp);
 #### Attributes for the FlexboxLayout:
 
 * __flexDirection__
-  * The direction children items are placed inside the Flexbox layout, it determines the
-  direction of the main axis (and the cross axis, perpendicular to the main axis).
+  * This attribute determines the direction of the main axis (and the cross axis, perpendicular to the main axis). The direction children items are placed inside the Flexbox layout.
   Possible values are:
     * row (default)
     * row_reverse
@@ -260,7 +259,7 @@ view.setLayoutParams(lp);
   regardless of the flex items being processed in the the previous flex line)
   This attribute is ignored if the `flex_wrap` attribute is set to `nowrap`.
   The equivalent attribute isn't defined in the original CSS Flexible Box Module
-  specification, but having this attribute is useful for Android developers to flatten
+  specification, but having this attribute is useful for Android developers. For example, to flatten
   the layouts when building a grid like layout or for a situation where developers want
   to put a new flex line to make a semantic difference from the previous one, etc.
 
@@ -286,8 +285,8 @@ equivalent attribute
   * Both `layout_flexBasisPercent` in this library and `flex-basis` property in the CSS are used to
   determine the initial length of an individual flex item. The `flex-basis` property accepts width
   values such as `1em`, `10px`, and `content` as strings as well as percentage values such as
-  `10%` and `30%`, whereas `layout_flexBasisPercent` only accepts percentage values.
-  But specifying initial fixed width values can be done by specifying width (or height) values in
+  `10%` and `30%`. `layout_flexBasisPercent` only accepts percentage values.
+  However, specifying initial fixed width values can be done by specifying width (or height) values in
   layout_width (or layout_height, varies depending on the `flexDirection`). Also, the same
   effect can be done by specifying "wrap_content" in layout_width (or layout_height) if
   developers want to achieve the same effect as 'content'. Thus, `layout_flexBasisPercent` only
