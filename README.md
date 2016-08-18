@@ -200,6 +200,10 @@ view.setLayoutParams(lp);
 * __layout_flexGrow__ (float)
   * This attribute determines how much this child will grow if positive free space is
   distributed relative to the rest of other flex items included in the same flex line.
+  If a flex item has a positive `layout_flexGrow` value, the item will take up the remaining
+  space in the flex line. If multiple flex items in the same flex line have positive `layout_flexGrow`
+  values, the remaining free space is distributed denepending on the proportion of their declared
+  `layout_flexGrow` value. (Similar to the `layout_weight` attribute in the `LinearLayout`)
   If not specified, `0` is set as a default value.
 
     ![Flex Grow explanation](/assets/layout_flexGrow.gif)
