@@ -19,15 +19,20 @@ package com.google.android.flexbox.test;
 
 import com.google.android.flexbox.FlexboxLayout;
 
+import org.hamcrest.Description;
+import org.hamcrest.TypeSafeMatcher;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import android.content.Context;
+import android.graphics.drawable.Drawable;
 import android.support.test.InstrumentationRegistry;
+import android.support.test.espresso.ViewAssertion;
 import android.support.test.filters.MediumTest;
 import android.support.test.rule.ActivityTestRule;
 import android.support.test.runner.AndroidJUnit4;
+import android.support.v4.content.res.ResourcesCompat;
 import android.test.FlakyTest;
 import android.view.View;
 import android.view.ViewGroup;
@@ -42,7 +47,9 @@ import static android.support.test.espresso.assertion.PositionAssertions.isLeftO
 import static android.support.test.espresso.assertion.PositionAssertions.isRightAlignedWith;
 import static android.support.test.espresso.assertion.PositionAssertions.isRightOf;
 import static android.support.test.espresso.assertion.PositionAssertions.isTopAlignedWith;
+import static android.support.test.espresso.assertion.ViewAssertions.matches;
 import static android.support.test.espresso.matcher.ViewMatchers.withId;
+import static junit.framework.Assert.assertEquals;
 import static junit.framework.Assert.assertTrue;
 import static org.hamcrest.core.Is.is;
 import static org.hamcrest.core.IsNot.not;
@@ -159,6 +166,155 @@ public class FlexboxAndroidTest {
 
     @Test
     @FlakyTest(tolerance = TOLERANCE)
+    public void testChangeOrder_fromChildSetLayoutParams() throws Throwable {
+        final FlexboxTestActivity activity = mActivityRule.getActivity();
+        mActivityRule.runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                activity.setContentView(R.layout.activity_order_test);
+            }
+        });
+        InstrumentationRegistry.getInstrumentation().waitForIdleSync();
+
+        final FlexboxLayout flexboxLayout = (FlexboxLayout) activity
+                .findViewById(R.id.flexbox_layout);
+        assertThat(flexboxLayout.getChildCount(), is(4));
+        // order: -1, index 1
+        assertThat(((TextView) flexboxLayout.getReorderedChildAt(0)).getText().toString(),
+                is(String.valueOf(2)));
+        // order: 0, index 2
+        assertThat(((TextView) flexboxLayout.getReorderedChildAt(1)).getText().toString(),
+                is(String.valueOf(3)));
+        // order: 0, index 3
+        assertThat(((TextView) flexboxLayout.getReorderedChildAt(2)).getText().toString(),
+                is(String.valueOf(4)));
+        // order: 2, index 0
+        assertThat(((TextView) flexboxLayout.getReorderedChildAt(3)).getText().toString(),
+                is(String.valueOf(1)));
+
+        // By changing the order and calling the setLayoutParams, the reordered array in the
+        // FlexboxLayout (mReordereredIndices) will be recreated without adding a new View.
+        mActivityRule.runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                View view1 = flexboxLayout.getChildAt(0);
+                FlexboxLayout.LayoutParams lp = (FlexboxLayout.LayoutParams)
+                        view1.getLayoutParams();
+                lp.order = -3;
+                view1.setLayoutParams(lp);
+            }
+        });
+        // order: -3, index 0
+        assertThat(((TextView) flexboxLayout.getReorderedChildAt(3)).getText().toString(),
+                is(String.valueOf(1)));
+        // order: -1, index 1
+        assertThat(((TextView) flexboxLayout.getReorderedChildAt(0)).getText().toString(),
+                is(String.valueOf(2)));
+        // order: 0, index 2
+        assertThat(((TextView) flexboxLayout.getReorderedChildAt(1)).getText().toString(),
+                is(String.valueOf(3)));
+        // order: 1, index 3
+        assertThat(((TextView) flexboxLayout.getReorderedChildAt(2)).getText().toString(),
+                is(String.valueOf(4)));
+    }
+
+    @Test
+    @FlakyTest(tolerance = TOLERANCE)
+    public void testOrderAttribute_addViewInMiddle() throws Throwable {
+        final FlexboxTestActivity activity = mActivityRule.getActivity();
+        mActivityRule.runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                activity.setContentView(R.layout.activity_order_test);
+                FlexboxLayout flexboxLayout = (FlexboxLayout) activity
+                        .findViewById(R.id.flexbox_layout);
+                TextView fifth = createTextView(activity, String.valueOf(5), 0);
+                // Add the new TextView in the middle of the indices
+                flexboxLayout.addView(fifth, 2);
+            }
+        });
+        FlexboxLayout flexboxLayout = (FlexboxLayout) activity.findViewById(R.id.flexbox_layout);
+        InstrumentationRegistry.getInstrumentation().waitForIdleSync();
+
+        assertNotNull(flexboxLayout);
+        assertThat(flexboxLayout.getChildCount(), is(5));
+        // order: -1, index 1
+        assertThat(((TextView) flexboxLayout.getReorderedChildAt(0)).getText().toString(),
+                is(String.valueOf(2)));
+        // order: 0, index 2
+        assertThat(((TextView) flexboxLayout.getReorderedChildAt(1)).getText().toString(),
+                is(String.valueOf(5)));
+        // order: 0, index 3
+        assertThat(((TextView) flexboxLayout.getReorderedChildAt(2)).getText().toString(),
+                is(String.valueOf(3)));
+        // order: 0, index 4
+        assertThat(((TextView) flexboxLayout.getReorderedChildAt(3)).getText().toString(),
+                is(String.valueOf(4)));
+        // order: 2, index 0
+        assertThat(((TextView) flexboxLayout.getReorderedChildAt(4)).getText().toString(),
+                is(String.valueOf(1)));
+    }
+
+    @Test
+    @FlakyTest(tolerance = TOLERANCE)
+    public void testOrderAttribute_removeLastView() throws Throwable {
+        final FlexboxTestActivity activity = mActivityRule.getActivity();
+        mActivityRule.runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                activity.setContentView(R.layout.activity_order_test);
+                FlexboxLayout flexboxLayout = (FlexboxLayout) activity
+                        .findViewById(R.id.flexbox_layout);
+                flexboxLayout.removeViewAt(flexboxLayout.getChildCount() - 1);
+            }
+        });
+        FlexboxLayout flexboxLayout = (FlexboxLayout) activity.findViewById(R.id.flexbox_layout);
+        InstrumentationRegistry.getInstrumentation().waitForIdleSync();
+
+        assertNotNull(flexboxLayout);
+        assertThat(flexboxLayout.getChildCount(), is(3));
+        // order: -1, index 1
+        assertThat(((TextView) flexboxLayout.getReorderedChildAt(0)).getText().toString(),
+                is(String.valueOf(2)));
+        // order: 0, index 2
+        assertThat(((TextView) flexboxLayout.getReorderedChildAt(1)).getText().toString(),
+                is(String.valueOf(3)));
+        // order: 2, index 0
+        assertThat(((TextView) flexboxLayout.getReorderedChildAt(2)).getText().toString(),
+                is(String.valueOf(1)));
+    }
+
+    @Test
+    @FlakyTest(tolerance = TOLERANCE)
+    public void testOrderAttribute_removeViewInMiddle() throws Throwable {
+        final FlexboxTestActivity activity = mActivityRule.getActivity();
+        mActivityRule.runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                activity.setContentView(R.layout.activity_order_test);
+                FlexboxLayout flexboxLayout = (FlexboxLayout) activity
+                        .findViewById(R.id.flexbox_layout);
+                flexboxLayout.removeViewAt(2);
+            }
+        });
+        FlexboxLayout flexboxLayout = (FlexboxLayout) activity.findViewById(R.id.flexbox_layout);
+        InstrumentationRegistry.getInstrumentation().waitForIdleSync();
+
+        assertNotNull(flexboxLayout);
+        assertThat(flexboxLayout.getChildCount(), is(3));
+        // order: -1, index 1
+        assertThat(((TextView) flexboxLayout.getReorderedChildAt(0)).getText().toString(),
+                is(String.valueOf(2)));
+        // order: 0, index 3
+        assertThat(((TextView) flexboxLayout.getReorderedChildAt(1)).getText().toString(),
+                is(String.valueOf(4)));
+        // order: 2, index 0
+        assertThat(((TextView) flexboxLayout.getReorderedChildAt(2)).getText().toString(),
+                is(String.valueOf(1)));
+    }
+
+    @Test
+    @FlakyTest(tolerance = TOLERANCE)
     public void testFlexWrap_wrap() throws Throwable {
         final FlexboxTestActivity activity = mActivityRule.getActivity();
         mActivityRule.runOnUiThread(new Runnable() {
@@ -179,6 +335,7 @@ public class FlexboxAndroidTest {
         onView(withId(R.id.text3)).check(isBelow(withId(R.id.text1)));
         onView(withId(R.id.text3)).check(isBelow(withId(R.id.text2)));
         onView(withId(R.id.text3)).check(isLeftAlignedWith(withId(R.id.flexbox_layout)));
+        assertThat(flexboxLayout.getFlexLines().size(), is(2));
     }
 
     @Test
@@ -207,6 +364,7 @@ public class FlexboxAndroidTest {
         // to the right of the second one and overflowing the parent FlexboxLayout.
         onView(withId(R.id.text3)).check(isRightOf(withId(R.id.text2)));
         onView(withId(R.id.text3)).check(isTopAlignedWith(withId(R.id.flexbox_layout)));
+        assertThat(flexboxLayout.getFlexLines().size(), is(1));
     }
 
     @Test
@@ -234,6 +392,7 @@ public class FlexboxAndroidTest {
         onView(withId(R.id.text3)).check(isAbove(withId(R.id.text1)));
         onView(withId(R.id.text3)).check(isAbove(withId(R.id.text2)));
         onView(withId(R.id.text3)).check(isLeftAlignedWith(withId(R.id.flexbox_layout)));
+        assertThat(flexboxLayout.getFlexLines().size(), is(2));
     }
 
     @Test
@@ -262,6 +421,7 @@ public class FlexboxAndroidTest {
         onView(withId(R.id.text3)).check(isRightOf(withId(R.id.text1)));
         onView(withId(R.id.text3)).check(isRightOf(withId(R.id.text2)));
         onView(withId(R.id.text3)).check(isTopAlignedWith(withId(R.id.flexbox_layout)));
+        assertThat(flexboxLayout.getFlexLines().size(), is(2));
     }
 
     @Test
@@ -292,6 +452,7 @@ public class FlexboxAndroidTest {
         // below the second one and overflowing the parent FlexboxLayout.
         onView(withId(R.id.text3)).check(isBelow(withId(R.id.text2)));
         onView(withId(R.id.text3)).check(isLeftAlignedWith(withId(R.id.flexbox_layout)));
+        assertThat(flexboxLayout.getFlexLines().size(), is(1));
     }
 
     @Test
@@ -322,6 +483,7 @@ public class FlexboxAndroidTest {
         onView(withId(R.id.text3)).check(isLeftOf(withId(R.id.text1)));
         onView(withId(R.id.text3)).check(isLeftOf(withId(R.id.text2)));
         onView(withId(R.id.text3)).check(isTopAlignedWith(withId(R.id.flexbox_layout)));
+        assertThat(flexboxLayout.getFlexLines().size(), is(2));
     }
 
     @Test
@@ -545,7 +707,8 @@ public class FlexboxAndroidTest {
         // Both the parent FrameLayout and the FlexboxLayout have different padding values
         // but the text3.getRight should be the padding value for the FlexboxLayout, not including
         // the parent's padding value
-        assertThat(flexboxLayout.getWidth() - text3.getRight(), is(flexboxLayout.getPaddingRight()));
+        assertThat(flexboxLayout.getWidth() - text3.getRight(),
+                is(flexboxLayout.getPaddingRight()));
         assertThat(text3.getTop(), is(flexboxLayout.getPaddingTop()));
     }
 
@@ -1181,6 +1344,58 @@ public class FlexboxAndroidTest {
 
     @Test
     @FlakyTest(tolerance = TOLERANCE)
+    public void testAlignContent_flexEnd_parentPadding() throws Throwable {
+        final FlexboxTestActivity activity = mActivityRule.getActivity();
+        mActivityRule.runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                activity.setContentView(R.layout.activity_align_content_test);
+                FlexboxLayout flexboxLayout = (FlexboxLayout) activity
+                        .findViewById(R.id.flexbox_layout);
+                flexboxLayout.setAlignContent(FlexboxLayout.ALIGN_CONTENT_FLEX_END);
+                flexboxLayout.setPadding(32, 32, 32, 32);
+            }
+        });
+        FlexboxLayout flexboxLayout = (FlexboxLayout) activity.findViewById(R.id.flexbox_layout);
+
+        assertThat(flexboxLayout.getAlignContent(), is(FlexboxLayout.ALIGN_CONTENT_FLEX_END));
+        onView(withId(R.id.text1)).check(isAbove(withId(R.id.text3)));
+        onView(withId(R.id.text2)).check(isAbove(withId(R.id.text3)));
+
+        TextView textView3 = (TextView) activity.findViewById(R.id.text3);
+        assertThat(textView3.getBottom(),
+                is(flexboxLayout.getBottom() - flexboxLayout.getPaddingBottom()));
+    }
+
+    @Test
+    @FlakyTest(tolerance = TOLERANCE)
+    public void testAlignContent_flexEnd_parentPadding_column() throws Throwable {
+        final FlexboxTestActivity activity = mActivityRule.getActivity();
+        mActivityRule.runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                activity.setContentView(R.layout.activity_align_content_test);
+                FlexboxLayout flexboxLayout = (FlexboxLayout) activity
+                        .findViewById(R.id.flexbox_layout);
+                flexboxLayout.setAlignContent(FlexboxLayout.ALIGN_CONTENT_FLEX_END);
+                flexboxLayout.setFlexDirection(FlexboxLayout.FLEX_DIRECTION_COLUMN);
+                flexboxLayout.setPadding(32, 32, 32, 32);
+            }
+        });
+        FlexboxLayout flexboxLayout = (FlexboxLayout) activity.findViewById(R.id.flexbox_layout);
+
+        assertThat(flexboxLayout.getAlignContent(), is(FlexboxLayout.ALIGN_CONTENT_FLEX_END));
+        assertThat(flexboxLayout.getFlexDirection(), is(FlexboxLayout.FLEX_DIRECTION_COLUMN));
+        onView(withId(R.id.text1)).check(isLeftOf(withId(R.id.text3)));
+        onView(withId(R.id.text2)).check(isLeftOf(withId(R.id.text3)));
+
+        TextView textView3 = (TextView) activity.findViewById(R.id.text3);
+        assertThat(textView3.getRight(),
+                is(flexboxLayout.getRight() - flexboxLayout.getPaddingRight()));
+    }
+
+    @Test
+    @FlakyTest(tolerance = TOLERANCE)
     public void testAlignContent_center() throws Throwable {
         final FlexboxTestActivity activity = mActivityRule.getActivity();
         mActivityRule.runOnUiThread(new Runnable() {
@@ -1722,6 +1937,60 @@ public class FlexboxAndroidTest {
         assertTrue(flexLineSize - 1 <= textView2.getBottom() &&
                 textView2.getBottom() <= flexLineSize + 1);
         assertThat(textView3.getBottom(), is(flexboxLayout.getBottom()));
+    }
+
+    @Test
+    @FlakyTest(tolerance = TOLERANCE)
+    public void testAlignItems_flexEnd_parentPadding() throws Throwable {
+        final FlexboxTestActivity activity = mActivityRule.getActivity();
+        mActivityRule.runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                activity.setContentView(R.layout.activity_align_items_parent_padding_test);
+                FlexboxLayout flexboxLayout = (FlexboxLayout) activity
+                        .findViewById(R.id.flexbox_layout);
+                flexboxLayout.setAlignItems(FlexboxLayout.ALIGN_ITEMS_FLEX_END);
+            }
+        });
+        FlexboxLayout flexboxLayout = (FlexboxLayout) activity.findViewById(R.id.flexbox_layout);
+
+        assertThat(flexboxLayout.getAlignItems(), is(FlexboxLayout.ALIGN_ITEMS_FLEX_END));
+        onView(withId(R.id.text2)).check(isRightOf(withId(R.id.text1)));
+
+        TextView textView1 = (TextView) activity.findViewById(R.id.text1);
+        TextView textView2 = (TextView) activity.findViewById(R.id.text2);
+        assertThat(textView1.getBottom(),
+                is(flexboxLayout.getBottom() - flexboxLayout.getPaddingBottom()));
+        assertThat(textView2.getBottom(),
+                is(flexboxLayout.getBottom() - flexboxLayout.getPaddingBottom()));
+    }
+
+    @Test
+    @FlakyTest(tolerance = TOLERANCE)
+    public void testAlignItems_flexEnd_parentPadding_column() throws Throwable {
+        final FlexboxTestActivity activity = mActivityRule.getActivity();
+        mActivityRule.runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                activity.setContentView(R.layout.activity_align_items_parent_padding_test);
+                FlexboxLayout flexboxLayout = (FlexboxLayout) activity
+                        .findViewById(R.id.flexbox_layout);
+                flexboxLayout.setAlignItems(FlexboxLayout.ALIGN_ITEMS_FLEX_END);
+                flexboxLayout.setFlexDirection(FlexboxLayout.FLEX_DIRECTION_COLUMN);
+            }
+        });
+        FlexboxLayout flexboxLayout = (FlexboxLayout) activity.findViewById(R.id.flexbox_layout);
+
+        assertThat(flexboxLayout.getAlignItems(), is(FlexboxLayout.ALIGN_ITEMS_FLEX_END));
+        assertThat(flexboxLayout.getFlexDirection(), is(FlexboxLayout.FLEX_DIRECTION_COLUMN));
+        onView(withId(R.id.text2)).check(isBelow(withId(R.id.text1)));
+
+        TextView textView1 = (TextView) activity.findViewById(R.id.text1);
+        TextView textView2 = (TextView) activity.findViewById(R.id.text2);
+        assertThat(textView1.getRight(),
+                is(flexboxLayout.getRight() - flexboxLayout.getPaddingRight()));
+        assertThat(textView2.getRight(),
+                is(flexboxLayout.getRight() - flexboxLayout.getPaddingRight()));
     }
 
     @Test
@@ -2299,6 +2568,190 @@ public class FlexboxAndroidTest {
 
     @Test
     @FlakyTest(tolerance = TOLERANCE)
+    public void testMinWidth_initial_width_less_than_minWidth() throws Throwable {
+        final FlexboxTestActivity activity = mActivityRule.getActivity();
+        mActivityRule.runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                activity.setContentView(R.layout.activity_minwidth_test);
+            }
+        });
+
+        // This test case verifies if the minWidth attribute works as a minimum constraint
+        // If the initial view width is less than the value of minWidth.
+        // The textView1's layout_width is set to wrap_content and its text is "1" apparently
+        // the initial measured width is less than the value of layout_minWidth (100dp)
+        FlexboxLayout flexboxLayout = (FlexboxLayout) activity.findViewById(R.id.flexbox_layout);
+        TextView textView1 = (TextView) activity.findViewById(R.id.text1);
+        int minWidth = ((FlexboxLayout.LayoutParams) textView1.getLayoutParams()).minWidth;
+
+        onView(withId(R.id.text1)).check(hasWidth(minWidth));
+        onView(withId(R.id.text2)).check(hasWidth(flexboxLayout.getWidth() - minWidth));
+    }
+
+    @Test
+    @FlakyTest(tolerance = TOLERANCE)
+    public void testMinWidth_works_as_lower_bound_shrink_to() throws Throwable {
+        final FlexboxTestActivity activity = mActivityRule.getActivity();
+        mActivityRule.runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                activity.setContentView(R.layout.activity_minwidth_lower_bound_test);
+            }
+        });
+
+        // This test case verifies if the minWidth attribute works as a lower bound
+        // when the view would shrink less than the minWidth if the minWidth weren't set
+        FlexboxLayout flexboxLayout = (FlexboxLayout) activity.findViewById(R.id.flexbox_layout);
+        TextView textView1 = (TextView) activity.findViewById(R.id.text1);
+        TextView textView2 = (TextView) activity.findViewById(R.id.text2);
+        TextView textView3 = (TextView) activity.findViewById(R.id.text3);
+        TextView textView4 = (TextView) activity.findViewById(R.id.text4);
+        int minWidth = ((FlexboxLayout.LayoutParams) textView1.getLayoutParams()).minWidth;
+
+        onView(withId(R.id.text1)).check(hasWidth(minWidth));
+        assertEquals(flexboxLayout.getWidth(),
+                textView1.getWidth() + textView2.getWidth() + textView3.getWidth() + textView4
+                        .getWidth());
+    }
+
+    @Test
+    @FlakyTest(tolerance = TOLERANCE)
+    public void testMinHeight_initial_height_less_than_minHeight() throws Throwable {
+        final FlexboxTestActivity activity = mActivityRule.getActivity();
+        mActivityRule.runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                activity.setContentView(R.layout.activity_minheight_test);
+            }
+        });
+
+        // This test case verifies if the minHeight attribute works as a minimum constraint
+        // If the initial view height is less than the value of minHeight.
+        // The textView1's layout_height is set to wrap_content and its text is "1" apparently
+        // the initial measured height is less than the value of layout_minHeight (100dp)
+        FlexboxLayout flexboxLayout = (FlexboxLayout) activity.findViewById(R.id.flexbox_layout);
+        TextView textView1 = (TextView) activity.findViewById(R.id.text1);
+        int minHeight = ((FlexboxLayout.LayoutParams) textView1.getLayoutParams()).minHeight;
+
+        onView(withId(R.id.text1)).check(hasHeight(minHeight));
+        onView(withId(R.id.text2)).check(hasHeight(flexboxLayout.getHeight() - minHeight));
+    }
+
+    @Test
+    @FlakyTest(tolerance = TOLERANCE)
+    public void testMinHeight_works_as_lower_bound_shrink_to() throws Throwable {
+        final FlexboxTestActivity activity = mActivityRule.getActivity();
+        mActivityRule.runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                activity.setContentView(R.layout.activity_minheight_lower_bound_test);
+            }
+        });
+
+        // This test case verifies if the minHeight attribute works as a lower bound
+        // when the view would shrink less than the minHeight if the minHeight weren't set
+        FlexboxLayout flexboxLayout = (FlexboxLayout) activity.findViewById(R.id.flexbox_layout);
+        TextView textView1 = (TextView) activity.findViewById(R.id.text1);
+        TextView textView2 = (TextView) activity.findViewById(R.id.text2);
+        TextView textView3 = (TextView) activity.findViewById(R.id.text3);
+        TextView textView4 = (TextView) activity.findViewById(R.id.text4);
+        int minHeight = ((FlexboxLayout.LayoutParams) textView1.getLayoutParams()).minHeight;
+
+        onView(withId(R.id.text1)).check(hasHeight(minHeight));
+        assertEquals(flexboxLayout.getHeight(),
+                textView1.getHeight() + textView2.getHeight() + textView3.getHeight()
+                        + textView4.getHeight());
+    }
+
+    @Test
+    @FlakyTest(tolerance = TOLERANCE)
+    public void testMaxWidth_initial_width_more_than_maxWidth() throws Throwable {
+        final FlexboxTestActivity activity = mActivityRule.getActivity();
+        mActivityRule.runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                activity.setContentView(R.layout.activity_maxwidth_test);
+            }
+        });
+
+        // This test case verifies if the maxWidth attribute works as a maximum constraint
+        // ff the initial view width is more than the value of maxWidth.
+        FlexboxLayout flexboxLayout = (FlexboxLayout) activity.findViewById(R.id.flexbox_layout);
+        TextView textView1 = (TextView) activity.findViewById(R.id.text1);
+        int maxWidth = ((FlexboxLayout.LayoutParams) textView1.getLayoutParams()).maxWidth;
+
+        onView(withId(R.id.text1)).check(hasWidth(maxWidth));
+        onView(withId(R.id.text2)).check(hasWidth(flexboxLayout.getWidth() - maxWidth));
+    }
+
+    @Test
+    @FlakyTest(tolerance = TOLERANCE)
+    public void testMaxWidth_works_as_upper_bound_expand_to() throws Throwable {
+        final FlexboxTestActivity activity = mActivityRule.getActivity();
+        mActivityRule.runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                activity.setContentView(R.layout.activity_maxwidth_upper_bound_test);
+            }
+        });
+
+        // This test case verifies if the maxWidth attribute works as a upper bound
+        // when the view would expand more than the maxWidth if the maxWidth weren't set
+        FlexboxLayout flexboxLayout = (FlexboxLayout) activity.findViewById(R.id.flexbox_layout);
+        TextView textView1 = (TextView) activity.findViewById(R.id.text1);
+        TextView textView2 = (TextView) activity.findViewById(R.id.text2);
+        int maxWidth = ((FlexboxLayout.LayoutParams) textView1.getLayoutParams()).maxWidth;
+
+        onView(withId(R.id.text1)).check(hasWidth(maxWidth));
+        assertEquals(flexboxLayout.getWidth(), textView1.getWidth() + textView2.getWidth());
+    }
+
+    @Test
+    @FlakyTest(tolerance = TOLERANCE)
+    public void testMaxHeight_initial_height_more_than_maxHeight() throws Throwable {
+        final FlexboxTestActivity activity = mActivityRule.getActivity();
+        mActivityRule.runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                activity.setContentView(R.layout.activity_maxheight_test);
+            }
+        });
+
+        // This test case verifies if the maxHeight attribute works as a maximum constraint
+        // ff the initial view height is more than the value of maxHeight.
+        FlexboxLayout flexboxLayout = (FlexboxLayout) activity.findViewById(R.id.flexbox_layout);
+        TextView textView1 = (TextView) activity.findViewById(R.id.text1);
+        int maxHeight = ((FlexboxLayout.LayoutParams) textView1.getLayoutParams()).maxHeight;
+
+        onView(withId(R.id.text1)).check(hasHeight(maxHeight));
+        onView(withId(R.id.text2)).check(hasHeight(flexboxLayout.getHeight() - maxHeight));
+    }
+
+    @Test
+    @FlakyTest(tolerance = TOLERANCE)
+    public void testMaxHeight_works_as_lower_bound_expand_to() throws Throwable {
+        final FlexboxTestActivity activity = mActivityRule.getActivity();
+        mActivityRule.runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                activity.setContentView(R.layout.activity_maxheight_upper_bound_test);
+            }
+        });
+
+        // This test case verifies if the maxHeight attribute works as a upper bound
+        // when the view would expand more than the maxHeight if the maxHeight weren't set
+        FlexboxLayout flexboxLayout = (FlexboxLayout) activity.findViewById(R.id.flexbox_layout);
+        TextView textView1 = (TextView) activity.findViewById(R.id.text1);
+        TextView textView2 = (TextView) activity.findViewById(R.id.text2);
+        int maxHeight = ((FlexboxLayout.LayoutParams) textView1.getLayoutParams()).maxHeight;
+
+        onView(withId(R.id.text1)).check(hasHeight(maxHeight));
+        assertEquals(flexboxLayout.getHeight(), textView1.getHeight() + textView2.getHeight());
+    }
+
+    @Test
+    @FlakyTest(tolerance = TOLERANCE)
     public void testView_visibility_gone() throws Throwable {
         final FlexboxTestActivity activity = mActivityRule.getActivity();
         mActivityRule.runOnUiThread(new Runnable() {
@@ -2332,6 +2785,64 @@ public class FlexboxAndroidTest {
 
     @Test
     @FlakyTest(tolerance = TOLERANCE)
+    public void testView_visibility_gone_first_item_in_flex_line_horizontal() throws Throwable {
+        // This test verifies if the FlexboxLayout is visible when the visibility of the first
+        // flex item in the second flex line (or arbitrary flex lines other than the first flex line)
+        // is set to "gone"
+        // There was an issue reported for that
+        // https://github.com/google/flexbox-layout/issues/47
+        final FlexboxTestActivity activity = mActivityRule.getActivity();
+        mActivityRule.runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                activity.setContentView(
+                        R.layout.activity_visibility_gone_first_item_in_flex_line_row);
+            }
+        });
+        InstrumentationRegistry.getInstrumentation().waitForIdleSync();
+
+        FlexboxLayout flexboxLayout = (FlexboxLayout) activity.findViewById(R.id.flexbox_layout);
+
+        assertThat(flexboxLayout.getFlexWrap(), is(FlexboxLayout.FLEX_WRAP_WRAP));
+        assertThat(flexboxLayout.getFlexDirection(), is(FlexboxLayout.FLEX_DIRECTION_ROW));
+        TextView textView1 = (TextView) activity.findViewById(R.id.text1);
+        TextView textView3 = (TextView) activity.findViewById(R.id.text3);
+
+        assertTrue(flexboxLayout.getHeight() > 0);
+        assertThat(flexboxLayout.getHeight(), is(textView1.getHeight() + textView3.getHeight()));
+    }
+
+    @Test
+    @FlakyTest(tolerance = TOLERANCE)
+    public void testView_visibility_gone_first_item_in_flex_line_vertical() throws Throwable {
+        // This test verifies if the FlexboxLayout is visible when the visibility of the first
+        // flex item in the second flex line (or arbitrary flex lines other than the first flex line)
+        // is set to "gone"
+        // There was an issue reported for that
+        // https://github.com/google/flexbox-layout/issues/47
+        final FlexboxTestActivity activity = mActivityRule.getActivity();
+        mActivityRule.runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                activity.setContentView(
+                        R.layout.activity_visibility_gone_first_item_in_flex_line_column);
+            }
+        });
+        InstrumentationRegistry.getInstrumentation().waitForIdleSync();
+
+        FlexboxLayout flexboxLayout = (FlexboxLayout) activity.findViewById(R.id.flexbox_layout);
+
+        assertThat(flexboxLayout.getFlexWrap(), is(FlexboxLayout.FLEX_WRAP_WRAP));
+        assertThat(flexboxLayout.getFlexDirection(), is(FlexboxLayout.FLEX_DIRECTION_COLUMN));
+        TextView textView1 = (TextView) activity.findViewById(R.id.text1);
+        TextView textView3 = (TextView) activity.findViewById(R.id.text3);
+
+        assertTrue(flexboxLayout.getWidth() > 0);
+        assertThat(flexboxLayout.getWidth(), is(textView1.getWidth() + textView3.getWidth()));
+    }
+
+    @Test
+    @FlakyTest(tolerance = TOLERANCE)
     public void testView_visibility_invisible() throws Throwable {
         final FlexboxTestActivity activity = mActivityRule.getActivity();
         mActivityRule.runOnUiThread(new Runnable() {
@@ -2360,6 +2871,933 @@ public class FlexboxAndroidTest {
         assertThat(textView3.getTop(), is(textView1.getBottom()));
     }
 
+    @Test
+    @FlakyTest(tolerance = TOLERANCE)
+    public void testWrapBefore() throws Throwable {
+        final FlexboxTestActivity activity = mActivityRule.getActivity();
+        mActivityRule.runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                activity.setContentView(R.layout.activity_wrap_before_test);
+            }
+        });
+        FlexboxLayout flexboxLayout = (FlexboxLayout) activity.findViewById(R.id.flexbox_layout);
+
+        // layout_wrapBefore for the text2 and text3 are set to true, the text2 and text3 should
+        // be the first item for each flex line.
+        assertThat(flexboxLayout.getFlexWrap(), is(FlexboxLayout.FLEX_WRAP_WRAP));
+        assertThat(flexboxLayout.getFlexDirection(), is(FlexboxLayout.FLEX_DIRECTION_ROW));
+        onView(withId(R.id.text1)).check(isTopAlignedWith(withId(R.id.flexbox_layout)));
+        onView(withId(R.id.text1)).check(isLeftAlignedWith(withId(R.id.flexbox_layout)));
+        onView(withId(R.id.text2)).check(isLeftAlignedWith(withId(R.id.flexbox_layout)));
+        onView(withId(R.id.text2)).check(isBelow(withId(R.id.text1)));
+        onView(withId(R.id.text3)).check(isLeftAlignedWith(withId(R.id.flexbox_layout)));
+        onView(withId(R.id.text3)).check(isBelow(withId(R.id.text2)));
+        TextView textView1 = (TextView) activity.findViewById(R.id.text1);
+        final TextView textView2 = (TextView) activity.findViewById(R.id.text2);
+        TextView textView3 = (TextView) activity.findViewById(R.id.text3);
+        assertThat(flexboxLayout.getHeight(), is(textView1.getHeight() + textView2.getHeight() +
+                textView3.getHeight()));
+
+        mActivityRule.runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                FlexboxLayout.LayoutParams lp2 = (FlexboxLayout.LayoutParams)
+                        textView2.getLayoutParams();
+                lp2.wrapBefore = false;
+                textView2.setLayoutParams(lp2);
+            }
+        });
+
+        onView(withId(R.id.text1)).check(isTopAlignedWith(withId(R.id.flexbox_layout)));
+        onView(withId(R.id.text1)).check(isLeftAlignedWith(withId(R.id.flexbox_layout)));
+        onView(withId(R.id.text2)).check(isTopAlignedWith(withId(R.id.flexbox_layout)));
+        onView(withId(R.id.text2)).check(isRightOf(withId(R.id.text1)));
+        onView(withId(R.id.text3)).check(isLeftAlignedWith(withId(R.id.flexbox_layout)));
+        onView(withId(R.id.text3)).check(isBelow(withId(R.id.text1)));
+        onView(withId(R.id.text3)).check(isBelow(withId(R.id.text2)));
+        assertThat(flexboxLayout.getHeight(), is(textView1.getHeight() + textView3.getHeight()));
+    }
+
+    @Test
+    @FlakyTest(tolerance = TOLERANCE)
+    public void testWrapBefore_nowrap() throws Throwable {
+        final FlexboxTestActivity activity = mActivityRule.getActivity();
+        mActivityRule.runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                activity.setContentView(R.layout.activity_wrap_before_test);
+                FlexboxLayout flexboxLayout = (FlexboxLayout) activity
+                        .findViewById(R.id.flexbox_layout);
+                flexboxLayout.setFlexWrap(FlexboxLayout.FLEX_WRAP_NOWRAP);
+            }
+        });
+        FlexboxLayout flexboxLayout = (FlexboxLayout) activity.findViewById(R.id.flexbox_layout);
+
+        // layout_wrapBefore for the text2 and text3 are set to true, but the flexWrap is set to
+        // FLEX_WRAP_NOWRAP, three text views should not be wrapped.
+        assertThat(flexboxLayout.getFlexWrap(), is(FlexboxLayout.FLEX_WRAP_NOWRAP));
+        assertThat(flexboxLayout.getFlexDirection(), is(FlexboxLayout.FLEX_DIRECTION_ROW));
+        onView(withId(R.id.text1)).check(isTopAlignedWith(withId(R.id.flexbox_layout)));
+        onView(withId(R.id.text1)).check(isLeftAlignedWith(withId(R.id.flexbox_layout)));
+        onView(withId(R.id.text1)).check(isBottomAlignedWith(withId(R.id.flexbox_layout)));
+        onView(withId(R.id.text2)).check(isTopAlignedWith(withId(R.id.flexbox_layout)));
+        onView(withId(R.id.text2)).check(isRightOf(withId(R.id.text1)));
+        onView(withId(R.id.text2)).check(isBottomAlignedWith(withId(R.id.flexbox_layout)));
+        onView(withId(R.id.text3)).check(isTopAlignedWith(withId(R.id.flexbox_layout)));
+        onView(withId(R.id.text3)).check(isRightOf(withId(R.id.text2)));
+        onView(withId(R.id.text3)).check(isBottomAlignedWith(withId(R.id.flexbox_layout)));
+    }
+
+    @Test
+    @FlakyTest(tolerance = TOLERANCE)
+    public void testWrap_parentPadding_horizontal() throws Throwable {
+        final FlexboxTestActivity activity = mActivityRule.getActivity();
+        mActivityRule.runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                activity.setContentView(R.layout.activity_wrap_parent_padding_horizontal_test);
+            }
+        });
+        FlexboxLayout flexboxLayout = (FlexboxLayout) activity.findViewById(R.id.flexbox_layout);
+
+        assertThat(flexboxLayout.getFlexWrap(), is(FlexboxLayout.FLEX_WRAP_WRAP));
+        assertThat(flexboxLayout.getFlexDirection(), is(FlexboxLayout.FLEX_DIRECTION_ROW));
+        // The sum of width of TextView1 and TextView2 is not enough for wrapping, but considering
+        // parent padding, the second TextView should be wrapped
+        onView(withId(R.id.text2)).check(isBelow(withId(R.id.text1)));
+        onView(withId(R.id.text3)).check(isRightOf(withId(R.id.text2)));
+
+        TextView text1 = (TextView) activity.findViewById(R.id.text1);
+        TextView text2 = (TextView) activity.findViewById(R.id.text2);
+        assertThat(flexboxLayout.getHeight(),
+                is(flexboxLayout.getPaddingTop() + flexboxLayout.getPaddingBottom() +
+                        text1.getHeight() + text2.getHeight()));
+    }
+
+    @Test
+    @FlakyTest(tolerance = TOLERANCE)
+    public void testWrap_parentPadding_vertical() throws Throwable {
+        final FlexboxTestActivity activity = mActivityRule.getActivity();
+        mActivityRule.runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                activity.setContentView(R.layout.activity_wrap_parent_padding_vertical_test);
+            }
+        });
+        FlexboxLayout flexboxLayout = (FlexboxLayout) activity.findViewById(R.id.flexbox_layout);
+
+        assertThat(flexboxLayout.getFlexWrap(), is(FlexboxLayout.FLEX_WRAP_WRAP));
+        assertThat(flexboxLayout.getFlexDirection(), is(FlexboxLayout.FLEX_DIRECTION_COLUMN));
+        // The sum of height of TextView1 and TextView2 is not enough for wrapping, but considering
+        // parent padding, the second TextView should be wrapped
+        onView(withId(R.id.text2)).check(isRightOf(withId(R.id.text1)));
+        onView(withId(R.id.text3)).check(isBelow(withId(R.id.text2)));
+
+        TextView text1 = (TextView) activity.findViewById(R.id.text1);
+        TextView text2 = (TextView) activity.findViewById(R.id.text2);
+        assertThat(flexboxLayout.getWidth(),
+                is(flexboxLayout.getPaddingLeft() + flexboxLayout.getPaddingRight() +
+                        text1.getWidth() + text2.getWidth()));
+    }
+
+    @Test
+    @FlakyTest(tolerance = TOLERANCE)
+    public void testWrap_childMargin_horizontal() throws Throwable {
+        final FlexboxTestActivity activity = mActivityRule.getActivity();
+        mActivityRule.runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                activity.setContentView(R.layout.activity_wrap_child_margin_horizontal_test);
+            }
+        });
+        FlexboxLayout flexboxLayout = (FlexboxLayout) activity.findViewById(R.id.flexbox_layout);
+
+        assertThat(flexboxLayout.getFlexWrap(), is(FlexboxLayout.FLEX_WRAP_WRAP));
+        assertThat(flexboxLayout.getFlexDirection(), is(FlexboxLayout.FLEX_DIRECTION_ROW));
+        // The sum of width of TextView1 and TextView2 is not enough for wrapping, but considering
+        // the margin for the TextView2, the second TextView should be wrapped
+        onView(withId(R.id.text2)).check(isBelow(withId(R.id.text1)));
+        onView(withId(R.id.text3)).check(isRightOf(withId(R.id.text2)));
+
+        TextView text1 = (TextView) activity.findViewById(R.id.text1);
+        TextView text2 = (TextView) activity.findViewById(R.id.text2);
+        FlexboxLayout.LayoutParams lp2 = (FlexboxLayout.LayoutParams) text2.getLayoutParams();
+        assertThat(flexboxLayout.getHeight(),
+                is(text1.getHeight() + text2.getHeight() + lp2.topMargin + lp2.bottomMargin));
+    }
+
+    @Test
+    @FlakyTest(tolerance = TOLERANCE)
+    public void testFirstItemLarge_horizontal() throws Throwable {
+        // This test verifies a empty flex line is not added when the first flex item is large
+        // and judged wrapping is required with the first item.
+        final FlexboxTestActivity activity = mActivityRule.getActivity();
+        mActivityRule.runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                activity.setContentView(R.layout.activity_first_item_large_horizontal_test);
+            }
+        });
+        FlexboxLayout flexboxLayout = (FlexboxLayout) activity.findViewById(R.id.flexbox_layout);
+
+        assertThat(flexboxLayout.getFlexWrap(), is(FlexboxLayout.FLEX_WRAP_WRAP));
+        assertThat(flexboxLayout.getFlexDirection(), is(FlexboxLayout.FLEX_DIRECTION_ROW));
+        assertThat(flexboxLayout.getAlignItems(), is(FlexboxLayout.ALIGN_ITEMS_STRETCH));
+        assertThat(flexboxLayout.getAlignContent(), is(FlexboxLayout.ALIGN_CONTENT_STRETCH));
+        // The sum of width of TextView1 and TextView2 is not enough for wrapping, but considering
+        // the margin for the TextView2, the second TextView should be wrapped
+        onView(withId(R.id.text1)).check(isTopAlignedWith(withId(R.id.flexbox_layout)));
+        onView(withId(R.id.text1)).check(isLeftAlignedWith(withId(R.id.flexbox_layout)));
+        onView(withId(R.id.text2)).check(isLeftAlignedWith(withId(R.id.flexbox_layout)));
+        onView(withId(R.id.text3)).check(isLeftAlignedWith(withId(R.id.flexbox_layout)));
+        onView(withId(R.id.text3)).check(isBottomAlignedWith(withId(R.id.flexbox_layout)));
+
+        TextView text1 = (TextView) activity.findViewById(R.id.text1);
+        TextView text2 = (TextView) activity.findViewById(R.id.text2);
+        TextView text3 = (TextView) activity.findViewById(R.id.text3);
+        assertThat(flexboxLayout.getHeight(),
+                is(text1.getHeight() + text2.getHeight() + text3.getHeight()));
+    }
+
+    @Test
+    @FlakyTest(tolerance = TOLERANCE)
+    public void testFirstItemLarge_vertical() throws Throwable {
+        // This test verifies a empty flex line is not added when the first flex item is large
+        // and judged wrapping is required with the first item.
+        final FlexboxTestActivity activity = mActivityRule.getActivity();
+        mActivityRule.runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                activity.setContentView(R.layout.activity_first_item_large_vertical_test);
+            }
+        });
+        FlexboxLayout flexboxLayout = (FlexboxLayout) activity.findViewById(R.id.flexbox_layout);
+
+        assertThat(flexboxLayout.getFlexWrap(), is(FlexboxLayout.FLEX_WRAP_WRAP));
+        assertThat(flexboxLayout.getFlexDirection(), is(FlexboxLayout.FLEX_DIRECTION_COLUMN));
+        assertThat(flexboxLayout.getAlignItems(), is(FlexboxLayout.ALIGN_ITEMS_STRETCH));
+        assertThat(flexboxLayout.getAlignContent(), is(FlexboxLayout.ALIGN_CONTENT_STRETCH));
+        // The sum of width of TextView1 and TextView2 is not enough for wrapping, but considering
+        // the margin for the TextView2, the second TextView should be wrapped
+        onView(withId(R.id.text1)).check(isTopAlignedWith(withId(R.id.flexbox_layout)));
+        onView(withId(R.id.text1)).check(isLeftAlignedWith(withId(R.id.flexbox_layout)));
+        onView(withId(R.id.text2)).check(isTopAlignedWith(withId(R.id.flexbox_layout)));
+        onView(withId(R.id.text3)).check(isTopAlignedWith(withId(R.id.flexbox_layout)));
+        onView(withId(R.id.text3)).check(isRightAlignedWith(withId(R.id.flexbox_layout)));
+
+        TextView text1 = (TextView) activity.findViewById(R.id.text1);
+        TextView text2 = (TextView) activity.findViewById(R.id.text2);
+        TextView text3 = (TextView) activity.findViewById(R.id.text3);
+        assertThat(flexboxLayout.getWidth(),
+                is(text1.getWidth() + text2.getWidth() + text3.getWidth()));
+    }
+
+    @Test
+    @FlakyTest(tolerance = TOLERANCE)
+    public void testWrap_childMargin_vertical() throws Throwable {
+        final FlexboxTestActivity activity = mActivityRule.getActivity();
+        mActivityRule.runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                activity.setContentView(R.layout.activity_wrap_child_margin_vertical_test);
+            }
+        });
+        FlexboxLayout flexboxLayout = (FlexboxLayout) activity.findViewById(R.id.flexbox_layout);
+
+        assertThat(flexboxLayout.getFlexWrap(), is(FlexboxLayout.FLEX_WRAP_WRAP));
+        assertThat(flexboxLayout.getFlexDirection(), is(FlexboxLayout.FLEX_DIRECTION_COLUMN));
+        // The sum of height of TextView1 and TextView2 is not enough for wrapping, but considering
+        // the margin of the TextView2, the second TextView should be wrapped
+        onView(withId(R.id.text2)).check(isRightOf(withId(R.id.text1)));
+        onView(withId(R.id.text3)).check(isBelow(withId(R.id.text2)));
+
+        TextView text1 = (TextView) activity.findViewById(R.id.text1);
+        TextView text2 = (TextView) activity.findViewById(R.id.text2);
+        FlexboxLayout.LayoutParams lp2 = (FlexboxLayout.LayoutParams) text2.getLayoutParams();
+        assertThat(flexboxLayout.getWidth(),
+                is(text1.getWidth() + text2.getWidth() + lp2.leftMargin + lp2.rightMargin));
+    }
+
+    @Test
+    @FlakyTest(tolerance = TOLERANCE)
+    public void testEmptyChildren() throws Throwable {
+        final FlexboxTestActivity activity = mActivityRule.getActivity();
+        mActivityRule.runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                activity.setContentView(R.layout.activity_empty_children);
+            }
+        });
+        FlexboxLayout flexboxLayout = (FlexboxLayout) activity.findViewById(R.id.flexbox_layout);
+
+        assertThat(flexboxLayout.getChildCount(), is(0));
+    }
+
+    @Test
+    @FlakyTest(tolerance = TOLERANCE)
+    public void testDivider_directionRow_verticalBeginning() throws Throwable {
+        final FlexboxTestActivity activity = mActivityRule.getActivity();
+        mActivityRule.runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                activity.setContentView(R.layout.activity_divider_test_direction_row);
+            }
+        });
+        InstrumentationRegistry.getInstrumentation().waitForIdleSync();
+        FlexboxLayout flexboxLayout = (FlexboxLayout) activity.findViewById(R.id.flexbox_layout);
+        assertThat(flexboxLayout.getFlexWrap(), is(FlexboxLayout.FLEX_WRAP_WRAP));
+        assertThat(flexboxLayout.getFlexDirection(), is(FlexboxLayout.FLEX_DIRECTION_ROW));
+        assertThat(flexboxLayout.getShowDividerVertical(),
+                is(FlexboxLayout.SHOW_DIVIDER_BEGINNING));
+
+        TextView text1 = (TextView) activity.findViewById(R.id.text1);
+        TextView text2 = (TextView) activity.findViewById(R.id.text2);
+        TextView text3 = (TextView) activity.findViewById(R.id.text3);
+        Drawable divider = ResourcesCompat
+                .getDrawable(activity.getResources(), R.drawable.divider, null);
+        assertNotNull(divider);
+        int widthSumFirstRow = text1.getWidth() + text2.getWidth() + text3.getWidth() + divider
+                .getIntrinsicWidth();
+        assertThat(text3.getRight(), is(widthSumFirstRow));
+        assertThat(text1.getLeft(), is(not(flexboxLayout.getLeft())));
+    }
+
+    @Test
+    @FlakyTest(tolerance = TOLERANCE)
+    public void testDivider_directionRow_verticalMiddle() throws Throwable {
+        final FlexboxTestActivity activity = mActivityRule.getActivity();
+        mActivityRule.runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                activity.setContentView(R.layout.activity_divider_test_direction_row);
+                FlexboxLayout flexboxLayout = (FlexboxLayout) activity
+                        .findViewById(R.id.flexbox_layout);
+                flexboxLayout.setShowDividerVertical(FlexboxLayout.SHOW_DIVIDER_MIDDLE);
+            }
+        });
+        InstrumentationRegistry.getInstrumentation().waitForIdleSync();
+        FlexboxLayout flexboxLayout = (FlexboxLayout) activity.findViewById(R.id.flexbox_layout);
+        assertThat(flexboxLayout.getFlexWrap(), is(FlexboxLayout.FLEX_WRAP_WRAP));
+        assertThat(flexboxLayout.getFlexDirection(), is(FlexboxLayout.FLEX_DIRECTION_ROW));
+        assertThat(flexboxLayout.getShowDividerVertical(), is(FlexboxLayout.SHOW_DIVIDER_MIDDLE));
+
+        TextView text1 = (TextView) activity.findViewById(R.id.text1);
+        TextView text2 = (TextView) activity.findViewById(R.id.text2);
+        TextView text3 = (TextView) activity.findViewById(R.id.text3);
+        Drawable divider = ResourcesCompat
+                .getDrawable(activity.getResources(), R.drawable.divider, null);
+        assertNotNull(divider);
+        // Three text views are placed in the first row, thus two vertical middle dividers should
+        // be placed
+        int widthSumFirstRow = text1.getWidth() + text2.getWidth() + text3.getWidth()
+                + divider.getIntrinsicWidth() * 2;
+        assertThat(text3.getRight(), is(widthSumFirstRow));
+        assertThat(text1.getLeft(), is(flexboxLayout.getLeft()));
+    }
+
+    @Test
+    @FlakyTest(tolerance = TOLERANCE)
+    public void testDivider_directionRow_verticalEnd() throws Throwable {
+        final FlexboxTestActivity activity = mActivityRule.getActivity();
+        mActivityRule.runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                activity.setContentView(R.layout.activity_divider_test_direction_row);
+                FlexboxLayout flexboxLayout = (FlexboxLayout) activity
+                        .findViewById(R.id.flexbox_layout);
+                flexboxLayout.setShowDividerVertical(FlexboxLayout.SHOW_DIVIDER_END);
+            }
+        });
+        InstrumentationRegistry.getInstrumentation().waitForIdleSync();
+        FlexboxLayout flexboxLayout = (FlexboxLayout) activity.findViewById(R.id.flexbox_layout);
+        assertThat(flexboxLayout.getFlexWrap(), is(FlexboxLayout.FLEX_WRAP_WRAP));
+        assertThat(flexboxLayout.getFlexDirection(), is(FlexboxLayout.FLEX_DIRECTION_ROW));
+        assertThat(flexboxLayout.getShowDividerVertical(), is(FlexboxLayout.SHOW_DIVIDER_END));
+
+        TextView text1 = (TextView) activity.findViewById(R.id.text1);
+        TextView text2 = (TextView) activity.findViewById(R.id.text2);
+        TextView text3 = (TextView) activity.findViewById(R.id.text3);
+        Drawable divider = ResourcesCompat
+                .getDrawable(activity.getResources(), R.drawable.divider, null);
+        assertNotNull(divider);
+        // Three text views are placed in the first row, thus two vertical middle dividers should
+        // be placed
+        int widthSumFirstRow = text1.getWidth() + text2.getWidth() + text3.getWidth()
+                + divider.getIntrinsicWidth();
+        assertThat(text3.getRight() + divider.getIntrinsicWidth(), is(widthSumFirstRow));
+        assertThat(text1.getLeft(), is(flexboxLayout.getLeft()));
+    }
+
+    @Test
+    @FlakyTest(tolerance = TOLERANCE)
+    public void testDivider_directionRow_verticalAll() throws Throwable {
+        final FlexboxTestActivity activity = mActivityRule.getActivity();
+        mActivityRule.runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                activity.setContentView(R.layout.activity_divider_test_direction_row);
+                FlexboxLayout flexboxLayout = (FlexboxLayout) activity
+                        .findViewById(R.id.flexbox_layout);
+                flexboxLayout.setShowDividerVertical(
+                        FlexboxLayout.SHOW_DIVIDER_BEGINNING | FlexboxLayout.SHOW_DIVIDER_MIDDLE
+                                | FlexboxLayout.SHOW_DIVIDER_END);
+            }
+        });
+        InstrumentationRegistry.getInstrumentation().waitForIdleSync();
+        FlexboxLayout flexboxLayout = (FlexboxLayout) activity.findViewById(R.id.flexbox_layout);
+        assertThat(flexboxLayout.getFlexWrap(), is(FlexboxLayout.FLEX_WRAP_WRAP));
+        assertThat(flexboxLayout.getFlexDirection(), is(FlexboxLayout.FLEX_DIRECTION_ROW));
+        assertThat(flexboxLayout.getShowDividerVertical(),
+                is(FlexboxLayout.SHOW_DIVIDER_BEGINNING | FlexboxLayout.SHOW_DIVIDER_MIDDLE |
+                        FlexboxLayout.SHOW_DIVIDER_END));
+
+        TextView text1 = (TextView) activity.findViewById(R.id.text1);
+        TextView text2 = (TextView) activity.findViewById(R.id.text2);
+        TextView text3 = (TextView) activity.findViewById(R.id.text3);
+        Drawable divider = ResourcesCompat
+                .getDrawable(activity.getResources(), R.drawable.divider, null);
+        assertNotNull(divider);
+        // Three text views are placed in the first row, thus two vertical middle dividers should
+        // be placed
+        int widthSumFirstRow = text1.getWidth() + text2.getWidth() + text3.getWidth()
+                + divider.getIntrinsicWidth() * 4;
+        assertThat(text3.getRight() + divider.getIntrinsicWidth(), is(widthSumFirstRow));
+        assertThat(text1.getLeft(), is(not(flexboxLayout.getLeft())));
+    }
+
+    @Test
+    @FlakyTest(tolerance = TOLERANCE)
+    public void testDivider_directionRow_horizontalBeginning() throws Throwable {
+        final FlexboxTestActivity activity = mActivityRule.getActivity();
+        final Drawable divider = ResourcesCompat
+                .getDrawable(activity.getResources(), R.drawable.divider, null);
+        mActivityRule.runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                activity.setContentView(R.layout.activity_divider_test_direction_row);
+                FlexboxLayout flexboxLayout = (FlexboxLayout) activity
+                        .findViewById(R.id.flexbox_layout);
+                flexboxLayout.setDividerDrawableHorizontal(divider);
+                flexboxLayout.setShowDividerHorizontal(FlexboxLayout.SHOW_DIVIDER_BEGINNING);
+                flexboxLayout.setShowDividerVertical(FlexboxLayout.SHOW_DIVIDER_NONE);
+            }
+        });
+        InstrumentationRegistry.getInstrumentation().waitForIdleSync();
+        FlexboxLayout flexboxLayout = (FlexboxLayout) activity.findViewById(R.id.flexbox_layout);
+        assertThat(flexboxLayout.getFlexWrap(), is(FlexboxLayout.FLEX_WRAP_WRAP));
+        assertThat(flexboxLayout.getFlexDirection(), is(FlexboxLayout.FLEX_DIRECTION_ROW));
+        assertThat(flexboxLayout.getShowDividerHorizontal(),
+                is(FlexboxLayout.SHOW_DIVIDER_BEGINNING));
+        assertThat(flexboxLayout.getShowDividerVertical(), is(FlexboxLayout.SHOW_DIVIDER_NONE));
+
+        TextView text1 = (TextView) activity.findViewById(R.id.text1);
+        TextView text4 = (TextView) activity.findViewById(R.id.text4);
+        assertNotNull(divider);
+        int heightSum = text1.getHeight() + text4.getHeight() + divider.getIntrinsicHeight();
+        assertThat(text4.getBottom(), is(heightSum));
+        assertThat(text1.getTop(), is(not(flexboxLayout.getTop())));
+    }
+
+    @Test
+    @FlakyTest(tolerance = TOLERANCE)
+    public void testDivider_directionRow_horizontalMiddle() throws Throwable {
+        final FlexboxTestActivity activity = mActivityRule.getActivity();
+        mActivityRule.runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                activity.setContentView(R.layout.activity_divider_test_direction_row);
+                FlexboxLayout flexboxLayout = (FlexboxLayout) activity
+                        .findViewById(R.id.flexbox_layout);
+                Drawable divider = ResourcesCompat
+                        .getDrawable(activity.getResources(), R.drawable.divider, null);
+                flexboxLayout.setDividerDrawableHorizontal(divider);
+                flexboxLayout.setShowDividerHorizontal(FlexboxLayout.SHOW_DIVIDER_MIDDLE);
+                flexboxLayout.setShowDividerVertical(FlexboxLayout.SHOW_DIVIDER_NONE);
+            }
+        });
+        InstrumentationRegistry.getInstrumentation().waitForIdleSync();
+        FlexboxLayout flexboxLayout = (FlexboxLayout) activity.findViewById(R.id.flexbox_layout);
+        assertThat(flexboxLayout.getFlexWrap(), is(FlexboxLayout.FLEX_WRAP_WRAP));
+        assertThat(flexboxLayout.getFlexDirection(), is(FlexboxLayout.FLEX_DIRECTION_ROW));
+        assertThat(flexboxLayout.getShowDividerHorizontal(), is(FlexboxLayout.SHOW_DIVIDER_MIDDLE));
+        assertThat(flexboxLayout.getShowDividerVertical(), is(FlexboxLayout.SHOW_DIVIDER_NONE));
+
+        TextView text1 = (TextView) activity.findViewById(R.id.text1);
+        TextView text4 = (TextView) activity.findViewById(R.id.text4);
+        Drawable divider = ResourcesCompat
+                .getDrawable(activity.getResources(), R.drawable.divider, null);
+        assertNotNull(divider);
+        int heightSum = text1.getHeight() + text4.getHeight() + divider.getIntrinsicHeight();
+        assertThat(text4.getBottom(), is(heightSum));
+        assertThat(text1.getTop(), is(flexboxLayout.getTop()));
+    }
+
+    @Test
+    @FlakyTest(tolerance = TOLERANCE)
+    public void testDivider_directionRow_horizontalEnd() throws Throwable {
+        final FlexboxTestActivity activity = mActivityRule.getActivity();
+        mActivityRule.runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                activity.setContentView(R.layout.activity_divider_test_direction_row);
+                FlexboxLayout flexboxLayout = (FlexboxLayout) activity
+                        .findViewById(R.id.flexbox_layout);
+                Drawable divider = ResourcesCompat
+                        .getDrawable(activity.getResources(), R.drawable.divider, null);
+                flexboxLayout.setDividerDrawableHorizontal(divider);
+                flexboxLayout.setShowDividerHorizontal(FlexboxLayout.SHOW_DIVIDER_END);
+                flexboxLayout.setShowDividerVertical(FlexboxLayout.SHOW_DIVIDER_NONE);
+            }
+        });
+        InstrumentationRegistry.getInstrumentation().waitForIdleSync();
+        FlexboxLayout flexboxLayout = (FlexboxLayout) activity.findViewById(R.id.flexbox_layout);
+        assertThat(flexboxLayout.getFlexWrap(), is(FlexboxLayout.FLEX_WRAP_WRAP));
+        assertThat(flexboxLayout.getFlexDirection(), is(FlexboxLayout.FLEX_DIRECTION_ROW));
+        assertThat(flexboxLayout.getShowDividerHorizontal(), is(FlexboxLayout.SHOW_DIVIDER_END));
+        assertThat(flexboxLayout.getShowDividerVertical(), is(FlexboxLayout.SHOW_DIVIDER_NONE));
+
+        TextView text1 = (TextView) activity.findViewById(R.id.text1);
+        TextView text4 = (TextView) activity.findViewById(R.id.text4);
+        Drawable divider = ResourcesCompat
+                .getDrawable(activity.getResources(), R.drawable.divider, null);
+        assertNotNull(divider);
+        int heightSum = text1.getHeight() + text4.getHeight() + divider.getIntrinsicHeight();
+        assertThat(text4.getBottom() + divider.getIntrinsicHeight(), is(heightSum));
+        assertThat(text1.getTop(), is(flexboxLayout.getTop()));
+    }
+
+    @Test
+    @FlakyTest(tolerance = TOLERANCE)
+    public void testDivider_directionRow_horizontalAll() throws Throwable {
+        final FlexboxTestActivity activity = mActivityRule.getActivity();
+        mActivityRule.runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                activity.setContentView(R.layout.activity_divider_test_direction_row);
+                FlexboxLayout flexboxLayout = (FlexboxLayout) activity
+                        .findViewById(R.id.flexbox_layout);
+                Drawable divider = ResourcesCompat
+                        .getDrawable(activity.getResources(), R.drawable.divider, null);
+                flexboxLayout.setDividerDrawableHorizontal(divider);
+                flexboxLayout.setShowDividerHorizontal(
+                        FlexboxLayout.SHOW_DIVIDER_BEGINNING | FlexboxLayout.SHOW_DIVIDER_MIDDLE
+                                | FlexboxLayout.SHOW_DIVIDER_END);
+                flexboxLayout.setShowDividerVertical(FlexboxLayout.SHOW_DIVIDER_NONE);
+            }
+        });
+        InstrumentationRegistry.getInstrumentation().waitForIdleSync();
+        FlexboxLayout flexboxLayout = (FlexboxLayout) activity.findViewById(R.id.flexbox_layout);
+        assertThat(flexboxLayout.getFlexWrap(), is(FlexboxLayout.FLEX_WRAP_WRAP));
+        assertThat(flexboxLayout.getFlexDirection(), is(FlexboxLayout.FLEX_DIRECTION_ROW));
+        assertThat(flexboxLayout.getShowDividerHorizontal(),
+                is(FlexboxLayout.SHOW_DIVIDER_BEGINNING | FlexboxLayout.SHOW_DIVIDER_MIDDLE |
+                        FlexboxLayout.SHOW_DIVIDER_END));
+        assertThat(flexboxLayout.getShowDividerVertical(), is(FlexboxLayout.SHOW_DIVIDER_NONE));
+
+        TextView text1 = (TextView) activity.findViewById(R.id.text1);
+        TextView text4 = (TextView) activity.findViewById(R.id.text4);
+        Drawable divider = ResourcesCompat
+                .getDrawable(activity.getResources(), R.drawable.divider, null);
+        assertNotNull(divider);
+        int heightSum = text1.getHeight() + text4.getHeight() + divider.getIntrinsicHeight() * 3;
+        assertThat(text4.getBottom() + divider.getIntrinsicHeight(), is(heightSum));
+        assertThat(text1.getTop(), is(not(flexboxLayout.getTop())));
+    }
+
+    @Test
+    @FlakyTest(tolerance = TOLERANCE)
+    public void testDivider_directionRow_all_thickDivider() throws Throwable {
+        final FlexboxTestActivity activity = mActivityRule.getActivity();
+        mActivityRule.runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                activity.setContentView(R.layout.activity_divider_test_direction_row);
+                FlexboxLayout flexboxLayout = (FlexboxLayout) activity
+                        .findViewById(R.id.flexbox_layout);
+                Drawable thickDivider = ResourcesCompat
+                        .getDrawable(activity.getResources(), R.drawable.divider_thick, null);
+                flexboxLayout.setDividerDrawableVertical(thickDivider);
+                flexboxLayout.setShowDividerVertical(
+                        FlexboxLayout.SHOW_DIVIDER_BEGINNING | FlexboxLayout.SHOW_DIVIDER_MIDDLE
+                                | FlexboxLayout.SHOW_DIVIDER_END);
+            }
+        });
+        InstrumentationRegistry.getInstrumentation().waitForIdleSync();
+        FlexboxLayout flexboxLayout = (FlexboxLayout) activity.findViewById(R.id.flexbox_layout);
+        assertThat(flexboxLayout.getFlexWrap(), is(FlexboxLayout.FLEX_WRAP_WRAP));
+        assertThat(flexboxLayout.getFlexDirection(), is(FlexboxLayout.FLEX_DIRECTION_ROW));
+        assertThat(flexboxLayout.getShowDividerVertical(),
+                is(FlexboxLayout.SHOW_DIVIDER_BEGINNING | FlexboxLayout.SHOW_DIVIDER_MIDDLE |
+                        FlexboxLayout.SHOW_DIVIDER_END));
+
+        TextView text1 = (TextView) activity.findViewById(R.id.text1);
+        TextView text2 = (TextView) activity.findViewById(R.id.text2);
+        TextView text3 = (TextView) activity.findViewById(R.id.text3);
+        Drawable divider = ResourcesCompat
+                .getDrawable(activity.getResources(), R.drawable.divider_thick, null);
+        // The sum of three text views and the sum of thick dividers don't fit in one line.
+        // The last text view should be placed to the next line.
+        assertNotNull(divider);
+        int widthSumFirstRow = text1.getWidth() + text2.getWidth()
+                + divider.getIntrinsicWidth() * 3;
+        assertThat(text2.getRight() + divider.getIntrinsicWidth(), is(widthSumFirstRow));
+        assertThat(text1.getLeft(), is(not(flexboxLayout.getLeft())));
+        assertThat(text3.getBottom(), is(text1.getHeight() + text2.getHeight()));
+    }
+
+    @Test
+    @FlakyTest(tolerance = TOLERANCE)
+    public void testDivider_directionColumn_horizontalBeginning() throws Throwable {
+        final FlexboxTestActivity activity = mActivityRule.getActivity();
+        mActivityRule.runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                activity.setContentView(R.layout.activity_divider_test_direction_column);
+            }
+        });
+        InstrumentationRegistry.getInstrumentation().waitForIdleSync();
+        FlexboxLayout flexboxLayout = (FlexboxLayout) activity.findViewById(R.id.flexbox_layout);
+        assertThat(flexboxLayout.getFlexWrap(), is(FlexboxLayout.FLEX_WRAP_WRAP));
+        assertThat(flexboxLayout.getFlexDirection(), is(FlexboxLayout.FLEX_DIRECTION_COLUMN));
+        assertThat(flexboxLayout.getShowDividerHorizontal(),
+                is(FlexboxLayout.SHOW_DIVIDER_BEGINNING));
+
+        TextView text1 = (TextView) activity.findViewById(R.id.text1);
+        TextView text2 = (TextView) activity.findViewById(R.id.text2);
+        TextView text3 = (TextView) activity.findViewById(R.id.text3);
+        Drawable divider = ResourcesCompat
+                .getDrawable(activity.getResources(), R.drawable.divider, null);
+        assertNotNull(divider);
+        int heightSumFirstRow = text1.getHeight() + text2.getHeight() + text3.getHeight() + divider
+                .getIntrinsicHeight();
+        assertThat(text3.getBottom(), is(heightSumFirstRow));
+        assertThat(text1.getTop(), is(not(flexboxLayout.getTop())));
+    }
+
+    @Test
+    @FlakyTest(tolerance = TOLERANCE)
+    public void testDivider_directionColumn_horizontalMiddle() throws Throwable {
+        final FlexboxTestActivity activity = mActivityRule.getActivity();
+        mActivityRule.runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                activity.setContentView(R.layout.activity_divider_test_direction_column);
+                FlexboxLayout flexboxLayout = (FlexboxLayout) activity
+                        .findViewById(R.id.flexbox_layout);
+                flexboxLayout.setShowDividerHorizontal(FlexboxLayout.SHOW_DIVIDER_MIDDLE);
+            }
+        });
+        InstrumentationRegistry.getInstrumentation().waitForIdleSync();
+        FlexboxLayout flexboxLayout = (FlexboxLayout) activity.findViewById(R.id.flexbox_layout);
+        assertThat(flexboxLayout.getFlexWrap(), is(FlexboxLayout.FLEX_WRAP_WRAP));
+        assertThat(flexboxLayout.getFlexDirection(), is(FlexboxLayout.FLEX_DIRECTION_COLUMN));
+        assertThat(flexboxLayout.getShowDividerHorizontal(), is(FlexboxLayout.SHOW_DIVIDER_MIDDLE));
+
+        TextView text1 = (TextView) activity.findViewById(R.id.text1);
+        TextView text2 = (TextView) activity.findViewById(R.id.text2);
+        TextView text3 = (TextView) activity.findViewById(R.id.text3);
+        Drawable divider = ResourcesCompat
+                .getDrawable(activity.getResources(), R.drawable.divider, null);
+        assertNotNull(divider);
+        int heightSumFirstRow = text1.getHeight() + text2.getHeight() + text3.getHeight() + divider
+                .getIntrinsicHeight() * 2;
+        assertThat(text3.getBottom(), is(heightSumFirstRow));
+        assertThat(text1.getTop(), is(flexboxLayout.getTop()));
+    }
+
+    @Test
+    @FlakyTest(tolerance = TOLERANCE)
+    public void testDivider_directionColumn_horizontalEnd() throws Throwable {
+        final FlexboxTestActivity activity = mActivityRule.getActivity();
+        mActivityRule.runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                activity.setContentView(R.layout.activity_divider_test_direction_column);
+                FlexboxLayout flexboxLayout = (FlexboxLayout) activity
+                        .findViewById(R.id.flexbox_layout);
+                flexboxLayout.setShowDividerHorizontal(FlexboxLayout.SHOW_DIVIDER_END);
+            }
+        });
+        InstrumentationRegistry.getInstrumentation().waitForIdleSync();
+        FlexboxLayout flexboxLayout = (FlexboxLayout) activity.findViewById(R.id.flexbox_layout);
+        assertThat(flexboxLayout.getFlexWrap(), is(FlexboxLayout.FLEX_WRAP_WRAP));
+        assertThat(flexboxLayout.getFlexDirection(), is(FlexboxLayout.FLEX_DIRECTION_COLUMN));
+        assertThat(flexboxLayout.getShowDividerHorizontal(), is(FlexboxLayout.SHOW_DIVIDER_END));
+
+        TextView text1 = (TextView) activity.findViewById(R.id.text1);
+        TextView text2 = (TextView) activity.findViewById(R.id.text2);
+        TextView text3 = (TextView) activity.findViewById(R.id.text3);
+        Drawable divider = ResourcesCompat
+                .getDrawable(activity.getResources(), R.drawable.divider, null);
+        assertNotNull(divider);
+        int heightSumFirstRow = text1.getHeight() + text2.getHeight() + text3.getHeight() + divider
+                .getIntrinsicHeight();
+        assertThat(text3.getBottom() + divider.getIntrinsicHeight(), is(heightSumFirstRow));
+        assertThat(text1.getTop(), is(flexboxLayout.getTop()));
+    }
+
+    @Test
+    @FlakyTest(tolerance = TOLERANCE)
+    public void testDivider_directionColumn_horizontalAll() throws Throwable {
+        final FlexboxTestActivity activity = mActivityRule.getActivity();
+        mActivityRule.runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                activity.setContentView(R.layout.activity_divider_test_direction_column);
+                FlexboxLayout flexboxLayout = (FlexboxLayout) activity
+                        .findViewById(R.id.flexbox_layout);
+                flexboxLayout.setShowDividerHorizontal(
+                        FlexboxLayout.SHOW_DIVIDER_BEGINNING | FlexboxLayout.SHOW_DIVIDER_MIDDLE
+                                | FlexboxLayout.SHOW_DIVIDER_END);
+            }
+        });
+        InstrumentationRegistry.getInstrumentation().waitForIdleSync();
+        FlexboxLayout flexboxLayout = (FlexboxLayout) activity.findViewById(R.id.flexbox_layout);
+        assertThat(flexboxLayout.getFlexWrap(), is(FlexboxLayout.FLEX_WRAP_WRAP));
+        assertThat(flexboxLayout.getFlexDirection(), is(FlexboxLayout.FLEX_DIRECTION_COLUMN));
+        assertThat(flexboxLayout.getShowDividerHorizontal(),
+                is(FlexboxLayout.SHOW_DIVIDER_BEGINNING | FlexboxLayout.SHOW_DIVIDER_MIDDLE |
+                        FlexboxLayout.SHOW_DIVIDER_END));
+
+        TextView text1 = (TextView) activity.findViewById(R.id.text1);
+        TextView text2 = (TextView) activity.findViewById(R.id.text2);
+        TextView text3 = (TextView) activity.findViewById(R.id.text3);
+        Drawable divider = ResourcesCompat
+                .getDrawable(activity.getResources(), R.drawable.divider, null);
+        assertNotNull(divider);
+        int heightSumFirstRow = text1.getHeight() + text2.getHeight() + text3.getHeight() + divider
+                .getIntrinsicHeight() * 4;
+        assertThat(text3.getBottom() + divider.getIntrinsicHeight(), is(heightSumFirstRow));
+        assertThat(text1.getTop(), is(not(flexboxLayout.getTop())));
+    }
+
+    @Test
+    @FlakyTest(tolerance = TOLERANCE)
+    public void testDivider_directionColumn_verticalBeginning() throws Throwable {
+        final FlexboxTestActivity activity = mActivityRule.getActivity();
+        mActivityRule.runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                activity.setContentView(R.layout.activity_divider_test_direction_column);
+                Drawable divider = ResourcesCompat
+                        .getDrawable(activity.getResources(), R.drawable.divider, null);
+                FlexboxLayout flexboxLayout = (FlexboxLayout) activity
+                        .findViewById(R.id.flexbox_layout);
+                flexboxLayout.setDividerDrawableVertical(divider);
+                flexboxLayout.setShowDividerVertical(FlexboxLayout.SHOW_DIVIDER_BEGINNING);
+                flexboxLayout.setShowDividerHorizontal(FlexboxLayout.SHOW_DIVIDER_NONE);
+            }
+        });
+        InstrumentationRegistry.getInstrumentation().waitForIdleSync();
+        FlexboxLayout flexboxLayout = (FlexboxLayout) activity.findViewById(R.id.flexbox_layout);
+        assertThat(flexboxLayout.getFlexWrap(), is(FlexboxLayout.FLEX_WRAP_WRAP));
+        assertThat(flexboxLayout.getFlexDirection(), is(FlexboxLayout.FLEX_DIRECTION_COLUMN));
+        assertThat(flexboxLayout.getShowDividerVertical(),
+                is(FlexboxLayout.SHOW_DIVIDER_BEGINNING));
+        assertThat(flexboxLayout.getShowDividerHorizontal(), is(FlexboxLayout.SHOW_DIVIDER_NONE));
+
+        TextView text1 = (TextView) activity.findViewById(R.id.text1);
+        TextView text4 = (TextView) activity.findViewById(R.id.text4);
+        Drawable divider = ResourcesCompat
+                .getDrawable(activity.getResources(), R.drawable.divider, null);
+        assertNotNull(divider);
+        int widthSum = text1.getWidth() + text4.getWidth() + divider.getIntrinsicWidth();
+        assertThat(text4.getRight(), is(widthSum));
+        assertThat(text1.getLeft(), is(not(flexboxLayout.getLeft())));
+    }
+
+    @Test
+    @FlakyTest(tolerance = TOLERANCE)
+    public void testDivider_directionColumn_verticalMiddle() throws Throwable {
+        final FlexboxTestActivity activity = mActivityRule.getActivity();
+        mActivityRule.runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                activity.setContentView(R.layout.activity_divider_test_direction_column);
+                FlexboxLayout flexboxLayout = (FlexboxLayout) activity
+                        .findViewById(R.id.flexbox_layout);
+                Drawable divider = ResourcesCompat
+                        .getDrawable(activity.getResources(), R.drawable.divider, null);
+                flexboxLayout.setDividerDrawableVertical(divider);
+                flexboxLayout.setShowDividerVertical(FlexboxLayout.SHOW_DIVIDER_MIDDLE);
+                flexboxLayout.setShowDividerHorizontal(FlexboxLayout.SHOW_DIVIDER_NONE);
+            }
+        });
+        InstrumentationRegistry.getInstrumentation().waitForIdleSync();
+        FlexboxLayout flexboxLayout = (FlexboxLayout) activity.findViewById(R.id.flexbox_layout);
+        assertThat(flexboxLayout.getFlexWrap(), is(FlexboxLayout.FLEX_WRAP_WRAP));
+        assertThat(flexboxLayout.getFlexDirection(), is(FlexboxLayout.FLEX_DIRECTION_COLUMN));
+        assertThat(flexboxLayout.getShowDividerVertical(), is(FlexboxLayout.SHOW_DIVIDER_MIDDLE));
+        assertThat(flexboxLayout.getShowDividerHorizontal(), is(FlexboxLayout.SHOW_DIVIDER_NONE));
+
+        TextView text1 = (TextView) activity.findViewById(R.id.text1);
+        TextView text4 = (TextView) activity.findViewById(R.id.text4);
+        Drawable divider = ResourcesCompat
+                .getDrawable(activity.getResources(), R.drawable.divider, null);
+        assertNotNull(divider);
+        int widthSum = text1.getWidth() + text4.getWidth() + divider.getIntrinsicWidth();
+        assertThat(text4.getRight(), is(widthSum));
+        assertThat(text1.getLeft(), is(flexboxLayout.getLeft()));
+    }
+
+    @Test
+    @FlakyTest(tolerance = TOLERANCE)
+    public void testDivider_directionColumn_verticalEnd() throws Throwable {
+        final FlexboxTestActivity activity = mActivityRule.getActivity();
+        mActivityRule.runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                activity.setContentView(R.layout.activity_divider_test_direction_column);
+                FlexboxLayout flexboxLayout = (FlexboxLayout) activity
+                        .findViewById(R.id.flexbox_layout);
+                Drawable divider = ResourcesCompat
+                        .getDrawable(activity.getResources(), R.drawable.divider, null);
+                flexboxLayout.setDividerDrawableHorizontal(divider);
+                flexboxLayout.setShowDividerVertical(FlexboxLayout.SHOW_DIVIDER_END);
+                flexboxLayout.setShowDividerHorizontal(FlexboxLayout.SHOW_DIVIDER_NONE);
+            }
+        });
+        InstrumentationRegistry.getInstrumentation().waitForIdleSync();
+        FlexboxLayout flexboxLayout = (FlexboxLayout) activity.findViewById(R.id.flexbox_layout);
+        assertThat(flexboxLayout.getFlexWrap(), is(FlexboxLayout.FLEX_WRAP_WRAP));
+        assertThat(flexboxLayout.getFlexDirection(), is(FlexboxLayout.FLEX_DIRECTION_COLUMN));
+        assertThat(flexboxLayout.getShowDividerVertical(), is(FlexboxLayout.SHOW_DIVIDER_END));
+        assertThat(flexboxLayout.getShowDividerHorizontal(), is(FlexboxLayout.SHOW_DIVIDER_NONE));
+
+        TextView text1 = (TextView) activity.findViewById(R.id.text1);
+        TextView text4 = (TextView) activity.findViewById(R.id.text4);
+        Drawable divider = ResourcesCompat
+                .getDrawable(activity.getResources(), R.drawable.divider, null);
+        assertNotNull(divider);
+        int widthSum = text1.getWidth() + text4.getWidth() + divider.getIntrinsicWidth();
+        assertThat(text4.getRight() + divider.getIntrinsicWidth(), is(widthSum));
+        assertThat(text1.getLeft(), is(flexboxLayout.getLeft()));
+    }
+
+    @Test
+    @FlakyTest(tolerance = TOLERANCE)
+    public void testDivider_directionColumn_verticalAll() throws Throwable {
+        final FlexboxTestActivity activity = mActivityRule.getActivity();
+        mActivityRule.runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                activity.setContentView(R.layout.activity_divider_test_direction_column);
+                FlexboxLayout flexboxLayout = (FlexboxLayout) activity
+                        .findViewById(R.id.flexbox_layout);
+                Drawable divider = ResourcesCompat
+                        .getDrawable(activity.getResources(), R.drawable.divider, null);
+                flexboxLayout.setDividerDrawableVertical(divider);
+                flexboxLayout.setShowDividerVertical(
+                        FlexboxLayout.SHOW_DIVIDER_BEGINNING | FlexboxLayout.SHOW_DIVIDER_MIDDLE
+                                | FlexboxLayout.SHOW_DIVIDER_END);
+                flexboxLayout.setShowDividerHorizontal(FlexboxLayout.SHOW_DIVIDER_NONE);
+            }
+        });
+        InstrumentationRegistry.getInstrumentation().waitForIdleSync();
+        FlexboxLayout flexboxLayout = (FlexboxLayout) activity.findViewById(R.id.flexbox_layout);
+        assertThat(flexboxLayout.getFlexWrap(), is(FlexboxLayout.FLEX_WRAP_WRAP));
+        assertThat(flexboxLayout.getFlexDirection(), is(FlexboxLayout.FLEX_DIRECTION_COLUMN));
+        assertThat(flexboxLayout.getShowDividerVertical(),
+                is(FlexboxLayout.SHOW_DIVIDER_BEGINNING | FlexboxLayout.SHOW_DIVIDER_MIDDLE |
+                        FlexboxLayout.SHOW_DIVIDER_END));
+
+        TextView text1 = (TextView) activity.findViewById(R.id.text1);
+        TextView text4 = (TextView) activity.findViewById(R.id.text4);
+        Drawable divider = ResourcesCompat
+                .getDrawable(activity.getResources(), R.drawable.divider, null);
+        assertNotNull(divider);
+        int widthSum = text1.getWidth() + text4.getWidth() + divider.getIntrinsicWidth() * 3;
+        assertThat(text4.getRight() + divider.getIntrinsicWidth(), is(widthSum));
+        assertThat(text1.getLeft(), is(not(flexboxLayout.getLeft())));
+    }
+
+    @Test
+    @FlakyTest(tolerance = TOLERANCE)
+    public void testDivider_directionColumn_vertical_horizontal_All() throws Throwable {
+        final FlexboxTestActivity activity = mActivityRule.getActivity();
+        mActivityRule.runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                activity.setContentView(R.layout.activity_divider_test_direction_column);
+                FlexboxLayout flexboxLayout = (FlexboxLayout) activity
+                        .findViewById(R.id.flexbox_layout);
+                Drawable divider = ResourcesCompat
+                        .getDrawable(activity.getResources(), R.drawable.divider, null);
+                flexboxLayout.setDividerDrawable(divider);
+                flexboxLayout.setShowDivider(
+                        FlexboxLayout.SHOW_DIVIDER_BEGINNING | FlexboxLayout.SHOW_DIVIDER_MIDDLE
+                                | FlexboxLayout.SHOW_DIVIDER_END);
+            }
+        });
+        InstrumentationRegistry.getInstrumentation().waitForIdleSync();
+        FlexboxLayout flexboxLayout = (FlexboxLayout) activity.findViewById(R.id.flexbox_layout);
+        assertThat(flexboxLayout.getFlexWrap(), is(FlexboxLayout.FLEX_WRAP_WRAP));
+        assertThat(flexboxLayout.getFlexDirection(), is(FlexboxLayout.FLEX_DIRECTION_COLUMN));
+        assertThat(flexboxLayout.getShowDividerVertical(),
+                is(FlexboxLayout.SHOW_DIVIDER_BEGINNING | FlexboxLayout.SHOW_DIVIDER_MIDDLE |
+                        FlexboxLayout.SHOW_DIVIDER_END));
+        assertThat(flexboxLayout.getShowDividerHorizontal(),
+                is(FlexboxLayout.SHOW_DIVIDER_BEGINNING | FlexboxLayout.SHOW_DIVIDER_MIDDLE |
+                        FlexboxLayout.SHOW_DIVIDER_END));
+
+        TextView text1 = (TextView) activity.findViewById(R.id.text1);
+        TextView text2 = (TextView) activity.findViewById(R.id.text2);
+        TextView text3 = (TextView) activity.findViewById(R.id.text3);
+        TextView text4 = (TextView) activity.findViewById(R.id.text4);
+        Drawable divider = ResourcesCompat
+                .getDrawable(activity.getResources(), R.drawable.divider, null);
+        assertNotNull(divider);
+        int heightSum = text1.getHeight() + text2.getHeight() + text3.getHeight()
+                + divider.getIntrinsicHeight() * 4;
+        int widthSum = text1.getWidth() + text4.getWidth() + divider.getIntrinsicWidth() * 3;
+        assertThat(text3.getBottom() + divider.getIntrinsicHeight(), is(heightSum));
+        assertThat(text4.getRight() + divider.getIntrinsicWidth(), is(widthSum));
+        assertThat(text1.getLeft(), is(not(flexboxLayout.getLeft())));
+        assertThat(text1.getTop(), is(not(flexboxLayout.getTop())));
+    }
+
+    @Test
+    @FlakyTest(tolerance = TOLERANCE)
+    public void testDivider_directionColumn_all_thickDivider() throws Throwable {
+        final FlexboxTestActivity activity = mActivityRule.getActivity();
+        mActivityRule.runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                activity.setContentView(R.layout.activity_divider_test_direction_column);
+                FlexboxLayout flexboxLayout = (FlexboxLayout) activity
+                        .findViewById(R.id.flexbox_layout);
+                Drawable thickDivider = ResourcesCompat
+                        .getDrawable(activity.getResources(), R.drawable.divider_thick, null);
+                flexboxLayout.setDividerDrawableHorizontal(thickDivider);
+                flexboxLayout.setShowDividerHorizontal(
+                        FlexboxLayout.SHOW_DIVIDER_BEGINNING | FlexboxLayout.SHOW_DIVIDER_MIDDLE
+                                | FlexboxLayout.SHOW_DIVIDER_END);
+            }
+        });
+        InstrumentationRegistry.getInstrumentation().waitForIdleSync();
+        FlexboxLayout flexboxLayout = (FlexboxLayout) activity.findViewById(R.id.flexbox_layout);
+        assertThat(flexboxLayout.getFlexWrap(), is(FlexboxLayout.FLEX_WRAP_WRAP));
+        assertThat(flexboxLayout.getFlexDirection(), is(FlexboxLayout.FLEX_DIRECTION_COLUMN));
+        assertThat(flexboxLayout.getShowDividerHorizontal(),
+                is(FlexboxLayout.SHOW_DIVIDER_BEGINNING | FlexboxLayout.SHOW_DIVIDER_MIDDLE |
+                        FlexboxLayout.SHOW_DIVIDER_END));
+
+        TextView text1 = (TextView) activity.findViewById(R.id.text1);
+        TextView text2 = (TextView) activity.findViewById(R.id.text2);
+        TextView text3 = (TextView) activity.findViewById(R.id.text3);
+        Drawable divider = ResourcesCompat
+                .getDrawable(activity.getResources(), R.drawable.divider_thick, null);
+        // The sum of three text views and the sum of thick dividers don't fit in one line.
+        // The last text view should be placed to the next line.
+        assertNotNull(divider);
+        int heightSum = text1.getHeight() + text2.getHeight()
+                + divider.getIntrinsicHeight() * 3;
+        assertThat(text2.getBottom() + divider.getIntrinsicHeight(), is(heightSum));
+        assertThat(text1.getTop(), is(not(flexboxLayout.getTop())));
+        assertThat(text3.getRight(), is(text1.getWidth() + text3.getWidth()));
+    }
+
     private TextView createTextView(Context context, String text, int order) {
         TextView textView = new TextView(context);
         textView.setText(text);
@@ -2368,5 +3806,43 @@ public class FlexboxAndroidTest {
         lp.order = order;
         textView.setLayoutParams(lp);
         return textView;
+    }
+
+    private ViewAssertion hasWidth(final int width) {
+        return matches(new TypeSafeMatcher<View>() {
+            @Override
+            public void describeTo(Description description) {
+                description.appendText("expected width: " + width);
+            }
+
+            @Override
+            protected void describeMismatchSafely(View item, Description mismatchDescription) {
+                mismatchDescription.appendText("actual width: " + item.getWidth());
+            }
+
+            @Override
+            protected boolean matchesSafely(View item) {
+                return item.getWidth() == width;
+            }
+        });
+    }
+
+    private ViewAssertion hasHeight(final int height) {
+        return matches(new TypeSafeMatcher<View>() {
+            @Override
+            public void describeTo(Description description) {
+                description.appendText("expected height: " + height);
+            }
+
+            @Override
+            protected void describeMismatchSafely(View item, Description mismatchDescription) {
+                mismatchDescription.appendText("actual height: " + item.getHeight());
+            }
+
+            @Override
+            protected boolean matchesSafely(View item) {
+                return item.getHeight() == height;
+            }
+        });
     }
 }

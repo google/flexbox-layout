@@ -10,7 +10,7 @@ Add the following dependency to your `build.gradle` file:
 
 ```
 dependencies {
-    compile 'com.google.android:flexbox:0.1.3'
+    compile 'com.google.android:flexbox:0.2.3'
 }
 ```
 
@@ -63,10 +63,11 @@ view.setLayoutParams(lp);
 ```
 
 ## Supported attributes
-You can specify the following attributes for the FlexboxLayout:
-* flexDirection
-  * The direction children items are placed inside the Flexbox layout, it determines the
-  direction of the main axis (and the cross axis, perpendicular to the main axis).
+
+#### Attributes for the FlexboxLayout:
+
+* __flexDirection__
+  * This attribute determines the direction of the main axis (and the cross axis, perpendicular to the main axis). The direction children items are placed inside the Flexbox layout.
   Possible values are:
     * row (default)
     * row_reverse
@@ -75,7 +76,7 @@ You can specify the following attributes for the FlexboxLayout:
 
     ![Flex Direction explanation](/assets/flex-direction.gif)
 
-* flexWrap
+* __flexWrap__
   * This attribute controls whether the flex container is single-line or multi-line, and the
   direction of the cross axis. Possible values are:
     * nowrap (default)
@@ -84,7 +85,7 @@ You can specify the following attributes for the FlexboxLayout:
 
     ![Flex Wrap explanation](/assets/flex-wrap.gif)
 
-* justifyContent
+* __justifyContent__
   * This attribute controls the alignment along the main axis. Possible values are:
     * flex_start (default)
     * flex_end
@@ -94,7 +95,7 @@ You can specify the following attributes for the FlexboxLayout:
 
     ![Justify Content explanation](/assets/justify-content.gif)
 
-* alignItems
+* __alignItems__
   * This attribute controls the alignment along the cross axis. Possible values are:
     * stretch (default)
     * flex_start
@@ -104,7 +105,7 @@ You can specify the following attributes for the FlexboxLayout:
 
     ![Align Items explanation](/assets/align-items.gif)
 
-* alignContent
+* __alignContent__
   * This attribute controls the alignment of the flex lines in the flex container. Possible values
   are:
     * stretch (default)
@@ -116,24 +117,105 @@ You can specify the following attributes for the FlexboxLayout:
 
     ![Align Content explanation](/assets/align-content.gif)
 
-Also you can specify the following attributes for the children of a FlexboxLayout.
+* __showDividerHorizontal__ (one or more of `none | beginning | middle | end`)
+* __dividerDrawableHorizontal__ (reference to a drawable)
+  * Puts horizontal dividers between flex lines (or flex items when flexDirection
+  is set to `column` or `column_rebase`).
+  
+* __showDividerVertical__ (one or more of `none | beginning | middle | end`)
+* __dividerDrawableVertical__ (reference to a drawable)
+  * Puts vertical dividers between flex items (or flex lines when flexDirection
+  is set to `column` or `column_rebase`).
 
-* layout_order
+* __showDivider__ (one or more of `none | beginning | middle | end`)
+* __dividerDrawable__ (reference to a drawable)
+  * Shorthand for setting both horizontal and vertical dividers. Note that if used with other attributes
+  (such as `justifyContent="space_around"` or `alignContent="space_between"` ... etc) for putting 
+  spaces between flex lines or flex items, you may see unexpected spaces. Please avoid using these
+  at the same time.
+  
+  Example of putting both vertical and horizontal dividers.
+  
+  `res/drawable/divider.xml`
+  ```xml
+  <shape xmlns:android="http://schemas.android.com/apk/res/android">
+    <size
+        android:width="8dp"
+        android:height="12dp" />
+    <solid android:color="#44A444" />
+  </shape> 
+  ```
+  
+  `res/layout/content_main.xml`
+  ```xml
+  <com.google.android.flexbox.FlexboxLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    app:alignContent="flex_start"
+    app:alignItems="flex_start"
+    app:flexWrap="wrap"
+    app:showDivider="beginning|middle"
+    app:dividerDrawable="@drawable/divider" >
+
+    <TextView
+        style="@style/FlexItem"
+        android:layout_width="220dp"
+        android:layout_height="80dp"
+        android:text="1" />
+    <TextView
+        style="@style/FlexItem"
+        android:layout_width="120dp"
+        android:layout_height="80dp"
+        android:text="2" />
+    <TextView
+        style="@style/FlexItem"
+        android:layout_width="160dp"
+        android:layout_height="80dp"
+        android:text="3" />
+    <TextView
+        style="@style/FlexItem"
+        android:layout_width="80dp"
+        android:layout_height="80dp"
+        android:text="4" />
+    <TextView
+        style="@style/FlexItem"
+        android:layout_width="100dp"
+        android:layout_height="80dp"
+        android:text="5" />
+  ```
+  
+  ![Dividers beginning and middle](/assets/divider-beginning-middle.png)
+
+
+#### Attributes for the children of a FlexboxLayout
+
+* __layout_order__ (integer)
   * This attribute can change how the ordering of the children views are laid out.
   By default, children are displayed and laid out in the same order as they appear in the
   layout XML. If not specified, `1` is set as a default value.
 
-* layout_flexGrow
+    ![Order explanation](/assets/layout_order.gif)
+
+* __layout_flexGrow__ (float)
   * This attribute determines how much this child will grow if positive free space is
   distributed relative to the rest of other flex items included in the same flex line.
+  If a flex item has a positive `layout_flexGrow` value, the item will take up the remaining
+  space in the flex line. If multiple flex items in the same flex line have positive `layout_flexGrow`
+  values, the remaining free space is distributed denepending on the proportion of their declared
+  `layout_flexGrow` value. (Similar to the `layout_weight` attribute in the `LinearLayout`)
   If not specified, `0` is set as a default value.
 
-* layout_flexShrink
+    ![Flex Grow explanation](/assets/layout_flexGrow.gif)
+
+* __layout_flexShrink__ (float)
   * This attribute determines how much this child will shrink if negative free space is
   distributed relative to the rest of other flex items included in the same flex line.
   If not specified, `1` is set as a default value.
 
-* layout_alignSelf
+    ![Flex Shrink explanation](/assets/layout_flexShrink.gif)
+
+* __layout_alignSelf__
   * This attribute determines the alignment along the cross axis (perpendicular to the
   main axis). The alignment in the same direction can be determined by the
   `alignItems` in the parent, but if this is set to other than
@@ -145,7 +227,9 @@ Also you can specify the following attributes for the children of a FlexboxLayou
     * baseline
     * stretch
 
-* layout_flexBasisPercent
+    ![Align Self explanation](/assets/layout_alignSelf.gif)
+
+* __layout_flexBasisPercent__ (fraction)
   * The initial flex item length in a fraction format relative to its parent.
   The initial main size of this child view is trying to be expanded as the specified
   fraction against the parent main size.
@@ -153,6 +237,37 @@ Also you can specify the following attributes for the children of a FlexboxLayou
   (or `layout_height`) is overridden by the calculated value from this attribute.
   This attribute is only effective when the parent's length is definite (MeasureSpec mode is
   `MeasureSpec.EXACTLY`). The default value is `-1`, which means not set.
+
+    ![Flex basis percent explanation](/assets/layout_flexBasisPercent.gif)
+
+* __layout_minWidth__ / __layout_minHeight__ (dimension)
+  * These attributes impose minimum size constraints for the children of FlexboxLayout.
+  A child view won't be shrank less than the value of these attributes (varies based on the
+  `flexDirection` attribute as to which attribute imposes the size constraint along the
+  main axis) regardless of the `layout_flexShrink` attribute.
+
+    ![Min width explanation](/assets/layout_minWidth.gif)
+
+* __layout_maxWidth__ / __layout_maxHeight__ (dimension)
+  * These attributes impose maximum size constraints for the children of FlexboxLayout.
+  A child view won't be expanded more than the value of these attributes (varies based on the
+  `flexDirection` attribute as to which attribute imposes the size constraint along the
+  main axis) regardless of the `layout_flexGrow` attribute.
+
+    ![Max width explanation](/assets/layout_maxWidth.gif)
+
+* __layout_wrapBefore__ (boolean)
+  * This attribute forces a flex line wrapping, the default value is `false`.
+  i.e. if this is set to `true` for a
+  flex item, the item will become the first item of a flex line. (A wrapping happens
+  regardless of the flex items being processed in the the previous flex line)
+  This attribute is ignored if the `flex_wrap` attribute is set to `nowrap`.
+  The equivalent attribute isn't defined in the original CSS Flexible Box Module
+  specification, but having this attribute is useful for Android developers. For example, to flatten
+  the layouts when building a grid like layout or for a situation where developers want
+  to put a new flex line to make a semantic difference from the previous one, etc.
+
+    ![Wrap before explanation](/assets/layout_wrapBefore.gif)
 
 ## Known differences from the original CSS specification
 This library tries to achieve the same capabilities of the original
@@ -174,19 +289,28 @@ equivalent attribute
   * Both `layout_flexBasisPercent` in this library and `flex-basis` property in the CSS are used to
   determine the initial length of an individual flex item. The `flex-basis` property accepts width
   values such as `1em`, `10px`, and `content` as strings as well as percentage values such as
-  `10%` and `30%`, whereas `layout_flexBasisPercent` only accepts percentage values.
-  But specifying initial fixed width values can be done by specifying width (or height) values in
+  `10%` and `30%`. `layout_flexBasisPercent` only accepts percentage values.
+  However, specifying initial fixed width values can be done by specifying width (or height) values in
   layout_width (or layout_height, varies depending on the `flexDirection`). Also, the same
   effect can be done by specifying "wrap_content" in layout_width (or layout_height) if
   developers want to achieve the same effect as 'content'. Thus, `layout_flexBasisPercent` only
   accepts percentage values, which can't be done through layout_width (or layout_height) for
   simplicity.
 
-(4) min-width and min-height can't be specified
-  * Which isn't implemented just yet.
+(4) `layout_wrapBefore` is introduced.
+  * The equivalent attribute doesn't exist in the CSS Flexible Box Module speicification,
+  but as explained above, Android developers will benefit by having this attribute for having
+  more control over when a wrapping happens.
+
+## Flexbox Playground demo app
+The `app` module works as a playground demo app for trying various values for the supported attributes.
+You can install it by
+```
+./gradlew installDebug
+```
 
 ## How to make contributions
-Please read and follow the steps in [CONTRIBUTING.md](https://github.com/google/flexbox-layout/blob/master/CONTRIBUTING.md)
+Please read and follow the steps in [CONTRIBUTING.md](/CONTRIBUTING.md)
 
 ## License
-Please see [License](https://github.com/google/flexbox-layout/blob/master/LICENSE)
+Please see [LICENSE](/LICENSE)

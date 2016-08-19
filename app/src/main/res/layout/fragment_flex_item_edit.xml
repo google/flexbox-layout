@@ -14,137 +14,219 @@ See the License for the specific language governing permissions and
 limitations under the License.
 -->
 <ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content">
+    android:layout_height="match_parent"
+    android:layout_marginEnd="@dimen/activity_horizontal_margin"
+    android:layout_marginStart="@dimen/activity_horizontal_margin"
+    android:layout_marginTop="@dimen/activity_vertical_margin"
+    android:layout_marginBottom="@dimen/activity_vertical_margin">
 
-    <LinearLayout
+    <com.google.android.flexbox.FlexboxLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="vertical"
-        android:paddingStart="@dimen/activity_horizontal_margin"
-        android:paddingEnd="@dimen/activity_horizontal_margin">
+        android:paddingEnd="@dimen/margin_medium"
+        android:paddingStart="@dimen/margin_medium"
+        app:flexWrap="wrap">
 
         <android.support.design.widget.TextInputLayout
             android:id="@+id/input_layout_order"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content">
+            android:layout_width="100dp"
+            android:layout_height="wrap_content"
+            app:layout_flexGrow="1">
 
             <EditText
                 android:id="@+id/edit_text_order"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:lines="1"
-                android:singleLine="true"
+                android:hint="@string/hint_order"
                 android:inputType="numberSigned"
-                android:hint="@string/hint_order" />
+                android:lines="1"
+                android:singleLine="true" />
         </android.support.design.widget.TextInputLayout>
 
         <android.support.design.widget.TextInputLayout
             android:id="@+id/input_layout_flex_grow"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content">
+            android:layout_width="100dp"
+            android:layout_height="wrap_content"
+            app:layout_flexGrow="1">
 
             <EditText
                 android:id="@+id/edit_text_flex_grow"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:lines="1"
-                android:singleLine="true"
+                android:hint="@string/hint_flex_grow"
                 android:inputType="numberDecimal"
-                android:hint="@string/hint_flex_grow" />
+                android:lines="1"
+                android:singleLine="true" />
         </android.support.design.widget.TextInputLayout>
 
         <android.support.design.widget.TextInputLayout
             android:id="@+id/input_layout_flex_shrink"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content">
+            android:layout_width="100dp"
+            android:layout_height="wrap_content"
+            app:layout_flexGrow="1">
 
             <EditText
                 android:id="@+id/edit_text_flex_shrink"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:lines="1"
-                android:singleLine="true"
+                android:hint="@string/hint_flex_shrink"
                 android:inputType="numberDecimal"
-                android:hint="@string/hint_flex_shrink" />
+                android:lines="1"
+                android:singleLine="true" />
         </android.support.design.widget.TextInputLayout>
 
         <android.support.design.widget.TextInputLayout
             android:id="@+id/input_layout_flex_basis_percent"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content">
+            android:layout_width="200dp"
+            android:layout_height="wrap_content"
+            app:layout_flexGrow="1">
 
             <EditText
                 android:id="@+id/edit_text_flex_basis_percent"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:lines="1"
-                android:singleLine="true"
+                android:hint="@string/hint_flex_basis_percent"
                 android:inputType="numberSigned"
-                android:hint="@string/hint_flex_basis_percent" />
+                android:lines="1"
+                android:singleLine="true" />
         </android.support.design.widget.TextInputLayout>
 
         <android.support.design.widget.TextInputLayout
             android:id="@+id/input_layout_width"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content">
+            android:layout_width="300dp"
+            android:layout_height="wrap_content"
+            app:layout_wrapBefore="true"
+            app:layout_flexGrow="1">
 
             <EditText
                 android:id="@+id/edit_text_width"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:lines="1"
-                android:singleLine="true"
+                android:hint="@string/hint_width"
                 android:inputType="numberSigned"
-                android:hint="@string/hint_width" />
+                android:lines="1"
+                android:singleLine="true" />
         </android.support.design.widget.TextInputLayout>
 
         <android.support.design.widget.TextInputLayout
             android:id="@+id/input_layout_height"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content">
+            android:layout_width="300dp"
+            android:layout_height="wrap_content"
+            app:layout_flexGrow="1">
 
             <EditText
                 android:id="@+id/edit_text_height"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:hint="@string/hint_height"
+                android:inputType="numberSigned"
+                android:lines="1"
+                android:singleLine="true" />
+        </android.support.design.widget.TextInputLayout>
+
+        <android.support.design.widget.TextInputLayout
+            android:id="@+id/input_layout_min_width"
+            android:layout_width="150dp"
+            android:layout_height="wrap_content"
+            app:layout_wrapBefore="true"
+            app:layout_flexGrow="1">
+
+            <EditText
+                android:id="@+id/edit_text_min_width"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
                 android:lines="1"
                 android:singleLine="true"
-                android:inputType="numberSigned"
-                android:hint="@string/hint_height" />
+                android:inputType="number"
+                android:hint="@string/hint_min_width" />
         </android.support.design.widget.TextInputLayout>
+
+        <android.support.design.widget.TextInputLayout
+            android:id="@+id/input_layout_min_height"
+            android:layout_width="150dp"
+            android:layout_height="wrap_content"
+            app:layout_flexGrow="1">
+
+            <EditText
+                android:id="@+id/edit_text_min_height"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:lines="1"
+                android:singleLine="true"
+                android:inputType="number"
+                android:hint="@string/hint_min_height" />
+        </android.support.design.widget.TextInputLayout>
+
+        <android.support.design.widget.TextInputLayout
+            android:id="@+id/input_layout_max_width"
+            android:layout_width="150dp"
+            android:layout_height="wrap_content"
+            app:layout_flexGrow="1">
+
+            <EditText
+                android:id="@+id/edit_text_max_width"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:lines="1"
+                android:singleLine="true"
+                android:inputType="number"
+                android:hint="@string/hint_max_width" />
+        </android.support.design.widget.TextInputLayout>
+
+        <android.support.design.widget.TextInputLayout
+            android:id="@+id/input_layout_max_height"
+            android:layout_width="150dp"
+            android:layout_height="wrap_content"
+            app:layout_flexGrow="1">
+
+            <EditText
+                android:id="@+id/edit_text_max_height"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:lines="1"
+                android:singleLine="true"
+                android:inputType="number"
+                android:hint="@string/hint_max_height" />
+        </android.support.design.widget.TextInputLayout>
+
+        <CheckBox
+            android:id="@+id/checkbox_wrap_before"
+            android:layout_width="150dp"
+            android:layout_height="wrap_content"
+            android:text="@string/hint_wrap_before"
+            app:layout_wrapBefore="true"
+            app:layout_flexGrow="1" />
 
         <LinearLayout
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:orientation="horizontal">
+            android:orientation="horizontal"
+            app:layout_flexGrow="1">
 
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:paddingStart="@dimen/margin_tiny"
-                android:paddingLeft="@dimen/margin_tiny"
-                android:paddingEnd="@dimen/margin_tiny"
-                android:paddingRight="@dimen/margin_tiny"
                 android:text="@string/hint_align_self" />
 
             <Spinner
                 android:id="@+id/spinner_align_self"
                 android:layout_width="0dp"
-                android:layout_weight="1"
                 android:layout_height="wrap_content"
+                android:layout_weight="1"
                 android:gravity="end" />
         </LinearLayout>
+
 
         <LinearLayout
             android:id="@+id/button_panel"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            android:paddingTop="@dimen/margin_small"
-            android:paddingBottom="@dimen/margin_small"
             android:gravity="bottom"
-            style="?android:attr/buttonBarStyle">
+            android:orientation="horizontal"
+            android:paddingBottom="@dimen/margin_small"
+            android:paddingTop="@dimen/margin_small">
 
             <View
                 android:id="@+id/spacer"
@@ -155,17 +237,17 @@ limitations under the License.
 
             <Button
                 android:id="@+id/button_cancel"
-                style="?android:attr/buttonBarStyle"
+                style="@style/DialogButton"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="@string/cancel" />
 
             <Button
                 android:id="@+id/button_ok"
-                style="?android:attr/buttonBarStyle"
+                style="@style/DialogButton"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="@string/ok" />
         </LinearLayout>
-    </LinearLayout>
+    </com.google.android.flexbox.FlexboxLayout>
 </ScrollView>

@@ -64,6 +64,20 @@ public class FlexItem implements Parcelable {
 
     public float flexBasisPercent;
 
+    /** Minimum width in DP */
+    public int minWidth;
+
+    /** Minimum height in DP */
+    public int minHeight;
+
+    /** Maximum width in DP */
+    public int maxWidth;
+
+    /** Maximum height in DP */
+    public int maxHeight;
+
+    public boolean wrapBefore;
+
     public FlexItem() {
     }
 
@@ -90,6 +104,11 @@ public class FlexItem implements Parcelable {
         dest.writeFloat(this.flexShrink);
         dest.writeInt(this.alignSelf);
         dest.writeFloat(this.flexBasisPercent);
+        dest.writeInt(this.minWidth);
+        dest.writeInt(this.minHeight);
+        dest.writeInt(this.maxWidth);
+        dest.writeInt(this.maxHeight);
+        dest.writeByte((byte) (wrapBefore ? 1 : 0));
     }
 
     protected FlexItem(Parcel in) {
@@ -109,6 +128,11 @@ public class FlexItem implements Parcelable {
         this.flexShrink = in.readFloat();
         this.alignSelf = in.readInt();
         this.flexBasisPercent = in.readFloat();
+        this.minWidth = in.readInt();
+        this.minHeight = in.readInt();
+        this.maxWidth = in.readInt();
+        this.maxHeight = in.readInt();
+        this.wrapBefore = in.readByte() != 0;
     }
 
     public FlexboxLayout.LayoutParams toLayoutParams(Context context) {
@@ -124,6 +148,11 @@ public class FlexItem implements Parcelable {
         MarginLayoutParamsCompat.setMarginStart(lp, startMargin);
         MarginLayoutParamsCompat.setMarginEnd(lp, endMargin);
         lp.bottomMargin = bottomMargin;
+        lp.minWidth = Util.dpToPixel(context, minWidth);
+        lp.minHeight = Util.dpToPixel(context, minHeight);
+        lp.maxWidth = Util.dpToPixel(context, maxWidth);
+        lp.maxHeight = Util.dpToPixel(context, maxHeight);
+        lp.wrapBefore = wrapBefore;
         return lp;
     }
 
@@ -146,6 +175,11 @@ public class FlexItem implements Parcelable {
         flexItem.paddingStart = ViewCompat.getPaddingStart(view);
         flexItem.paddingEnd = ViewCompat.getPaddingEnd(view);
         flexItem.paddingBottom = view.getPaddingBottom();
+        flexItem.minWidth = Util.pixelToDp(view.getContext(), lp.minWidth);
+        flexItem.minHeight = Util.pixelToDp(view.getContext(), lp.minHeight);
+        flexItem.maxWidth = Util.pixelToDp(view.getContext(), lp.maxWidth);
+        flexItem.maxHeight = Util.pixelToDp(view.getContext(), lp.maxHeight);
+        flexItem.wrapBefore = lp.wrapBefore;
         return flexItem;
     }
 

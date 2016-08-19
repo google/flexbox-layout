@@ -16,14 +16,16 @@
 
 package com.google.android.apps.flexbox;
 
+import com.google.android.apps.flexbox.validators.DimensionInputValidator;
+import com.google.android.apps.flexbox.validators.FixedDimensionInputValidator;
 import com.google.android.apps.flexbox.validators.FlexBasisPercentInputValidator;
 import com.google.android.apps.flexbox.validators.InputValidator;
 import com.google.android.apps.flexbox.validators.IntegerInputValidator;
 import com.google.android.apps.flexbox.validators.NonNegativeDecimalInputValidator;
-import com.google.android.apps.flexbox.validators.DimensionInputValidator;
 import com.google.android.flexbox.FlexboxLayout;
 
 import android.app.Activity;
+import android.content.Context;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
@@ -32,14 +34,20 @@ import android.support.v4.app.DialogFragment;
 import android.text.Editable;
 import android.text.TextUtils;
 import android.text.TextWatcher;
+import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.inputmethod.EditorInfo;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
+import android.widget.CheckBox;
+import android.widget.CompoundButton;
 import android.widget.EditText;
 import android.widget.Spinner;
+import android.widget.TextView;
 import android.widget.Toast;
 
 /**
@@ -110,7 +118,7 @@ public class FlexItemEditFragment extends DialogFragment {
 
         final TextInputLayout flexGrowInput = (TextInputLayout) view
                 .findViewById(R.id.input_layout_flex_grow);
-        EditText flexGrowEdit = (EditText) view.findViewById(R.id.edit_text_flex_grow);
+        final EditText flexGrowEdit = (EditText) view.findViewById(R.id.edit_text_flex_grow);
         flexGrowEdit.setText(String.valueOf(mFlexItem.flexGrow));
         flexGrowEdit.addTextChangedListener(
                 new FlexEditTextWatcher(flexGrowInput, new NonNegativeDecimalInputValidator(),
@@ -156,6 +164,43 @@ public class FlexItemEditFragment extends DialogFragment {
                 new FlexEditTextWatcher(heightInput, new DimensionInputValidator(),
                         R.string.must_be_minus_one_or_minus_two_or_non_negative_integer));
 
+        final TextInputLayout minWidthInput = (TextInputLayout) view
+                .findViewById(R.id.input_layout_min_width);
+        EditText minWidthEdit = (EditText) view.findViewById(R.id.edit_text_min_width);
+        minWidthEdit.setText(String.valueOf(mFlexItem.minWidth));
+        minWidthEdit.addTextChangedListener(
+                new FlexEditTextWatcher(minWidthInput, new FixedDimensionInputValidator(),
+                        R.string.must_be_non_negative_integer));
+
+        final TextInputLayout minHeightInput = (TextInputLayout) view
+                .findViewById(R.id.input_layout_min_height);
+        EditText minHeightEdit = (EditText) view.findViewById(
+                R.id.edit_text_min_height);
+        minHeightEdit.setText(String.valueOf(mFlexItem.minHeight));
+        minHeightEdit.addTextChangedListener(
+                new FlexEditTextWatcher(minHeightInput, new FixedDimensionInputValidator(),
+                        R.string.must_be_non_negative_integer));
+
+        final TextInputLayout maxWidthInput = (TextInputLayout) view
+                .findViewById(R.id.input_layout_max_width);
+        EditText maxWidthEdit = (EditText) view.findViewById(R.id.edit_text_max_width);
+        maxWidthEdit.setText(String.valueOf(mFlexItem.maxWidth));
+        maxWidthEdit.addTextChangedListener(
+                new FlexEditTextWatcher(maxWidthInput, new FixedDimensionInputValidator(),
+                        R.string.must_be_non_negative_integer));
+
+        final TextInputLayout maxHeightInput = (TextInputLayout) view
+                .findViewById(R.id.input_layout_max_height);
+        EditText maxHeightEdit = (EditText) view.findViewById(
+                R.id.edit_text_max_height);
+        maxHeightEdit.setText(String.valueOf(mFlexItem.maxHeight));
+        maxHeightEdit.addTextChangedListener(
+                new FlexEditTextWatcher(maxHeightInput, new FixedDimensionInputValidator(),
+                        R.string.must_be_non_negative_integer));
+
+        setNextFocusesOnEnterDown(orderEdit, flexGrowEdit, flexShrinkEdit, flexBasisPercentEdit,
+                widthEdit, heightEdit, minWidthEdit, minHeightEdit, maxWidthEdit, maxHeightEdit);
+
         Spinner alignSelfSpinner = (Spinner) view.findViewById(
                 R.id.spinner_align_self);
         ArrayAdapter<CharSequence> arrayAdapter = ArrayAdapter.createFromResource(getActivity(),
@@ -185,6 +230,15 @@ public class FlexItemEditFragment extends DialogFragment {
                 // No op
             }
         });
+
+        CheckBox wrapBeforeCheckBox = (CheckBox) view.findViewById(R.id.checkbox_wrap_before);
+        wrapBeforeCheckBox.setChecked(mFlexItem.wrapBefore);
+        wrapBeforeCheckBox.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                mFlexItem.wrapBefore = isChecked;
+            }
+        });
         int alignSelfPosition = arrayAdapter.getPosition(alignSelfAsString(mFlexItem.alignSelf));
         alignSelfSpinner.setSelection(alignSelfPosition);
 
@@ -200,7 +254,9 @@ public class FlexItemEditFragment extends DialogFragment {
             public void onClick(View v) {
                 if (orderTextInput.isErrorEnabled() || flexGrowInput.isErrorEnabled() ||
                         flexBasisPercentInput.isErrorEnabled() || widthInput.isErrorEnabled() ||
-                        heightInput.isErrorEnabled()) {
+                        heightInput.isErrorEnabled() || minWidthInput.isErrorEnabled() ||
+                        minHeightInput.isErrorEnabled() || maxWidthInput.isErrorEnabled() ||
+                        maxHeightInput.isErrorEnabled()) {
                     Toast.makeText(getActivity(), R.string.invalid_values_exist, Toast.LENGTH_SHORT)
                             .show();
                     return;
@@ -216,6 +272,46 @@ public class FlexItemEditFragment extends DialogFragment {
 
     public void setFlexItemChangedListener(FlexItemChangedListener flexItemChangedListener) {
         mFlexItemChangedListener = flexItemChangedListener;
+    }
+
+    private void setNextFocusesOnEnterDown(final TextView... textViews) {
+        // This can be done by setting android:nextFocus* as in 
+        // https://developer.android.com/training/keyboard-input/navigation.html
+        // But it requires API level 11 as a minimum sdk version. To support the lower level devices,
+        // doing it programatically.
+        for (int i = 0; i < textViews.length; i++) {
+            final int index = i;
+            textViews[index].setOnEditorActionListener(new TextView.OnEditorActionListener() {
+                @Override
+                public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
+                    if (actionId == EditorInfo.IME_ACTION_NEXT ||
+                            actionId == EditorInfo.IME_ACTION_DONE ||
+                            (actionId == EditorInfo.IME_NULL
+                                    && event.getAction() == KeyEvent.ACTION_DOWN
+                                    && event.getKeyCode() == KeyEvent.KEYCODE_ENTER)) {
+                        if (index + 1 < textViews.length) {
+                            textViews[index + 1].requestFocus();
+                        } else if (index == textViews.length - 1) {
+                            InputMethodManager inputMethodManager
+                                    = (InputMethodManager) getActivity()
+                                    .getSystemService(Context.INPUT_METHOD_SERVICE);
+                            inputMethodManager.hideSoftInputFromWindow(v.getWindowToken(), 0);
+                        }
+                    }
+                    return true;
+                }
+            });
+
+            // Suppress the key focus change by KeyEvent.ACTION_UP of the enter key
+            textViews[index].setOnKeyListener(new View.OnKeyListener() {
+                @Override
+                public boolean onKey(View v, int keyCode, KeyEvent event) {
+                    return keyCode == KeyEvent.KEYCODE_ENTER
+                            && event.getAction() == KeyEvent.ACTION_UP;
+                }
+            });
+        }
+
     }
 
     private String alignSelfAsString(int alignSelf) {
@@ -304,6 +400,18 @@ public class FlexItemEditFragment extends DialogFragment {
                         mFlexItem.flexBasisPercent
                                 = FlexboxLayout.LayoutParams.FLEX_BASIS_PERCENT_DEFAULT;
                     }
+                    break;
+                case R.id.input_layout_min_width:
+                    mFlexItem.minWidth = intValue;
+                    break;
+                case R.id.input_layout_min_height:
+                    mFlexItem.minHeight = intValue;
+                    break;
+                case R.id.input_layout_max_width:
+                    mFlexItem.maxWidth = intValue;
+                    break;
+                case R.id.input_layout_max_height:
+                    mFlexItem.maxHeight = intValue;
                     break;
             }
         }

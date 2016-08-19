@@ -19,7 +19,7 @@ package com.google.android.apps.flexbox.validators;
 import android.text.TextUtils;
 
 /**
- * Validator for dimension values.
+ * Validator for dimension values including match_parent and wrap_content.
  */
 public class DimensionInputValidator implements InputValidator {
 

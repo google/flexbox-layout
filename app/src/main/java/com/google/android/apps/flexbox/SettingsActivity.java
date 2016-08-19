@@ -22,32 +22,31 @@ import com.google.android.apps.flexbox.validators.InputValidator;
 import com.google.android.apps.flexbox.validators.IntegerInputValidator;
 import com.google.android.apps.flexbox.validators.NonNegativeDecimalInputValidator;
 
-import android.app.Activity;
 import android.os.Bundle;
-import android.preference.EditTextPreference;
-import android.preference.Preference;
-import android.preference.PreferenceFragment;
+import android.support.v4.app.FragmentActivity;
+import android.support.v7.preference.EditTextPreference;
+import android.support.v7.preference.Preference;
+import android.support.v7.preference.PreferenceFragmentCompat;
 import android.widget.Toast;
 
-public class SettingsActivity extends Activity {
+public class SettingsActivity extends FragmentActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
         // Display the fragment as the main content.
-        getFragmentManager().beginTransaction().replace(android.R.id.content,
+        getSupportFragmentManager().beginTransaction().replace(android.R.id.content,
                 new SettingsFragment()).commit();
     }
 
     /**
      * Fragment for settings.
      */
-    public static class SettingsFragment extends PreferenceFragment {
+    public static class SettingsFragment extends PreferenceFragmentCompat {
 
         @Override
-        public void onCreate(Bundle savedInstanceState) {
-            super.onCreate(savedInstanceState);
+        public void onCreatePreferences(Bundle savedInstanceState, String s) {
             addPreferencesFromResource(R.xml.new_flex_item_preferences);
 
             EditTextPreference orderPreference = (EditTextPreference) findPreference(
@@ -152,5 +151,6 @@ public class SettingsActivity extends Activity {
                         }
                     });
         }
+
     }
 }
