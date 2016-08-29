@@ -21,13 +21,14 @@ import android.support.v4.view.ViewCompat;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.AttributeSet;
+import android.view.ViewGroup;
 
 /**
  * LayoutManager for the {@link RecyclerView}. This class is intended to be used within a
  * {@link RecyclerView} and offers the same capabilities of measure/layout its children
  * as the {@link FlexboxLayout}.
  */
-public class FlexboxLayoutManager extends RecyclerView.LayoutManager {
+public class FlexboxLayoutManager extends RecyclerView.LayoutManager implements FlexContainer {
 
     /**
      * The current value of the {@link FlexDirection}, the default value is {@link
@@ -57,6 +58,8 @@ public class FlexboxLayoutManager extends RecyclerView.LayoutManager {
      * {@link AlignContent#STRETCH}.
      */
     private int mAlignContent;
+
+    private final FlexboxHelper mFlexboxHelper = new FlexboxHelper(this);
 
     /**
      * Creates a default FlexboxLayoutManager.
@@ -197,6 +200,25 @@ public class FlexboxLayoutManager extends RecyclerView.LayoutManager {
         return new LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT);
     }
 
+    @Override
+    public boolean checkLayoutParams(RecyclerView.LayoutParams lp) {
+        return lp instanceof LayoutParams;
+    }
+
+    @Override
+    public void onLayoutChildren(RecyclerView.Recycler recycler, RecyclerView.State state) {
+        if (getItemCount() == 0) {
+            detachAndScrapAttachedViews(recycler);
+            return;
+        }
+        if (getChildCount() == 0 && state.isPreLayout()) {
+            return;
+        }
+
+        mFlexboxHelper.createReorderedIndices();
+        //TODO: Implement the rest of the method
+    }
+
     /**
      * LayoutParams used by the {@link FlexboxLayoutManager}, which stores per-child information
      * required for the Flexbox.
@@ -295,6 +317,18 @@ public class FlexboxLayoutManager extends RecyclerView.LayoutManager {
 
         public LayoutParams(int width, int height) {
             super(width, height);
+        }
+
+        public LayoutParams(ViewGroup.MarginLayoutParams source) {
+            super(source);
+        }
+
+        public LayoutParams(ViewGroup.LayoutParams source) {
+            super(source);
+        }
+
+        public LayoutParams(RecyclerView.LayoutParams source) {
+            super(source);
         }
 
         public LayoutParams(LayoutParams source) {
