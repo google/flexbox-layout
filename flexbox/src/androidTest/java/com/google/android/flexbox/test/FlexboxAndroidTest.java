@@ -3759,7 +3759,7 @@ public class FlexboxAndroidTest {
         });
         InstrumentationRegistry.getInstrumentation().waitForIdleSync();
         FlexboxLayout flexboxLayout = (FlexboxLayout) activity.findViewById(R.id.flexbox_layout);
-        assertThat(flexboxLayout.getFlexDirection(), is(FlexboxLayout.FLEX_DIRECTION_ROW));
+        assertThat(flexboxLayout.getFlexDirection(), is(FlexDirection.ROW));
 
         TextView text1 = (TextView) activity.findViewById(R.id.text1);
         TextView text2 = (TextView) activity.findViewById(R.id.text2);
@@ -3787,7 +3787,7 @@ public class FlexboxAndroidTest {
         InstrumentationRegistry.getInstrumentation().waitForIdleSync();
 
         FlexboxLayout flexboxLayout = (FlexboxLayout) activity.findViewById(R.id.flexbox_layout);
-        assertThat(flexboxLayout.getFlexDirection(), is(FlexboxLayout.FLEX_DIRECTION_COLUMN));
+        assertThat(flexboxLayout.getFlexDirection(), is(FlexDirection.COLUMN));
 
         TextView text1 = (TextView) activity.findViewById(R.id.text1);
         TextView text2 = (TextView) activity.findViewById(R.id.text2);
@@ -3810,7 +3810,7 @@ public class FlexboxAndroidTest {
         InstrumentationRegistry.getInstrumentation().waitForIdleSync();
 
         FlexboxLayout flexboxLayout = (FlexboxLayout) activity.findViewById(R.id.flexbox_layout);
-        assertThat(flexboxLayout.getFlexDirection(), is(FlexboxLayout.FLEX_DIRECTION_ROW));
+        assertThat(flexboxLayout.getFlexDirection(), is(FlexDirection.ROW));
 
         TextView text1 = (TextView) activity.findViewById(R.id.text1);
         assertThat(text1.getTop(), isEqualAllowingError(TestUtil.dpToPixel(activity, 30)));
@@ -3832,7 +3832,7 @@ public class FlexboxAndroidTest {
         InstrumentationRegistry.getInstrumentation().waitForIdleSync();
 
         FlexboxLayout flexboxLayout = (FlexboxLayout) activity.findViewById(R.id.flexbox_layout);
-        assertThat(flexboxLayout.getFlexDirection(), is(FlexboxLayout.FLEX_DIRECTION_COLUMN));
+        assertThat(flexboxLayout.getFlexDirection(), is(FlexDirection.COLUMN));
 
         TextView text1 = (TextView) activity.findViewById(R.id.text1);
         assertThat(text1.getLeft(), isEqualAllowingError(TestUtil.dpToPixel(activity, 30)));
