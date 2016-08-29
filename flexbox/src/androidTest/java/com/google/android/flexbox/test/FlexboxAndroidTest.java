@@ -3536,6 +3536,7 @@ public class FlexboxAndroidTest {
         final FlexboxTestActivity activity = mActivityRule.getActivity();
         FlexboxLayout flexboxLayout = createFlexboxLayout(
                 R.layout.activity_zero_width_positive_flexgrow);
+
         assertThat(flexboxLayout.getFlexDirection(), is(FlexDirection.ROW));
 
         TextView text1 = (TextView) activity.findViewById(R.id.text1);
@@ -3557,6 +3558,7 @@ public class FlexboxAndroidTest {
         final FlexboxTestActivity activity = mActivityRule.getActivity();
         FlexboxLayout flexboxLayout = createFlexboxLayout(
                 R.layout.activity_zero_height_positive_flexgrow);
+
         assertThat(flexboxLayout.getFlexDirection(), is(FlexDirection.COLUMN));
 
         TextView text1 = (TextView) activity.findViewById(R.id.text1);
@@ -3572,6 +3574,7 @@ public class FlexboxAndroidTest {
         final FlexboxTestActivity activity = mActivityRule.getActivity();
         FlexboxLayout flexboxLayout = createFlexboxLayout(
                 R.layout.activity_direction_row_align_items_center_margin_oneside);
+
         assertThat(flexboxLayout.getFlexDirection(), is(FlexDirection.ROW));
 
         TextView text1 = (TextView) activity.findViewById(R.id.text1);
@@ -3586,6 +3589,7 @@ public class FlexboxAndroidTest {
         final FlexboxTestActivity activity = mActivityRule.getActivity();
         FlexboxLayout flexboxLayout = createFlexboxLayout(
                 R.layout.activity_direction_column_align_items_center_margin_oneside);
+
         assertThat(flexboxLayout.getFlexDirection(), is(FlexDirection.COLUMN));
 
         TextView text1 = (TextView) activity.findViewById(R.id.text1);
