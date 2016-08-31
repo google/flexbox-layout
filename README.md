@@ -202,7 +202,7 @@ view.setLayoutParams(lp);
   distributed relative to the rest of other flex items included in the same flex line.
   If a flex item has a positive `layout_flexGrow` value, the item will take up the remaining
   space in the flex line. If multiple flex items in the same flex line have positive `layout_flexGrow`
-  values, the remaining free space is distributed denepending on the proportion of their declared
+  values, the remaining free space is distributed depending on the proportion of their declared
   `layout_flexGrow` value. (Similar to the `layout_weight` attribute in the `LinearLayout`)
   If not specified, `0` is set as a default value.
 
@@ -298,7 +298,7 @@ equivalent attribute
   simplicity.
 
 (4) `layout_wrapBefore` is introduced.
-  * The equivalent attribute doesn't exist in the CSS Flexible Box Module speicification,
+  * The equivalent attribute doesn't exist in the CSS Flexible Box Module specification,
   but as explained above, Android developers will benefit by having this attribute for having
   more control over when a wrapping happens.
 
