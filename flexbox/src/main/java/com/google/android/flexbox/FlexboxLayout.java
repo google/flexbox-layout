@@ -476,7 +476,7 @@ public class FlexboxLayout extends ViewGroup {
 
     @NonNull
     private List<Order> createOrders(int childCount) {
-        List<Order> orders = new ArrayList<>();
+        List<Order> orders = new ArrayList<>(childCount);
         for (int i = 0; i < childCount; i++) {
             View child = getChildAt(i);
             LayoutParams params = (LayoutParams) child.getLayoutParams();
