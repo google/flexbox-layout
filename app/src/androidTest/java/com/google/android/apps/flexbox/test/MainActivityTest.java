@@ -332,6 +332,26 @@ public class MainActivityTest {
 
     @Test
     @FlakyTest(tolerance = TOLERANCE)
+    public void testEditFragment_changeFlexGrowFloat() {
+        MainActivity activity = mActivityRule.getActivity();
+        FlexboxLayout flexboxLayout = (FlexboxLayout) activity.findViewById(R.id.flexbox_layout);
+        assertNotNull(flexboxLayout);
+        onView(withId(R.id.textview1)).perform(click());
+        onView(withId(R.id.edit_text_flex_grow)).perform(replaceText("1.0"), closeSoftKeyboard());
+        onView(withId(R.id.button_ok)).perform(click());
+        TextView first = (TextView) activity.findViewById(R.id.textview1);
+        TextView second = (TextView) activity.findViewById(R.id.textview2);
+        TextView third = (TextView) activity.findViewById(R.id.textview3);
+        assertNotNull(first);
+        assertNotNull(second);
+        assertNotNull(third);
+
+        assertThat(first.getWidth(),
+                is(flexboxLayout.getWidth() - second.getWidth() - third.getWidth()));
+    }
+
+    @Test
+    @FlakyTest(tolerance = TOLERANCE)
     public void testEditFragment_changeFlexBasisPercent() {
         MainActivity activity = mActivityRule.getActivity();
         FlexboxLayout flexboxLayout = (FlexboxLayout) activity.findViewById(R.id.flexbox_layout);
