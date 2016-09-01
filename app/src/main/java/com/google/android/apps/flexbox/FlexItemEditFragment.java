@@ -371,47 +371,59 @@ public class FlexItemEditFragment extends DialogFragment {
                     !mInputValidator.isValidInput(editable.toString())) {
                 return;
             }
-            int intValue;
-            try {
-                intValue = Integer.valueOf(editable.toString());
-            } catch (NumberFormatException | NullPointerException ignore) {
-                return;
+            final Number value;
+            switch (mTextInputLayout.getId()) {
+                case R.id.input_layout_flex_grow:
+                case R.id.input_layout_flex_shrink:
+                    try {
+                        value = Float.valueOf(editable.toString());
+                    } catch (NumberFormatException | NullPointerException ignore) {
+                        return;
+                    }
+                    break;
+                default:
+                    try {
+                        value = Integer.valueOf(editable.toString());
+                    } catch (NumberFormatException | NullPointerException ignore) {
+                        return;
+                    }
             }
+
             switch (mTextInputLayout.getId()) {
                 case R.id.input_layout_order:
-                    mFlexItem.order = intValue;
+                    mFlexItem.order = value.intValue();
                     break;
                 case R.id.input_layout_flex_grow:
-                    mFlexItem.flexGrow = intValue;
+                    mFlexItem.flexGrow = value.floatValue();
                     break;
                 case R.id.input_layout_flex_shrink:
-                    mFlexItem.flexShrink = intValue;
+                    mFlexItem.flexShrink = value.floatValue();
                     break;
                 case R.id.input_layout_width:
-                    mFlexItem.width = intValue;
+                    mFlexItem.width = value.intValue();
                     break;
                 case R.id.input_layout_height:
-                    mFlexItem.height = intValue;
+                    mFlexItem.height = value.intValue();
                     break;
                 case R.id.input_layout_flex_basis_percent:
-                    if (intValue != FlexboxLayout.LayoutParams.FLEX_BASIS_PERCENT_DEFAULT) {
-                        mFlexItem.flexBasisPercent = (float) (intValue / 100.0);
+                    if (value.intValue() != FlexboxLayout.LayoutParams.FLEX_BASIS_PERCENT_DEFAULT) {
+                        mFlexItem.flexBasisPercent = (float) (value.intValue() / 100.0);
                     } else {
                         mFlexItem.flexBasisPercent
                                 = FlexboxLayout.LayoutParams.FLEX_BASIS_PERCENT_DEFAULT;
                     }
                     break;
                 case R.id.input_layout_min_width:
-                    mFlexItem.minWidth = intValue;
+                    mFlexItem.minWidth = value.intValue();
                     break;
                 case R.id.input_layout_min_height:
-                    mFlexItem.minHeight = intValue;
+                    mFlexItem.minHeight = value.intValue();
                     break;
                 case R.id.input_layout_max_width:
-                    mFlexItem.maxWidth = intValue;
+                    mFlexItem.maxWidth = value.intValue();
                     break;
                 case R.id.input_layout_max_height:
-                    mFlexItem.maxHeight = intValue;
+                    mFlexItem.maxHeight = value.intValue();
                     break;
             }
         }
