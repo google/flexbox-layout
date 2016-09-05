@@ -92,9 +92,9 @@ public class FlexboxAndroidTest {
 
         View child = flexboxLayout.getChildAt(0);
         FlexboxLayout.LayoutParams lp = (FlexboxLayout.LayoutParams) child.getLayoutParams();
-        assertThat(lp.order, is(2));
-        assertThat(lp.flexGrow, is(1f));
-        assertThat(lp.alignSelf, is(FlexboxLayout.LayoutParams.ALIGN_SELF_STRETCH));
+        assertThat(lp.getOrder(), is(2));
+        assertThat(lp.getFlexGrow(), is(1f));
+        assertThat(lp.getAlignSelf(), is(AlignItems.STRETCH));
     }
 
     @Test
@@ -181,7 +181,7 @@ public class FlexboxAndroidTest {
                 View view1 = flexboxLayout.getChildAt(0);
                 FlexboxLayout.LayoutParams lp = (FlexboxLayout.LayoutParams)
                         view1.getLayoutParams();
-                lp.order = -3;
+                lp.setOrder(-3);
                 view1.setLayoutParams(lp);
             }
         });
@@ -2332,9 +2332,9 @@ public class FlexboxAndroidTest {
         FlexboxLayout.LayoutParams lp1 = (FlexboxLayout.LayoutParams) textView1.getLayoutParams();
         FlexboxLayout.LayoutParams lp2 = (FlexboxLayout.LayoutParams) textView2.getLayoutParams();
         assertThat(textView1.getWidth(),
-                is(Math.round(flexboxLayout.getWidth() * lp1.flexBasisPercent)));
+                is(Math.round(flexboxLayout.getWidth() * lp1.getFlexBasisPercent())));
         assertThat(textView2.getWidth(),
-                is(Math.round(flexboxLayout.getWidth() * lp2.flexBasisPercent)));
+                is(Math.round(flexboxLayout.getWidth() * lp2.getFlexBasisPercent())));
     }
 
     @Test
@@ -2398,9 +2398,9 @@ public class FlexboxAndroidTest {
         FlexboxLayout.LayoutParams lp1 = (FlexboxLayout.LayoutParams) textView1.getLayoutParams();
         FlexboxLayout.LayoutParams lp2 = (FlexboxLayout.LayoutParams) textView2.getLayoutParams();
         assertThat(textView1.getHeight(),
-                is(Math.round(flexboxLayout.getHeight() * lp1.flexBasisPercent)));
+                is(Math.round(flexboxLayout.getHeight() * lp1.getFlexBasisPercent())));
         assertThat(textView2.getHeight(),
-                is(Math.round(flexboxLayout.getHeight() * lp2.flexBasisPercent)));
+                is(Math.round(flexboxLayout.getHeight() * lp2.getFlexBasisPercent())));
     }
 
     @Test
@@ -2450,7 +2450,7 @@ public class FlexboxAndroidTest {
         // the initial measured width is less than the value of layout_minWidth (100dp)
         FlexboxLayout flexboxLayout = createFlexboxLayout(R.layout.activity_minwidth_test);
         TextView textView1 = (TextView) activity.findViewById(R.id.text1);
-        int minWidth = ((FlexboxLayout.LayoutParams) textView1.getLayoutParams()).minWidth;
+        int minWidth = ((FlexboxLayout.LayoutParams) textView1.getLayoutParams()).getMinWidth();
 
         onView(withId(R.id.text1)).check(hasWidth(minWidth));
         onView(withId(R.id.text2)).check(hasWidth(flexboxLayout.getWidth() - minWidth));
@@ -2469,7 +2469,7 @@ public class FlexboxAndroidTest {
         TextView textView2 = (TextView) activity.findViewById(R.id.text2);
         TextView textView3 = (TextView) activity.findViewById(R.id.text3);
         TextView textView4 = (TextView) activity.findViewById(R.id.text4);
-        int minWidth = ((FlexboxLayout.LayoutParams) textView1.getLayoutParams()).minWidth;
+        int minWidth = ((FlexboxLayout.LayoutParams) textView1.getLayoutParams()).getMinWidth();
 
         onView(withId(R.id.text1)).check(hasWidth(minWidth));
         assertEquals(flexboxLayout.getWidth(),
@@ -2488,7 +2488,7 @@ public class FlexboxAndroidTest {
         // the initial measured height is less than the value of layout_minHeight (100dp)
         FlexboxLayout flexboxLayout = createFlexboxLayout(R.layout.activity_minheight_test);
         TextView textView1 = (TextView) activity.findViewById(R.id.text1);
-        int minHeight = ((FlexboxLayout.LayoutParams) textView1.getLayoutParams()).minHeight;
+        int minHeight = ((FlexboxLayout.LayoutParams) textView1.getLayoutParams()).getMinHeight();
 
         onView(withId(R.id.text1)).check(hasHeight(minHeight));
         onView(withId(R.id.text2)).check(hasHeight(flexboxLayout.getHeight() - minHeight));
@@ -2507,7 +2507,7 @@ public class FlexboxAndroidTest {
         TextView textView2 = (TextView) activity.findViewById(R.id.text2);
         TextView textView3 = (TextView) activity.findViewById(R.id.text3);
         TextView textView4 = (TextView) activity.findViewById(R.id.text4);
-        int minHeight = ((FlexboxLayout.LayoutParams) textView1.getLayoutParams()).minHeight;
+        int minHeight = ((FlexboxLayout.LayoutParams) textView1.getLayoutParams()).getMinHeight();
 
         onView(withId(R.id.text1)).check(hasHeight(minHeight));
         assertEquals(flexboxLayout.getHeight(),
@@ -2524,7 +2524,7 @@ public class FlexboxAndroidTest {
         // ff the initial view width is more than the value of maxWidth.
         FlexboxLayout flexboxLayout = createFlexboxLayout(R.layout.activity_maxwidth_test);
         TextView textView1 = (TextView) activity.findViewById(R.id.text1);
-        int maxWidth = ((FlexboxLayout.LayoutParams) textView1.getLayoutParams()).maxWidth;
+        int maxWidth = ((FlexboxLayout.LayoutParams) textView1.getLayoutParams()).getMaxWidth();
 
         onView(withId(R.id.text1)).check(hasWidth(maxWidth));
         onView(withId(R.id.text2)).check(hasWidth(flexboxLayout.getWidth() - maxWidth));
@@ -2541,7 +2541,7 @@ public class FlexboxAndroidTest {
                 R.layout.activity_maxwidth_upper_bound_test);
         TextView textView1 = (TextView) activity.findViewById(R.id.text1);
         TextView textView2 = (TextView) activity.findViewById(R.id.text2);
-        int maxWidth = ((FlexboxLayout.LayoutParams) textView1.getLayoutParams()).maxWidth;
+        int maxWidth = ((FlexboxLayout.LayoutParams) textView1.getLayoutParams()).getMaxWidth();
 
         onView(withId(R.id.text1)).check(hasWidth(maxWidth));
         assertEquals(flexboxLayout.getWidth(), textView1.getWidth() + textView2.getWidth());
@@ -2556,7 +2556,7 @@ public class FlexboxAndroidTest {
         // ff the initial view height is more than the value of maxHeight.
         FlexboxLayout flexboxLayout = createFlexboxLayout(R.layout.activity_maxheight_test);
         TextView textView1 = (TextView) activity.findViewById(R.id.text1);
-        int maxHeight = ((FlexboxLayout.LayoutParams) textView1.getLayoutParams()).maxHeight;
+        int maxHeight = ((FlexboxLayout.LayoutParams) textView1.getLayoutParams()).getMaxHeight();
 
         onView(withId(R.id.text1)).check(hasHeight(maxHeight));
         onView(withId(R.id.text2)).check(hasHeight(flexboxLayout.getHeight() - maxHeight));
@@ -2573,7 +2573,7 @@ public class FlexboxAndroidTest {
                 R.layout.activity_maxheight_upper_bound_test);
         TextView textView1 = (TextView) activity.findViewById(R.id.text1);
         TextView textView2 = (TextView) activity.findViewById(R.id.text2);
-        int maxHeight = ((FlexboxLayout.LayoutParams) textView1.getLayoutParams()).maxHeight;
+        int maxHeight = ((FlexboxLayout.LayoutParams) textView1.getLayoutParams()).getMaxHeight();
 
         onView(withId(R.id.text1)).check(hasHeight(maxHeight));
         assertEquals(flexboxLayout.getHeight(), textView1.getHeight() + textView2.getHeight());
@@ -2702,7 +2702,7 @@ public class FlexboxAndroidTest {
             public void run() {
                 FlexboxLayout.LayoutParams lp2 = (FlexboxLayout.LayoutParams)
                         textView2.getLayoutParams();
-                lp2.wrapBefore = false;
+                lp2.setWrapBefore(false);
                 textView2.setLayoutParams(lp2);
             }
         });
@@ -3736,7 +3736,7 @@ public class FlexboxAndroidTest {
         textView.setText(text);
         FlexboxLayout.LayoutParams lp = new FlexboxLayout.LayoutParams(
                 ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
-        lp.order = order;
+        lp.setOrder(order);
         textView.setLayoutParams(lp);
         return textView;
     }
