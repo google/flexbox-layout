@@ -34,13 +34,13 @@ class FlexboxHelper {
     private final FlexContainer mFlexContainer;
 
     /**
-     * Holds reordered indices, which {@link FlexboxLayout.LayoutParams#order} parameters are taken
+     * Holds reordered indices, which {@link FlexItem#getOrder()} parameters are taken
      * into account
      */
     int[] mReorderedIndices;
 
     /**
-     * Caches the {@link FlexboxLayout.LayoutParams#order} attributes for children views.
+     * Caches the {@link FlexItem#getOrder()} attributes for children views.
      * Key: the index of the view ({@link #mReorderedIndices} isn't taken into account)
      * Value: the value for the order attribute
      */
@@ -52,7 +52,7 @@ class FlexboxHelper {
 
     /**
      * Create an array, which indicates the reordered indices that
-     * {@link FlexboxLayout.LayoutParams#order} attributes are taken into account.
+     * {@link FlexItem#getOrder()} attributes are taken into account.
      * This method takes a View before that is added as the parent ViewGroup's children.
      *
      * @param viewBeforeAdded          the View instance before added to the array of children
@@ -69,9 +69,9 @@ class FlexboxHelper {
         List<Order> orders = createOrders(childCount);
         Order orderForViewToBeAdded = new Order();
         if (viewBeforeAdded != null
-                && paramsForViewBeforeAdded instanceof FlexboxLayout.LayoutParams) {
-            orderForViewToBeAdded.order = ((FlexboxLayout.LayoutParams)
-                    paramsForViewBeforeAdded).order;
+                && paramsForViewBeforeAdded instanceof FlexItem) {
+            orderForViewToBeAdded.order = ((FlexItem)
+                    paramsForViewBeforeAdded).getOrder();
         } else {
             orderForViewToBeAdded.order = FlexboxLayout.LayoutParams.ORDER_DEFAULT;
         }
@@ -95,7 +95,7 @@ class FlexboxHelper {
 
     /**
      * Create an array, which indicates the reordered indices that
-     * {@link FlexboxLayout.LayoutParams#order} attributes are taken into account.
+     * {@link FlexItem#getOrder()} attributes are taken into account.
      *
      * @return @return an array which have the reordered indices
      */
@@ -111,10 +111,10 @@ class FlexboxHelper {
         List<Order> orders = new ArrayList<>(childCount);
         for (int i = 0; i < childCount; i++) {
             View child = mFlexContainer.getChildAt(i);
-            FlexboxLayout.LayoutParams params = (FlexboxLayout.LayoutParams) child
+            FlexItem flexItem = (FlexItem) child
                     .getLayoutParams();
             Order order = new Order();
-            order.order = params.order;
+            order.order = flexItem.getOrder();
             order.index = i;
             orders.add(order);
         }
@@ -122,7 +122,7 @@ class FlexboxHelper {
     }
 
     /**
-     * Returns if any of the children's {@link FlexboxLayout.LayoutParams#order} attributes are
+     * Returns if any of the children's {@link FlexItem#getOrder()} attributes are
      * changed from the last measurement.
      *
      * @return {@code true} if changed from the last measurement, {@code false} otherwise.
@@ -140,8 +140,8 @@ class FlexboxHelper {
             if (view == null) {
                 continue;
             }
-            FlexboxLayout.LayoutParams lp = (FlexboxLayout.LayoutParams) view.getLayoutParams();
-            if (lp.order != mOrderCache.get(i)) {
+            FlexItem flexItem = (FlexItem) view.getLayoutParams();
+            if (flexItem.getOrder() != mOrderCache.get(i)) {
                 return true;
             }
         }
