@@ -17,10 +17,12 @@
 package com.google.android.flexbox;
 
 import android.content.Context;
-import android.support.v4.view.ViewCompat;
+import android.os.Parcel;
+import android.os.Parcelable;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.AttributeSet;
+import android.view.View;
 import android.view.ViewGroup;
 
 /**
@@ -201,6 +203,11 @@ public class FlexboxLayoutManager extends RecyclerView.LayoutManager implements 
     }
 
     @Override
+    public RecyclerView.LayoutParams generateLayoutParams(Context c, AttributeSet attrs) {
+        return new LayoutParams(c, attrs);
+    }
+
+    @Override
     public boolean checkLayoutParams(RecyclerView.LayoutParams lp) {
         return lp instanceof LayoutParams;
     }
@@ -211,7 +218,8 @@ public class FlexboxLayoutManager extends RecyclerView.LayoutManager implements 
             detachAndScrapAttachedViews(recycler);
             return;
         }
-        if (getChildCount() == 0 && state.isPreLayout()) {
+        int childCount = getChildCount();
+        if (childCount == 0 && state.isPreLayout()) {
             return;
         }
 
@@ -220,96 +228,191 @@ public class FlexboxLayoutManager extends RecyclerView.LayoutManager implements 
     }
 
     /**
+     * Returns a View, which is reordered by taking {@link LayoutParams#mOrder} parameters
+     * into account.
+     *
+     * @param index the index of the view
+     * @return the reordered view, which {@link LayoutParams@mOrder} is taken into account.
+     * If the index is negative or out of bounds of the number of contained views,
+     * returns {@code null}.
+     */
+    public View getReorderedChildAt(int index) {
+        if (index < 0 || index >= mFlexboxHelper.mReorderedIndices.length) {
+            return null;
+        }
+        return getChildAt(mFlexboxHelper.mReorderedIndices[index]);
+    }
+
+    /**
      * LayoutParams used by the {@link FlexboxLayoutManager}, which stores per-child information
      * required for the Flexbox.
+     *
+     * Note that some parent fields (which are not primitive nor a class implements
+     * {@link Parcelable}) are not included as the stored/restored fields after this class
+     * is serialized/de-serialized as an {@link Parcelable}.
      */
-    public static class LayoutParams extends RecyclerView.LayoutParams {
-
-        private static final int ORDER_DEFAULT = 1;
-
-        private static final float FLEX_GROW_DEFAULT = 0f;
-
-        private static final float FLEX_SHRINK_DEFAULT = 1f;
-
-        public static final float FLEX_BASIS_PERCENT_DEFAULT = -1f;
-
-        public static final int ALIGN_SELF_AUTO = -1;
-
-        private static final int MAX_SIZE = Integer.MAX_VALUE & ViewCompat.MEASURED_SIZE_MASK;
+    public static class LayoutParams extends RecyclerView.LayoutParams implements FlexItem {
 
         /**
-         * This attribute can change the ordering of the children views are laid out.
-         *
-         * @see FlexboxLayout.LayoutParams#order
+         * @see FlexItem#getOrder()
          */
-        public int order = ORDER_DEFAULT;
+        private int mOrder = FlexItem.ORDER_DEFAULT;
 
         /**
-         * This attribute determines how much this child will grow if positive free space is
-         * distributed.
-         *
-         * @see FlexboxLayout.LayoutParams#flexGrow
+         * @see FlexItem#getFlexGrow()
          */
-        public float flexGrow = FLEX_GROW_DEFAULT;
+        private float mFlexGrow = FlexItem.FLEX_GROW_DEFAULT;
 
         /**
-         * This attributes determines how much this child will shrink is negative free space is
-         * distributed.
-         *
-         * @see FlexboxLayout.LayoutParams#flexShrink
+         * @see FlexItem#getFlexShrink()
          */
-        public float flexShrink = FLEX_SHRINK_DEFAULT;
+        private float mFlexShrink = FlexItem.FLEX_SHRINK_DEFAULT;
 
         /**
-         * This attributes overrides the alignment along the cross axis (perpendicular to the
-         * main axis).
-         *
-         * @see FlexboxLayout.LayoutParams#alignSelf
+         * @see FlexItem#getAlignSelf()
          */
-        public int alignSelf = ALIGN_SELF_AUTO;
+        private int mAlignSelf = AlignSelf.AUTO;
 
         /**
-         * The initial flex item length in a fraction format relative to its parent.
-         *
-         * @see FlexboxLayout.LayoutParams#flexBasisPercent
+         * @see FlexItem#getFlexBasisPercent()
          */
-        public float flexBasisPercent = FLEX_BASIS_PERCENT_DEFAULT;
+        private float mFlexBasisPercent = FlexItem.FLEX_BASIS_PERCENT_DEFAULT;
 
         /**
-         * This attribute determines the minimum width the child can shrink to.
-         *
-         * @see FlexboxLayout.LayoutParams#minWidth
+         * @see FlexItem#getMinWidth()
          */
-        public int minWidth;
+        private int mMinWidth;
 
         /**
-         * This attribute determines the minimum height the child can shrink to.
-         *
-         * @see FlexboxLayout.LayoutParams#minHeight
+         * @see FlexItem#getMinHeight()
          */
-        public int minHeight;
+        private int mMinHeight;
 
         /**
-         * This attribute determines the maximum width the child can expand to.
-         *
-         * @see FlexboxLayout.LayoutParams#maxWidth
+         * @see FlexItem#getMaxWidth()
          */
-        public int maxWidth = MAX_SIZE;
+        private int mMaxWidth = MAX_SIZE;
 
         /**
-         * This attribute determines the maximum height the child can expand to.
-         *
-         * @see FlexboxLayout.LayoutParams#maxWidth
+         * @see FlexItem#getMaxHeight()
          */
-        public int maxHeight = MAX_SIZE;
+        private int mMaxHeight = MAX_SIZE;
 
         /**
-         * This attribute forces a flex line wrapping. i.e. if this is set to {@code true} for a
-         * flex item, the item will become the first item of the new flex line.
-         *
-         * @see FlexboxLayout.LayoutParams#wrapBefore
+         * @see FlexItem#isWrapBefore()
          */
-        public boolean wrapBefore;
+        private boolean mWrapBefore;
+
+        @Override
+        public int getWidth() {
+            return width;
+        }
+
+        @Override
+        public void setWidth(int width) {
+            this.width = width;
+        }
+
+        @Override
+        public int getHeight() {
+            return height;
+        }
+
+        @Override
+        public void setHeight(int height) {
+            this.height = height;
+        }
+
+        @Override
+        public float getFlexGrow() {
+            return mFlexGrow;
+        }
+
+        @Override
+        public void setFlexGrow(float flexGrow) {
+            this.mFlexGrow = flexGrow;
+        }
+
+        @Override
+        public float getFlexShrink() {
+            return mFlexShrink;
+        }
+
+        @Override
+        public void setFlexShrink(float flexShrink) {
+            this.mFlexShrink = flexShrink;
+        }
+
+        @AlignSelf
+        @Override
+        public int getAlignSelf() {
+            return mAlignSelf;
+        }
+
+        @Override
+        public void setAlignSelf(@AlignSelf int alignSelf) {
+            this.mAlignSelf = alignSelf;
+        }
+
+        @Override
+        public int getMinWidth() {
+            return mMinWidth;
+        }
+
+        @Override
+        public void setMinWidth(int minWidth) {
+            this.mMinWidth = minWidth;
+        }
+
+        @Override
+        public int getMinHeight() {
+            return mMinHeight;
+        }
+
+        @Override
+        public void setMinHeight(int minHeight) {
+            this.mMinHeight = minHeight;
+        }
+
+        @Override
+        public int getMaxWidth() {
+            return mMaxWidth;
+        }
+
+        @Override
+        public void setMaxWidth(int maxWidth) {
+            this.mMaxWidth = maxWidth;
+        }
+
+        @Override
+        public int getMaxHeight() {
+            return mMaxHeight;
+        }
+
+        @Override
+        public void setMaxHeight(int maxHeight) {
+            this.mMaxHeight = maxHeight;
+        }
+
+        @Override
+        public boolean isWrapBefore() {
+            return mWrapBefore;
+        }
+
+        @Override
+        public void setWrapBefore(boolean wrapBefore) {
+            this.mWrapBefore = wrapBefore;
+        }
+
+        @Override
+        public float getFlexBasisPercent() {
+            return mFlexBasisPercent;
+        }
+
+        @Override
+        public void setFlexBasisPercent(float flexBasisPercent) {
+            this.mFlexBasisPercent = flexBasisPercent;
+        }
 
         public LayoutParams(Context c, AttributeSet attrs) {
             super(c, attrs);
@@ -334,16 +437,84 @@ public class FlexboxLayoutManager extends RecyclerView.LayoutManager implements 
         public LayoutParams(LayoutParams source) {
             super(source);
 
-            order = source.order;
-            flexGrow = source.flexGrow;
-            flexShrink = source.flexShrink;
-            alignSelf = source.alignSelf;
-            flexBasisPercent = source.flexBasisPercent;
-            minWidth = source.minWidth;
-            minHeight = source.minHeight;
-            maxWidth = source.maxWidth;
-            maxHeight = source.maxHeight;
-            wrapBefore = source.wrapBefore;
+            mOrder = source.mOrder;
+            mFlexGrow = source.mFlexGrow;
+            mFlexShrink = source.mFlexShrink;
+            mAlignSelf = source.mAlignSelf;
+            mFlexBasisPercent = source.mFlexBasisPercent;
+            mMinWidth = source.mMinWidth;
+            mMinHeight = source.mMinHeight;
+            mMaxWidth = source.mMaxWidth;
+            mMaxHeight = source.mMaxHeight;
+            mWrapBefore = source.mWrapBefore;
         }
+
+        @Override
+        public int getOrder() {
+            return mOrder;
+        }
+
+        @Override
+        public void setOrder(int order) {
+            mOrder = order;
+        }
+
+        @Override
+        public int describeContents() {
+            return 0;
+        }
+
+        @Override
+        public void writeToParcel(Parcel dest, int flags) {
+            dest.writeInt(this.mOrder);
+            dest.writeFloat(this.mFlexGrow);
+            dest.writeFloat(this.mFlexShrink);
+            dest.writeInt(this.mAlignSelf);
+            dest.writeFloat(this.mFlexBasisPercent);
+            dest.writeInt(this.mMinWidth);
+            dest.writeInt(this.mMinHeight);
+            dest.writeInt(this.mMaxWidth);
+            dest.writeInt(this.mMaxHeight);
+            dest.writeByte(this.mWrapBefore ? (byte) 1 : (byte) 0);
+            dest.writeInt(this.bottomMargin);
+            dest.writeInt(this.leftMargin);
+            dest.writeInt(this.rightMargin);
+            dest.writeInt(this.topMargin);
+            dest.writeInt(this.height);
+            dest.writeInt(this.width);
+        }
+
+        protected LayoutParams(Parcel in) {
+            super(WRAP_CONTENT, WRAP_CONTENT);
+            this.mOrder = in.readInt();
+            this.mFlexGrow = in.readFloat();
+            this.mFlexShrink = in.readFloat();
+            this.mAlignSelf = in.readInt();
+            this.mFlexBasisPercent = in.readFloat();
+            this.mMinWidth = in.readInt();
+            this.mMinHeight = in.readInt();
+            this.mMaxWidth = in.readInt();
+            this.mMaxHeight = in.readInt();
+            this.mWrapBefore = in.readByte() != 0;
+            this.bottomMargin = in.readInt();
+            this.leftMargin = in.readInt();
+            this.rightMargin = in.readInt();
+            this.topMargin = in.readInt();
+            this.height = in.readInt();
+            this.width = in.readInt();
+        }
+
+        public static final Parcelable.Creator<LayoutParams> CREATOR
+                = new Parcelable.Creator<LayoutParams>() {
+            @Override
+            public LayoutParams createFromParcel(Parcel source) {
+                return new LayoutParams(source);
+            }
+
+            @Override
+            public LayoutParams[] newArray(int size) {
+                return new LayoutParams[size];
+            }
+        };
     }
 }

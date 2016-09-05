@@ -22,6 +22,9 @@ import com.google.android.apps.flexbox.validators.FlexBasisPercentInputValidator
 import com.google.android.apps.flexbox.validators.InputValidator;
 import com.google.android.apps.flexbox.validators.IntegerInputValidator;
 import com.google.android.apps.flexbox.validators.NonNegativeDecimalInputValidator;
+import com.google.android.flexbox.AlignItems;
+import com.google.android.flexbox.AlignSelf;
+import com.google.android.flexbox.FlexItem;
 import com.google.android.flexbox.FlexboxLayout;
 
 import android.app.Activity;
@@ -57,6 +60,8 @@ public class FlexItemEditFragment extends DialogFragment {
 
     private static final String FLEX_ITEM_KEY = "flex_item";
 
+    private static final String VIEW_INDEX_KEY = "view_index";
+
     private String ALIGN_SELF_AUTO;
 
     private String ALIGN_SELF_FLEX_START;
@@ -69,16 +74,33 @@ public class FlexItemEditFragment extends DialogFragment {
 
     private String ALIGN_SELF_STRETCH;
 
+    private int mViewIndex;
+
     private FlexItem mFlexItem;
 
     private FlexItemChangedListener mFlexItemChangedListener;
 
-    public static FlexItemEditFragment newInstance(FlexItem flexItem) {
+    private Context mContext;
+
+    public static FlexItemEditFragment newInstance(FlexItem flexItem, int viewIndex) {
         FlexItemEditFragment fragment = new FlexItemEditFragment();
         Bundle args = new Bundle();
         args.putParcelable(FLEX_ITEM_KEY, flexItem);
+        args.putInt(VIEW_INDEX_KEY, viewIndex);
         fragment.setArguments(args);
         return fragment;
+    }
+
+    @Override
+    public void onAttach(Context context) {
+        super.onAttach(context);
+        mContext = context;
+    }
+
+    @Override
+    public void onDetach() {
+        mContext = null;
+        super.onDetach();
     }
 
     @Override
@@ -93,6 +115,7 @@ public class FlexItemEditFragment extends DialogFragment {
         }
         Bundle args = getArguments();
         mFlexItem = args.getParcelable(FLEX_ITEM_KEY);
+        mViewIndex = args.getInt(VIEW_INDEX_KEY);
 
         Activity activity = getActivity();
         ALIGN_SELF_AUTO = activity.getString(R.string.auto);
@@ -108,12 +131,12 @@ public class FlexItemEditFragment extends DialogFragment {
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container,
             @Nullable Bundle savedInstanceState) {
         final View view = inflater.inflate(R.layout.fragment_flex_item_edit, container, false);
-        getDialog().setTitle(String.valueOf(mFlexItem.index + 1));
+        getDialog().setTitle(String.valueOf(mViewIndex + 1));
 
         final TextInputLayout orderTextInput = (TextInputLayout) view
                 .findViewById(R.id.input_layout_order);
         EditText orderEdit = (EditText) view.findViewById(R.id.edit_text_order);
-        orderEdit.setText(String.valueOf(mFlexItem.order));
+        orderEdit.setText(String.valueOf(mFlexItem.getOrder()));
         orderEdit.addTextChangedListener(
                 new FlexEditTextWatcher(orderTextInput, new IntegerInputValidator(),
                         R.string.must_be_integer));
@@ -121,7 +144,7 @@ public class FlexItemEditFragment extends DialogFragment {
         final TextInputLayout flexGrowInput = (TextInputLayout) view
                 .findViewById(R.id.input_layout_flex_grow);
         final EditText flexGrowEdit = (EditText) view.findViewById(R.id.edit_text_flex_grow);
-        flexGrowEdit.setText(String.valueOf(mFlexItem.flexGrow));
+        flexGrowEdit.setText(String.valueOf(mFlexItem.getFlexGrow()));
         flexGrowEdit.addTextChangedListener(
                 new FlexEditTextWatcher(flexGrowInput, new NonNegativeDecimalInputValidator(),
                         R.string.must_be_non_negative_float));
@@ -130,7 +153,7 @@ public class FlexItemEditFragment extends DialogFragment {
                 .findViewById(R.id.input_layout_flex_shrink);
         EditText flexShrinkEdit = (EditText) view.findViewById(
                 R.id.edit_text_flex_shrink);
-        flexShrinkEdit.setText(String.valueOf(mFlexItem.flexShrink));
+        flexShrinkEdit.setText(String.valueOf(mFlexItem.getFlexShrink()));
         flexShrinkEdit.addTextChangedListener(
                 new FlexEditTextWatcher(flexShrinkInput, new NonNegativeDecimalInputValidator(),
                         R.string.must_be_non_negative_float));
@@ -139,11 +162,12 @@ public class FlexItemEditFragment extends DialogFragment {
                 .findViewById(R.id.input_layout_flex_basis_percent);
         EditText flexBasisPercentEdit = (EditText) view.findViewById(
                 R.id.edit_text_flex_basis_percent);
-        if (mFlexItem.flexBasisPercent != FlexboxLayout.LayoutParams.FLEX_BASIS_PERCENT_DEFAULT) {
+        if (mFlexItem.getFlexBasisPercent()
+                != FlexboxLayout.LayoutParams.FLEX_BASIS_PERCENT_DEFAULT) {
             flexBasisPercentEdit
-                    .setText(String.valueOf(Math.round(mFlexItem.flexBasisPercent * 100)));
+                    .setText(String.valueOf(Math.round(mFlexItem.getFlexBasisPercent() * 100)));
         } else {
-            flexBasisPercentEdit.setText(String.valueOf((int) mFlexItem.flexBasisPercent));
+            flexBasisPercentEdit.setText(String.valueOf((int) mFlexItem.getFlexBasisPercent()));
         }
         flexBasisPercentEdit.addTextChangedListener(
                 new FlexEditTextWatcher(flexBasisPercentInput, new FlexBasisPercentInputValidator(),
@@ -152,7 +176,7 @@ public class FlexItemEditFragment extends DialogFragment {
         final TextInputLayout widthInput = (TextInputLayout) view
                 .findViewById(R.id.input_layout_width);
         EditText widthEdit = (EditText) view.findViewById(R.id.edit_text_width);
-        widthEdit.setText(String.valueOf(mFlexItem.width));
+        widthEdit.setText(String.valueOf(Util.pixelToDp(mContext, mFlexItem.getWidth())));
         widthEdit.addTextChangedListener(
                 new FlexEditTextWatcher(widthInput, new DimensionInputValidator(),
                         R.string.must_be_minus_one_or_minus_two_or_non_negative_integer));
@@ -161,7 +185,7 @@ public class FlexItemEditFragment extends DialogFragment {
                 .findViewById(R.id.input_layout_height);
         EditText heightEdit = (EditText) view.findViewById(
                 R.id.edit_text_height);
-        heightEdit.setText(String.valueOf(mFlexItem.height));
+        heightEdit.setText(String.valueOf(Util.pixelToDp(mContext, mFlexItem.getHeight())));
         heightEdit.addTextChangedListener(
                 new FlexEditTextWatcher(heightInput, new DimensionInputValidator(),
                         R.string.must_be_minus_one_or_minus_two_or_non_negative_integer));
@@ -169,7 +193,7 @@ public class FlexItemEditFragment extends DialogFragment {
         final TextInputLayout minWidthInput = (TextInputLayout) view
                 .findViewById(R.id.input_layout_min_width);
         EditText minWidthEdit = (EditText) view.findViewById(R.id.edit_text_min_width);
-        minWidthEdit.setText(String.valueOf(mFlexItem.minWidth));
+        minWidthEdit.setText(String.valueOf(Util.pixelToDp(mContext, mFlexItem.getMinWidth())));
         minWidthEdit.addTextChangedListener(
                 new FlexEditTextWatcher(minWidthInput, new FixedDimensionInputValidator(),
                         R.string.must_be_non_negative_integer));
@@ -178,7 +202,7 @@ public class FlexItemEditFragment extends DialogFragment {
                 .findViewById(R.id.input_layout_min_height);
         EditText minHeightEdit = (EditText) view.findViewById(
                 R.id.edit_text_min_height);
-        minHeightEdit.setText(String.valueOf(mFlexItem.minHeight));
+        minHeightEdit.setText(String.valueOf(Util.pixelToDp(mContext, mFlexItem.getMinHeight())));
         minHeightEdit.addTextChangedListener(
                 new FlexEditTextWatcher(minHeightInput, new FixedDimensionInputValidator(),
                         R.string.must_be_non_negative_integer));
@@ -186,7 +210,7 @@ public class FlexItemEditFragment extends DialogFragment {
         final TextInputLayout maxWidthInput = (TextInputLayout) view
                 .findViewById(R.id.input_layout_max_width);
         EditText maxWidthEdit = (EditText) view.findViewById(R.id.edit_text_max_width);
-        maxWidthEdit.setText(String.valueOf(mFlexItem.maxWidth));
+        maxWidthEdit.setText(String.valueOf(Util.pixelToDp(mContext, mFlexItem.getMaxWidth())));
         maxWidthEdit.addTextChangedListener(
                 new FlexEditTextWatcher(maxWidthInput, new FixedDimensionInputValidator(),
                         R.string.must_be_non_negative_integer));
@@ -195,7 +219,7 @@ public class FlexItemEditFragment extends DialogFragment {
                 .findViewById(R.id.input_layout_max_height);
         EditText maxHeightEdit = (EditText) view.findViewById(
                 R.id.edit_text_max_height);
-        maxHeightEdit.setText(String.valueOf(mFlexItem.maxHeight));
+        maxHeightEdit.setText(String.valueOf(Util.pixelToDp(mContext, mFlexItem.getMaxHeight())));
         maxHeightEdit.addTextChangedListener(
                 new FlexEditTextWatcher(maxHeightInput, new FixedDimensionInputValidator(),
                         R.string.must_be_non_negative_integer));
@@ -213,17 +237,17 @@ public class FlexItemEditFragment extends DialogFragment {
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
                 String selected = parent.getItemAtPosition(position).toString();
                 if (selected.equals(ALIGN_SELF_AUTO)) {
-                    mFlexItem.alignSelf = FlexboxLayout.LayoutParams.ALIGN_SELF_AUTO;
+                    mFlexItem.setAlignSelf(AlignSelf.AUTO);
                 } else if (selected.equals(ALIGN_SELF_FLEX_START)) {
-                    mFlexItem.alignSelf = FlexboxLayout.LayoutParams.ALIGN_SELF_FLEX_START;
+                    mFlexItem.setAlignSelf(AlignItems.FLEX_START);
                 } else if (selected.equals(ALIGN_SELF_FLEX_END)) {
-                    mFlexItem.alignSelf = FlexboxLayout.LayoutParams.ALIGN_SELF_FLEX_END;
+                    mFlexItem.setAlignSelf(AlignItems.FLEX_END);
                 } else if (selected.equals(ALIGN_SELF_CENTER)) {
-                    mFlexItem.alignSelf = FlexboxLayout.LayoutParams.ALIGN_SELF_CENTER;
+                    mFlexItem.setAlignSelf(AlignItems.CENTER);
                 } else if (selected.equals(ALIGN_SELF_BASELINE)) {
-                    mFlexItem.alignSelf = FlexboxLayout.LayoutParams.ALIGN_SELF_BASELINE;
+                    mFlexItem.setAlignSelf(AlignItems.BASELINE);
                 } else if (selected.equals(ALIGN_SELF_STRETCH)) {
-                    mFlexItem.alignSelf = FlexboxLayout.LayoutParams.ALIGN_SELF_STRETCH;
+                    mFlexItem.setAlignSelf(AlignItems.STRETCH);
                 }
             }
 
@@ -234,14 +258,15 @@ public class FlexItemEditFragment extends DialogFragment {
         });
 
         CheckBox wrapBeforeCheckBox = (CheckBox) view.findViewById(R.id.checkbox_wrap_before);
-        wrapBeforeCheckBox.setChecked(mFlexItem.wrapBefore);
+        wrapBeforeCheckBox.setChecked(mFlexItem.isWrapBefore());
         wrapBeforeCheckBox.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                mFlexItem.wrapBefore = isChecked;
+                mFlexItem.setWrapBefore(isChecked);
             }
         });
-        int alignSelfPosition = arrayAdapter.getPosition(alignSelfAsString(mFlexItem.alignSelf));
+        int alignSelfPosition = arrayAdapter
+                .getPosition(alignSelfAsString(mFlexItem.getAlignSelf()));
         alignSelfSpinner.setSelection(alignSelfPosition);
 
         view.findViewById(R.id.button_cancel).setOnClickListener(new View.OnClickListener() {
@@ -264,7 +289,7 @@ public class FlexItemEditFragment extends DialogFragment {
                     return;
                 }
                 if (mFlexItemChangedListener != null) {
-                    mFlexItemChangedListener.onFlexItemChanged(mFlexItem);
+                    mFlexItemChangedListener.onFlexItemChanged(mFlexItem, mViewIndex);
                 }
                 dismiss();
             }
@@ -280,7 +305,7 @@ public class FlexItemEditFragment extends DialogFragment {
         // This can be done by setting android:nextFocus* as in 
         // https://developer.android.com/training/keyboard-input/navigation.html
         // But it requires API level 11 as a minimum sdk version. To support the lower level devices,
-        // doing it programatically.
+        // doing it programmatically.
         for (int i = 0; i < textViews.length; i++) {
             final int index = i;
             textViews[index].setOnEditorActionListener(new TextView.OnEditorActionListener() {
@@ -318,17 +343,17 @@ public class FlexItemEditFragment extends DialogFragment {
 
     private String alignSelfAsString(int alignSelf) {
         switch (alignSelf) {
-            case FlexboxLayout.LayoutParams.ALIGN_SELF_AUTO:
+            case AlignSelf.AUTO:
                 return ALIGN_SELF_AUTO;
-            case FlexboxLayout.LayoutParams.ALIGN_SELF_FLEX_START:
+            case AlignItems.FLEX_START:
                 return ALIGN_SELF_FLEX_START;
-            case FlexboxLayout.LayoutParams.ALIGN_SELF_FLEX_END:
+            case AlignItems.FLEX_END:
                 return ALIGN_SELF_FLEX_END;
-            case FlexboxLayout.LayoutParams.ALIGN_SELF_CENTER:
+            case AlignItems.CENTER:
                 return ALIGN_SELF_CENTER;
-            case FlexboxLayout.LayoutParams.ALIGN_SELF_BASELINE:
+            case AlignItems.BASELINE:
                 return ALIGN_SELF_BASELINE;
-            case FlexboxLayout.LayoutParams.ALIGN_SELF_STRETCH:
+            case AlignItems.STRETCH:
                 return ALIGN_SELF_STRETCH;
             default:
                 return ALIGN_SELF_AUTO;
@@ -343,8 +368,8 @@ public class FlexItemEditFragment extends DialogFragment {
 
         int mErrorMessageId;
 
-        FlexEditTextWatcher(TextInputLayout textInputLayout, InputValidator inputValidator,
-                int errorMessageId) {
+        FlexEditTextWatcher(TextInputLayout textInputLayout,
+                InputValidator inputValidator, int errorMessageId) {
             mTextInputLayout = textInputLayout;
             mInputValidator = inputValidator;
             mErrorMessageId = errorMessageId;
@@ -393,39 +418,38 @@ public class FlexItemEditFragment extends DialogFragment {
 
             switch (mTextInputLayout.getId()) {
                 case R.id.input_layout_order:
-                    mFlexItem.order = value.intValue();
+                    mFlexItem.setOrder(value.intValue());
                     break;
                 case R.id.input_layout_flex_grow:
-                    mFlexItem.flexGrow = value.floatValue();
+                    mFlexItem.setFlexGrow(value.floatValue());
                     break;
                 case R.id.input_layout_flex_shrink:
-                    mFlexItem.flexShrink = value.floatValue();
+                    mFlexItem.setFlexShrink(value.floatValue());
                     break;
                 case R.id.input_layout_width:
-                    mFlexItem.width = value.intValue();
+                    mFlexItem.setWidth(Util.dpToPixel(mContext, value.intValue()));
                     break;
                 case R.id.input_layout_height:
-                    mFlexItem.height = value.intValue();
+                    mFlexItem.setHeight(Util.dpToPixel(mContext, value.intValue()));
                     break;
                 case R.id.input_layout_flex_basis_percent:
                     if (value.intValue() != FlexboxLayout.LayoutParams.FLEX_BASIS_PERCENT_DEFAULT) {
-                        mFlexItem.flexBasisPercent = (float) (value.intValue() / 100.0);
+                        mFlexItem.setFlexBasisPercent((float) (value.intValue() / 100.0));
                     } else {
-                        mFlexItem.flexBasisPercent
-                                = FlexboxLayout.LayoutParams.FLEX_BASIS_PERCENT_DEFAULT;
+                        mFlexItem.setFlexBasisPercent(FlexItem.FLEX_BASIS_PERCENT_DEFAULT);
                     }
                     break;
                 case R.id.input_layout_min_width:
-                    mFlexItem.minWidth = value.intValue();
+                    mFlexItem.setMinWidth(Util.dpToPixel(mContext, value.intValue()));
                     break;
                 case R.id.input_layout_min_height:
-                    mFlexItem.minHeight = value.intValue();
+                    mFlexItem.setMinHeight(Util.dpToPixel(mContext, value.intValue()));
                     break;
                 case R.id.input_layout_max_width:
-                    mFlexItem.maxWidth = value.intValue();
+                    mFlexItem.setMaxWidth(Util.dpToPixel(mContext, value.intValue()));
                     break;
                 case R.id.input_layout_max_height:
-                    mFlexItem.maxHeight = value.intValue();
+                    mFlexItem.setMaxHeight(Util.dpToPixel(mContext, value.intValue()));
                     break;
             }
         }
@@ -436,6 +460,6 @@ public class FlexItemEditFragment extends DialogFragment {
      */
     public interface FlexItemChangedListener {
 
-        void onFlexItemChanged(FlexItem flexItem);
+        void onFlexItemChanged(FlexItem flexItem, int viewIndex);
     }
 }
