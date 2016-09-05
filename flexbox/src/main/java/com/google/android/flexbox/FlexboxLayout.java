@@ -2322,11 +2322,20 @@ public class FlexboxLayout extends ViewGroup {
     }
 
     /**
-     * @return the flex lines composing this flex container. This method returns an unmodifiable
-     * list. Thus any changes of the returned list are not supported.
+     * @return the flex lines composing this flex container. This method returns a copy of the
+     * original list excluding a dummy flex line (flex line that doesn't have any flex items in it
+     * but used for the alignment along the cross axis).
+     * Thus any changes of the returned list are not reflected to the original list.
      */
     public List<FlexLine> getFlexLines() {
-        return Collections.unmodifiableList(mFlexLines);
+        List<FlexLine> result = new ArrayList<>(mFlexLines.size());
+        for (FlexLine flexLine : mFlexLines) {
+            if (flexLine.getItemCount() == 0) {
+                continue;
+            }
+            result.add(flexLine);
+        }
+        return result;
     }
 
     /**
