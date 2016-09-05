@@ -19,6 +19,7 @@ package com.google.android.apps.flexbox;
 import com.google.android.flexbox.AlignContent;
 import com.google.android.flexbox.AlignItems;
 import com.google.android.flexbox.FlexDirection;
+import com.google.android.flexbox.FlexItem;
 import com.google.android.flexbox.FlexWrap;
 import com.google.android.flexbox.FlexboxLayout;
 import com.google.android.flexbox.JustifyContent;
@@ -30,7 +31,6 @@ import android.preference.PreferenceManager;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.NavigationView;
 import android.support.v4.view.MenuItemCompat;
-import android.support.v4.view.ViewCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
@@ -126,11 +126,8 @@ public class MainActivity extends AppCompatActivity
             mFlexboxLayout.removeAllViews();
             for (int i = 0; i < flexItems.size(); i++) {
                 FlexItem flexItem = flexItems.get(i);
-                FlexboxLayout.LayoutParams lp = flexItem.toLayoutParams(this);
                 TextView textView = createBaseFlexItemTextView(i);
-                ViewCompat.setPaddingRelative(textView, flexItem.paddingStart, flexItem.paddingTop,
-                        flexItem.paddingEnd, flexItem.paddingBottom);
-                textView.setLayoutParams(lp);
+                textView.setLayoutParams((FlexboxLayout.LayoutParams) flexItem);
                 mFlexboxLayout.addView(textView);
             }
         }
@@ -192,8 +189,7 @@ public class MainActivity extends AppCompatActivity
         ArrayList<FlexItem> flexItems = new ArrayList<>();
         for (int i = 0; i < mFlexboxLayout.getChildCount(); i++) {
             View child = mFlexboxLayout.getChildAt(i);
-            FlexItem flexItem = FlexItem.fromFlexView(child, i);
-            flexItems.add(flexItem);
+            flexItems.add((FlexItem) child.getLayoutParams());
         }
         outState.putParcelableArrayList(FLEX_ITEMS_KEY, flexItems);
     }
@@ -223,12 +219,12 @@ public class MainActivity extends AppCompatActivity
                         readPreferenceAsInteger(getString(R.string.new_width_key), DEFAULT_WIDTH)),
                 Util.dpToPixel(this, readPreferenceAsInteger(getString(R.string.new_height_key),
                         DEFAULT_HEIGHT)));
-        lp.order = readPreferenceAsInteger(getString(R.string.new_flex_item_order_key), "1");
-        lp.flexGrow = readPreferenceAsFloat(getString(R.string.new_flex_grow_key), "0.0");
-        lp.flexShrink = readPreferenceAsFloat(getString(R.string.new_flex_shrink_key), "1.0");
+        lp.setOrder(readPreferenceAsInteger(getString(R.string.new_flex_item_order_key), "1"));
+        lp.setFlexGrow(readPreferenceAsFloat(getString(R.string.new_flex_grow_key), "0.0"));
+        lp.setFlexShrink(readPreferenceAsFloat(getString(R.string.new_flex_shrink_key), "1.0"));
         int flexBasisPercent = readPreferenceAsInteger(
                 getString(R.string.new_flex_basis_percent_key), "-1");
-        lp.flexBasisPercent = flexBasisPercent == -1 ? -1 : (float) (flexBasisPercent / 100.0);
+        lp.setFlexBasisPercent(flexBasisPercent == -1 ? -1 : (float) (flexBasisPercent / 100.0));
         return lp;
     }
 
@@ -522,8 +518,8 @@ public class MainActivity extends AppCompatActivity
 
         @Override
         public void onClick(View v) {
-            FlexItem flexItem = FlexItem.fromFlexView(v, mViewIndex);
-            FlexItemEditFragment fragment = FlexItemEditFragment.newInstance(flexItem);
+            FlexItemEditFragment fragment = FlexItemEditFragment
+                    .newInstance((FlexItem) v.getLayoutParams(), mViewIndex);
             fragment.setFlexItemChangedListener(new FlexItemChangeListenerImpl());
             fragment.show(getSupportFragmentManager(), EDIT_DIALOG_TAG);
         }
@@ -533,10 +529,9 @@ public class MainActivity extends AppCompatActivity
             implements FlexItemEditFragment.FlexItemChangedListener {
 
         @Override
-        public void onFlexItemChanged(FlexItem flexItem) {
-            View view = mFlexboxLayout.getChildAt(flexItem.index);
-            FlexboxLayout.LayoutParams lp = flexItem.toLayoutParams(MainActivity.this);
-            view.setLayoutParams(lp);
+        public void onFlexItemChanged(FlexItem flexItem, int viewIndex) {
+            View view = mFlexboxLayout.getChildAt(viewIndex);
+            view.setLayoutParams((FlexboxLayout.LayoutParams) flexItem);
         }
     }
 
