@@ -1423,6 +1423,7 @@ public class FlexboxAndroidTest {
                 && textView1.getTop() <= spaceAboveAndBottom + 1);
         assertTrue(flexboxLayout.getBottom() - spaceAboveAndBottom - 1 <= textView3.getBottom() &&
                 textView3.getBottom() <= flexboxLayout.getBottom() - spaceAboveAndBottom + 1);
+        assertThat(flexboxLayout.getFlexLines().size(), is(2));
     }
 
     @Test
@@ -1447,6 +1448,7 @@ public class FlexboxAndroidTest {
         onView(withId(R.id.text2)).check(isTopAlignedWith(withId(R.id.flexbox_layout)));
         onView(withId(R.id.text3)).check(isBottomAlignedWith(withId(R.id.flexbox_layout)));
         onView(withId(R.id.text3)).check(isLeftAlignedWith(withId(R.id.flexbox_layout)));
+        assertThat(flexboxLayout.getFlexLines().size(), is(2));
     }
 
     @Test
@@ -1503,6 +1505,7 @@ public class FlexboxAndroidTest {
         int spaceLowerBound = textView1.getBottom() + spaceAround * 2 - 1;
         int spaceUpperBound = textView1.getBottom() + spaceAround * 2 + 1;
         assertTrue(spaceLowerBound <= textView3.getTop() && textView3.getTop() <= spaceUpperBound);
+        assertThat(flexboxLayout.getFlexLines().size(), is(2));
     }
 
     @Test
@@ -1538,6 +1541,7 @@ public class FlexboxAndroidTest {
         TextView textView1 = (TextView) activity.findViewById(R.id.text1);
         TextView textView3 = (TextView) activity.findViewById(R.id.text3);
         assertThat(textView3.getTop(), is(textView1.getHeight()));
+        assertThat(flexboxLayout.getFlexLines().size(), is(2));
     }
 
     @Test
