@@ -664,7 +664,8 @@ public class FlexboxLayout extends ViewGroup implements FlexContainer {
 
     /**
      * Determine the main size by expanding (shrinking if negative remaining free space is given)
-     * an individual child in each flex line if any children's mFlexGrow (or mFlexShrink if remaining
+     * an individual child in each flex line if any children's mFlexGrow (or mFlexShrink if
+     * remaining
      * space is negative) properties are set to non-zero.
      *
      * @param flexDirection     the value of the flex direction
@@ -812,7 +813,8 @@ public class FlexboxLayout extends ViewGroup implements FlexContainer {
             } else {
                 // The direction of the main axis is vertical
                 if (!mChildrenFrozen[childIndex]) {
-                    float rawCalculatedHeight = child.getMeasuredHeight() + unitSpace * lp.mFlexGrow;
+                    float rawCalculatedHeight = child.getMeasuredHeight()
+                            + unitSpace * lp.mFlexGrow;
                     if (i == flexLine.mItemCount - 1) {
                         rawCalculatedHeight += accumulatedRoundError;
                         accumulatedRoundError = 0;
@@ -2176,10 +2178,12 @@ public class FlexboxLayout extends ViewGroup implements FlexContainer {
     }
 
     @FlexDirection
+    @Override
     public int getFlexDirection() {
         return mFlexDirection;
     }
 
+    @Override
     public void setFlexDirection(@FlexDirection int flexDirection) {
         if (mFlexDirection != flexDirection) {
             mFlexDirection = flexDirection;
@@ -2188,10 +2192,12 @@ public class FlexboxLayout extends ViewGroup implements FlexContainer {
     }
 
     @FlexWrap
+    @Override
     public int getFlexWrap() {
         return mFlexWrap;
     }
 
+    @Override
     public void setFlexWrap(@FlexWrap int flexWrap) {
         if (mFlexWrap != flexWrap) {
             mFlexWrap = flexWrap;
@@ -2200,10 +2206,12 @@ public class FlexboxLayout extends ViewGroup implements FlexContainer {
     }
 
     @JustifyContent
+    @Override
     public int getJustifyContent() {
         return mJustifyContent;
     }
 
+    @Override
     public void setJustifyContent(@JustifyContent int justifyContent) {
         if (mJustifyContent != justifyContent) {
             mJustifyContent = justifyContent;
@@ -2212,10 +2220,12 @@ public class FlexboxLayout extends ViewGroup implements FlexContainer {
     }
 
     @AlignItems
+    @Override
     public int getAlignItems() {
         return mAlignItems;
     }
 
+    @Override
     public void setAlignItems(@AlignItems int alignItems) {
         if (mAlignItems != alignItems) {
             mAlignItems = alignItems;
@@ -2224,10 +2234,12 @@ public class FlexboxLayout extends ViewGroup implements FlexContainer {
     }
 
     @AlignContent
+    @Override
     public int getAlignContent() {
         return mAlignContent;
     }
 
+    @Override
     public void setAlignContent(@AlignContent int alignContent) {
         if (mAlignContent != alignContent) {
             mAlignContent = alignContent;
@@ -2241,6 +2253,7 @@ public class FlexboxLayout extends ViewGroup implements FlexContainer {
      * but used for the alignment along the cross axis).
      * Thus any changes of the returned list are not reflected to the original list.
      */
+    @Override
     public List<FlexLine> getFlexLines() {
         List<FlexLine> result = new ArrayList<>(mFlexLines.size());
         for (FlexLine flexLine : mFlexLines) {
@@ -2557,7 +2570,8 @@ public class FlexboxLayout extends ViewGroup implements FlexContainer {
             mFlexBasisPercent = a
                     .getFraction(R.styleable.FlexboxLayout_Layout_layout_flexBasisPercent, 1, 1,
                             FLEX_BASIS_PERCENT_DEFAULT);
-            mMinWidth = a.getDimensionPixelSize(R.styleable.FlexboxLayout_Layout_layout_minWidth, 0);
+            mMinWidth = a
+                    .getDimensionPixelSize(R.styleable.FlexboxLayout_Layout_layout_minWidth, 0);
             mMinHeight = a
                     .getDimensionPixelSize(R.styleable.FlexboxLayout_Layout_layout_minHeight, 0);
             mMaxWidth = a.getDimensionPixelSize(R.styleable.FlexboxLayout_Layout_layout_maxWidth,
