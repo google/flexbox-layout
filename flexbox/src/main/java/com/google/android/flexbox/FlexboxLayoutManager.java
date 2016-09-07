@@ -25,6 +25,9 @@ import android.util.AttributeSet;
 import android.view.View;
 import android.view.ViewGroup;
 
+import java.util.ArrayList;
+import java.util.List;
+
 /**
  * LayoutManager for the {@link RecyclerView}. This class is intended to be used within a
  * {@link RecyclerView} and offers the same capabilities of measure/layout its children
@@ -60,6 +63,8 @@ public class FlexboxLayoutManager extends RecyclerView.LayoutManager implements 
      * {@link AlignContent#STRETCH}.
      */
     private int mAlignContent;
+
+    private List<FlexLine> mFlexLines = new ArrayList<>();
 
     private final FlexboxHelper mFlexboxHelper = new FlexboxHelper(this);
 
@@ -138,10 +143,12 @@ public class FlexboxLayoutManager extends RecyclerView.LayoutManager implements 
     }
 
     @FlexDirection
+    @Override
     public int getFlexDirection() {
         return mFlexDirection;
     }
 
+    @Override
     public void setFlexDirection(@FlexDirection int flexDirection) {
         if (mFlexDirection != flexDirection) {
             mFlexDirection = flexDirection;
@@ -149,11 +156,13 @@ public class FlexboxLayoutManager extends RecyclerView.LayoutManager implements 
         }
     }
 
+    @Override
     @FlexWrap
     public int getFlexWrap() {
         return mFlexWrap;
     }
 
+    @Override
     public void setFlexWrap(@FlexWrap int flexWrap) {
         if (mFlexWrap != flexWrap) {
             mFlexWrap = flexWrap;
@@ -162,10 +171,12 @@ public class FlexboxLayoutManager extends RecyclerView.LayoutManager implements 
     }
 
     @JustifyContent
+    @Override
     public int getJustifyContent() {
         return mJustifyContent;
     }
 
+    @Override
     public void setJustifyContent(@JustifyContent int justifyContent) {
         if (mJustifyContent != justifyContent) {
             mJustifyContent = justifyContent;
@@ -174,10 +185,12 @@ public class FlexboxLayoutManager extends RecyclerView.LayoutManager implements 
     }
 
     @AlignItems
+    @Override
     public int getAlignItems() {
         return mAlignItems;
     }
 
+    @Override
     public void setAlignItems(@AlignItems int alignItems) {
         if (mAlignItems != alignItems) {
             mAlignItems = alignItems;
@@ -186,15 +199,29 @@ public class FlexboxLayoutManager extends RecyclerView.LayoutManager implements 
     }
 
     @AlignContent
+    @Override
     public int getAlignContent() {
         return mAlignContent;
     }
 
+    @Override
     public void setAlignContent(@AlignContent int alignContent) {
         if (mAlignContent != alignContent) {
             mAlignContent = alignContent;
             requestLayout();
         }
+    }
+
+    @Override
+    public List<FlexLine> getFlexLines() {
+        List<FlexLine> result = new ArrayList<>(mFlexLines.size());
+        for (FlexLine flexLine : mFlexLines) {
+            if (flexLine.getItemCount() == 0) {
+                continue;
+            }
+            result.add(flexLine);
+        }
+        return result;
     }
 
     @Override
