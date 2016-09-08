@@ -48,6 +48,7 @@ import static android.support.test.espresso.action.ViewActions.closeSoftKeyboard
 import static android.support.test.espresso.action.ViewActions.replaceText;
 import static android.support.test.espresso.matcher.ViewMatchers.withId;
 import static junit.framework.Assert.assertNotNull;
+import static junit.framework.Assert.assertTrue;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.core.Is.is;
 
@@ -94,6 +95,7 @@ public class MainActivityTest {
         MainActivity activity = mActivityRule.getActivity();
         FlexboxLayout flexboxLayout = (FlexboxLayout) activity.findViewById(R.id.flexbox_layout);
         assertNotNull(flexboxLayout);
+        onView(withId(R.id.add_fab)).perform(click());
         onView(withId(R.id.add_fab)).perform(click());
         onView(withId(R.id.add_fab)).perform(click());
         int beforeCount = flexboxLayout.getChildCount();
@@ -362,7 +364,8 @@ public class MainActivityTest {
         FlexboxLayout flexboxLayout = (FlexboxLayout) activity.findViewById(R.id.flexbox_layout);
         assertNotNull(flexboxLayout);
         onView(withId(R.id.textview1)).perform(click());
-        onView(withId(R.id.edit_text_flex_basis_percent)).perform(replaceText("50"), closeSoftKeyboard());
+        onView(withId(R.id.edit_text_flex_basis_percent))
+                .perform(replaceText("50"), closeSoftKeyboard());
         onView(withId(R.id.button_ok)).perform(click());
         TextView first = (TextView) activity.findViewById(R.id.textview1);
         TextView second = (TextView) activity.findViewById(R.id.textview2);
@@ -371,6 +374,7 @@ public class MainActivityTest {
         assertNotNull(second);
         assertNotNull(third);
 
-        assertThat(first.getWidth(), is(flexboxLayout.getWidth() / 2));
+        assertTrue(first.getWidth() - 1 <= flexboxLayout.getWidth() / 2
+                || flexboxLayout.getWidth() / 2 <= first.getWidth() + 1);
     }
 }
