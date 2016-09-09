@@ -34,22 +34,49 @@ public interface FlexContainer {
     /**
      * Returns the view at the given index.
      *
-     * @param i the index
+     * @param index the index
      * @return the view at the index
      */
-    View getChildAt(int i);
+    View getChildAt(int index);
 
 
     /**
      * Returns a View, which is reordered by taking the order attribute into account.
      *
-     * @param i the index of the view
+     * @param index the index of the view
      * @return the reordered view, which order attribute is taken into account.
      * If the index is negative or out of bounds of the number of contained views,
      * returns {@code null}.
      * @see FlexItem#getOrder()
      */
-    View getReorderedChildAt(int i);
+    View getReorderedChildAt(int index);
+
+    /**
+     * Adds the view to the flex container as a flex item.
+     *
+     * @param view the view to be added
+     */
+    void addView(View view);
+
+    /**
+     * Adds the view to the specified index of the flex container.
+     *
+     * @param view  the view to be added
+     * @param index the index for the view to be added
+     */
+    void addView(View view, int index);
+
+    /**
+     * Removes all the views contained in the flex container.
+     */
+    void removeAllViews();
+
+    /**
+     * Removes the view at the specified index.
+     *
+     * @param index the index from which the view is removed.
+     */
+    void removeViewAt(int index);
 
     /**
      * @return the flex direction attribute of the flex container.
