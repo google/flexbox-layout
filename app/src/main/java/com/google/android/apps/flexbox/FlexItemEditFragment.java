@@ -42,6 +42,7 @@ import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.google.android.apps.flexbox.listeners.FlexItemChangedListener;
 import com.google.android.apps.flexbox.validators.DimensionInputValidator;
 import com.google.android.apps.flexbox.validators.FixedDimensionInputValidator;
 import com.google.android.apps.flexbox.validators.FlexBasisPercentInputValidator;
@@ -454,13 +455,5 @@ public class FlexItemEditFragment extends DialogFragment {
                     break;
             }
         }
-    }
-
-    /**
-     * A listener that listens to the change of a flex item
-     */
-    public interface FlexItemChangedListener {
-
-        void onFlexItemChanged(FlexItem flexItem, int viewIndex);
     }
 }
