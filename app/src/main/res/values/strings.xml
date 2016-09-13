@@ -127,4 +127,8 @@ limitations under the License.
     <string name="size_unit_summary">(-1: match_parent, -2: wrap_content)</string>
     <string name="new_width_key" translatable="false">new_width_key</string>
     <string name="new_height_key" translatable="false">new_height_key</string>
+
+    <string name="viewgroup">ViewGroup</string>
+    <string name="recyclerview">RecyclerView</string>
+    <string name="underlying_implementation">Underlying implementation</string>
 </resources>
