@@ -39,6 +39,7 @@ import android.support.test.runner.AndroidJUnit4;
 import android.support.v4.view.MenuItemCompat;
 import android.view.Menu;
 import android.widget.ArrayAdapter;
+import android.widget.RadioGroup;
 import android.widget.Spinner;
 import android.widget.TextView;
 
@@ -48,6 +49,7 @@ import static android.support.test.espresso.action.ViewActions.closeSoftKeyboard
 import static android.support.test.espresso.action.ViewActions.replaceText;
 import static android.support.test.espresso.matcher.ViewMatchers.withId;
 import static junit.framework.Assert.assertNotNull;
+import static junit.framework.Assert.assertNull;
 import static junit.framework.Assert.assertTrue;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.core.Is.is;
@@ -376,5 +378,29 @@ public class MainActivityTest {
 
         assertTrue(first.getWidth() - 1 <= flexboxLayout.getWidth() / 2
                 || flexboxLayout.getWidth() / 2 <= first.getWidth() + 1);
+    }
+
+    @Test
+    @FlakyTest
+    public void testSwitchRecyclerViewFragment() {
+        MainActivity activity = mActivityRule.getActivity();
+        FlexboxLayout flexboxLayout = (FlexboxLayout) activity.findViewById(R.id.flexbox_layout);
+        assertNotNull(flexboxLayout);
+        NavigationView navigationView = (NavigationView) activity.findViewById(R.id.nav_view);
+        assertNotNull(navigationView);
+        assertNull(activity.findViewById(R.id.recyclerview));
+        assertNotNull(activity.findViewById(R.id.flexbox_layout));
+
+        final RadioGroup radioGroup = (RadioGroup) navigationView.getHeaderView(0)
+                .findViewById(R.id.radiogroup_container_implementation);
+        activity.runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                radioGroup.check(R.id.radiobutton_recyclerview);
+            }
+        });
+        InstrumentationRegistry.getInstrumentation().waitForIdleSync();
+        assertNotNull(activity.findViewById(R.id.recyclerview));
+        assertNull(activity.findViewById(R.id.flexbox_layout));
     }
 }
