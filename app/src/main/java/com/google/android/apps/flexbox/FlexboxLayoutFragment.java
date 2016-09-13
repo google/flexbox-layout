@@ -22,9 +22,12 @@ import com.google.android.flexbox.FlexContainer;
 import com.google.android.flexbox.FlexItem;
 import com.google.android.flexbox.FlexboxLayout;
 
+import android.content.Context;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.Fragment;
+import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -54,10 +57,10 @@ public class FlexboxLayoutFragment extends Fragment {
 
     @Override
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
-        MainActivity activity = (MainActivity) getActivity();
+        final MainActivity activity = (MainActivity) getActivity();
         mFlexContainer = (FlexboxLayout) view.findViewById(R.id.flexbox_layout);
 
-        FragmentHelper fragmentHelper = new FragmentHelper(activity, mFlexContainer);
+        final FragmentHelper fragmentHelper = new FragmentHelper(activity, mFlexContainer);
         fragmentHelper.initializeViews();
         if (savedInstanceState != null) {
             ArrayList<FlexItem> flexItems = savedInstanceState
@@ -66,7 +69,7 @@ public class FlexboxLayoutFragment extends Fragment {
             mFlexContainer.removeAllViews();
             for (int i = 0; i < flexItems.size(); i++) {
                 FlexItem flexItem = flexItems.get(i);
-                TextView textView = fragmentHelper.createBaseFlexItemTextView(i);
+                TextView textView = createBaseFlexItemTextView(activity, i);
                 textView.setLayoutParams((FlexboxLayout.LayoutParams) flexItem);
                 mFlexContainer.addView(textView);
             }
@@ -76,6 +79,40 @@ public class FlexboxLayoutFragment extends Fragment {
                         new FlexItemClickListener(activity,
                                 new FlexItemChangedListenerImpl(mFlexContainer), i));
             }
+        }
+
+        FloatingActionButton addFab = (FloatingActionButton) activity.findViewById(R.id.add_fab);
+        if (addFab != null) {
+            addFab.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    int viewIndex = mFlexContainer.getChildCount();
+                    // index starts from 0. New View's index is N if N views ([0, 1, 2, ... N-1])
+                    // exist.
+                    TextView textView = createBaseFlexItemTextView(activity, viewIndex);
+                    FlexboxLayout.LayoutParams lp = new FlexboxLayout.LayoutParams(
+                            ViewGroup.LayoutParams.WRAP_CONTENT,
+                            ViewGroup.LayoutParams.WRAP_CONTENT);
+                    fragmentHelper.setFlexItemAttributes(lp);
+                    textView.setLayoutParams(lp);
+                    textView.setOnClickListener(new FlexItemClickListener(activity,
+                            new FlexItemChangedListenerImpl(mFlexContainer), viewIndex));
+                    mFlexContainer.addView(textView);
+                }
+            });
+        }
+        FloatingActionButton removeFab = (FloatingActionButton) activity.findViewById(
+                R.id.remove_fab);
+        if (removeFab != null) {
+            removeFab.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    if (mFlexContainer.getChildCount() == 0) {
+                        return;
+                    }
+                    mFlexContainer.removeViewAt(mFlexContainer.getChildCount() - 1);
+                }
+            });
         }
     }
 
@@ -88,5 +125,13 @@ public class FlexboxLayoutFragment extends Fragment {
             flexItems.add((FlexItem) child.getLayoutParams());
         }
         outState.putParcelableArrayList(FLEX_ITEMS_KEY, flexItems);
+    }
+
+    private TextView createBaseFlexItemTextView(Context context, int index) {
+        TextView textView = new TextView(context);
+        textView.setBackgroundResource(R.drawable.flex_item_background);
+        textView.setText(String.valueOf(index + 1));
+        textView.setGravity(Gravity.CENTER);
+        return textView;
     }
 }
