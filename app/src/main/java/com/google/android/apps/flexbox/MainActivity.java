@@ -27,11 +27,14 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.widget.RadioGroup;
 
 public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
 
     private static final String FLEXBOXLAYOUT_FRAGMENT = "flexboxlayout_fragment";
+
+    private static final String RECYCLERVIEW_FRAGMENT = "recyclerview_fragment";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -49,9 +52,31 @@ public class MainActivity extends AppCompatActivity
         }
         toggle.syncState();
 
-        // TODO: Add another Fragment that contains RecyclerView in it and switch the Fragment
-        //       between the two implementations.
-        FragmentManager fragmentManager = getSupportFragmentManager();
+        NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
+        RadioGroup radioGroup = (RadioGroup) navigationView.getHeaderView(0)
+                .findViewById(R.id.radiogroup_container_implementation);
+        final FragmentManager fragmentManager = getSupportFragmentManager();
+        radioGroup.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(RadioGroup radioGroup, int checkedId) {
+                if (checkedId == R.id.radiobutton_viewgroup) {
+                    replaceToFlexboxLayoutFragment(fragmentManager);
+                } else {
+                    RecyclerViewFragment fragment = (RecyclerViewFragment)
+                            fragmentManager.findFragmentByTag(RECYCLERVIEW_FRAGMENT);
+                    if (fragment == null) {
+                        fragment = RecyclerViewFragment.newInstance();
+                    }
+                    fragmentManager.beginTransaction()
+                            .replace(R.id.container, fragment, RECYCLERVIEW_FRAGMENT).commit();
+                }
+            }
+        });
+
+        replaceToFlexboxLayoutFragment(fragmentManager);
+    }
+
+    private void replaceToFlexboxLayoutFragment(FragmentManager fragmentManager) {
         FlexboxLayoutFragment fragment = (FlexboxLayoutFragment)
                 fragmentManager.findFragmentByTag(FLEXBOXLAYOUT_FRAGMENT);
         if (fragment == null) {
