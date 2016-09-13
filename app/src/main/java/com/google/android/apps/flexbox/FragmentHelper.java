@@ -16,28 +16,23 @@
 
 package com.google.android.apps.flexbox;
 
-import com.google.android.apps.flexbox.listeners.FlexItemChangedListenerImpl;
-import com.google.android.apps.flexbox.listeners.FlexItemClickListener;
 import com.google.android.flexbox.AlignContent;
 import com.google.android.flexbox.AlignItems;
 import com.google.android.flexbox.FlexContainer;
 import com.google.android.flexbox.FlexDirection;
+import com.google.android.flexbox.FlexItem;
 import com.google.android.flexbox.FlexWrap;
-import com.google.android.flexbox.FlexboxLayout;
 import com.google.android.flexbox.JustifyContent;
 
 import android.content.SharedPreferences;
-import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.NavigationView;
 import android.support.v4.view.MenuItemCompat;
 import android.support.v7.preference.PreferenceManager;
-import android.view.Gravity;
 import android.view.Menu;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Spinner;
-import android.widget.TextView;
 
 /**
  * Helper class that has the common logic for initializing the Fragment for the play ground demo
@@ -45,9 +40,9 @@ import android.widget.TextView;
  */
 class FragmentHelper {
 
-    private static final String DEFAULT_WIDTH = "120";
+    static final String DEFAULT_WIDTH = "120";
 
-    private static final String DEFAULT_HEIGHT = "80";
+    static final String DEFAULT_HEIGHT = "80";
 
     private String ROW;
 
@@ -101,36 +96,6 @@ class FragmentHelper {
             initializeAlignItemsSpinner(navigationMenu);
             initializeAlignContentSpinner(navigationMenu);
         }
-
-        FloatingActionButton addFab = (FloatingActionButton) mActivity.findViewById(R.id.add_fab);
-        if (addFab != null) {
-            addFab.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View view) {
-                    int viewIndex = mFlexContainer.getChildCount();
-                    // index starts from 0. New View's index is N if N views ([0, 1, 2, ... N-1])
-                    // exist.
-                    TextView textView = createBaseFlexItemTextView(viewIndex);
-                    textView.setLayoutParams(createDefaultLayoutParams());
-                    textView.setOnClickListener(new FlexItemClickListener(mActivity,
-                            new FlexItemChangedListenerImpl(mFlexContainer), viewIndex));
-                    mFlexContainer.addView(textView);
-                }
-            });
-        }
-        FloatingActionButton removeFab = (FloatingActionButton) mActivity.findViewById(
-                R.id.remove_fab);
-        if (removeFab != null) {
-            removeFab.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    if (mFlexContainer.getChildCount() == 0) {
-                        return;
-                    }
-                    mFlexContainer.removeViewAt(mFlexContainer.getChildCount() - 1);
-                }
-            });
-        }
     }
 
     private void initializeStringResources() {
@@ -150,38 +115,32 @@ class FragmentHelper {
         SPACE_AROUND = mActivity.getString(R.string.space_around);
     }
 
-    TextView createBaseFlexItemTextView(int index) {
-        TextView textView = new TextView(mActivity);
-        textView.setBackgroundResource(R.drawable.flex_item_background);
-        textView.setText(String.valueOf(index + 1));
-        textView.setGravity(Gravity.CENTER);
-        return textView;
-    }
-
     /**
-     * Creates a new {@link FlexboxLayout.LayoutParams} based on the stored default values in
+     * Sets the attributes for a {@link FlexItem} based on the stored default values in
      * the SharedPreferences.
      *
-     * @return a {@link FlexboxLayout.LayoutParams} instance
+     * @param flexItem the FlexItem instance
+     * @return a FlexItem instance, which attributes from the SharedPreferences are updated
      */
-    private FlexboxLayout.LayoutParams createDefaultLayoutParams() {
-        FlexboxLayout.LayoutParams lp = new FlexboxLayout.LayoutParams(
-                Util.dpToPixel(mActivity,
-                        readPreferenceAsInteger(mActivity.getString(R.string.new_width_key),
-                                DEFAULT_WIDTH)),
-                Util.dpToPixel(mActivity,
-                        readPreferenceAsInteger(mActivity.getString(R.string.new_height_key),
-                                DEFAULT_HEIGHT)));
-        lp.setOrder(readPreferenceAsInteger(mActivity.getString(R.string.new_flex_item_order_key),
-                "1"));
-        lp.setFlexGrow(
+    FlexItem setFlexItemAttributes(FlexItem flexItem) {
+        flexItem.setWidth(Util.dpToPixel(mActivity,
+                readPreferenceAsInteger(mActivity.getString(R.string.new_width_key),
+                        DEFAULT_WIDTH)));
+        flexItem.setHeight(Util.dpToPixel(mActivity,
+                readPreferenceAsInteger(mActivity.getString(R.string.new_height_key),
+                        DEFAULT_HEIGHT)));
+        flexItem.setOrder(
+                readPreferenceAsInteger(mActivity.getString(R.string.new_flex_item_order_key),
+                        "1"));
+        flexItem.setFlexGrow(
                 readPreferenceAsFloat(mActivity.getString(R.string.new_flex_grow_key), "0.0"));
-        lp.setFlexShrink(
+        flexItem.setFlexShrink(
                 readPreferenceAsFloat(mActivity.getString(R.string.new_flex_shrink_key), "1.0"));
         int flexBasisPercent = readPreferenceAsInteger(
                 mActivity.getString(R.string.new_flex_basis_percent_key), "-1");
-        lp.setFlexBasisPercent(flexBasisPercent == -1 ? -1 : (float) (flexBasisPercent / 100.0));
-        return lp;
+        flexItem.setFlexBasisPercent(
+                flexBasisPercent == -1 ? -1 : (float) (flexBasisPercent / 100.0));
+        return flexItem;
     }
 
     private int readPreferenceAsInteger(String key, String defValue) {
