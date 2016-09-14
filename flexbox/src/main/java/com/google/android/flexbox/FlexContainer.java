@@ -159,4 +159,33 @@ public interface FlexContainer {
      * returned list are not reflected to the original list.
      */
     List<FlexLine> getFlexLines();
+
+    /**
+     * Returns the length of decoration (such as deviders) of the flex item
+     *
+     * @param childAbsoluteIndex the absolute index of the flex item within the flex container
+     * @param childRelativeIndexInFlexLine the relative index of the flex item within the flex line
+     * @param flexItem the flex item from which the lenght of the decoration is calculated
+     * @return the length of the decoration. Note that the length of the flex item itself is not
+     * included in the result.
+     */
+    int getDecorationLength(int childAbsoluteIndex,
+            int childRelativeIndexInFlexLine, FlexItem flexItem);
+
+    int getPaddingTop();
+
+    int getPaddingLeft();
+
+    int getPaddingRight();
+
+    int getPaddingBottom();
+
+    int getHorizontalChildMeasureSpec(int widthSpec, int padding, int childDimension);
+
+    int getVerticalChildMeasureSpec(int heightSpec, int padding, int childDimension);
+
+    void onNewFlexItemAdded(int childAbsoluteIndex, int childRelativeIndexInFlexLine,
+            FlexLine flexLine);
+
+    void onNewFlexLineAdded(FlexLine flexLine);
 }

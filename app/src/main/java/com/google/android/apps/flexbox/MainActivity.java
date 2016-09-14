@@ -73,7 +73,15 @@ public class MainActivity extends AppCompatActivity
             }
         });
 
-        replaceToFlexboxLayoutFragment(fragmentManager);
+//        replaceToFlexboxLayoutFragment(fragmentManager);
+
+        RecyclerViewFragment fragment = (RecyclerViewFragment)
+                fragmentManager.findFragmentByTag(RECYCLERVIEW_FRAGMENT);
+        if (fragment == null) {
+            fragment = RecyclerViewFragment.newInstance();
+        }
+        fragmentManager.beginTransaction()
+                .replace(R.id.container, fragment, RECYCLERVIEW_FRAGMENT).commit();
     }
 
     private void replaceToFlexboxLayoutFragment(FragmentManager fragmentManager) {
