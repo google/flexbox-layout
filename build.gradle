@@ -38,6 +38,7 @@ ext {
     espressoVersion = "2.2.2"
     testRunnerVersion = "0.5"
     junitVersion = "4.12"
+    mockitoVersion = "1.10.19"
 }
 
 allprojects {
