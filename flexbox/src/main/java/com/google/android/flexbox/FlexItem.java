@@ -238,4 +238,24 @@ public interface FlexItem extends Parcelable {
      * @param flexBasisPercent the order attribute
      */
     void setFlexBasisPercent(float flexBasisPercent);
+
+    /**
+     * @return the left margin of the flex item.
+     */
+    int getLeftMargin();
+
+    /**
+     * @return the top margin of the flex item.
+     */
+    int getTopMargin();
+
+    /**
+     * @return the right margin of the flex item.
+     */
+    int getRightMargin();
+
+    /**
+     * @return the bottom margin of the flex item.
+     */
+    int getBottomMargin();
 }
