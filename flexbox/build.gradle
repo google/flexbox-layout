@@ -47,4 +47,5 @@ dependencies {
     androidTestCompile "com.android.support:support-annotations:${rootProject.ext.supportLibVersion}"
     androidTestCompile "com.android.support.test:runner:${rootProject.ext.testRunnerVersion}"
     androidTestCompile "com.android.support.test.espresso:espresso-core:${rootProject.ext.espressoVersion}"
+    androidTestCompile "org.mockito:mockito-core:${rootProject.ext.mockitoVersion}"
 }
