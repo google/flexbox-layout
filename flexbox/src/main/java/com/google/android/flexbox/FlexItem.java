@@ -242,20 +242,30 @@ public interface FlexItem extends Parcelable {
     /**
      * @return the left margin of the flex item.
      */
-    int getLeftMargin();
+    int getMarginLeft();
 
     /**
      * @return the top margin of the flex item.
      */
-    int getTopMargin();
+    int getMarginTop();
 
     /**
      * @return the right margin of the flex item.
      */
-    int getRightMargin();
+    int getMarginRight();
 
     /**
      * @return the bottom margin of the flex item.
      */
-    int getBottomMargin();
+    int getMarginBottom();
+
+    /**
+     * @return the start margin of the flex item depending on its resolved layout direction.
+     */
+    int getMarginStart();
+
+    /**
+     * @return the end margin of the flex item depending on its resolved layout direction.
+     */
+    int getMarginEnd();
 }

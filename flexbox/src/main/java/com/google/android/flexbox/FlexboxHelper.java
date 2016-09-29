@@ -224,14 +224,14 @@ class FlexboxHelper {
             }
             int childWidthMeasureSpec = mFlexContainer
                     .getChildWidthMeasureSpec(widthMeasureSpec,
-                            paddingLeft + paddingRight + flexItem.getLeftMargin()
-                                    + flexItem.getRightMargin(), childWidth);
+                            paddingLeft + paddingRight + flexItem.getMarginLeft()
+                                    + flexItem.getMarginRight(), childWidth);
 
             int childHeightMeasureSpec = mFlexContainer
                     .getChildHeightMeasureSpec(heightMeasureSpec,
                             mFlexContainer.getPaddingTop() + mFlexContainer.getPaddingBottom()
-                                    + flexItem.getTopMargin()
-                                    + flexItem.getBottomMargin(), flexItem.getHeight());
+                                    + flexItem.getMarginTop()
+                                    + flexItem.getMarginBottom(), flexItem.getHeight());
             child.measure(childWidthMeasureSpec, childHeightMeasureSpec);
 
             // Check the size constraint after the first measurement for the child
@@ -245,11 +245,11 @@ class FlexboxHelper {
             childState = ViewCompat
                     .combineMeasuredStates(childState, ViewCompat.getMeasuredState(child));
             largestHeightInRow = Math.max(largestHeightInRow,
-                    child.getMeasuredHeight() + flexItem.getTopMargin() + flexItem
-                            .getBottomMargin());
+                    child.getMeasuredHeight() + flexItem.getMarginTop() + flexItem
+                            .getMarginBottom());
 
             if (isWrapRequired(widthMode, widthSize, flexLine.mMainSize,
-                    child.getMeasuredWidth() + flexItem.getLeftMargin() + flexItem.getRightMargin(),
+                    child.getMeasuredWidth() + flexItem.getMarginLeft() + flexItem.getMarginRight(),
                     flexItem, i, indexInFlexLine)) {
                 if (flexLine.mItemCount > 0) {
                     addFlexLine(flexLines, flexLine);
@@ -258,15 +258,15 @@ class FlexboxHelper {
                 flexLine = new FlexLine();
                 flexLine.mItemCount = 1;
                 flexLine.mMainSize = paddingLeft + paddingRight;
-                largestHeightInRow = child.getMeasuredHeight() + flexItem.getTopMargin()
-                        + flexItem.getBottomMargin();
+                largestHeightInRow = child.getMeasuredHeight() + flexItem.getMarginTop()
+                        + flexItem.getMarginBottom();
                 indexInFlexLine = 0;
             } else {
                 flexLine.mItemCount++;
                 indexInFlexLine++;
             }
-            flexLine.mMainSize += child.getMeasuredWidth() + flexItem.getLeftMargin()
-                    + flexItem.getRightMargin();
+            flexLine.mMainSize += child.getMeasuredWidth() + flexItem.getMarginLeft()
+                    + flexItem.getMarginRight();
             flexLine.mTotalFlexGrow += flexItem.getFlexGrow();
             flexLine.mTotalFlexShrink += flexItem.getFlexShrink();
             // Temporarily set the cross axis length as the largest child in the row
@@ -277,7 +277,7 @@ class FlexboxHelper {
             mFlexContainer.onNewFlexItemAdded(i, indexInFlexLine, flexLine);
             if (mFlexContainer.getFlexWrap() != FlexWrap.WRAP_REVERSE) {
                 flexLine.mMaxBaseline = Math
-                        .max(flexLine.mMaxBaseline, child.getBaseline() + flexItem.getTopMargin());
+                        .max(flexLine.mMaxBaseline, child.getBaseline() + flexItem.getMarginTop());
             } else {
                 // if the flex wrap property is WRAP_REVERSE, calculate the
                 // baseline as the distance from the cross end and the baseline
@@ -285,7 +285,7 @@ class FlexboxHelper {
                 flexLine.mMaxBaseline = Math
                         .max(flexLine.mMaxBaseline,
                                 child.getMeasuredHeight() - child.getBaseline()
-                                        + flexItem.getBottomMargin());
+                                        + flexItem.getMarginBottom());
             }
             addFlexLineIfLastFlexItem(flexLines, i, childCount, flexLine);
         }

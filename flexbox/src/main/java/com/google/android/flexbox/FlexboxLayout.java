@@ -295,7 +295,8 @@ public class FlexboxLayout extends ViewGroup implements FlexContainer {
         // ViewGroup since otherwise reordered indices won't be in effect before the
         // FlexboxLayout's onMeasure is called.
         // Because requestLayout is requested in the super.addView method.
-        mFlexboxHelper.mReorderedIndices = mFlexboxHelper.createReorderedIndices(child, index, params);
+        mFlexboxHelper.mReorderedIndices = mFlexboxHelper
+                .createReorderedIndices(child, index, params);
         super.addView(child, index, params);
     }
 
@@ -2083,14 +2084,13 @@ public class FlexboxLayout extends ViewGroup implements FlexContainer {
     /**
      * Check if a divider is needed before the view whose indices are passed as arguments.
      *
-     * @param childAbsoluteIndex           the absolute index of the view to be judged
-     * @param childRelativeIndexInFlexLine the relative index in the flex line where the view
-     *                                     belongs
+     * @param index           the absolute index of the view to be judged
+     * @param indexInFlexLine the relative index in the flex line where the view
+     *                        belongs
      * @return {@code true} if a divider is needed, {@code false} otherwise
      */
-    private boolean hasDividerBeforeChildAtAlongMainAxis(int childAbsoluteIndex,
-            int childRelativeIndexInFlexLine) {
-        if (allViewsAreGoneBefore(childAbsoluteIndex, childRelativeIndexInFlexLine)) {
+    private boolean hasDividerBeforeChildAtAlongMainAxis(int index, int indexInFlexLine) {
+        if (allViewsAreGoneBefore(index, indexInFlexLine)) {
             if (isMainAxisDirectionHorizontal()) {
                 return (mShowDividerVertical & SHOW_DIVIDER_BEGINNING) != 0;
             } else {
@@ -2105,10 +2105,9 @@ public class FlexboxLayout extends ViewGroup implements FlexContainer {
         }
     }
 
-    private boolean allViewsAreGoneBefore(int childAbsoluteIndex,
-            int childRelativeIndexInFlexLine) {
-        for (int i = 1; i <= childRelativeIndexInFlexLine; i++) {
-            View view = getReorderedChildAt(childAbsoluteIndex - i);
+    private boolean allViewsAreGoneBefore(int index, int indexInFlexLine) {
+        for (int i = 1; i <= indexInFlexLine; i++) {
+            View view = getReorderedChildAt(index - i);
             if (view != null && view.getVisibility() != View.GONE) {
                 return false;
             }
@@ -2409,22 +2408,22 @@ public class FlexboxLayout extends ViewGroup implements FlexContainer {
         }
 
         @Override
-        public int getLeftMargin() {
+        public int getMarginLeft() {
             return leftMargin;
         }
 
         @Override
-        public int getTopMargin() {
+        public int getMarginTop() {
             return topMargin;
         }
 
         @Override
-        public int getRightMargin() {
+        public int getMarginRight() {
             return rightMargin;
         }
 
         @Override
-        public int getBottomMargin() {
+        public int getMarginBottom() {
             return bottomMargin;
         }
 

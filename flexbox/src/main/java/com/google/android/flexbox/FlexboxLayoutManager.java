@@ -285,7 +285,7 @@ public class FlexboxLayoutManager extends RecyclerView.LayoutManager implements 
      * This method is used to avoid the implementation of the similar method.
      * i.e. {@link FlexboxLayoutManager#getChildAt(int)} returns a view for the given index,
      * but the index is based on the layout position, not based on the adapter position, which
-     * isn't desired from the usage of this method.
+     * isn't desired given the usage of this method.
      */
     @Override
     public View getFlexItemAt(int index) {
@@ -603,22 +603,22 @@ public class FlexboxLayoutManager extends RecyclerView.LayoutManager implements 
         }
 
         @Override
-        public int getLeftMargin() {
+        public int getMarginLeft() {
             return leftMargin;
         }
 
         @Override
-        public int getTopMargin() {
+        public int getMarginTop() {
             return topMargin;
         }
 
         @Override
-        public int getRightMargin() {
+        public int getMarginRight() {
             return rightMargin;
         }
 
         @Override
-        public int getBottomMargin() {
+        public int getMarginBottom() {
             return bottomMargin;
         }
 

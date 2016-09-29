@@ -195,10 +195,20 @@ public interface FlexContainer {
     int getPaddingBottom();
 
     /**
+     * @return the start padding of this view depending on its resolved layout direction.
+     */
+    int getPaddingStart();
+
+    /**
+     * @return the end padding of this view depending on its resolved layout direction.
+     */
+    int getPaddingEnd();
+
+    /**
      * Returns the child measure spec for its width.
      *
-     * @param widthSpec the measure spec for the width imposed by the parent
-     * @param padding the padding along the width for the parent
+     * @param widthSpec      the measure spec for the width imposed by the parent
+     * @param padding        the padding along the width for the parent
      * @param childDimension the value of the child dimension
      */
     int getChildWidthMeasureSpec(int widthSpec, int padding, int childDimension);
@@ -206,8 +216,8 @@ public interface FlexContainer {
     /**
      * Returns the child measure spec for its height.
      *
-     * @param heightSpec the measure spec for the height imposed by the parent
-     * @param padding the padding along the height for the parent
+     * @param heightSpec     the measure spec for the height imposed by the parent
+     * @param padding        the padding along the height for the parent
      * @param childDimension the value of the child dimension
      */
     int getChildHeightMeasureSpec(int heightSpec, int padding, int childDimension);
@@ -215,13 +225,11 @@ public interface FlexContainer {
     /**
      * Callback when a new flex item is added to the current container
      *
-     * @param childAbsoluteIndex           the absolute index of the flex item added
-     * @param childRelativeIndexInFlexLine the relative index of the flex item added within the
-     *                                     flex line
-     * @param flexLine                     the flex line where the new flex item is added
+     * @param index           the absolute index of the flex item added
+     * @param indexInFlexLine the relative index of the flex item added within the flex line
+     * @param flexLine        the flex line where the new flex item is added
      */
-    void onNewFlexItemAdded(int childAbsoluteIndex, int childRelativeIndexInFlexLine,
-            FlexLine flexLine);
+    void onNewFlexItemAdded(int index, int indexInFlexLine, FlexLine flexLine);
 
     /**
      * Callback when a new flex line is added to the current container

@@ -163,6 +163,16 @@ class FakeFlexContainer implements FlexContainer {
     }
 
     @Override
+    public int getPaddingStart() {
+        return 0;
+    }
+
+    @Override
+    public int getPaddingEnd() {
+        return 0;
+    }
+
+    @Override
     public int getChildWidthMeasureSpec(int widthSpec, int padding, int childDimension) {
         return ViewGroup.getChildMeasureSpec(widthSpec, padding, childDimension);
     }
