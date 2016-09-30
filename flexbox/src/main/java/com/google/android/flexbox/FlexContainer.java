@@ -27,21 +27,21 @@ import java.util.List;
 public interface FlexContainer {
 
     /**
-     * @return the number of child count contained in the flex container.
+     * @return the number of flex items contained in the flex container.
      */
-    int getChildCount();
+    int getFlexItemCount();
 
     /**
-     * Returns the view at the given index.
+     * Returns a flex item as a View at the given index.
      *
      * @param index the index
      * @return the view at the index
      */
-    View getChildAt(int index);
-
+    View getFlexItemAt(int index);
 
     /**
-     * Returns a View, which is reordered by taking the order attribute into account.
+     * Returns a flex item as a View, which is reordered by taking the order attribute into
+     * account.
      *
      * @param index the index of the view
      * @return the reordered view, which order attribute is taken into account.
@@ -49,7 +49,7 @@ public interface FlexContainer {
      * returns {@code null}.
      * @see FlexItem#getOrder()
      */
-    View getReorderedChildAt(int index);
+    View getReorderedFlexItemAt(int index);
 
     /**
      * Adds the view to the flex container as a flex item.
@@ -159,4 +159,82 @@ public interface FlexContainer {
      * returned list are not reflected to the original list.
      */
     List<FlexLine> getFlexLines();
+
+    /**
+     * Returns the length of decoration (such as deviders) of the flex item
+     *
+     * @param childAbsoluteIndex           the absolute index of the flex item within the flex
+     *                                     container
+     * @param childRelativeIndexInFlexLine the relative index of the flex item within the flex line
+     * @param flexItem                     the flex item from which the lenght of the decoration is
+     *                                     calculated
+     * @return the length of the decoration. Note that the length of the flex item itself is not
+     * included in the result.
+     */
+    int getDecorationLength(int childAbsoluteIndex,
+            int childRelativeIndexInFlexLine, FlexItem flexItem);
+
+    /**
+     * @return the top padding of the flex container.
+     */
+    int getPaddingTop();
+
+    /**
+     * @return the left padding of the flex container.
+     */
+    int getPaddingLeft();
+
+    /**
+     * @return the right padding of the flex container.
+     */
+    int getPaddingRight();
+
+    /**
+     * @return the bottom padding of the flex container.
+     */
+    int getPaddingBottom();
+
+    /**
+     * @return the start padding of this view depending on its resolved layout direction.
+     */
+    int getPaddingStart();
+
+    /**
+     * @return the end padding of this view depending on its resolved layout direction.
+     */
+    int getPaddingEnd();
+
+    /**
+     * Returns the child measure spec for its width.
+     *
+     * @param widthSpec      the measure spec for the width imposed by the parent
+     * @param padding        the padding along the width for the parent
+     * @param childDimension the value of the child dimension
+     */
+    int getChildWidthMeasureSpec(int widthSpec, int padding, int childDimension);
+
+    /**
+     * Returns the child measure spec for its height.
+     *
+     * @param heightSpec     the measure spec for the height imposed by the parent
+     * @param padding        the padding along the height for the parent
+     * @param childDimension the value of the child dimension
+     */
+    int getChildHeightMeasureSpec(int heightSpec, int padding, int childDimension);
+
+    /**
+     * Callback when a new flex item is added to the current container
+     *
+     * @param index           the absolute index of the flex item added
+     * @param indexInFlexLine the relative index of the flex item added within the flex line
+     * @param flexLine        the flex line where the new flex item is added
+     */
+    void onNewFlexItemAdded(int index, int indexInFlexLine, FlexLine flexLine);
+
+    /**
+     * Callback when a new flex line is added to the current container
+     *
+     * @param flexLine the new added flex line
+     */
+    void onNewFlexLineAdded(FlexLine flexLine);
 }

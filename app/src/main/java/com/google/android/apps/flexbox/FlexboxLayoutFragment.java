@@ -74,8 +74,8 @@ public class FlexboxLayoutFragment extends Fragment {
                 mFlexContainer.addView(textView);
             }
         } else {
-            for (int i = 0; i < mFlexContainer.getChildCount(); i++) {
-                mFlexContainer.getChildAt(i).setOnClickListener(
+            for (int i = 0; i < mFlexContainer.getFlexItemCount(); i++) {
+                mFlexContainer.getFlexItemAt(i).setOnClickListener(
                         new FlexItemClickListener(activity,
                                 new FlexItemChangedListenerImpl(mFlexContainer), i));
             }
@@ -86,7 +86,7 @@ public class FlexboxLayoutFragment extends Fragment {
             addFab.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
-                    int viewIndex = mFlexContainer.getChildCount();
+                    int viewIndex = mFlexContainer.getFlexItemCount();
                     // index starts from 0. New View's index is N if N views ([0, 1, 2, ... N-1])
                     // exist.
                     TextView textView = createBaseFlexItemTextView(activity, viewIndex);
@@ -107,10 +107,10 @@ public class FlexboxLayoutFragment extends Fragment {
             removeFab.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    if (mFlexContainer.getChildCount() == 0) {
+                    if (mFlexContainer.getFlexItemCount() == 0) {
                         return;
                     }
-                    mFlexContainer.removeViewAt(mFlexContainer.getChildCount() - 1);
+                    mFlexContainer.removeViewAt(mFlexContainer.getFlexItemCount() - 1);
                 }
             });
         }
@@ -120,8 +120,8 @@ public class FlexboxLayoutFragment extends Fragment {
     public void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
         ArrayList<FlexItem> flexItems = new ArrayList<>();
-        for (int i = 0; i < mFlexContainer.getChildCount(); i++) {
-            View child = mFlexContainer.getChildAt(i);
+        for (int i = 0; i < mFlexContainer.getFlexItemCount(); i++) {
+            View child = mFlexContainer.getFlexItemAt(i);
             flexItems.add((FlexItem) child.getLayoutParams());
         }
         outState.putParcelableArrayList(FLEX_ITEMS_KEY, flexItems);
