@@ -22,6 +22,7 @@ import android.os.Parcelable;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.AttributeSet;
+import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 
@@ -34,6 +35,10 @@ import java.util.List;
  * as the {@link FlexboxLayout}.
  */
 public class FlexboxLayoutManager extends RecyclerView.LayoutManager implements FlexContainer {
+
+    private static final String TAG = "FlexboxLayoutManager";
+
+    private static final boolean DEBUG = false;
 
     /**
      * The current value of the {@link FlexDirection}, the default value is {@link
@@ -67,6 +72,22 @@ public class FlexboxLayoutManager extends RecyclerView.LayoutManager implements 
     private List<FlexLine> mFlexLines = new ArrayList<>();
 
     private final FlexboxHelper mFlexboxHelper = new FlexboxHelper(this);
+
+    /**
+     * A snapshot of the {@link RecyclerView.Recycler} instance at a given moment.
+     * It's not guaranteed that this instance has a reference to the latest Recycler.
+     * When you want to use the latest Recycler, use the one passed as an method argument
+     * (such as the one in {@link #onLayoutChildren(RecyclerView.Recycler, RecyclerView.State)})
+     */
+    private RecyclerView.Recycler mRecycler;
+
+    /**
+     * A snapshot of the {@link RecyclerView.State} instance at a given moment.
+     * It's not guaranteed that this instance has a reference to the latest State.
+     * When you want to use the latest State, use the one passed as an method argument
+     * (such as the one in {@link #onLayoutChildren(RecyclerView.Recycler, RecyclerView.State)})
+     */
+    private RecyclerView.State mState;
 
     /**
      * Creates a default FlexboxLayoutManager.
@@ -142,6 +163,7 @@ public class FlexboxLayoutManager extends RecyclerView.LayoutManager implements 
         setAutoMeasureEnabled(true);
     }
 
+    // From here, methods from FlexContainer
     @FlexDirection
     @Override
     public int getFlexDirection() {
@@ -225,6 +247,109 @@ public class FlexboxLayoutManager extends RecyclerView.LayoutManager implements 
     }
 
     @Override
+    public int getDecorationLength(int childAbsoluteIndex, int childRelativeIndexInFlexLine,
+            FlexItem flexItem) {
+        // TODO: Implement the method
+        return 0;
+    }
+
+    @Override
+    public void onNewFlexItemAdded(int childAbsoluteIndex, int childRelativeIndexInFlexLine,
+            FlexLine flexLine) {
+        // TODO: Implement the method
+    }
+
+    /**
+     * @return the number of flex items contained in the flex container.
+     * This method doesn't always reflect the latest state of the adapter.
+     * If you want to access the latest state of the adapter, use the {@link RecyclerView.State}
+     * instance passed as an argument for some methods (such as
+     * {@link #onLayoutChildren(RecyclerView.Recycler, RecyclerView.State)})
+     *
+     * This method is used to avoid the implementation of the similar method.
+     * i.e. {@link FlexboxLayoutManager#getChildCount()} returns the child count, but it doesn't
+     * include the children that are detached or scrapped.
+     */
+    @Override
+    public int getFlexItemCount() {
+        return mState.getItemCount();
+    }
+
+    /**
+     * @return the flex item as a view specified as the index.
+     * This method doesn't always return the latest state of the view in the adapter.
+     * If you want to access the latest state, use the {@link RecyclerView.Recycler}
+     * instance passed as an argument for some methods (such as
+     * {@link #onLayoutChildren(RecyclerView.Recycler, RecyclerView.State)})
+     *
+     * This method is used to avoid the implementation of the similar method.
+     * i.e. {@link FlexboxLayoutManager#getChildAt(int)} returns a view for the given index,
+     * but the index is based on the layout position, not based on the adapter position, which
+     * isn't desired given the usage of this method.
+     */
+    @Override
+    public View getFlexItemAt(int index) {
+        return mRecycler.getViewForPosition(index);
+    }
+
+    /**
+     * Returns a View, which is reordered by taking {@link LayoutParams#mOrder} parameters
+     * into account.
+     *
+     * @param index the index of the view
+     * @return the reordered view, which {@link LayoutParams@mOrder} is taken into account.
+     * If the index is negative or out of bounds of the number of contained views,
+     * returns {@code null}.
+     */
+    public View getReorderedChildAt(int index) {
+        if (index < 0 || index >= mFlexboxHelper.mReorderedIndices.length) {
+            return null;
+        }
+        return mRecycler.getViewForPosition(mFlexboxHelper.mReorderedIndices[index]);
+    }
+
+    @Override
+    public View getReorderedFlexItemAt(int index) {
+        return getReorderedChildAt(index);
+    }
+
+    @Override
+    public void onNewFlexLineAdded(FlexLine flexLine) {
+        // No op
+    }
+
+    @Override
+    public int getChildWidthMeasureSpec(int widthSpec, int padding, int childDimension) {
+        return getChildMeasureSpec(getWidth(), getWidthMode(), padding, childDimension,
+                canScrollHorizontally());
+    }
+
+    @Override
+    public int getChildHeightMeasureSpec(int heightSpec, int padding, int childDimension) {
+        return getChildMeasureSpec(getHeight(), getHeightMode(), padding, childDimension,
+                canScrollVertically());
+    }
+    // The end of methods from FlexContainer
+
+    private int getLargestMainSize() {
+        int largest = 0;
+        for (int i = 0, size = mFlexLines.size(); i < size; i++) {
+            FlexLine flexLine = mFlexLines.get(i);
+            largest = Math.max(largest, flexLine.getMainSize());
+        }
+        return largest;
+    }
+
+    private int getSumOfCrossSize() {
+        int sum = 0;
+        for (int i = 0, size = mFlexLines.size(); i < size; i++) {
+            FlexLine flexLine = mFlexLines.get(i);
+            sum += flexLine.mCrossSize;
+        }
+        return sum;
+    }
+
+    @Override
     public RecyclerView.LayoutParams generateDefaultLayoutParams() {
         return new LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT);
     }
@@ -241,33 +366,69 @@ public class FlexboxLayoutManager extends RecyclerView.LayoutManager implements 
 
     @Override
     public void onLayoutChildren(RecyclerView.Recycler recycler, RecyclerView.State state) {
-        if (getItemCount() == 0) {
-            detachAndScrapAttachedViews(recycler);
+        if (DEBUG) {
+            Log.i(TAG,
+                    String.format("onLayoutChildren. recycler.getScrapList.size(): %s, state: %s",
+                            recycler.getScrapList().size(), state));
+            Log.i(TAG, String.format("getChildCount: %d", getChildCount()));
+        }
+
+        // Assign the Recycler and the State as the member variables so that
+        // the method from FlexContainer (such as getFlexItemCount()) returns the number of
+        // flex items from the adapter not the child count in the LayoutManager because
+        // LayoutManager#getChildCount doesn't include the views that are detached or scrapped.
+        mRecycler = recycler;
+        mState = state;
+        if (state.getItemCount() == 0) {
             return;
         }
-        int childCount = getChildCount();
+        int childCount = state.getItemCount();
         if (childCount == 0 && state.isPreLayout()) {
             return;
         }
 
-        mFlexboxHelper.createReorderedIndices();
-        //TODO: Implement the rest of the method
+        // TODO: If we support the order attribute, we need to inflate the all ViewHolders in the
+        // adapter instead of inflating only the visible ViewHolders, which is inefficient given
+        // that this is part of RecyclerView
+        if (mFlexboxHelper.isOrderChangedFromLastMeasurement()) {
+            mFlexboxHelper.mReorderedIndices = mFlexboxHelper.createReorderedIndices();
+        }
+
+        //noinspection ResourceType
+        int widthMeasureSpec = View.MeasureSpec.makeMeasureSpec(getWidth(), getWidthMode());
+        //noinspection ResourceType
+        int heightMeasureSpec = View.MeasureSpec.makeMeasureSpec(getHeight(), getHeightMode());
+        FlexboxHelper.FlexLinesResult flexLinesResult;
+        mFlexLines.clear();
+
+        // TODO: Change the code to calculate only the visible area
+        if (isMainAxisDirectionHorizontal()) {
+            flexLinesResult = mFlexboxHelper
+                    .calculateHorizontalFlexLines(widthMeasureSpec, heightMeasureSpec);
+        } else {
+            flexLinesResult = mFlexboxHelper
+                    .calculateVerticalFlexLines(widthMeasureSpec, heightMeasureSpec);
+        }
+        mFlexLines = flexLinesResult.mFlexLines;
+        if (DEBUG) {
+            for (int i = 0, size = mFlexLines.size(); i < size; i++) {
+                FlexLine flexLine = mFlexLines.get(i);
+                Log.i(TAG, String.format("%d flex line. MainSize: %d, CrossSize: %d, itemCount: %d",
+                        i, flexLine.getMainSize(), flexLine.getCrossSize(),
+                        flexLine.getItemCount()));
+            }
+        }
+
+        // TODO: Layout the visible ViewHolders
     }
 
-    /**
-     * Returns a View, which is reordered by taking {@link LayoutParams#mOrder} parameters
-     * into account.
-     *
-     * @param index the index of the view
-     * @return the reordered view, which {@link LayoutParams@mOrder} is taken into account.
-     * If the index is negative or out of bounds of the number of contained views,
-     * returns {@code null}.
-     */
-    public View getReorderedChildAt(int index) {
-        if (index < 0 || index >= mFlexboxHelper.mReorderedIndices.length) {
-            return null;
-        }
-        return getChildAt(mFlexboxHelper.mReorderedIndices[index]);
+    @Override
+    public void onAdapterChanged(RecyclerView.Adapter oldAdapter, RecyclerView.Adapter newAdapter) {
+        removeAllViews();
+    }
+
+    private boolean isMainAxisDirectionHorizontal() {
+        return mFlexDirection == FlexDirection.ROW || mFlexDirection == FlexDirection.ROW_REVERSE;
     }
 
     /**
@@ -439,6 +600,26 @@ public class FlexboxLayoutManager extends RecyclerView.LayoutManager implements 
         @Override
         public void setFlexBasisPercent(float flexBasisPercent) {
             this.mFlexBasisPercent = flexBasisPercent;
+        }
+
+        @Override
+        public int getMarginLeft() {
+            return leftMargin;
+        }
+
+        @Override
+        public int getMarginTop() {
+            return topMargin;
+        }
+
+        @Override
+        public int getMarginRight() {
+            return rightMargin;
+        }
+
+        @Override
+        public int getMarginBottom() {
+            return bottomMargin;
         }
 
         public LayoutParams(Context c, AttributeSet attrs) {
