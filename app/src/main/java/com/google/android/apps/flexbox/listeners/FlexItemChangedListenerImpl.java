@@ -35,7 +35,7 @@ public class FlexItemChangedListenerImpl implements FlexItemChangedListener {
 
     @Override
     public void onFlexItemChanged(FlexItem flexItem, int viewIndex) {
-        View view = mFlexContainer.getChildAt(viewIndex);
+        View view = mFlexContainer.getFlexItemAt(viewIndex);
         view.setLayoutParams((FlexboxLayout.LayoutParams) flexItem);
     }
 }
