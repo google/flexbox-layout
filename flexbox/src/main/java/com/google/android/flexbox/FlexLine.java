@@ -16,6 +16,8 @@
 
 package com.google.android.flexbox;
 
+import android.view.View;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -64,7 +66,7 @@ public class FlexLine {
 
     /**
      * The largest value of the individual child's baseline (obtained by View#getBaseline()
-     * if the {@link FlexboxLayout#mAlignItems} value is not {@link FlexboxLayout#ALIGN_ITEMS_BASELINE}
+     * if the {@link FlexboxLayout#mAlignItems} value is not {@link AlignItems#BASELINE}
      * or the flex direction is vertical, this value is not used.
      * If the alignment direction is from the bottom to top,
      * (e.g. flexWrap == WRAP_REVERSE and flexDirection == ROW)
@@ -145,5 +147,18 @@ public class FlexLine {
      */
     public float getTotalFlexShrink() {
         return mTotalFlexShrink;
+    }
+
+    /**
+     * Updates the position of the flex line from the contained view.
+     *
+     * @param view the view contained in this flex line
+     */
+    void updatePositionFromView(View view) {
+        FlexItem flexItem = (FlexItem) view.getLayoutParams();
+        mLeft = Math.min(mLeft, view.getLeft() - flexItem.getMarginLeft());
+        mTop = Math.min(mTop, view.getTop() - flexItem.getMarginTop());
+        mRight = Math.max(mRight, view.getRight() + flexItem.getMarginRight());
+        mBottom = Math.max(mBottom, view.getBottom() + flexItem.getMarginBottom());
     }
 }

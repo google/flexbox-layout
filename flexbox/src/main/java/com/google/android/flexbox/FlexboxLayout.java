@@ -1258,10 +1258,7 @@ public class FlexboxLayout extends ViewGroup implements FlexContainer {
                 childRight -= child.getMeasuredWidth() + spaceBetweenItem + lp.leftMargin;
                 currentViewIndex++;
 
-                flexLine.mLeft = Math.min(flexLine.mLeft, child.getLeft() - lp.leftMargin);
-                flexLine.mTop = Math.min(flexLine.mTop, child.getTop() - lp.topMargin);
-                flexLine.mRight = Math.max(flexLine.mRight, child.getRight() + lp.rightMargin);
-                flexLine.mBottom = Math.max(flexLine.mBottom, child.getBottom() + lp.bottomMargin);
+                flexLine.updatePositionFromView(child);
             }
             childTop += flexLine.mCrossSize;
             childBottom -= flexLine.mCrossSize;
@@ -1473,10 +1470,7 @@ public class FlexboxLayout extends ViewGroup implements FlexContainer {
                 childBottom -= child.getMeasuredHeight() + spaceBetweenItem + lp.topMargin;
                 currentViewIndex++;
 
-                flexLine.mLeft = Math.min(flexLine.mLeft, child.getLeft() - lp.leftMargin);
-                flexLine.mTop = Math.min(flexLine.mTop, child.getTop() - lp.topMargin);
-                flexLine.mRight = Math.max(flexLine.mRight, child.getRight() + lp.rightMargin);
-                flexLine.mBottom = Math.max(flexLine.mBottom, child.getBottom() + lp.bottomMargin);
+                flexLine.updatePositionFromView(child);
             }
             childLeft += flexLine.mCrossSize;
             childRight -= flexLine.mCrossSize;
