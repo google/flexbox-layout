@@ -35,8 +35,6 @@ import android.support.test.filters.MediumTest;
 import android.support.test.rule.ActivityTestRule;
 import android.support.test.runner.AndroidJUnit4;
 import android.support.v7.widget.RecyclerView;
-import android.widget.FrameLayout;
-import android.widget.TextView;
 
 import static org.hamcrest.Matchers.instanceOf;
 import static org.hamcrest.Matchers.is;
@@ -187,7 +185,7 @@ public class FlexboxLayoutManagerTest {
         });
         InstrumentationRegistry.getInstrumentation().waitForIdleSync();
 
-        // In total 9 items are added but the seventh item and the items follow aren't detached
+        // In total 9 items are added but the seventh item and the items follow aren't attached
         // (invisible) so are not included in the count of of the getChildCount.
         assertThat(layoutManager.getFlexItemCount(), is(9));
         assertThat(layoutManager.getChildCount(), is(6));

@@ -583,7 +583,7 @@ public class FlexboxLayoutManager extends RecyclerView.LayoutManager implements 
         int start = layoutState.mAvailable;
         int remainingSpace = layoutState.mAvailable;
         int consumed = 0;
-        while (remainingSpace > 0 && layoutState.hasMore(state)) {
+        while (remainingSpace > 0 && layoutState.hasMore(state, mFlexLines)) {
             FlexLine flexLine = mFlexLines.get(layoutState.mFlexLinePosition);
             consumed += layoutFlexLine(recycler, state, flexLine, layoutState);
             layoutState.mOffset += flexLine.getCrossSize() * layoutState.mLayoutDirection;
@@ -692,7 +692,7 @@ public class FlexboxLayoutManager extends RecyclerView.LayoutManager implements 
         int indexInFlexLine = 0;
         for (int i = startPosition, itemCount = flexLine.getItemCount();
                 i < startPosition + itemCount; i++) {
-            if (!layoutState.hasMore(state)) {
+            if (!layoutState.hasMore(state, mFlexLines)) {
                 break;
             }
             View view = layoutState.next(recycler);
@@ -820,12 +820,12 @@ public class FlexboxLayoutManager extends RecyclerView.LayoutManager implements 
 
         updateLayoutState(layoutDirection, absDy);
 
-        final int freeScroll = mLayoutState.mScrollingOffset;
-        final int consumed = freeScroll + fill(recycler, state, mLayoutState);
+        int freeScroll = mLayoutState.mScrollingOffset;
+        int consumed = freeScroll + fill(recycler, state, mLayoutState);
         if (consumed < 0) {
             return 0;
         }
-        final int scrolled = absDy > consumed ? layoutDirection * consumed : dy;
+        int scrolled = absDy > consumed ? layoutDirection * consumed : dy;
         mOrientationHelper.offsetChildren(-scrolled);
         mLayoutState.mLastScrollDelta = scrolled;
         return scrolled;
@@ -1239,10 +1239,10 @@ public class FlexboxLayoutManager extends RecyclerView.LayoutManager implements 
     }
 
     /**
-     * Helper class that keeps temporary state while {LayoutManager} is filling out the empty
-     * space.
+     * Helper class that keeps temporary state while the FlexboxLayoutManager is filling out the
+     * empty space.
      */
-    private class LayoutState {
+    private static class LayoutState {
 
         private final static int SCROLLING_OFFSET_NaN = Integer.MIN_VALUE;
 
@@ -1251,7 +1251,7 @@ public class FlexboxLayoutManager extends RecyclerView.LayoutManager implements 
 
         // TODO: Add mExtra to support better smooth scrolling
 
-        /** Current position on the flex lines being in the layout call */
+        /** Current position on the flex lines being laid out in the layout call */
         private int mFlexLinePosition;
 
         /** Current position on the adapter to get the next item. */
@@ -1285,9 +1285,9 @@ public class FlexboxLayoutManager extends RecyclerView.LayoutManager implements 
         /**
          * @return {@code true} if there are more items to layout
          */
-        private boolean hasMore(RecyclerView.State state) {
+        private boolean hasMore(RecyclerView.State state, List<FlexLine> flexLines) {
             return mPosition >= 0 && mPosition < state.getItemCount() &&
-                    mFlexLinePosition >= 0 && mFlexLinePosition < mFlexLines.size();
+                    mFlexLinePosition >= 0 && mFlexLinePosition < flexLines.size();
         }
 
         /**

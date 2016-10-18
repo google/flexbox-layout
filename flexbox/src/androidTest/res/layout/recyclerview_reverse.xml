@@ -22,6 +22,5 @@
     android:orientation="horizontal"
     app:reverseLayout="true"
     app:stackFromEnd="true"
-    app:layoutManager="com.google.android.flexbox.FlexboxLayoutManager">
+    app:layoutManager="com.google.android.flexbox.FlexboxLayoutManager" />
 
-</android.support.v7.widget.RecyclerView>
