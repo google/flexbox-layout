@@ -9,7 +9,7 @@ machine:
 
 dependencies:
     pre:
-        - echo y | android update sdk --no-ui --all --filter "android-24,build-tools-24.0.2,tools,platform-tools,extra-android-m2repository"
+        - echo y | android update sdk --no-ui --all --filter "android-25,build-tools-24.0.2,tools,platform-tools,extra-android-m2repository"
         # For some reasons, there is an issue with the pre-installed gcloud that
         # PyOpenSSL is not available when trying to activate the service account.
         # Re-installing the gcloud worked as a workaround.
