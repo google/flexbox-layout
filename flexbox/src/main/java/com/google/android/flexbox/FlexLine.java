@@ -153,12 +153,18 @@ public class FlexLine {
      * Updates the position of the flex line from the contained view.
      *
      * @param view the view contained in this flex line
+     * @param leftDecoration the length of the decoration on the left of the view
+     * @param topDecoration the length of the decoration on the top of the view
+     * @param rightDecoration the length of the decoration on the right of the view
+     * @param bottomDecoration the length of the decoration on the bottom of the view
      */
-    void updatePositionFromView(View view) {
+    void updatePositionFromView(View view, int leftDecoration, int topDecoration,
+            int rightDecoration, int bottomDecoration) {
         FlexItem flexItem = (FlexItem) view.getLayoutParams();
-        mLeft = Math.min(mLeft, view.getLeft() - flexItem.getMarginLeft());
-        mTop = Math.min(mTop, view.getTop() - flexItem.getMarginTop());
-        mRight = Math.max(mRight, view.getRight() + flexItem.getMarginRight());
-        mBottom = Math.max(mBottom, view.getBottom() + flexItem.getMarginBottom());
+        mLeft = Math.min(mLeft, view.getLeft() - flexItem.getMarginLeft() - leftDecoration);
+        mTop = Math.min(mTop, view.getTop() - flexItem.getMarginTop() - topDecoration);
+        mRight = Math.max(mRight, view.getRight() + flexItem.getMarginRight() + rightDecoration);
+        mBottom = Math
+                .max(mBottom, view.getBottom() + flexItem.getMarginBottom() + bottomDecoration);
     }
 }

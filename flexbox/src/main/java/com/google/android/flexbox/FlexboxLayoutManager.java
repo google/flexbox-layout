@@ -520,8 +520,8 @@ public class FlexboxLayoutManager extends RecyclerView.LayoutManager implements 
      * Find a visible (or less preferred invisible) view within the given start and end index.
      * Large part refers to the same method in LinearLayoutManager#findReferenceChild
      *
-     * @param start the start index within the range to find a view
-     * @param end the end index within the range to find a view
+     * @param start     the start index within the range to find a view
+     * @param end       the end index within the range to find a view
      * @param itemCount the item count
      * @return the found view within the range of the given start and
      */
@@ -707,7 +707,6 @@ public class FlexboxLayoutManager extends RecyclerView.LayoutManager implements 
                 indexInFlexLine++;
             }
 
-            // TODO: Consider including decorated width/height
             if (layoutState.mLayoutDirection == LayoutDirection.END) {
                 layoutDecoratedWithMargins(view, childLeft, childTop,
                         childLeft + view.getMeasuredWidth(), childTop + view.getMeasuredHeight());
@@ -716,7 +715,10 @@ public class FlexboxLayoutManager extends RecyclerView.LayoutManager implements 
                         childLeft + view.getMeasuredWidth(), childBottom);
             }
             childLeft += view.getMeasuredWidth();
-            flexLine.updatePositionFromView(view);
+
+            // TODO: Consider RTL
+            flexLine.updatePositionFromView(view, getDecoratedLeft(view), 0,
+                    getDecoratedRight(view), 0);
         }
         layoutState.mFlexLinePosition += mLayoutState.mLayoutDirection;
         return flexLine.getCrossSize();
