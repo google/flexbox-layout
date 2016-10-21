@@ -16,6 +16,8 @@
 
 package com.google.android.flexbox;
 
+import android.view.View;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -67,7 +69,7 @@ public class FlexLine {
 
     /**
      * The largest value of the individual child's baseline (obtained by View#getBaseline()
-     * if the {@link FlexboxLayout#mAlignItems} value is not {@link FlexboxLayout#ALIGN_ITEMS_BASELINE}
+     * if the {@link FlexboxLayout#mAlignItems} value is not {@link AlignItems#BASELINE}
      * or the flex direction is vertical, this value is not used.
      * If the alignment direction is from the bottom to top,
      * (e.g. flexWrap == WRAP_REVERSE and flexDirection == ROW)
@@ -155,5 +157,24 @@ public class FlexLine {
      */
     public float getTotalFlexShrink() {
         return mTotalFlexShrink;
+    }
+
+    /**
+     * Updates the position of the flex line from the contained view.
+     *
+     * @param view the view contained in this flex line
+     * @param leftDecoration the length of the decoration on the left of the view
+     * @param topDecoration the length of the decoration on the top of the view
+     * @param rightDecoration the length of the decoration on the right of the view
+     * @param bottomDecoration the length of the decoration on the bottom of the view
+     */
+    void updatePositionFromView(View view, int leftDecoration, int topDecoration,
+            int rightDecoration, int bottomDecoration) {
+        FlexItem flexItem = (FlexItem) view.getLayoutParams();
+        mLeft = Math.min(mLeft, view.getLeft() - flexItem.getMarginLeft() - leftDecoration);
+        mTop = Math.min(mTop, view.getTop() - flexItem.getMarginTop() - topDecoration);
+        mRight = Math.max(mRight, view.getRight() + flexItem.getMarginRight() + rightDecoration);
+        mBottom = Math
+                .max(mBottom, view.getBottom() + flexItem.getMarginBottom() + bottomDecoration);
     }
 }
