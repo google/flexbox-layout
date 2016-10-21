@@ -29,11 +29,12 @@ android {
         versionName "$mavenVersion"
 
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
+
+        consumerProguardFiles 'proguard-rules.txt'
     }
     buildTypes {
         release {
             minifyEnabled false
-            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }
     }
 }
