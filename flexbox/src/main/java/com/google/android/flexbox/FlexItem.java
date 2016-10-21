@@ -151,7 +151,7 @@ public interface FlexItem extends Parcelable {
     int getMinWidth();
 
     /**
-     * Sets the mininum width attribute to the flex item
+     * Sets the minimum width attribute to the flex item
      *
      * @param minWidth the order attribute
      */
