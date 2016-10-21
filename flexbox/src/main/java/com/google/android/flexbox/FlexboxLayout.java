@@ -81,29 +81,39 @@ public class FlexboxLayout extends ViewGroup implements FlexContainer {
     /**
      * The current value of the {@link FlexDirection}, the default value is {@link
      * FlexDirection#ROW}.
+     *
+     * @see {@link FlexDirection}
      */
     private int mFlexDirection;
 
     /**
      * The current value of the {@link FlexWrap}, the default value is {@link FlexWrap#NOWRAP}.
+     *
+     * @see {@link FlexWrap}
      */
     private int mFlexWrap;
 
     /**
      * The current value of the {@link JustifyContent}, the default value is
      * {@link JustifyContent#FLEX_START}.
+     *
+     * @see {@link JustifyContent}
      */
     private int mJustifyContent;
 
     /**
      * The current value of the {@link AlignItems}, the default value is
      * {@link AlignItems#STRETCH}.
+     *
+     * @see {@link AlignItems}
      */
     private int mAlignItems;
 
     /**
      * The current value of the {@link AlignContent}, the default value is
      * {@link AlignContent#STRETCH}.
+     *
+     * @see {@link AlignContent}
      */
     private int mAlignContent;
 
@@ -1082,50 +1092,6 @@ public class FlexboxLayout extends ViewGroup implements FlexContainer {
     }
 
     /**
-     * Determine if a wrap is required (add a new flex line).
-     *
-     * @param mode          the width or height mode along the main axis direction
-     * @param maxSize       the max size along the main axis direction
-     * @param currentLength the accumulated current length
-     * @param childLength   the length of a child view which is to be collected to the flex line
-     * @param lp            the LayoutParams for the view being determined whether a new flex line
-     *                      is needed
-     * @return {@code true} if a wrap is required, {@code false} otherwise
-     * @see #getFlexWrap()
-     * @see #setFlexWrap(int)
-     */
-    private boolean isWrapRequired(int mode, int maxSize, int currentLength, int childLength,
-            LayoutParams lp, int childAbsoluteIndex, int childRelativeIndexInFlexLine) {
-        if (mFlexWrap == FlexWrap.NOWRAP) {
-            return false;
-        }
-        if (lp.mWrapBefore) {
-            return true;
-        }
-        if (mode == MeasureSpec.UNSPECIFIED) {
-            return false;
-        }
-        if (isMainAxisDirectionHorizontal()) {
-            if (hasDividerBeforeChildAtAlongMainAxis(childAbsoluteIndex,
-                    childRelativeIndexInFlexLine)) {
-                childLength += mDividerVerticalWidth;
-            }
-            if ((mShowDividerVertical & SHOW_DIVIDER_END) > 0) {
-                childLength += mDividerVerticalWidth;
-            }
-        } else {
-            if (hasDividerBeforeChildAtAlongMainAxis(childAbsoluteIndex,
-                    childRelativeIndexInFlexLine)) {
-                childLength += mDividerHorizontalHeight;
-            }
-            if ((mShowDividerHorizontal & SHOW_DIVIDER_END) > 0) {
-                childLength += mDividerHorizontalHeight;
-            }
-        }
-        return maxSize < currentLength + childLength;
-    }
-
-    /**
      * Retrieve the largest main size of all flex lines.
      *
      * @return the largest main size
@@ -1297,9 +1263,15 @@ public class FlexboxLayout extends ViewGroup implements FlexContainer {
                 LayoutParams lp = ((LayoutParams) child.getLayoutParams());
                 childLeft += lp.leftMargin;
                 childRight -= lp.rightMargin;
+                int beforeDividerLength = 0;
+                int endDividerLength = 0;
                 if (hasDividerBeforeChildAtAlongMainAxis(currentViewIndex, j)) {
-                    childLeft += mDividerVerticalWidth;
-                    childRight -= mDividerVerticalWidth;
+                    beforeDividerLength = mDividerVerticalWidth;
+                    childLeft += beforeDividerLength;
+                    childRight -= beforeDividerLength;
+                }
+                if (j == flexLine.mItemCount - 1 && (mShowDividerVertical & SHOW_DIVIDER_END) > 0) {
+                    endDividerLength = mDividerVerticalWidth;
                 }
 
                 if (mFlexWrap == FlexWrap.WRAP_REVERSE) {
@@ -1330,10 +1302,13 @@ public class FlexboxLayout extends ViewGroup implements FlexContainer {
                 childRight -= child.getMeasuredWidth() + spaceBetweenItem + lp.leftMargin;
                 currentViewIndex++;
 
-                flexLine.mLeft = Math.min(flexLine.mLeft, child.getLeft() - lp.leftMargin);
-                flexLine.mTop = Math.min(flexLine.mTop, child.getTop() - lp.topMargin);
-                flexLine.mRight = Math.max(flexLine.mRight, child.getRight() + lp.rightMargin);
-                flexLine.mBottom = Math.max(flexLine.mBottom, child.getBottom() + lp.bottomMargin);
+                if (isRtl) {
+                    flexLine.updatePositionFromView(child, /*leftDecoration*/endDividerLength, 0,
+                            /*rightDecoration*/ beforeDividerLength, 0);
+                } else {
+                    flexLine.updatePositionFromView(child, /*leftDecoration*/beforeDividerLength, 0,
+                            /*rightDecoration*/ endDividerLength, 0);
+                }
             }
             childTop += flexLine.mCrossSize;
             childBottom -= flexLine.mCrossSize;
@@ -1515,9 +1490,16 @@ public class FlexboxLayout extends ViewGroup implements FlexContainer {
                 LayoutParams lp = ((LayoutParams) child.getLayoutParams());
                 childTop += lp.topMargin;
                 childBottom -= lp.bottomMargin;
+                int beforeDividerLength = 0;
+                int endDividerLength = 0;
                 if (hasDividerBeforeChildAtAlongMainAxis(currentViewIndex, j)) {
-                    childTop += mDividerHorizontalHeight;
-                    childBottom -= mDividerHorizontalHeight;
+                    beforeDividerLength = mDividerHorizontalHeight;
+                    childTop += beforeDividerLength;
+                    childBottom -= beforeDividerLength;
+                }
+                if (j == flexLine.mItemCount - 1
+                        && (mShowDividerHorizontal & SHOW_DIVIDER_END) > 0) {
+                    endDividerLength = mDividerHorizontalHeight;
                 }
                 if (isRtl) {
                     if (fromBottomToTop) {
@@ -1546,10 +1528,13 @@ public class FlexboxLayout extends ViewGroup implements FlexContainer {
                 childBottom -= child.getMeasuredHeight() + spaceBetweenItem + lp.topMargin;
                 currentViewIndex++;
 
-                flexLine.mLeft = Math.min(flexLine.mLeft, child.getLeft() - lp.leftMargin);
-                flexLine.mTop = Math.min(flexLine.mTop, child.getTop() - lp.topMargin);
-                flexLine.mRight = Math.max(flexLine.mRight, child.getRight() + lp.rightMargin);
-                flexLine.mBottom = Math.max(flexLine.mBottom, child.getBottom() + lp.bottomMargin);
+                if (fromBottomToTop) {
+                    flexLine.updatePositionFromView(child, 0, /*topDecoration*/endDividerLength, 0,
+                            /*bottomDecoration*/ beforeDividerLength);
+                } else {
+                    flexLine.updatePositionFromView(child, 0, /*topDecoration*/beforeDividerLength,
+                            0, /*bottomDecoration*/endDividerLength);
+                }
             }
             childLeft += flexLine.mCrossSize;
             childRight -= flexLine.mCrossSize;
