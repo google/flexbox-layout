@@ -84,6 +84,11 @@ public class FlexboxHelperTest {
         assertEquals(100, result.mFlexLines.get(0).getCrossSize());
         assertEquals(100, result.mFlexLines.get(1).getCrossSize());
         assertEquals(100, result.mFlexLines.get(2).getCrossSize());
+
+        assertEquals(0, mFlexboxHelper.mIndexToFlexLine.get(0));
+        assertEquals(0, mFlexboxHelper.mIndexToFlexLine.get(1));
+        assertEquals(1, mFlexboxHelper.mIndexToFlexLine.get(2));
+        assertEquals(2, mFlexboxHelper.mIndexToFlexLine.get(3));
     }
 
     @Test
@@ -120,5 +125,10 @@ public class FlexboxHelperTest {
         assertEquals(100, result.mFlexLines.get(0).getCrossSize());
         assertEquals(100, result.mFlexLines.get(1).getCrossSize());
         assertEquals(100, result.mFlexLines.get(2).getCrossSize());
+
+        assertEquals(0, mFlexboxHelper.mIndexToFlexLine.get(0));
+        assertEquals(0, mFlexboxHelper.mIndexToFlexLine.get(1));
+        assertEquals(1, mFlexboxHelper.mIndexToFlexLine.get(2));
+        assertEquals(2, mFlexboxHelper.mIndexToFlexLine.get(3));
     }
 }

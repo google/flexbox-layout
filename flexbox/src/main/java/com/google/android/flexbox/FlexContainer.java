@@ -161,7 +161,7 @@ public interface FlexContainer {
     List<FlexLine> getFlexLines();
 
     /**
-     * Returns the length of decoration (such as deviders) of the flex item
+     * Returns the length of decoration (such as dividers) of the flex item
      *
      * @param childAbsoluteIndex           the absolute index of the flex item within the flex
      *                                     container
