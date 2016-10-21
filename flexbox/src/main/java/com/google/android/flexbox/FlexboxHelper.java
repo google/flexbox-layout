@@ -48,6 +48,24 @@ class FlexboxHelper {
      */
     private SparseIntArray mOrderCache;
 
+    /**
+     * Map the view index to the flex line which contains the view represented by the index to
+     * look for a flex line from a given view index in a constant time.
+     * Key: index of the view
+     * Value: index of the flex line that contains the given view
+     *
+     * E.g. if we have following flex lines,
+     * <p>
+     * FlexLine(0): itemCount 3
+     * FlexLine(1): itemCount 2
+     * </p>
+     * this instance should have following entries
+     * <p>
+     * {0, 0}, {1, 0}, {2, 0}, {3, 1}, {4, 1}
+     * </p>
+     */
+    SparseIntArray mIndexToFlexLine;
+
     FlexboxHelper(FlexContainer flexContainer) {
         mFlexContainer = flexContainer;
     }
@@ -180,7 +198,6 @@ class FlexboxHelper {
     FlexLinesResult calculateHorizontalFlexLines(int widthMeasureSpec, int heightMeasureSpec) {
         int widthMode = View.MeasureSpec.getMode(widthMeasureSpec);
         int widthSize = View.MeasureSpec.getSize(widthMeasureSpec);
-
         FlexLinesResult result = new FlexLinesResult();
         List<FlexLine> flexLines = new ArrayList<>();
         result.mFlexLines = flexLines;
@@ -253,7 +270,7 @@ class FlexboxHelper {
                     child.getMeasuredWidth() + flexItem.getMarginLeft() + flexItem.getMarginRight(),
                     flexItem, i, indexInFlexLine)) {
                 if (flexLine.getItemCountNotGone() > 0) {
-                    addFlexLine(flexLines, flexLine);
+                    addFlexLine(flexLines, flexLine, i - 1);
                 }
 
                 flexLine = new FlexLine();
@@ -309,7 +326,6 @@ class FlexboxHelper {
     FlexLinesResult calculateVerticalFlexLines(int widthMeasureSpec, int heightMeasureSpec) {
         int heightMode = View.MeasureSpec.getMode(heightMeasureSpec);
         int heightSize = View.MeasureSpec.getSize(heightMeasureSpec);
-
         FlexLinesResult result = new FlexLinesResult();
         List<FlexLine> flexLines = new ArrayList<>();
         result.mFlexLines = flexLines;
@@ -378,7 +394,7 @@ class FlexboxHelper {
                     child.getMeasuredHeight() + lp.topMargin + lp.bottomMargin, lp,
                     i, indexInFlexLine)) {
                 if (flexLine.getItemCountNotGone() > 0) {
-                    addFlexLine(flexLines, flexLine);
+                    addFlexLine(flexLines, flexLine, i - 1);
                 }
 
                 flexLine = new FlexLine();
@@ -441,12 +457,17 @@ class FlexboxHelper {
             FlexLine flexLine) {
         if (childIndex == childCount - 1 && flexLine.getItemCountNotGone() != 0) {
             // Add the flex line if this item is the last item
-            addFlexLine(flexLines, flexLine);
+            addFlexLine(flexLines, flexLine, childIndex);
         }
     }
 
-    private List<FlexLine> addFlexLine(List<FlexLine> flexLines, FlexLine flexLine) {
+    private List<FlexLine> addFlexLine(List<FlexLine> flexLines, FlexLine flexLine, int index) {
         mFlexContainer.onNewFlexLineAdded(flexLine);
+        if (mIndexToFlexLine == null) {
+            mIndexToFlexLine = new SparseIntArray();
+        }
+        mIndexToFlexLine.append(index, flexLines.size());
+
         flexLines.add(flexLine);
         return flexLines;
     }
