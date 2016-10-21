@@ -69,3 +69,4 @@ class IsEqualAllowingError<T extends Number> extends BaseMatcher<T> {
         return new IsEqualAllowingError<>(expected, errorAllowed);
     }
 }
+
