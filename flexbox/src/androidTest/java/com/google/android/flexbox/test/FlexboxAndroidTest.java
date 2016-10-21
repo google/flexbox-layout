@@ -49,6 +49,7 @@ import static android.support.test.espresso.assertion.PositionAssertions.isRight
 import static android.support.test.espresso.assertion.PositionAssertions.isTopAlignedWith;
 import static android.support.test.espresso.assertion.ViewAssertions.matches;
 import static android.support.test.espresso.matcher.ViewMatchers.withId;
+import static com.google.android.flexbox.test.IsEqualAllowingError.isEqualAllowingError;
 import static junit.framework.Assert.assertEquals;
 import static junit.framework.Assert.assertTrue;
 import static org.hamcrest.core.Is.is;
@@ -738,9 +739,8 @@ public class FlexboxAndroidTest {
         int space = flexboxLayout.getWidth() - textView1.getWidth() - textView2.getWidth() -
                 textView3.getWidth();
         space = space / 2;
-        assertTrue(space - 1 <= textView1.getLeft() && textView1.getLeft() <= space + 1);
-        assertTrue(space - 1 <= flexboxLayout.getRight() - textView3.getRight()
-                && flexboxLayout.getRight() - textView3.getRight() <= space + 1);
+        assertThat(textView1.getLeft(), isEqualAllowingError(space));
+        assertThat(flexboxLayout.getRight() - textView3.getRight(), isEqualAllowingError(space));
     }
 
     @Test
@@ -768,12 +768,10 @@ public class FlexboxAndroidTest {
                 textView3.getWidth() - flexboxLayout.getPaddingLeft() -
                 flexboxLayout.getPaddingRight();
         space = space / 2;
-        assertTrue(space - 1 <= textView1.getLeft() - flexboxLayout.getPaddingLeft()
-                && textView1.getLeft() - flexboxLayout.getPaddingLeft() <= space + 1);
-        assertTrue(space - 1 <= flexboxLayout.getWidth() - textView3.getRight()
-                - flexboxLayout.getPaddingRight()
-                && flexboxLayout.getWidth() - textView3.getRight() - flexboxLayout.getPaddingRight()
-                <= space + 1);
+        assertThat(textView1.getLeft() - flexboxLayout.getPaddingLeft(),
+                isEqualAllowingError(space));
+        assertThat(flexboxLayout.getWidth() - textView3.getRight()
+                - flexboxLayout.getPaddingRight(), isEqualAllowingError(space));
     }
 
     @Test
@@ -805,10 +803,8 @@ public class FlexboxAndroidTest {
         int space = flexboxLayout.getWidth() - textView1.getWidth() - textView2.getWidth() -
                 textView3.getWidth();
         space = space / 2;
-        assertTrue(space - 1 <= textView2.getLeft() - textView1.getRight() &&
-                textView2.getLeft() - textView1.getRight() <= space + 1);
-        assertTrue(space - 1 <= textView3.getLeft() - textView2.getRight() &&
-                textView3.getLeft() - textView2.getRight() <= space + 1);
+        assertThat(textView2.getLeft() - textView1.getRight(), isEqualAllowingError(space));
+        assertThat(textView3.getLeft() - textView2.getRight(), isEqualAllowingError(space));
     }
 
     @Test
@@ -841,10 +837,8 @@ public class FlexboxAndroidTest {
         space = space / 2;
         assertThat(textView1.getLeft(), is(padding));
         assertThat(flexboxLayout.getRight() - textView3.getRight(), is(padding));
-        assertTrue(space - 1 <= textView2.getLeft() - textView1.getRight() &&
-                textView2.getLeft() - textView1.getRight() <= space + 1);
-        assertTrue(space - 1 <= textView3.getLeft() - textView2.getRight() &&
-                textView3.getLeft() - textView2.getRight() <= space + 1);
+        assertThat(textView2.getLeft() - textView1.getRight(), isEqualAllowingError(space));
+        assertThat(textView3.getLeft() - textView2.getRight(), isEqualAllowingError(space));
     }
 
     @Test
@@ -875,14 +869,10 @@ public class FlexboxAndroidTest {
                 textView3.getWidth();
         space = space / 6; // Divide by the number of children * 2
         assertTrue(space - 1 <= textView1.getLeft() && textView1.getLeft() <= space + 1);
-        int spaceLowerBound = space * 2 - 1;
-        int spaceUpperBound = space * 2 + 1;
-        assertTrue(spaceLowerBound <= textView2.getLeft() - textView1.getRight() &&
-                textView2.getLeft() - textView1.getRight() <= spaceUpperBound);
-        assertTrue(spaceLowerBound <= textView3.getLeft() - textView2.getRight() &&
-                textView3.getLeft() - textView2.getRight() <= spaceUpperBound);
-        assertTrue(space - 1 <= flexboxLayout.getRight() - textView3.getRight() &&
-                flexboxLayout.getRight() - textView3.getRight() <= space + 1);
+        int spaceInMiddle = space * 2;
+        assertThat(textView2.getLeft() - textView1.getRight(), isEqualAllowingError(spaceInMiddle));
+        assertThat(textView3.getLeft() - textView2.getRight(), isEqualAllowingError(spaceInMiddle));
+        assertThat(flexboxLayout.getRight() - textView3.getRight(), isEqualAllowingError(space));
     }
 
     @Test
@@ -913,16 +903,13 @@ public class FlexboxAndroidTest {
         int space = flexboxLayout.getWidth() - textView1.getWidth() - textView2.getWidth() -
                 textView3.getWidth() - padding * 2;
         space = space / 6; // Divide by the number of children * 2
-        assertTrue(space - 1 <= textView1.getLeft() - padding
-                && textView1.getLeft() - padding <= space + 1);
-        int spaceLowerBound = space * 2 - 1;
-        int spaceUpperBound = space * 2 + 1;
-        assertTrue(spaceLowerBound <= textView2.getLeft() - textView1.getRight() &&
-                textView2.getLeft() - textView1.getRight() <= spaceUpperBound);
-        assertTrue(spaceLowerBound <= textView3.getLeft() - textView2.getRight() &&
-                textView3.getLeft() - textView2.getRight() <= spaceUpperBound);
-        assertTrue(space - 1 <= flexboxLayout.getRight() - textView3.getRight() - padding &&
-                flexboxLayout.getRight() - textView3.getRight() - padding <= space + 1);
+        assertThat(textView1.getLeft() - padding, isEqualAllowingError(space));
+
+        int spaceInMiddle = space * 2;
+        assertThat(textView2.getLeft() - textView1.getRight(), isEqualAllowingError(spaceInMiddle));
+        assertThat(textView3.getLeft() - textView2.getRight(), isEqualAllowingError(spaceInMiddle));
+        assertThat(flexboxLayout.getRight() - textView3.getRight() - padding,
+                isEqualAllowingError(space));
     }
 
     @Test
@@ -1004,9 +991,8 @@ public class FlexboxAndroidTest {
         int space = flexboxLayout.getHeight() - textView1.getHeight() - textView2.getHeight() -
                 textView3.getHeight();
         space = space / 2;
-        assertTrue(space - 1 <= textView1.getTop() && textView1.getTop() <= space + 1);
-        assertTrue(space - 1 <= flexboxLayout.getBottom() - textView3.getBottom() &&
-                flexboxLayout.getBottom() - textView3.getBottom() <= space + 1);
+        assertThat(textView1.getTop(), isEqualAllowingError(space));
+        assertThat(flexboxLayout.getBottom() - textView3.getBottom(), isEqualAllowingError(space));
     }
 
     @Test
@@ -1040,10 +1026,8 @@ public class FlexboxAndroidTest {
         int space = flexboxLayout.getHeight() - textView1.getHeight() - textView2.getHeight() -
                 textView3.getHeight();
         space = space / 2;
-        assertTrue(space - 1 <= textView2.getTop() - textView1.getBottom() &&
-                textView2.getTop() - textView1.getBottom() <= space + 1);
-        assertTrue(space - 1 <= textView3.getTop() - textView2.getBottom() &&
-                textView3.getTop() - textView2.getBottom() <= space + 1);
+        assertThat(textView2.getTop() - textView1.getBottom(), isEqualAllowingError(space));
+        assertThat(textView3.getTop() - textView2.getBottom(), isEqualAllowingError(space));
     }
 
     @Test
@@ -1079,10 +1063,8 @@ public class FlexboxAndroidTest {
         space = space / 2;
         assertThat(textView1.getTop(), is(padding));
         assertThat(flexboxLayout.getBottom() - textView3.getBottom(), is(padding));
-        assertTrue(space - 1 <= textView2.getTop() - textView1.getBottom() &&
-                textView2.getTop() - textView1.getBottom() <= space + 1);
-        assertTrue(space - 1 <= textView3.getTop() - textView2.getBottom() &&
-                textView3.getTop() - textView2.getBottom() <= space + 1);
+        assertThat(textView2.getTop() - textView1.getBottom(), isEqualAllowingError(space));
+        assertThat(textView3.getTop() - textView2.getBottom(), isEqualAllowingError(space));
     }
 
     @Test
@@ -1111,18 +1093,14 @@ public class FlexboxAndroidTest {
         TextView textView1 = (TextView) activity.findViewById(R.id.text1);
         TextView textView2 = (TextView) activity.findViewById(R.id.text2);
         TextView textView3 = (TextView) activity.findViewById(R.id.text3);
-        float space = flexboxLayout.getHeight() - textView1.getHeight() - textView2.getHeight() -
+        int space = flexboxLayout.getHeight() - textView1.getHeight() - textView2.getHeight() -
                 textView3.getHeight();
         space = space / 6; // Divide by the number of children * 2
-        assertTrue(space - 1 <= textView1.getTop() && textView1.getTop() <= space + 1);
-        float spaceLowerBound = space * 2 - 1;
-        float spaceUpperBound = space * 2 + 1;
-        assertTrue(spaceLowerBound <= textView2.getTop() - textView1.getBottom() &&
-                textView2.getTop() - textView1.getBottom() <= spaceUpperBound);
-        assertTrue(spaceLowerBound <= textView3.getTop() - textView2.getBottom() &&
-                textView3.getTop() - textView2.getBottom() <= spaceUpperBound);
-        assertTrue(space - 1 <= flexboxLayout.getBottom() - textView3.getBottom() &&
-                flexboxLayout.getBottom() - textView3.getBottom() <= space + 1);
+        assertThat(textView1.getTop(), isEqualAllowingError(space));
+        int spaceInMiddle = space * 2;
+        assertThat(textView2.getTop() - textView1.getBottom(), isEqualAllowingError(spaceInMiddle));
+        assertThat(textView3.getTop() - textView2.getBottom(), isEqualAllowingError(spaceInMiddle));
+        assertThat(flexboxLayout.getBottom() - textView3.getBottom(), isEqualAllowingError(space));
     }
 
     @Test
@@ -1152,19 +1130,15 @@ public class FlexboxAndroidTest {
         TextView textView1 = (TextView) activity.findViewById(R.id.text1);
         TextView textView2 = (TextView) activity.findViewById(R.id.text2);
         TextView textView3 = (TextView) activity.findViewById(R.id.text3);
-        float space = flexboxLayout.getHeight() - textView1.getHeight() - textView2.getHeight() -
+        int space = flexboxLayout.getHeight() - textView1.getHeight() - textView2.getHeight() -
                 textView3.getHeight() - padding * 2;
         space = space / 6; // Divide by the number of children * 2
-        assertTrue(space - 1 <= textView1.getTop() - padding
-                && textView1.getTop() - padding <= space + 1);
-        float spaceLowerBound = space * 2 - 1;
-        float spaceUpperBound = space * 2 + 1;
-        assertTrue(spaceLowerBound <= textView2.getTop() - textView1.getBottom() &&
-                textView2.getTop() - textView1.getBottom() <= spaceUpperBound);
-        assertTrue(spaceLowerBound <= textView3.getTop() - textView2.getBottom() &&
-                textView3.getTop() - textView2.getBottom() <= spaceUpperBound);
-        assertTrue(space - 1 <= flexboxLayout.getBottom() - textView3.getBottom() - padding &&
-                flexboxLayout.getBottom() - textView3.getBottom() - padding <= space + 1);
+        assertThat(textView1.getTop() - padding, isEqualAllowingError(space));
+        int spaceInMiddle = space * 2;
+        assertThat(textView2.getTop() - textView1.getBottom(), isEqualAllowingError(spaceInMiddle));
+        assertThat(textView3.getTop() - textView2.getBottom(), isEqualAllowingError(spaceInMiddle));
+        assertThat(flexboxLayout.getBottom() - textView3.getBottom() - padding,
+                isEqualAllowingError(space));
     }
 
     @Test
@@ -1417,10 +1391,9 @@ public class FlexboxAndroidTest {
                 .getHeight();
         spaceAboveAndBottom /= 2;
 
-        assertTrue(spaceAboveAndBottom - 1 <= textView1.getTop()
-                && textView1.getTop() <= spaceAboveAndBottom + 1);
-        assertTrue(flexboxLayout.getBottom() - spaceAboveAndBottom - 1 <= textView3.getBottom() &&
-                textView3.getBottom() <= flexboxLayout.getBottom() - spaceAboveAndBottom + 1);
+        assertThat(textView1.getTop(), isEqualAllowingError(spaceAboveAndBottom));
+        assertThat(flexboxLayout.getBottom() - textView3.getBottom(),
+                isEqualAllowingError(spaceAboveAndBottom));
         assertThat(flexboxLayout.getFlexLines().size(), is(2));
     }
 
@@ -1498,11 +1471,9 @@ public class FlexboxAndroidTest {
         int spaceAround = flexboxLayout.getHeight() - textView1.getHeight() - textView3.getHeight();
         spaceAround /= 4; // Divide by the number of flex lines * 2
 
-        assertTrue(spaceAround - 1 <= textView1.getTop() &&
-                textView1.getTop() <= spaceAround + 1);
-        int spaceLowerBound = textView1.getBottom() + spaceAround * 2 - 1;
-        int spaceUpperBound = textView1.getBottom() + spaceAround * 2 + 1;
-        assertTrue(spaceLowerBound <= textView3.getTop() && textView3.getTop() <= spaceUpperBound);
+        assertThat(textView1.getTop(), isEqualAllowingError(spaceAround));
+        int spaceInMiddle = textView1.getBottom() + spaceAround * 2;
+        assertThat(textView3.getTop(), isEqualAllowingError(spaceInMiddle));
         assertThat(flexboxLayout.getFlexLines().size(), is(2));
     }
 
@@ -1663,12 +1634,9 @@ public class FlexboxAndroidTest {
                 - textView3.getWidth();
         spaceLeftAndRight /= 2;
 
-        assertTrue(spaceLeftAndRight - 1 <= textView1.getLeft() &&
-                textView1.getLeft() <= spaceLeftAndRight + 1);
-        int spaceLowerBound = flexboxLayout.getRight() - spaceLeftAndRight - 1;
-        int spaceUpperBound = flexboxLayout.getRight() - spaceLeftAndRight + 1;
-        assertTrue(
-                spaceLowerBound <= textView3.getRight() && textView3.getRight() <= spaceUpperBound);
+        assertThat(textView1.getLeft(), isEqualAllowingError(spaceLeftAndRight));
+        assertThat(textView3.getRight(),
+                isEqualAllowingError(flexboxLayout.getRight() - spaceLeftAndRight));
     }
 
     @Test
@@ -1724,12 +1692,9 @@ public class FlexboxAndroidTest {
         int spaceAround = flexboxLayout.getWidth() - textView1.getWidth() - textView3.getWidth();
         spaceAround /= 4; // Divide by the number of flex lines * 2
 
-        assertTrue(spaceAround - 1 <= textView1.getLeft() &&
-                textView1.getLeft() <= spaceAround + 1);
-        int spaceLowerBound = textView1.getRight() + spaceAround * 2 - 1;
-        int spaceUpperBound = textView1.getRight() + spaceAround * 2 + 1;
-        assertTrue(spaceLowerBound <= textView3.getLeft() &&
-                textView3.getLeft() <= spaceUpperBound);
+        assertThat(textView1.getLeft(), isEqualAllowingError(spaceAround));
+        int spaceInMiddle = textView1.getRight() + spaceAround * 2;
+        assertThat(textView3.getLeft(), isEqualAllowingError(spaceInMiddle));
     }
 
     @Test
@@ -1795,12 +1760,9 @@ public class FlexboxAndroidTest {
         TextView textView1 = (TextView) activity.findViewById(R.id.text1);
         TextView textView2 = (TextView) activity.findViewById(R.id.text2);
         TextView textView3 = (TextView) activity.findViewById(R.id.text3);
-        assertTrue(flexLineSize - 1 <= textView1.getHeight()
-                && textView1.getHeight() <= flexLineSize + 1);
-        assertTrue(flexLineSize - 1 <= textView2.getHeight() &&
-                flexLineSize <= flexLineSize + 1);
-        assertTrue(flexLineSize - 1 <= textView3.getHeight() &&
-                textView3.getHeight() <= flexLineSize + 1);
+        assertThat(textView1.getHeight(), isEqualAllowingError(flexLineSize));
+        assertThat(textView2.getHeight(), isEqualAllowingError(flexLineSize));
+        assertThat(textView3.getHeight(), isEqualAllowingError(flexLineSize));
     }
 
     @Test
@@ -1829,8 +1791,7 @@ public class FlexboxAndroidTest {
         TextView textView1 = (TextView) activity.findViewById(R.id.text1);
         TextView textView2 = (TextView) activity.findViewById(R.id.text2);
         TextView textView3 = (TextView) activity.findViewById(R.id.text3);
-        assertTrue(flexLineSize - 1 <= textView1.getHeight() &&
-                textView1.getHeight() <= flexLineSize + 1);
+        assertThat(textView1.getHeight(), isEqualAllowingError(flexLineSize));
         assertThat(textView2.getHeight(), not(flexLineSize));
         assertThat(textView3.getHeight(), not(flexLineSize));
     }
@@ -1864,8 +1825,7 @@ public class FlexboxAndroidTest {
         TextView textView1 = (TextView) activity.findViewById(R.id.text1);
         TextView textView2 = (TextView) activity.findViewById(R.id.text2);
         TextView textView3 = (TextView) activity.findViewById(R.id.text3);
-        assertTrue(flexLineSize - 1 <= textView1.getWidth()
-                && textView1.getWidth() <= flexLineSize + 1);
+        assertThat(textView1.getWidth(), isEqualAllowingError(flexLineSize));
         assertThat(textView2.getWidth(), not(flexLineSize));
         assertThat(textView3.getWidth(), not(flexLineSize));
     }
@@ -1899,8 +1859,7 @@ public class FlexboxAndroidTest {
         assertThat(textView1.getHeight(), not(flexLineSize));
         assertThat(textView2.getHeight(), not(flexLineSize));
         assertThat(textView3.getHeight(), not(flexLineSize));
-        assertTrue(flexLineSize - 1 <= textView3.getTop() &&
-                textView3.getTop() <= flexLineSize + 1);
+        assertThat(textView3.getTop(), isEqualAllowingError(flexLineSize));
     }
 
     @Test
@@ -1934,10 +1893,8 @@ public class FlexboxAndroidTest {
         assertThat(textView1.getHeight(), not(flexLineSize));
         assertThat(textView2.getHeight(), not(flexLineSize));
         assertThat(textView3.getHeight(), not(flexLineSize));
-        assertTrue(flexLineSize - 1 <= textView1.getBottom() &&
-                textView1.getBottom() <= flexLineSize + 1);
-        assertTrue(flexLineSize - 1 <= textView2.getBottom() &&
-                textView2.getBottom() <= flexLineSize + 1);
+        assertThat(textView1.getBottom(), isEqualAllowingError(flexLineSize));
+        assertThat(textView2.getBottom(), isEqualAllowingError(flexLineSize));
         assertThat(textView3.getBottom(), is(flexboxLayout.getBottom()));
     }
 
@@ -2028,12 +1985,9 @@ public class FlexboxAndroidTest {
         assertThat(textView1.getHeight(), not(flexLineSize));
         assertThat(textView2.getHeight(), not(flexLineSize));
         assertThat(textView3.getHeight(), not(flexLineSize));
-        assertTrue(spaceAboveAndBelow - 1 <= textView1.getTop() &&
-                textView1.getTop() <= spaceAboveAndBelow + 1);
-        assertTrue(spaceAboveAndBelow - 1 <= textView2.getTop() &&
-                textView2.getTop() <= spaceAboveAndBelow + 1);
-        assertTrue(flexLineSize + spaceAboveAndBelow - 1 <= textView3.getTop() &&
-                textView3.getTop() <= flexLineSize + spaceAboveAndBelow + 1);
+        assertThat(textView1.getTop(), isEqualAllowingError(spaceAboveAndBelow));
+        assertThat(textView2.getTop(), isEqualAllowingError(spaceAboveAndBelow));
+        assertThat(textView3.getTop(), isEqualAllowingError(flexLineSize + spaceAboveAndBelow));
     }
 
     @Test
@@ -2068,10 +2022,10 @@ public class FlexboxAndroidTest {
         assertThat(textView1.getHeight(), not(flexLineSize));
         assertThat(textView2.getHeight(), not(flexLineSize));
         assertThat(textView3.getHeight(), not(flexLineSize));
-        int lowerBound = flexboxLayout.getHeight() - flexLineSize - 1;
-        int upperBound = flexboxLayout.getHeight() - flexLineSize + 1;
-        assertTrue(lowerBound <= textView1.getTop() && textView1.getTop() <= upperBound);
-        assertTrue(lowerBound <= textView2.getTop() && textView2.getTop() <= upperBound);
+        assertThat(textView1.getTop(),
+                isEqualAllowingError(flexboxLayout.getHeight() - flexLineSize));
+        assertThat(textView2.getTop(),
+                isEqualAllowingError(flexboxLayout.getHeight() - flexLineSize));
         assertThat(textView3.getTop(), is(0));
     }
 
@@ -2109,14 +2063,12 @@ public class FlexboxAndroidTest {
         assertThat(textView1.getHeight(), not(flexLineSize));
         assertThat(textView2.getHeight(), not(flexLineSize));
         assertThat(textView3.getHeight(), not(flexLineSize));
-        int lowerBound = flexboxLayout.getHeight() - spaceAboveAndBelow - 1;
-        int upperBound = flexboxLayout.getHeight() - spaceAboveAndBelow + 1;
-        assertTrue(lowerBound <= textView1.getBottom() && textView1.getBottom() <= upperBound);
-        assertTrue(lowerBound <= textView2.getBottom() && textView2.getBottom() <= upperBound);
-        assertTrue(flexboxLayout.getHeight() - flexLineSize - spaceAboveAndBelow - 1 <=
-                textView3.getBottom() &&
-                textView3.getBottom()
-                        <= flexboxLayout.getHeight() - flexLineSize - spaceAboveAndBelow + 1);
+        assertThat(textView1.getBottom(),
+                isEqualAllowingError(flexboxLayout.getHeight() - spaceAboveAndBelow));
+        assertThat(textView2.getBottom(),
+                isEqualAllowingError(flexboxLayout.getHeight() - spaceAboveAndBelow));
+        assertThat(textView3.getBottom(), isEqualAllowingError(
+                flexboxLayout.getHeight() - flexLineSize - spaceAboveAndBelow));
     }
 
     @Test
@@ -2152,8 +2104,7 @@ public class FlexboxAndroidTest {
         assertThat(textView1.getWidth(), not(flexLineSize));
         assertThat(textView2.getWidth(), not(flexLineSize));
         assertThat(textView3.getWidth(), not(flexLineSize));
-        assertTrue(flexLineSize - 1 <= textView3.getLeft() &&
-                textView3.getLeft() <= flexLineSize + 1);
+        assertThat(textView3.getLeft(), isEqualAllowingError(flexLineSize));
     }
 
     @Test
@@ -2189,10 +2140,8 @@ public class FlexboxAndroidTest {
         assertThat(textView1.getWidth(), not(flexLineSize));
         assertThat(textView2.getWidth(), not(flexLineSize));
         assertThat(textView3.getWidth(), not(flexLineSize));
-        assertTrue(flexLineSize - 1 <= textView1.getRight()
-                && textView1.getRight() <= flexLineSize + 1);
-        assertTrue(flexLineSize - 1 <= textView2.getRight()
-                && textView2.getRight() <= flexLineSize + 1);
+        assertThat(textView1.getRight(), isEqualAllowingError(flexLineSize));
+        assertThat(textView2.getRight(), isEqualAllowingError(flexLineSize));
         assertThat(textView3.getRight(), is(flexboxLayout.getRight()));
     }
 
@@ -2231,12 +2180,9 @@ public class FlexboxAndroidTest {
         assertThat(textView1.getWidth(), not(flexLineSize));
         assertThat(textView2.getWidth(), not(flexLineSize));
         assertThat(textView3.getWidth(), not(flexLineSize));
-        assertTrue(spaceLeftAndRight - 1 <= textView1.getLeft() &&
-                textView1.getLeft() <= spaceLeftAndRight + 1);
-        assertTrue(spaceLeftAndRight - 1 <= textView2.getLeft() &&
-                textView2.getLeft() <= spaceLeftAndRight + 1);
-        assertTrue(flexLineSize + spaceLeftAndRight - 1 <= textView3.getLeft() &&
-                textView2.getLeft() <= flexLineSize + spaceLeftAndRight + 1);
+        assertThat(textView1.getLeft(), isEqualAllowingError(spaceLeftAndRight));
+        assertThat(textView2.getLeft(), isEqualAllowingError(spaceLeftAndRight));
+        assertThat(textView3.getLeft(), isEqualAllowingError(flexLineSize + spaceLeftAndRight));
     }
 
     @Test
@@ -2273,10 +2219,10 @@ public class FlexboxAndroidTest {
         assertThat(textView1.getWidth(), not(flexLineSize));
         assertThat(textView2.getWidth(), not(flexLineSize));
         assertThat(textView3.getWidth(), not(flexLineSize));
-        int lowerBound = flexboxLayout.getWidth() - flexLineSize - 1;
-        int upperBound = flexboxLayout.getWidth() - flexLineSize + 1;
-        assertTrue(lowerBound <= textView1.getLeft() && textView1.getLeft() <= upperBound);
-        assertTrue(lowerBound <= textView2.getLeft() && textView2.getLeft() <= upperBound);
+        assertThat(textView1.getLeft(),
+                isEqualAllowingError(flexboxLayout.getWidth() - flexLineSize));
+        assertThat(textView2.getLeft(),
+                isEqualAllowingError(flexboxLayout.getWidth() - flexLineSize));
         assertThat(textView3.getLeft(), is(0));
     }
 
@@ -2316,14 +2262,12 @@ public class FlexboxAndroidTest {
         assertThat(textView1.getWidth(), not(flexLineSize));
         assertThat(textView2.getWidth(), not(flexLineSize));
         assertThat(textView3.getWidth(), not(flexLineSize));
-        int lowerBound = flexboxLayout.getWidth() - spaceLeftAndRight - 1;
-        int upperBound = flexboxLayout.getWidth() - spaceLeftAndRight + 1;
-        assertTrue(lowerBound <= textView1.getRight() && textView1.getRight() <= upperBound);
-        assertTrue(lowerBound <= textView2.getRight() && textView2.getRight() <= upperBound);
-        assertTrue(flexboxLayout.getWidth() - flexLineSize - spaceLeftAndRight - 1 <=
-                textView3.getRight() &&
-                textView3.getRight()
-                        <= flexboxLayout.getWidth() - flexLineSize - spaceLeftAndRight + 1);
+        assertThat(textView1.getRight(),
+                isEqualAllowingError(flexboxLayout.getWidth() - spaceLeftAndRight));
+        assertThat(textView2.getRight(),
+                isEqualAllowingError(flexboxLayout.getWidth() - spaceLeftAndRight));
+        assertThat(textView3.getRight(),
+                isEqualAllowingError(flexboxLayout.getWidth() - flexLineSize - spaceLeftAndRight));
     }
 
     @Test
@@ -2489,8 +2433,7 @@ public class FlexboxAndroidTest {
         // Allowing minor different length with the flex container since the sum of the three text
         // views width is not always the same as the flex container's main size caused by round
         // errors in calculating the percent lengths.
-        assertTrue(totalWidth >= flexboxLayout.getWidth() - 3 ||
-                totalWidth <= flexboxLayout.getWidth() + 3);
+        assertThat(flexboxLayout.getWidth(), isEqualAllowingError(totalWidth));
     }
 
     @Test
@@ -2564,8 +2507,7 @@ public class FlexboxAndroidTest {
         // Allowing minor different length with the flex container since the sum of the three text
         // views width is not always the same as the flex container's main size caused by round
         // errors in calculating the percent lengths.
-        assertTrue(totalHeight >= flexboxLayout.getHeight() - 3 ||
-                totalHeight <= flexboxLayout.getHeight() + 3);
+        assertThat(flexboxLayout.getHeight(), isEqualAllowingError(totalHeight));
     }
 
     @Test
