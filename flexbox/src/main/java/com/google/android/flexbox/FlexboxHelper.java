@@ -26,6 +26,8 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
+import static com.google.android.flexbox.R.attr.flexDirection;
+
 /**
  * Offers various calculations for Flexbox to use the common logic between the classes such as
  * {@link FlexboxLayout} and {@link FlexboxLayoutManager}.
@@ -505,6 +507,377 @@ class FlexboxHelper {
                     View.MeasureSpec.makeMeasureSpec(childHeight, View.MeasureSpec.EXACTLY));
         }
     }
+
+    /**
+     * Determine the main size by expanding (shrinking if negative remaining free space is given)
+     * an individual child in each flex line if any children's mFlexGrow (or mFlexShrink if
+     * remaining
+     * space is negative) properties are set to non-zero.
+     *
+     * @param flexLines         a list of flex lines that compose the flex container
+     * @param widthMeasureSpec  horizontal space requirements as imposed by the parent
+     * @param heightMeasureSpec vertical space requirements as imposed by the parent
+     * @param childrenFrozen    a boolean array that represents 'frozen' state of children during
+     *                          measure. If a view is frozen it will no longer
+     *                          expand or shrink regardless of flex grow/flex shrink attributes.
+     *                          Items are indexed by the child's reordered index.
+     * @see FlexContainer#setFlexDirection(int)
+     * @see FlexContainer#getFlexDirection()
+     */
+    void determineMainSize(List<FlexLine> flexLines, int widthMeasureSpec, int heightMeasureSpec,
+            boolean[] childrenFrozen) {
+        int mainSize;
+        int paddingAlongMainAxis;
+        switch (mFlexContainer.getFlexDirection()) {
+            case FlexDirection.ROW: // Intentional fall through
+            case FlexDirection.ROW_REVERSE:
+                int widthMode = View.MeasureSpec.getMode(widthMeasureSpec);
+                int widthSize = View.MeasureSpec.getSize(widthMeasureSpec);
+                if (widthMode == View.MeasureSpec.EXACTLY) {
+                    mainSize = widthSize;
+                } else {
+                    mainSize = mFlexContainer.getLargestMainSize();
+                }
+                paddingAlongMainAxis = mFlexContainer.getPaddingLeft()
+                        + mFlexContainer.getPaddingRight();
+                break;
+            case FlexDirection.COLUMN: // Intentional fall through
+            case FlexDirection.COLUMN_REVERSE:
+                int heightMode = View.MeasureSpec.getMode(heightMeasureSpec);
+                int heightSize = View.MeasureSpec.getSize(heightMeasureSpec);
+                if (heightMode == View.MeasureSpec.EXACTLY) {
+                    mainSize = heightSize;
+                } else {
+                    mainSize = mFlexContainer.getLargestMainSize();
+                }
+                paddingAlongMainAxis = mFlexContainer.getPaddingTop()
+                        + mFlexContainer.getPaddingBottom();
+                break;
+            default:
+                throw new IllegalArgumentException("Invalid flex direction: " + flexDirection);
+        }
+
+        int childIndex = 0;
+        for (FlexLine flexLine : flexLines) {
+            if (flexLine.mMainSize < mainSize) {
+                childIndex = expandFlexItems(widthMeasureSpec, heightMeasureSpec, flexLine,
+                        mainSize, paddingAlongMainAxis, childIndex, childrenFrozen);
+            } else {
+                childIndex = shrinkFlexItems(widthMeasureSpec, heightMeasureSpec, flexLine,
+                        mainSize, paddingAlongMainAxis, childIndex, childrenFrozen);
+            }
+        }
+    }
+
+    /**
+     * Expand the flex items along the main axis based on the individual mFlexGrow attribute.
+     *
+     * @param widthMeasureSpec     the horizontal space requirements as imposed by the parent
+     * @param heightMeasureSpec    the vertical space requirements as imposed by the parent
+     * @param flexLine             the flex line to which flex items belong
+     * @param maxMainSize          the maximum main size. Expanded main size will be this size
+     * @param paddingAlongMainAxis the padding value along the main axis
+     * @param startIndex           the start index of the children views to be expanded. This index
+     *                             needs to
+     *                             be an absolute index in the flex container (FlexboxLayout),
+     *                             not the relative index in the flex line.
+     * @return the next index, the next flex line's first flex item starts from the returned index
+     * @see FlexContainer#getFlexDirection()
+     * @see FlexContainer#setFlexDirection(int)
+     * @see FlexItem#getFlexGrow()
+     */
+    private int expandFlexItems(int widthMeasureSpec, int heightMeasureSpec, FlexLine flexLine,
+            int maxMainSize, int paddingAlongMainAxis, int startIndex, boolean[] childrenFrozen) {
+        int childIndex = startIndex;
+        if (flexLine.mTotalFlexGrow <= 0 || maxMainSize < flexLine.mMainSize) {
+            childIndex += flexLine.mItemCount;
+            return childIndex;
+        }
+        int sizeBeforeExpand = flexLine.mMainSize;
+        boolean needsReexpand = false;
+        float unitSpace = (maxMainSize - flexLine.mMainSize) / flexLine.mTotalFlexGrow;
+        flexLine.mMainSize = paddingAlongMainAxis + flexLine.mDividerLengthInMainSize;
+
+        // Setting the cross size of the flex line as the temporal value since the cross size of
+        // each flex item may be changed from the initial calculation
+        // (in the measureHorizontal/measureVertical method) even this method is part of the main
+        // size determination.
+        // E.g. If a TextView's layout_width is set to 0dp, layout_height is set to wrap_content,
+        // and layout_flexGrow is set to 1, the TextView is trying to expand to the vertical
+        // direction to enclose its content (in the measureHorizontal method), but
+        // the width will be expanded in this method. In that case, the height needs to be measured
+        // again with the expanded width.
+        flexLine.mCrossSize = Integer.MIN_VALUE;
+        float accumulatedRoundError = 0;
+        for (int i = 0; i < flexLine.mItemCount; i++) {
+            View child = mFlexContainer.getReorderedFlexItemAt(childIndex);
+            if (child == null) {
+                continue;
+            } else if (child.getVisibility() == View.GONE) {
+                childIndex++;
+                continue;
+            }
+            FlexItem flexItem = (FlexItem) child.getLayoutParams();
+            int flexDirection = mFlexContainer.getFlexDirection();
+            if (flexDirection == FlexDirection.ROW || flexDirection == FlexDirection.ROW_REVERSE) {
+                // The direction of the main axis is horizontal
+                if (!childrenFrozen[childIndex]) {
+                    float rawCalculatedWidth = child.getMeasuredWidth()
+                            + unitSpace * flexItem.getFlexGrow();
+                    if (i == flexLine.mItemCount - 1) {
+                        rawCalculatedWidth += accumulatedRoundError;
+                        accumulatedRoundError = 0;
+                    }
+                    int newWidth = Math.round(rawCalculatedWidth);
+                    if (newWidth > flexItem.getMaxWidth()) {
+                        // This means the child can't expand beyond the value of the mMaxWidth attribute.
+                        // To adjust the flex line length to the size of maxMainSize, remaining
+                        // positive free space needs to be re-distributed to other flex items
+                        // (children views). In that case, invoke this method again with the same
+                        // startIndex.
+                        needsReexpand = true;
+                        newWidth = flexItem.getMaxWidth();
+                        childrenFrozen[childIndex] = true;
+                        flexLine.mTotalFlexGrow -= flexItem.getFlexGrow();
+                    } else {
+                        accumulatedRoundError += (rawCalculatedWidth - newWidth);
+                        if (accumulatedRoundError > 1.0) {
+                            newWidth += 1;
+                            accumulatedRoundError -= 1.0;
+                        } else if (accumulatedRoundError < -1.0) {
+                            newWidth -= 1;
+                            accumulatedRoundError += 1.0;
+                        }
+                    }
+                    int childHeightMeasureSpec = getChildHeightMeasureSpecInternal(
+                            heightMeasureSpec, flexItem);
+                    child.measure(
+                            View.MeasureSpec.makeMeasureSpec(newWidth, View.MeasureSpec.EXACTLY),
+                            childHeightMeasureSpec);
+                }
+                flexLine.mMainSize += child.getMeasuredWidth() + flexItem.getMarginLeft()
+                        + flexItem.getMarginRight();
+                flexLine.mCrossSize = Math.max(flexLine.mCrossSize, child.getMeasuredHeight());
+            } else {
+                // The direction of the main axis is vertical
+                if (!childrenFrozen[childIndex]) {
+                    float rawCalculatedHeight = child.getMeasuredHeight()
+                            + unitSpace * flexItem.getFlexGrow();
+                    if (i == flexLine.mItemCount - 1) {
+                        rawCalculatedHeight += accumulatedRoundError;
+                        accumulatedRoundError = 0;
+                    }
+                    int newHeight = Math.round(rawCalculatedHeight);
+                    if (newHeight > flexItem.getMaxHeight()) {
+                        // This means the child can't expand beyond the value of the mMaxHeight
+                        // attribute.
+                        // To adjust the flex line length to the size of maxMainSize, remaining
+                        // positive free space needs to be re-distributed to other flex items
+                        // (children views). In that case, invoke this method again with the same
+                        // startIndex.
+                        needsReexpand = true;
+                        newHeight = flexItem.getMaxHeight();
+                        childrenFrozen[childIndex] = true;
+                        flexLine.mTotalFlexGrow -= flexItem.getFlexGrow();
+                    } else {
+                        accumulatedRoundError += (rawCalculatedHeight - newHeight);
+                        if (accumulatedRoundError > 1.0) {
+                            newHeight += 1;
+                            accumulatedRoundError -= 1.0;
+                        } else if (accumulatedRoundError < -1.0) {
+                            newHeight -= 1;
+                            accumulatedRoundError += 1.0;
+                        }
+                    }
+                    int childWidthMeasureSpec = getChildWidthMeasureSpecInternal(widthMeasureSpec,
+                            flexItem);
+                    child.measure(childWidthMeasureSpec,
+                            View.MeasureSpec.makeMeasureSpec(newHeight, View.MeasureSpec.EXACTLY));
+                }
+                flexLine.mMainSize += child.getMeasuredHeight() + flexItem.getMarginTop()
+                        + flexItem.getMarginBottom();
+                flexLine.mCrossSize = Math.max(flexLine.mCrossSize, child.getMeasuredWidth());
+            }
+            childIndex++;
+        }
+
+        if (needsReexpand && sizeBeforeExpand != flexLine.mMainSize) {
+            // Re-invoke the method with the same startIndex to distribute the positive free space
+            // that wasn't fully distributed (because of maximum length constraint)
+            expandFlexItems(widthMeasureSpec, heightMeasureSpec, flexLine, maxMainSize,
+                    paddingAlongMainAxis, startIndex, childrenFrozen);
+        }
+        return childIndex;
+    }
+
+    /**
+     * Shrink the flex items along the main axis based on the individual mFlexShrink attribute.
+     *
+     * @param widthMeasureSpec     the horizontal space requirements as imposed by the parent
+     * @param heightMeasureSpec    the vertical space requirements as imposed by the parent
+     * @param flexLine             the flex line to which flex items belong
+     * @param maxMainSize          the maximum main size. Shrank main size will be this size
+     * @param paddingAlongMainAxis the padding value along the main axis
+     * @param startIndex           the start index of the children views to be shrank. This index
+     *                             needs to
+     *                             be an absolute index in the flex container (FlexboxLayout),
+     *                             not the relative index in the flex line.
+     * @return the next index, the next flex line's first flex item starts from the returned index
+     * @see FlexContainer#getFlexDirection()
+     * @see FlexContainer#setFlexDirection(int)
+     * @see FlexItem#getFlexShrink()
+     */
+    private int shrinkFlexItems(int widthMeasureSpec, int heightMeasureSpec, FlexLine flexLine,
+            int maxMainSize, int paddingAlongMainAxis, int startIndex, boolean[] childrenFrozen) {
+        int childIndex = startIndex;
+        int sizeBeforeShrink = flexLine.mMainSize;
+        if (flexLine.mTotalFlexShrink <= 0 || maxMainSize > flexLine.mMainSize) {
+            childIndex += flexLine.mItemCount;
+            return childIndex;
+        }
+        boolean needsReshrink = false;
+        float unitShrink = (flexLine.mMainSize - maxMainSize) / flexLine.mTotalFlexShrink;
+        float accumulatedRoundError = 0;
+        flexLine.mMainSize = paddingAlongMainAxis + flexLine.mDividerLengthInMainSize;
+
+        // Setting the cross size of the flex line as the temporal value since the cross size of
+        // each flex item may be changed from the initial calculation
+        // (in the measureHorizontal/measureVertical method) even this method is part of the main
+        // size determination.
+        // E.g. If a TextView's layout_width is set to 0dp, layout_height is set to wrap_content,
+        // and layout_flexGrow is set to 1, the TextView is trying to expand to the vertical
+        // direction to enclose its content (in the measureHorizontal method), but
+        // the width will be expanded in this method. In that case, the height needs to be measured
+        // again with the expanded width.
+        flexLine.mCrossSize = Integer.MIN_VALUE;
+        for (int i = 0; i < flexLine.mItemCount; i++) {
+            View child = mFlexContainer.getReorderedFlexItemAt(childIndex);
+            if (child == null) {
+                continue;
+            } else if (child.getVisibility() == View.GONE) {
+                childIndex++;
+                continue;
+            }
+            FlexItem flexItem = (FlexItem) child.getLayoutParams();
+            int flexDirection = mFlexContainer.getFlexDirection();
+            if (flexDirection == FlexDirection.ROW || flexDirection == FlexDirection.ROW_REVERSE) {
+                // The direction of main axis is horizontal
+                if (!childrenFrozen[childIndex]) {
+                    float rawCalculatedWidth = child.getMeasuredWidth()
+                            - unitShrink * flexItem.getFlexShrink();
+                    if (i == flexLine.mItemCount - 1) {
+                        rawCalculatedWidth += accumulatedRoundError;
+                        accumulatedRoundError = 0;
+                    }
+                    int newWidth = Math.round(rawCalculatedWidth);
+                    if (newWidth < flexItem.getMinWidth()) {
+                        // This means the child doesn't have enough space to distribute the negative
+                        // free space. To adjust the flex line length down to the maxMainSize, remaining
+                        // negative free space needs to be re-distributed to other flex items
+                        // (children views). In that case, invoke this method again with the same
+                        // startIndex.
+                        needsReshrink = true;
+                        newWidth = flexItem.getMinWidth();
+                        childrenFrozen[childIndex] = true;
+                        flexLine.mTotalFlexShrink -= flexItem.getFlexShrink();
+                    } else {
+                        accumulatedRoundError += (rawCalculatedWidth - newWidth);
+                        if (accumulatedRoundError > 1.0) {
+                            newWidth += 1;
+                            accumulatedRoundError -= 1;
+                        } else if (accumulatedRoundError < -1.0) {
+                            newWidth -= 1;
+                            accumulatedRoundError += 1;
+                        }
+                    }
+                    int childHeightMeasureSpec = getChildHeightMeasureSpecInternal(
+                            heightMeasureSpec, flexItem);
+                    child.measure(
+                            View.MeasureSpec.makeMeasureSpec(newWidth, View.MeasureSpec.EXACTLY),
+                            childHeightMeasureSpec);
+                }
+                flexLine.mMainSize += child.getMeasuredWidth() + flexItem.getMarginLeft()
+                        + flexItem.getMarginRight();
+                flexLine.mCrossSize = Math.max(flexLine.mCrossSize, child.getMeasuredHeight());
+            } else {
+                // The direction of main axis is vertical
+                if (!childrenFrozen[childIndex]) {
+                    float rawCalculatedHeight = child.getMeasuredHeight()
+                            - unitShrink * flexItem.getFlexShrink();
+                    if (i == flexLine.mItemCount - 1) {
+                        rawCalculatedHeight += accumulatedRoundError;
+                        accumulatedRoundError = 0;
+                    }
+                    int newHeight = Math.round(rawCalculatedHeight);
+                    if (newHeight < flexItem.getMinHeight()) {
+                        // Need to invoke this method again like the case flex direction is vertical
+                        needsReshrink = true;
+                        newHeight = flexItem.getMinHeight();
+                        childrenFrozen[childIndex] = true;
+                        flexLine.mTotalFlexShrink -= flexItem.getFlexShrink();
+                    } else {
+                        accumulatedRoundError += (rawCalculatedHeight - newHeight);
+                        if (accumulatedRoundError > 1.0) {
+                            newHeight += 1;
+                            accumulatedRoundError -= 1;
+                        } else if (accumulatedRoundError < -1.0) {
+                            newHeight -= 1;
+                            accumulatedRoundError += 1;
+                        }
+                    }
+                    int childWidthMeasureSpec = getChildWidthMeasureSpecInternal(widthMeasureSpec,
+                            flexItem);
+                    child.measure(childWidthMeasureSpec,
+                            View.MeasureSpec.makeMeasureSpec(newHeight, View.MeasureSpec.EXACTLY));
+                }
+                flexLine.mMainSize += child.getMeasuredHeight() + flexItem.getMarginTop()
+                        + flexItem.getMarginBottom();
+                flexLine.mCrossSize = Math.max(flexLine.mCrossSize, child.getMeasuredWidth());
+            }
+            childIndex++;
+        }
+
+        if (needsReshrink && sizeBeforeShrink != flexLine.mMainSize) {
+            // Re-invoke the method with the same startIndex to distribute the negative free space
+            // that wasn't fully distributed (because some views length were not enough)
+            shrinkFlexItems(widthMeasureSpec, heightMeasureSpec, flexLine,
+                    maxMainSize, paddingAlongMainAxis, startIndex, childrenFrozen);
+        }
+        return childIndex;
+    }
+
+    private int getChildWidthMeasureSpecInternal(int widthMeasureSpec, FlexItem flexItem) {
+        int childWidthMeasureSpec = mFlexContainer.getChildWidthMeasureSpec(widthMeasureSpec,
+                mFlexContainer.getPaddingLeft() + mFlexContainer.getPaddingRight() +
+                        flexItem.getMarginLeft() + flexItem.getMarginRight(),
+                flexItem.getWidth());
+        int childWidth = View.MeasureSpec.getSize(childWidthMeasureSpec);
+        if (childWidth > flexItem.getMaxWidth()) {
+            childWidthMeasureSpec = View.MeasureSpec.makeMeasureSpec(flexItem.getMaxWidth(),
+                    View.MeasureSpec.getMode(childWidthMeasureSpec));
+        } else if (childWidth < flexItem.getMinWidth()) {
+            childWidthMeasureSpec = View.MeasureSpec.makeMeasureSpec(flexItem.getMinWidth(),
+                    View.MeasureSpec.getMode(childWidthMeasureSpec));
+        }
+        return childWidthMeasureSpec;
+    }
+
+    private int getChildHeightMeasureSpecInternal(int heightMeasureSpec, FlexItem flexItem) {
+        int childHeightMeasureSpec = mFlexContainer.getChildHeightMeasureSpec(heightMeasureSpec,
+                mFlexContainer.getPaddingTop() + mFlexContainer.getPaddingBottom()
+                        + flexItem.getMarginTop() + flexItem.getMarginBottom(),
+                flexItem.getHeight());
+        int childHeight = View.MeasureSpec.getSize(childHeightMeasureSpec);
+        if (childHeight > flexItem.getMaxHeight()) {
+            childHeightMeasureSpec = View.MeasureSpec.makeMeasureSpec(flexItem.getMaxHeight(),
+                    View.MeasureSpec.getMode(childHeightMeasureSpec));
+        } else if (childHeight < flexItem.getMinHeight()) {
+            childHeightMeasureSpec = View.MeasureSpec.makeMeasureSpec(flexItem.getMinHeight(),
+                    View.MeasureSpec.getMode(childHeightMeasureSpec));
+        }
+        return childHeightMeasureSpec;
+    }
+
 
     /**
      * A class that is used for calculating the view order which view's indices and order
