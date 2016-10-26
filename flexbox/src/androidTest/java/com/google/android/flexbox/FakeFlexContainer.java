@@ -183,6 +183,25 @@ class FakeFlexContainer implements FlexContainer {
     }
 
     @Override
+    public int getLargestMainSize() {
+        int largestSize = Integer.MIN_VALUE;
+        for (FlexLine flexLine : mFlexLines) {
+            largestSize = Math.max(largestSize, flexLine.mMainSize);
+        }
+        return largestSize;
+    }
+
+    @Override
+    public int getSumOfCrossSize() {
+        int sum = 0;
+        for (int i = 0, size = mFlexLines.size(); i < size; i++) {
+            FlexLine flexLine = mFlexLines.get(i);
+            sum += flexLine.mCrossSize;
+        }
+        return sum;
+    }
+
+    @Override
     public void onNewFlexItemAdded(int childAbsoluteIndex, int childRelativeIndexInFlexLine,
             FlexLine flexLine) {
         // No op
