@@ -223,6 +223,16 @@ public interface FlexContainer {
     int getChildHeightMeasureSpec(int heightSpec, int padding, int childDimension);
 
     /**
+     * @return the largest main size of all flex lines including decorator lengths.
+     */
+    int getLargestMainSize();
+
+    /**
+     * @return the sum of the cross sizes of all flex lines including decorator lengths.
+     */
+    int getSumOfCrossSize();
+
+    /**
      * Callback when a new flex item is added to the current container
      *
      * @param index           the absolute index of the flex item added
