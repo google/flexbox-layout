@@ -329,7 +329,8 @@ public class FlexboxLayout extends ViewGroup implements FlexContainer {
         FlexboxHelper.FlexLinesResult flexLinesResult = mFlexboxHelper
                 .calculateHorizontalFlexLines(widthMeasureSpec, heightMeasureSpec);
         mFlexLines = flexLinesResult.mFlexLines;
-        determineMainSize(mFlexDirection, widthMeasureSpec, heightMeasureSpec);
+        mFlexboxHelper.determineMainSize(mFlexLines, widthMeasureSpec, heightMeasureSpec,
+                mChildrenFrozen);
 
         // TODO: Consider the case any individual child's mAlignSelf is set to ALIGN_SELF_BASELINE
         if (mAlignItems == AlignItems.BASELINE) {
@@ -385,7 +386,8 @@ public class FlexboxLayout extends ViewGroup implements FlexContainer {
                 .calculateVerticalFlexLines(widthMeasureSpec, heightMeasureSpec);
         mFlexLines = flexLinesResult.mFlexLines;
 
-        determineMainSize(mFlexDirection, widthMeasureSpec, heightMeasureSpec);
+        mFlexboxHelper.determineMainSize(mFlexLines, widthMeasureSpec, heightMeasureSpec,
+                mChildrenFrozen);
         determineCrossSize(mFlexDirection, widthMeasureSpec, heightMeasureSpec,
                 getPaddingLeft() + getPaddingRight());
         // Now cross size for each flex line is determined.
@@ -456,6 +458,7 @@ public class FlexboxLayout extends ViewGroup implements FlexContainer {
     }
 
     /**
+<<<<<<< HEAD
      * Determine the main size by expanding (shrinking if negative remaining free space is given)
      * an individual child in each flex line if any children's mFlexGrow (or mFlexShrink if
      * remaining
@@ -819,6 +822,8 @@ public class FlexboxLayout extends ViewGroup implements FlexContainer {
     }
 
     /**
+=======
+>>>>>>> Extract the method to determine the main size of the flex lines in the flex container. (#135)
      * Determines the cross size (Calculate the length along the cross axis).
      * Expand the cross size only if the height mode is MeasureSpec.EXACTLY, otherwise
      * use the sum of cross sizes of all flex lines.
@@ -1174,12 +1179,8 @@ public class FlexboxLayout extends ViewGroup implements FlexContainer {
         setMeasuredDimension(widthSizeAndState, heightSizeAndState);
     }
 
-    /**
-     * Retrieve the largest main size of all flex lines.
-     *
-     * @return the largest main size
-     */
-    private int getLargestMainSize() {
+    @Override
+    public int getLargestMainSize() {
         int largestSize = Integer.MIN_VALUE;
         for (FlexLine flexLine : mFlexLines) {
             largestSize = Math.max(largestSize, flexLine.mMainSize);
@@ -1187,12 +1188,8 @@ public class FlexboxLayout extends ViewGroup implements FlexContainer {
         return largestSize;
     }
 
-    /**
-     * Retrieve the sum of the cross sizes of all flex lines including divider lengths.
-     *
-     * @return the sum of the cross sizes
-     */
-    private int getSumOfCrossSize() {
+    @Override
+    public int getSumOfCrossSize() {
         int sum = 0;
         for (int i = 0, size = mFlexLines.size(); i < size; i++) {
             FlexLine flexLine = mFlexLines.get(i);
