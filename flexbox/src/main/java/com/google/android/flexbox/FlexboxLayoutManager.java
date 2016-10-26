@@ -31,6 +31,7 @@ import android.view.ViewGroup;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import static android.support.v7.widget.LinearLayoutManager.INVALID_OFFSET;
@@ -87,6 +88,13 @@ public class FlexboxLayoutManager extends RecyclerView.LayoutManager implements 
     private int mAlignContent;
 
     private List<FlexLine> mFlexLines = new ArrayList<>();
+
+    /**
+     * Holds the 'frozen' state of children during measure. If a view is frozen it will no longer
+     * expand or shrink regardless of flex grow/flex shrink attributes.
+     * Items are indexed by the child's reordered index.
+     */
+    private boolean[] mChildrenFrozen;
 
     private final FlexboxHelper mFlexboxHelper = new FlexboxHelper(this);
 
@@ -360,6 +368,26 @@ public class FlexboxLayoutManager extends RecyclerView.LayoutManager implements 
         return getChildMeasureSpec(getHeight(), getHeightMode(), padding, childDimension,
                 canScrollVertically());
     }
+
+    @Override
+    public int getLargestMainSize() {
+        int largestSize = Integer.MIN_VALUE;
+        for (FlexLine flexLine : mFlexLines) {
+            largestSize = Math.max(largestSize, flexLine.mMainSize);
+        }
+        return largestSize;
+    }
+
+    @Override
+    public int getSumOfCrossSize() {
+        int sum = 0;
+        for (int i = 0, size = mFlexLines.size(); i < size; i++) {
+            FlexLine flexLine = mFlexLines.get(i);
+            // TODO: Consider adding decorator between flex lines.
+            sum += flexLine.mCrossSize;
+        }
+        return sum;
+    }
     // The end of methods from FlexContainer
 
     @Override
@@ -402,6 +430,7 @@ public class FlexboxLayoutManager extends RecyclerView.LayoutManager implements 
             return;
         }
         ensureOrientationHelper();
+        ensureChildrenFrozenArray(state);
         mLayoutState.mShouldRecycle = false;
         mAnchorInfo.reset();
         updateAnchorInfoForLayout(state, mAnchorInfo);
@@ -429,6 +458,8 @@ public class FlexboxLayoutManager extends RecyclerView.LayoutManager implements 
                     .calculateVerticalFlexLines(widthMeasureSpec, heightMeasureSpec);
         }
         mFlexLines = flexLinesResult.mFlexLines;
+        mFlexboxHelper.determineMainSize(mFlexLines, widthMeasureSpec, heightMeasureSpec,
+                mChildrenFrozen);
         if (DEBUG) {
             for (int i = 0, size = mFlexLines.size(); i < size; i++) {
                 FlexLine flexLine = mFlexLines.get(i);
@@ -791,6 +822,14 @@ public class FlexboxLayoutManager extends RecyclerView.LayoutManager implements 
             }
         }
         mLayoutState = new LayoutState();
+    }
+
+    private void ensureChildrenFrozenArray(RecyclerView.State state) {
+        if (mChildrenFrozen == null || mChildrenFrozen.length < state.getItemCount()) {
+            mChildrenFrozen = new boolean[state.getItemCount()];
+        } else {
+            Arrays.fill(mChildrenFrozen, false);
+        }
     }
 
     @Override
