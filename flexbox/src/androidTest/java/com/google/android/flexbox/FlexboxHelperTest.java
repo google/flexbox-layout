@@ -29,6 +29,8 @@ import android.support.test.runner.AndroidJUnit4;
 import android.view.View;
 
 import static junit.framework.Assert.assertEquals;
+import static org.hamcrest.Matchers.is;
+import static org.junit.Assert.assertThat;
 
 /**
  * Unit tests for {@link FlexboxHelper}.
@@ -130,5 +132,177 @@ public class FlexboxHelperTest {
         assertEquals(0, mFlexboxHelper.mIndexToFlexLine.get(1));
         assertEquals(1, mFlexboxHelper.mIndexToFlexLine.get(2));
         assertEquals(2, mFlexboxHelper.mIndexToFlexLine.get(3));
+    }
+
+    @Test
+    public void testDetermineMainSize_direction_row_flexGrowSet() throws Throwable {
+        Activity activity = mActivityRule.getActivity();
+        FlexboxLayout.LayoutParams lp1 = new FlexboxLayout.LayoutParams(100, 100);
+        View view1 = new View(activity);
+        view1.setLayoutParams(lp1);
+        FlexboxLayout.LayoutParams lp2 = new FlexboxLayout.LayoutParams(200, 100);
+        lp2.setFlexGrow(1.0f);
+        View view2 = new View(activity);
+        view2.setLayoutParams(lp2);
+        FlexboxLayout.LayoutParams lp3 = new FlexboxLayout.LayoutParams(300, 100);
+        View view3 = new View(activity);
+        view3.setLayoutParams(lp3);
+        FlexboxLayout.LayoutParams lp4 = new FlexboxLayout.LayoutParams(400, 100);
+        lp4.setFlexGrow(2.0f);
+        View view4 = new View(activity);
+        view4.setLayoutParams(lp4);
+        mFlexContainer.addView(view1);
+        mFlexContainer.addView(view2);
+        mFlexContainer.addView(view3);
+        mFlexContainer.addView(view4);
+        mFlexContainer.setFlexDirection(FlexDirection.ROW);
+        mFlexContainer.setFlexWrap(FlexWrap.WRAP);
+        int widthMeasureSpec = View.MeasureSpec.makeMeasureSpec(500, View.MeasureSpec.EXACTLY);
+        int heightMeasureSpec = View.MeasureSpec
+                .makeMeasureSpec(1000, View.MeasureSpec.UNSPECIFIED);
+        FlexboxHelper.FlexLinesResult result = mFlexboxHelper
+                .calculateHorizontalFlexLines(widthMeasureSpec, heightMeasureSpec);
+        boolean[] childrenFrozen = new boolean[4];
+        mFlexboxHelper.determineMainSize(result.mFlexLines, widthMeasureSpec, heightMeasureSpec,
+                childrenFrozen);
+
+        assertThat(view1.getMeasuredWidth(), is(100));
+        assertThat(view1.getMeasuredHeight(), is(100));
+        // view2 will expand to fill the left space in the first flex line since flex grow is set
+        assertThat(view2.getMeasuredWidth(), is(400));
+        assertThat(view2.getMeasuredHeight(), is(100));
+        assertThat(view3.getMeasuredWidth(), is(300));
+        assertThat(view3.getMeasuredHeight(), is(100));
+        // view4 will expand to fill the left space in the first flex line since flex grow is set
+        assertThat(view4.getMeasuredWidth(), is(500));
+        assertThat(view4.getMeasuredHeight(), is(100));
+    }
+
+    @Test
+    public void testDetermineMainSize_direction_column_flexGrowSet() throws Throwable {
+        Activity activity = mActivityRule.getActivity();
+        FlexboxLayout.LayoutParams lp1 = new FlexboxLayout.LayoutParams(100, 100);
+        View view1 = new View(activity);
+        view1.setLayoutParams(lp1);
+        FlexboxLayout.LayoutParams lp2 = new FlexboxLayout.LayoutParams(100, 200);
+        lp2.setFlexGrow(1.0f);
+        View view2 = new View(activity);
+        view2.setLayoutParams(lp2);
+        FlexboxLayout.LayoutParams lp3 = new FlexboxLayout.LayoutParams(100, 300);
+        View view3 = new View(activity);
+        view3.setLayoutParams(lp3);
+        FlexboxLayout.LayoutParams lp4 = new FlexboxLayout.LayoutParams(100, 400);
+        lp4.setFlexGrow(2.0f);
+        View view4 = new View(activity);
+        view4.setLayoutParams(lp4);
+        mFlexContainer.addView(view1);
+        mFlexContainer.addView(view2);
+        mFlexContainer.addView(view3);
+        mFlexContainer.addView(view4);
+        mFlexContainer.setFlexDirection(FlexDirection.COLUMN);
+        mFlexContainer.setFlexWrap(FlexWrap.WRAP);
+        int widthMeasureSpec = View.MeasureSpec.makeMeasureSpec(1000, View.MeasureSpec.UNSPECIFIED);
+        int heightMeasureSpec = View.MeasureSpec
+                .makeMeasureSpec(500, View.MeasureSpec.EXACTLY);
+        FlexboxHelper.FlexLinesResult result = mFlexboxHelper
+                .calculateVerticalFlexLines(widthMeasureSpec, heightMeasureSpec);
+        boolean[] childrenFrozen = new boolean[4];
+        mFlexboxHelper.determineMainSize(result.mFlexLines, widthMeasureSpec, heightMeasureSpec,
+                childrenFrozen);
+
+        assertThat(view1.getMeasuredWidth(), is(100));
+        assertThat(view1.getMeasuredHeight(), is(100));
+        assertThat(view2.getMeasuredWidth(), is(100));
+        // view2 will expand to fill the left space in the first flex line since flex grow is set
+        assertThat(view2.getMeasuredHeight(), is(400));
+        assertThat(view3.getMeasuredWidth(), is(100));
+        assertThat(view3.getMeasuredHeight(), is(300));
+        assertThat(view4.getMeasuredWidth(), is(100));
+        // view4 will expand to fill the left space in the first flex line since flex grow is set
+        assertThat(view4.getMeasuredHeight(), is(500));
+    }
+
+    @Test
+    public void testDetermineMainSize_direction_row_flexShrinkSet() throws Throwable {
+        Activity activity = mActivityRule.getActivity();
+        FlexboxLayout.LayoutParams lp1 = new FlexboxLayout.LayoutParams(200, 100);
+        View view1 = new View(activity);
+        view1.setLayoutParams(lp1);
+        FlexboxLayout.LayoutParams lp2 = new FlexboxLayout.LayoutParams(200, 100);
+        View view2 = new View(activity);
+        view2.setLayoutParams(lp2);
+        FlexboxLayout.LayoutParams lp3 = new FlexboxLayout.LayoutParams(200, 100);
+        View view3 = new View(activity);
+        view3.setLayoutParams(lp3);
+        FlexboxLayout.LayoutParams lp4 = new FlexboxLayout.LayoutParams(200, 100);
+        View view4 = new View(activity);
+        view4.setLayoutParams(lp4);
+        mFlexContainer.addView(view1);
+        mFlexContainer.addView(view2);
+        mFlexContainer.addView(view3);
+        mFlexContainer.addView(view4);
+        mFlexContainer.setFlexDirection(FlexDirection.ROW);
+        mFlexContainer.setFlexWrap(FlexWrap.NOWRAP);
+        int widthMeasureSpec = View.MeasureSpec.makeMeasureSpec(500, View.MeasureSpec.EXACTLY);
+        int heightMeasureSpec = View.MeasureSpec
+                .makeMeasureSpec(1000, View.MeasureSpec.UNSPECIFIED);
+        FlexboxHelper.FlexLinesResult result = mFlexboxHelper
+                .calculateHorizontalFlexLines(widthMeasureSpec, heightMeasureSpec);
+        boolean[] childrenFrozen = new boolean[4];
+        mFlexboxHelper.determineMainSize(result.mFlexLines, widthMeasureSpec, heightMeasureSpec,
+                childrenFrozen);
+
+        // Flex shrink is set to 1.0 (default value) for all views.
+        // They should be shrank equally for the amount overflown the width
+        assertThat(view1.getMeasuredWidth(), is(125));
+        assertThat(view1.getMeasuredHeight(), is(100));
+        assertThat(view2.getMeasuredWidth(), is(125));
+        assertThat(view2.getMeasuredHeight(), is(100));
+        assertThat(view3.getMeasuredWidth(), is(125));
+        assertThat(view3.getMeasuredHeight(), is(100));
+        assertThat(view4.getMeasuredWidth(), is(125));
+        assertThat(view4.getMeasuredHeight(), is(100));
+    }
+
+    @Test
+    public void testDetermineMainSize_direction_column_flexShrinkSet() throws Throwable {
+        Activity activity = mActivityRule.getActivity();
+        FlexboxLayout.LayoutParams lp1 = new FlexboxLayout.LayoutParams(100, 200);
+        View view1 = new View(activity);
+        view1.setLayoutParams(lp1);
+        FlexboxLayout.LayoutParams lp2 = new FlexboxLayout.LayoutParams(100, 200);
+        View view2 = new View(activity);
+        view2.setLayoutParams(lp2);
+        FlexboxLayout.LayoutParams lp3 = new FlexboxLayout.LayoutParams(100, 200);
+        View view3 = new View(activity);
+        view3.setLayoutParams(lp3);
+        FlexboxLayout.LayoutParams lp4 = new FlexboxLayout.LayoutParams(100, 200);
+        View view4 = new View(activity);
+        view4.setLayoutParams(lp4);
+        mFlexContainer.addView(view1);
+        mFlexContainer.addView(view2);
+        mFlexContainer.addView(view3);
+        mFlexContainer.addView(view4);
+        mFlexContainer.setFlexDirection(FlexDirection.COLUMN);
+        mFlexContainer.setFlexWrap(FlexWrap.NOWRAP);
+        int widthMeasureSpec = View.MeasureSpec.makeMeasureSpec(1000, View.MeasureSpec.UNSPECIFIED);
+        int heightMeasureSpec = View.MeasureSpec
+                .makeMeasureSpec(500, View.MeasureSpec.EXACTLY);
+        FlexboxHelper.FlexLinesResult result = mFlexboxHelper
+                .calculateVerticalFlexLines(widthMeasureSpec, heightMeasureSpec);
+        boolean[] childrenFrozen = new boolean[4];
+        mFlexboxHelper.determineMainSize(result.mFlexLines, widthMeasureSpec, heightMeasureSpec,
+                childrenFrozen);
+
+        // Flex shrink is set to 1.0 (default value) for all views.
+        // They should be shrank equally for the amount overflown the height
+        assertThat(view1.getMeasuredWidth(), is(100));
+        assertThat(view1.getMeasuredHeight(), is(125));
+        assertThat(view2.getMeasuredWidth(), is(100));
+        assertThat(view2.getMeasuredHeight(), is(125));
+        assertThat(view3.getMeasuredWidth(), is(100));
+        assertThat(view3.getMeasuredHeight(), is(125));
+        assertThat(view4.getMeasuredWidth(), is(100));
+        assertThat(view4.getMeasuredHeight(), is(125));
     }
 }
