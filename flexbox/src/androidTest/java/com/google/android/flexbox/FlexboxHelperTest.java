@@ -28,6 +28,7 @@ import android.support.test.rule.ActivityTestRule;
 import android.support.test.runner.AndroidJUnit4;
 import android.view.View;
 
+import static com.google.android.flexbox.test.IsEqualAllowingError.isEqualAllowingError;
 import static junit.framework.Assert.assertEquals;
 import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertThat;
@@ -44,7 +45,7 @@ public class FlexboxHelperTest {
 
     private FlexboxHelper mFlexboxHelper;
 
-    private FlexContainer mFlexContainer;
+    private FlexContainerInternal mFlexContainer;
 
     @Before
     public void setUp() {
@@ -162,9 +163,9 @@ public class FlexboxHelperTest {
                 .makeMeasureSpec(1000, View.MeasureSpec.UNSPECIFIED);
         FlexboxHelper.FlexLinesResult result = mFlexboxHelper
                 .calculateHorizontalFlexLines(widthMeasureSpec, heightMeasureSpec);
+        mFlexContainer.setFlexLines(result.mFlexLines);
         boolean[] childrenFrozen = new boolean[4];
-        mFlexboxHelper.determineMainSize(result.mFlexLines, widthMeasureSpec, heightMeasureSpec,
-                childrenFrozen);
+        mFlexboxHelper.determineMainSize(widthMeasureSpec, heightMeasureSpec, childrenFrozen);
 
         assertThat(view1.getMeasuredWidth(), is(100));
         assertThat(view1.getMeasuredHeight(), is(100));
@@ -206,9 +207,9 @@ public class FlexboxHelperTest {
                 .makeMeasureSpec(500, View.MeasureSpec.EXACTLY);
         FlexboxHelper.FlexLinesResult result = mFlexboxHelper
                 .calculateVerticalFlexLines(widthMeasureSpec, heightMeasureSpec);
+        mFlexContainer.setFlexLines(result.mFlexLines);
         boolean[] childrenFrozen = new boolean[4];
-        mFlexboxHelper.determineMainSize(result.mFlexLines, widthMeasureSpec, heightMeasureSpec,
-                childrenFrozen);
+        mFlexboxHelper.determineMainSize(widthMeasureSpec, heightMeasureSpec, childrenFrozen);
 
         assertThat(view1.getMeasuredWidth(), is(100));
         assertThat(view1.getMeasuredHeight(), is(100));
@@ -248,9 +249,9 @@ public class FlexboxHelperTest {
                 .makeMeasureSpec(1000, View.MeasureSpec.UNSPECIFIED);
         FlexboxHelper.FlexLinesResult result = mFlexboxHelper
                 .calculateHorizontalFlexLines(widthMeasureSpec, heightMeasureSpec);
+        mFlexContainer.setFlexLines(result.mFlexLines);
         boolean[] childrenFrozen = new boolean[4];
-        mFlexboxHelper.determineMainSize(result.mFlexLines, widthMeasureSpec, heightMeasureSpec,
-                childrenFrozen);
+        mFlexboxHelper.determineMainSize(widthMeasureSpec, heightMeasureSpec, childrenFrozen);
 
         // Flex shrink is set to 1.0 (default value) for all views.
         // They should be shrank equally for the amount overflown the width
@@ -290,9 +291,9 @@ public class FlexboxHelperTest {
                 .makeMeasureSpec(500, View.MeasureSpec.EXACTLY);
         FlexboxHelper.FlexLinesResult result = mFlexboxHelper
                 .calculateVerticalFlexLines(widthMeasureSpec, heightMeasureSpec);
+        mFlexContainer.setFlexLines(result.mFlexLines);
         boolean[] childrenFrozen = new boolean[4];
-        mFlexboxHelper.determineMainSize(result.mFlexLines, widthMeasureSpec, heightMeasureSpec,
-                childrenFrozen);
+        mFlexboxHelper.determineMainSize(widthMeasureSpec, heightMeasureSpec, childrenFrozen);
 
         // Flex shrink is set to 1.0 (default value) for all views.
         // They should be shrank equally for the amount overflown the height
@@ -304,5 +305,91 @@ public class FlexboxHelperTest {
         assertThat(view3.getMeasuredHeight(), is(125));
         assertThat(view4.getMeasuredWidth(), is(100));
         assertThat(view4.getMeasuredHeight(), is(125));
+    }
+
+    @Test
+    public void testDetermineCrossSize_direction_row_alignContent_stretch() throws Throwable {
+        Activity activity = mActivityRule.getActivity();
+        FlexboxLayout.LayoutParams lp1 = new FlexboxLayout.LayoutParams(100, 100);
+        View view1 = new View(activity);
+        view1.setLayoutParams(lp1);
+        FlexboxLayout.LayoutParams lp2 = new FlexboxLayout.LayoutParams(200, 100);
+        View view2 = new View(activity);
+        view2.setLayoutParams(lp2);
+        FlexboxLayout.LayoutParams lp3 = new FlexboxLayout.LayoutParams(300, 100);
+        View view3 = new View(activity);
+        view3.setLayoutParams(lp3);
+        FlexboxLayout.LayoutParams lp4 = new FlexboxLayout.LayoutParams(400, 100);
+        View view4 = new View(activity);
+        view4.setLayoutParams(lp4);
+        mFlexContainer.addView(view1);
+        mFlexContainer.addView(view2);
+        mFlexContainer.addView(view3);
+        mFlexContainer.addView(view4);
+        mFlexContainer.setFlexDirection(FlexDirection.ROW);
+        mFlexContainer.setFlexWrap(FlexWrap.WRAP);
+        mFlexContainer.setAlignContent(AlignContent.STRETCH);
+        int widthMeasureSpec = View.MeasureSpec.makeMeasureSpec(500, View.MeasureSpec.EXACTLY);
+        int heightMeasureSpec = View.MeasureSpec
+                .makeMeasureSpec(1000, View.MeasureSpec.EXACTLY);
+        FlexboxHelper.FlexLinesResult result = mFlexboxHelper
+                .calculateHorizontalFlexLines(widthMeasureSpec, heightMeasureSpec);
+        mFlexContainer.setFlexLines(result.mFlexLines);
+        boolean[] childrenFrozen = new boolean[4];
+        mFlexboxHelper.determineMainSize(widthMeasureSpec, heightMeasureSpec, childrenFrozen);
+        mFlexboxHelper
+                .determineCrossSize(widthMeasureSpec, heightMeasureSpec, 0);
+        mFlexboxHelper.stretchViews();
+
+        // align content is set to Align.STRETCH, the cross size for each flex line is stretched
+        // to distribute the remaining free space along the cross axis
+        // (remaining height in this case)
+        assertThat(view1.getMeasuredHeight(), isEqualAllowingError(333));
+        assertThat(view2.getMeasuredHeight(), isEqualAllowingError(333));
+        assertThat(view3.getMeasuredHeight(), isEqualAllowingError(333));
+        assertThat(view4.getMeasuredHeight(), isEqualAllowingError(333));
+    }
+
+    @Test
+    public void testDetermineCrossSize_direction_column_alignContent_stretch() throws Throwable {
+        Activity activity = mActivityRule.getActivity();
+        FlexboxLayout.LayoutParams lp1 = new FlexboxLayout.LayoutParams(100, 100);
+        View view1 = new View(activity);
+        view1.setLayoutParams(lp1);
+        FlexboxLayout.LayoutParams lp2 = new FlexboxLayout.LayoutParams(100, 200);
+        View view2 = new View(activity);
+        view2.setLayoutParams(lp2);
+        FlexboxLayout.LayoutParams lp3 = new FlexboxLayout.LayoutParams(100, 300);
+        View view3 = new View(activity);
+        view3.setLayoutParams(lp3);
+        FlexboxLayout.LayoutParams lp4 = new FlexboxLayout.LayoutParams(100, 400);
+        View view4 = new View(activity);
+        view4.setLayoutParams(lp4);
+        mFlexContainer.addView(view1);
+        mFlexContainer.addView(view2);
+        mFlexContainer.addView(view3);
+        mFlexContainer.addView(view4);
+        mFlexContainer.setFlexDirection(FlexDirection.COLUMN);
+        mFlexContainer.setFlexWrap(FlexWrap.WRAP);
+        mFlexContainer.setAlignContent(AlignContent.STRETCH);
+        int widthMeasureSpec = View.MeasureSpec.makeMeasureSpec(1000, View.MeasureSpec.EXACTLY);
+        int heightMeasureSpec = View.MeasureSpec
+                .makeMeasureSpec(500, View.MeasureSpec.EXACTLY);
+        FlexboxHelper.FlexLinesResult result = mFlexboxHelper
+                .calculateVerticalFlexLines(widthMeasureSpec, heightMeasureSpec);
+        mFlexContainer.setFlexLines(result.mFlexLines);
+        boolean[] childrenFrozen = new boolean[4];
+        mFlexboxHelper.determineMainSize(widthMeasureSpec, heightMeasureSpec, childrenFrozen);
+        mFlexboxHelper
+                .determineCrossSize(widthMeasureSpec, heightMeasureSpec, 0);
+        mFlexboxHelper.stretchViews();
+
+        // align content is set to Align.STRETCH, the cross size for each flex line is stretched
+        // to distribute the remaining free space along the cross axis
+        // (remaining width in this case)
+        assertThat(view1.getMeasuredWidth(), isEqualAllowingError(333));
+        assertThat(view2.getMeasuredWidth(), isEqualAllowingError(333));
+        assertThat(view3.getMeasuredWidth(), isEqualAllowingError(333));
+        assertThat(view4.getMeasuredWidth(), isEqualAllowingError(333));
     }
 }
