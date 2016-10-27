@@ -14,19 +14,15 @@
  * limitations under the License.
  */
 
-package com.google.android.apps.flexbox;
+package com.google.android.flexbox;
 
-import com.google.android.apps.flexbox.listeners.FlexItemChangedListener;
-import com.google.android.apps.flexbox.validators.DimensionInputValidator;
-import com.google.android.apps.flexbox.validators.FixedDimensionInputValidator;
-import com.google.android.apps.flexbox.validators.FlexBasisPercentInputValidator;
-import com.google.android.apps.flexbox.validators.InputValidator;
-import com.google.android.apps.flexbox.validators.IntegerInputValidator;
-import com.google.android.apps.flexbox.validators.NonNegativeDecimalInputValidator;
-import com.google.android.flexbox.AlignItems;
-import com.google.android.flexbox.AlignSelf;
-import com.google.android.flexbox.FlexItem;
-import com.google.android.flexbox.FlexboxLayout;
+import com.google.android.apps.flexbox.R;
+import com.google.android.flexbox.validators.DimensionInputValidator;
+import com.google.android.flexbox.validators.FixedDimensionInputValidator;
+import com.google.android.flexbox.validators.FlexBasisPercentInputValidator;
+import com.google.android.flexbox.validators.InputValidator;
+import com.google.android.flexbox.validators.IntegerInputValidator;
+import com.google.android.flexbox.validators.NonNegativeDecimalInputValidator;
 
 import android.app.Activity;
 import android.content.Context;
@@ -159,8 +155,8 @@ public class FlexItemEditFragment extends DialogFragment {
                 new FlexEditTextWatcher(flexShrinkInput, new NonNegativeDecimalInputValidator(),
                         R.string.must_be_non_negative_float));
 
-        final TextInputLayout flexBasisPercentInput = (TextInputLayout) view
-                .findViewById(R.id.input_layout_flex_basis_percent);
+        final TextInputLayout flexBasisPercentInput = (TextInputLayout)
+                view.findViewById(R.id.input_layout_flex_basis_percent);
         EditText flexBasisPercentEdit = (EditText) view.findViewById(
                 R.id.edit_text_flex_basis_percent);
         if (mFlexItem.getFlexBasisPercent()
@@ -258,7 +254,8 @@ public class FlexItemEditFragment extends DialogFragment {
             }
         });
 
-        CheckBox wrapBeforeCheckBox = (CheckBox) view.findViewById(R.id.checkbox_wrap_before);
+        CheckBox wrapBeforeCheckBox = (CheckBox) view.findViewById(
+                R.id.checkbox_wrap_before);
         wrapBeforeCheckBox.setChecked(mFlexItem.isWrapBefore());
         wrapBeforeCheckBox.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override

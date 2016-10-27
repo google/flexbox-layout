@@ -72,7 +72,7 @@ import java.util.List;
  * <li>{@code layout_wrapBefore}</li>
  * </ul>
  */
-public class FlexboxLayout extends ViewGroup implements FlexContainerInternal {
+public class FlexboxLayout extends ViewGroup implements FlexContainer {
 
     //TODO: Extracting the interfaces to independent classes is a breaking change. Update the
     //      document to notify that.
