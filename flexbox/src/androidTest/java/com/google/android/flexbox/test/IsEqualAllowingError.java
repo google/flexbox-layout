@@ -27,7 +27,7 @@ import java.util.Locale;
  * Custom {@link BaseMatcher} that expects {@link Number} value allowing some errors to allow
  * such as rounding errors.
  */
-class IsEqualAllowingError<T extends Number> extends BaseMatcher<T> {
+public class IsEqualAllowingError<T extends Number> extends BaseMatcher<T> {
 
     private Number expected;
 
@@ -60,12 +60,12 @@ class IsEqualAllowingError<T extends Number> extends BaseMatcher<T> {
     }
 
     @Factory
-    static <T extends Number> Matcher<T> isEqualAllowingError(T expected) {
+    public static <T extends Number> Matcher<T> isEqualAllowingError(T expected) {
         return new IsEqualAllowingError<>(expected);
     }
 
     @Factory
-    static <T extends Number> Matcher<T> isEqualAllowingError(T expected, int errorAllowed) {
+    public static <T extends Number> Matcher<T> isEqualAllowingError(T expected, int errorAllowed) {
         return new IsEqualAllowingError<>(expected, errorAllowed);
     }
 }
