@@ -25,7 +25,7 @@ import java.util.List;
 /**
  * Fake implementation of {@link FlexContainer}.
  */
-class FakeFlexContainer implements FlexContainer {
+class FakeFlexContainer implements FlexContainerInternal {
 
     private List<View> mViews = new ArrayList<>();
 
@@ -210,5 +210,15 @@ class FakeFlexContainer implements FlexContainer {
     @Override
     public void onNewFlexLineAdded(FlexLine flexLine) {
         // No op
+    }
+
+    @Override
+    public void setFlexLines(List<FlexLine> flexLines) {
+        mFlexLines = flexLines;
+    }
+
+    @Override
+    public List<FlexLine> getFlexLinesInternal() {
+        return mFlexLines;
     }
 }
