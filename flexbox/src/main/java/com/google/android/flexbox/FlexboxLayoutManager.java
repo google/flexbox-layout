@@ -42,7 +42,8 @@ import static android.support.v7.widget.RecyclerView.NO_POSITION;
  * {@link RecyclerView} and offers the same capabilities of measure/layout its children
  * as the {@link FlexboxLayout}.
  */
-public class FlexboxLayoutManager extends RecyclerView.LayoutManager implements FlexContainer {
+public class FlexboxLayoutManager extends RecyclerView.LayoutManager
+        implements FlexContainerInternal {
 
     private static final String TAG = "FlexboxLayoutManager";
 
@@ -390,6 +391,19 @@ public class FlexboxLayoutManager extends RecyclerView.LayoutManager implements 
     }
     // The end of methods from FlexContainer
 
+
+    // From the FlexContainerInternal
+    @Override
+    public void setFlexLines(List<FlexLine> flexLines) {
+        mFlexLines = flexLines;
+    }
+
+    @Override
+    public List<FlexLine> getFlexLinesInternal() {
+        return mFlexLines;
+    }
+    // End of the FlexContainerInternal
+
     @Override
     public RecyclerView.LayoutParams generateDefaultLayoutParams() {
         return new LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT);
@@ -450,16 +464,18 @@ public class FlexboxLayoutManager extends RecyclerView.LayoutManager implements 
         mFlexLines.clear();
 
         // TODO: Change the code to calculate only the visible area
+        int paddingAlongCrossAxis = 0;
         if (isMainAxisDirectionHorizontal()) {
             flexLinesResult = mFlexboxHelper
                     .calculateHorizontalFlexLines(widthMeasureSpec, heightMeasureSpec);
+            paddingAlongCrossAxis = getPaddingTop() + getPaddingBottom();
         } else {
             flexLinesResult = mFlexboxHelper
                     .calculateVerticalFlexLines(widthMeasureSpec, heightMeasureSpec);
+            paddingAlongCrossAxis = getPaddingLeft() + getPaddingRight();
         }
         mFlexLines = flexLinesResult.mFlexLines;
-        mFlexboxHelper.determineMainSize(mFlexLines, widthMeasureSpec, heightMeasureSpec,
-                mChildrenFrozen);
+        mFlexboxHelper.determineMainSize(widthMeasureSpec, heightMeasureSpec, mChildrenFrozen);
         if (DEBUG) {
             for (int i = 0, size = mFlexLines.size(); i < size; i++) {
                 FlexLine flexLine = mFlexLines.get(i);
@@ -468,6 +484,10 @@ public class FlexboxLayoutManager extends RecyclerView.LayoutManager implements 
                         flexLine.getItemCount()));
             }
         }
+        mFlexboxHelper.determineCrossSize(widthMeasureSpec, heightMeasureSpec,
+                paddingAlongCrossAxis);
+        mFlexboxHelper.stretchViews();
+
         detachAndScrapAttachedViews(recycler);
 
         // TODO: Consider RTL
