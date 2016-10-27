@@ -73,7 +73,7 @@ import java.util.List;
  * <li>{@code layout_wrapBefore}</li>
  * </ul>
  */
-public class FlexboxLayout extends ViewGroup implements FlexContainer {
+public class FlexboxLayout extends ViewGroup implements FlexContainerInternal {
 
     //TODO: Extracting the interfaces to independent classes is a breaking change. Update the
     //      document to notify that.
@@ -329,8 +329,8 @@ public class FlexboxLayout extends ViewGroup implements FlexContainer {
         FlexboxHelper.FlexLinesResult flexLinesResult = mFlexboxHelper
                 .calculateHorizontalFlexLines(widthMeasureSpec, heightMeasureSpec);
         mFlexLines = flexLinesResult.mFlexLines;
-        mFlexboxHelper.determineMainSize(mFlexLines, widthMeasureSpec, heightMeasureSpec,
-                mChildrenFrozen);
+
+        mFlexboxHelper.determineMainSize(widthMeasureSpec, heightMeasureSpec, mChildrenFrozen);
 
         // TODO: Consider the case any individual child's mAlignSelf is set to ALIGN_SELF_BASELINE
         if (mAlignItems == AlignItems.BASELINE) {
@@ -359,11 +359,11 @@ public class FlexboxLayout extends ViewGroup implements FlexContainer {
             }
         }
 
-        determineCrossSize(mFlexDirection, widthMeasureSpec, heightMeasureSpec,
+        mFlexboxHelper.determineCrossSize(widthMeasureSpec, heightMeasureSpec,
                 getPaddingTop() + getPaddingBottom());
         // Now cross size for each flex line is determined.
         // Expand the views if alignItems (or mAlignSelf in each child view) is set to stretch
-        stretchViews(mFlexDirection, mAlignItems);
+        mFlexboxHelper.stretchViews();
         setMeasuredDimensionForFlex(mFlexDirection, widthMeasureSpec, heightMeasureSpec,
                 flexLinesResult.mChildState);
     }
@@ -386,13 +386,13 @@ public class FlexboxLayout extends ViewGroup implements FlexContainer {
                 .calculateVerticalFlexLines(widthMeasureSpec, heightMeasureSpec);
         mFlexLines = flexLinesResult.mFlexLines;
 
-        mFlexboxHelper.determineMainSize(mFlexLines, widthMeasureSpec, heightMeasureSpec,
+        mFlexboxHelper.determineMainSize(widthMeasureSpec, heightMeasureSpec,
                 mChildrenFrozen);
-        determineCrossSize(mFlexDirection, widthMeasureSpec, heightMeasureSpec,
+        mFlexboxHelper.determineCrossSize(widthMeasureSpec, heightMeasureSpec,
                 getPaddingLeft() + getPaddingRight());
         // Now cross size for each flex line is determined.
         // Expand the views if alignItems (or mAlignSelf in each child view) is set to stretch
-        stretchViews(mFlexDirection, mAlignItems);
+        mFlexboxHelper.stretchViews();
         setMeasuredDimensionForFlex(mFlexDirection, widthMeasureSpec, heightMeasureSpec,
             flexLinesResult.mChildState);
     }
@@ -822,8 +822,6 @@ public class FlexboxLayout extends ViewGroup implements FlexContainer {
     }
 
     /**
-=======
->>>>>>> Extract the method to determine the main size of the flex lines in the flex container. (#135)
      * Determines the cross size (Calculate the length along the cross axis).
      * Expand the cross size only if the height mode is MeasureSpec.EXACTLY, otherwise
      * use the sum of cross sizes of all flex lines.
@@ -2085,6 +2083,18 @@ public class FlexboxLayout extends ViewGroup implements FlexContainer {
             }
         }
     }
+
+    // From FlexContainerInternal
+    @Override
+    public void setFlexLines(List<FlexLine> flexLines) {
+        mFlexLines = flexLines;
+    }
+
+    @Override
+    public List<FlexLine> getFlexLinesInternal() {
+        return mFlexLines;
+    }
+    // End of FlexContainerInternal
 
     /**
      * @return the horizontal divider drawable that will divide each item.
