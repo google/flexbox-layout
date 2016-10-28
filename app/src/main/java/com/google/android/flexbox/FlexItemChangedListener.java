@@ -14,20 +14,14 @@
  * limitations under the License.
  */
 
-package com.google.android.apps.flexbox.validators;
+package com.google.android.flexbox;
 
-import android.text.TextUtils;
+import com.google.android.flexbox.FlexItem;
 
 /**
- * Validator for the flex basis percent attribute.
+ * A listener that listens to the change of a flex item
  */
-public class FlexBasisPercentInputValidator implements InputValidator {
+public interface FlexItemChangedListener {
 
-    @Override
-    public boolean isValidInput(CharSequence charSequence) {
-        // -1 represents not set
-        return !TextUtils.isEmpty(charSequence) &&
-                (TextUtils.isDigitsOnly(charSequence) ||
-                        charSequence.toString().equals("-1"));
-    }
+    void onFlexItemChanged(FlexItem flexItem, int viewIndex);
 }

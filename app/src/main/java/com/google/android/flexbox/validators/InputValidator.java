@@ -14,17 +14,18 @@
  * limitations under the License.
  */
 
-package com.google.android.apps.flexbox.validators;
-
-import android.text.TextUtils;
+package com.google.android.flexbox.validators;
 
 /**
- * Validator for dimension values.
+ * Interface to verify a given input.
  */
-public class FixedDimensionInputValidator implements InputValidator {
+public interface InputValidator {
 
-    @Override
-    public boolean isValidInput(CharSequence charSequence) {
-        return !TextUtils.isEmpty(charSequence) && TextUtils.isDigitsOnly(charSequence);
-    }
+    /**
+     * Verifies if the given input is valid.
+     *
+     * @param charSequence the input to be verified
+     * @return {@code true} if charSequence is valid, {@code false} otherwise
+     */
+    boolean isValidInput(CharSequence charSequence);
 }

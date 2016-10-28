@@ -16,7 +16,7 @@
 
 package com.google.android.apps.flexbox.test;
 
-import com.google.android.apps.flexbox.MainActivity;
+import com.google.android.flexbox.MainActivity;
 import com.google.android.apps.flexbox.R;
 import com.google.android.flexbox.AlignContent;
 import com.google.android.flexbox.AlignItems;
