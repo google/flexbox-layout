@@ -14,20 +14,18 @@
  * limitations under the License.
  */
 
-package com.google.android.apps.flexbox.validators;
-
-import android.text.TextUtils;
+package com.google.android.flexbox.validators;
 
 /**
- * Validator for the flex basis percent attribute.
+ * Interface to verify a given input.
  */
-public class FlexBasisPercentInputValidator implements InputValidator {
+public interface InputValidator {
 
-    @Override
-    public boolean isValidInput(CharSequence charSequence) {
-        // -1 represents not set
-        return !TextUtils.isEmpty(charSequence) &&
-                (TextUtils.isDigitsOnly(charSequence) ||
-                        charSequence.toString().equals("-1"));
-    }
+    /**
+     * Verifies if the given input is valid.
+     *
+     * @param charSequence the input to be verified
+     * @return {@code true} if charSequence is valid, {@code false} otherwise
+     */
+    boolean isValidInput(CharSequence charSequence);
 }

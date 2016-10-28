@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.google.android.apps.flexbox;
+package com.google.android.flexbox;
 
 import android.content.Context;
 import android.util.DisplayMetrics;

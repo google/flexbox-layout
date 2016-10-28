@@ -14,26 +14,20 @@
  * limitations under the License.
  */
 
-package com.google.android.apps.flexbox.recyclerview;
+package com.google.android.flexbox.validators;
 
-import com.google.android.apps.flexbox.R;
-
-import android.support.v7.widget.RecyclerView;
-import android.view.View;
-import android.widget.TextView;
+import android.text.TextUtils;
 
 /**
- * ViewHolder implementation for a flex item.
+ * Validator for the flex basis percent attribute.
  */
-public class FlexItemViewHolder extends RecyclerView.ViewHolder {
+public class FlexBasisPercentInputValidator implements InputValidator {
 
-    TextView mTextView;
-    View mItemView;
-
-    public FlexItemViewHolder(View itemView) {
-        super(itemView);
-
-        mItemView = itemView;
-        mTextView = (TextView) itemView.findViewById(R.id.textview);
+    @Override
+    public boolean isValidInput(CharSequence charSequence) {
+        // -1 represents not set
+        return !TextUtils.isEmpty(charSequence) &&
+                (TextUtils.isDigitsOnly(charSequence) ||
+                        charSequence.toString().equals("-1"));
     }
 }
