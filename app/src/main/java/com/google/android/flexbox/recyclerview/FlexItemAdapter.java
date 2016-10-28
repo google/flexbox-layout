@@ -14,10 +14,9 @@
  * limitations under the License.
  */
 
-package com.google.android.apps.flexbox.recyclerview;
+package com.google.android.flexbox.recyclerview;
 
 import com.google.android.apps.flexbox.R;
-import com.google.android.flexbox.FlexItem;
 
 import android.support.v7.widget.RecyclerView;
 import android.view.Gravity;
@@ -33,14 +32,14 @@ import java.util.List;
  */
 public class FlexItemAdapter extends RecyclerView.Adapter<FlexItemViewHolder> {
 
-    private List<FlexItem> mFlexItems;
+    private List<RecyclerView.LayoutParams> mLayoutParams;
 
     public FlexItemAdapter() {
-        this(new ArrayList<FlexItem>());
+        this(new ArrayList<RecyclerView.LayoutParams>());
     }
 
-    public FlexItemAdapter(List<FlexItem> flexItems) {
-        mFlexItems = flexItems;
+    public FlexItemAdapter(List<RecyclerView.LayoutParams> flexItems) {
+        mLayoutParams = flexItems;
     }
 
     @Override
@@ -55,22 +54,22 @@ public class FlexItemAdapter extends RecyclerView.Adapter<FlexItemViewHolder> {
         holder.mTextView.setText(String.valueOf(position + 1));
         holder.mTextView.setBackgroundResource(R.drawable.flex_item_background);
         holder.mTextView.setGravity(Gravity.CENTER);
-        holder.mItemView.setLayoutParams((RecyclerView.LayoutParams) mFlexItems.get(position));
+        holder.mItemView.setLayoutParams(mLayoutParams.get(position));
     }
 
-    public void addFlexItem(FlexItem flexItem) {
-        mFlexItems.add(flexItem);
+    public void addItem(RecyclerView.LayoutParams lp) {
+        mLayoutParams.add(lp);
     }
 
-    public void removeFlexItem(int position) {
-        if (position < 0 || position >= mFlexItems.size()) {
+    public void removeItem(int position) {
+        if (position < 0 || position >= mLayoutParams.size()) {
             return;
         }
-        mFlexItems.remove(position);
+        mLayoutParams.remove(position);
     }
 
     @Override
     public int getItemCount() {
-        return mFlexItems.size();
+        return mLayoutParams.size();
     }
 }

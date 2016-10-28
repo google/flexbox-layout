@@ -25,7 +25,7 @@ import java.util.List;
 /**
  * Fake implementation of {@link FlexContainer}.
  */
-class FakeFlexContainer implements FlexContainerInternal {
+class FakeFlexContainer implements FlexContainer {
 
     private List<View> mViews = new ArrayList<>();
 
