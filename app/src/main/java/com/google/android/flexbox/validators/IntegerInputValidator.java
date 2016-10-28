@@ -14,22 +14,25 @@
  * limitations under the License.
  */
 
-package com.google.android.apps.flexbox.validators;
+package com.google.android.flexbox.validators;
 
 import android.text.TextUtils;
 
 /**
- * Validator for non negative integers.
+ * Validator for the integers.
  */
-public class NonNegativeDecimalInputValidator implements InputValidator {
+public class IntegerInputValidator implements InputValidator {
 
     @Override
     public boolean isValidInput(CharSequence charSequence) {
-        try {
-            Float.parseFloat(charSequence.toString());
-        } catch (NumberFormatException | NullPointerException ignore) {
+        if (TextUtils.isEmpty(charSequence)) {
             return false;
         }
-        return !TextUtils.isEmpty(charSequence) && Float.valueOf(charSequence.toString()) >= 0;
+        try {
+            Integer.parseInt(charSequence.toString());
+        } catch (NumberFormatException | NullPointerException e) {
+            return false;
+        }
+        return true;
     }
 }
