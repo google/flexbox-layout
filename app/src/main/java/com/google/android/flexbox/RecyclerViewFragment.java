@@ -14,11 +14,10 @@
  * limitations under the License.
  */
 
-package com.google.android.apps.flexbox;
+package com.google.android.flexbox;
 
-import com.google.android.apps.flexbox.recyclerview.FlexItemAdapter;
-import com.google.android.flexbox.FlexItem;
-import com.google.android.flexbox.FlexboxLayoutManager;
+import com.google.android.apps.flexbox.R;
+import com.google.android.flexbox.recyclerview.FlexItemAdapter;
 
 import android.os.Bundle;
 import android.support.annotation.Nullable;
@@ -50,7 +49,8 @@ public class RecyclerViewFragment extends Fragment {
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-        RecyclerView recyclerView = (RecyclerView) view.findViewById(R.id.recyclerview);
+        RecyclerView recyclerView = (RecyclerView) view.findViewById(
+                R.id.recyclerview);
         final FlexboxLayoutManager flexboxLayoutManager = new FlexboxLayoutManager();
         recyclerView.setLayoutManager(flexboxLayoutManager);
         final FlexItemAdapter adapter = new FlexItemAdapter();
@@ -59,16 +59,17 @@ public class RecyclerViewFragment extends Fragment {
         final MainActivity activity = (MainActivity) getActivity();
         final FragmentHelper fragmentHelper = new FragmentHelper(activity, flexboxLayoutManager);
         fragmentHelper.initializeViews();
-        FloatingActionButton addFab = (FloatingActionButton) activity.findViewById(R.id.add_fab);
+        FloatingActionButton addFab = (FloatingActionButton) activity.findViewById(
+                R.id.add_fab);
         if (addFab != null) {
             addFab.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
-                    FlexItem flexItem = new FlexboxLayoutManager.LayoutParams(
+                    RecyclerView.LayoutParams lp = new FlexboxLayoutManager.LayoutParams(
                             ViewGroup.LayoutParams.WRAP_CONTENT,
                             ViewGroup.LayoutParams.WRAP_CONTENT);
-                    fragmentHelper.setFlexItemAttributes(flexItem);
-                    adapter.addFlexItem(flexItem);
+                    fragmentHelper.setFlexItemAttributes((FlexItem) lp);
+                    adapter.addItem(lp);
                     // TODO: Specify index?
                     adapter.notifyDataSetChanged();
                 }
@@ -83,7 +84,7 @@ public class RecyclerViewFragment extends Fragment {
                     if (adapter.getItemCount() == 0) {
                         return;
                     }
-                    adapter.removeFlexItem(adapter.getItemCount() - 1);
+                    adapter.removeItem(adapter.getItemCount() - 1);
 
                     // TODO: Specify index?
                     adapter.notifyDataSetChanged();
