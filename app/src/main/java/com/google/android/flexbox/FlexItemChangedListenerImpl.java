@@ -14,11 +14,7 @@
  * limitations under the License.
  */
 
-package com.google.android.apps.flexbox.listeners;
-
-import com.google.android.flexbox.FlexContainer;
-import com.google.android.flexbox.FlexItem;
-import com.google.android.flexbox.FlexboxLayout;
+package com.google.android.flexbox;
 
 import android.view.View;
 
