@@ -14,14 +14,25 @@
  * limitations under the License.
  */
 
-package com.google.android.apps.flexbox.listeners;
+package com.google.android.flexbox.validators;
 
-import com.google.android.flexbox.FlexItem;
+import android.text.TextUtils;
 
 /**
- * A listener that listens to the change of a flex item
+ * Validator for the integers.
  */
-public interface FlexItemChangedListener {
+public class IntegerInputValidator implements InputValidator {
 
-    void onFlexItemChanged(FlexItem flexItem, int viewIndex);
+    @Override
+    public boolean isValidInput(CharSequence charSequence) {
+        if (TextUtils.isEmpty(charSequence)) {
+            return false;
+        }
+        try {
+            Integer.parseInt(charSequence.toString());
+        } catch (NumberFormatException | NullPointerException e) {
+            return false;
+        }
+        return true;
+    }
 }
