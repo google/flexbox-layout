@@ -14,13 +14,14 @@
  * limitations under the License.
  */
 
-package com.google.android.apps.flexbox;
+package com.google.android.flexbox;
 
-import com.google.android.apps.flexbox.validators.DimensionInputValidator;
-import com.google.android.apps.flexbox.validators.FlexBasisPercentInputValidator;
-import com.google.android.apps.flexbox.validators.InputValidator;
-import com.google.android.apps.flexbox.validators.IntegerInputValidator;
-import com.google.android.apps.flexbox.validators.NonNegativeDecimalInputValidator;
+import com.google.android.apps.flexbox.R;
+import com.google.android.flexbox.validators.DimensionInputValidator;
+import com.google.android.flexbox.validators.FlexBasisPercentInputValidator;
+import com.google.android.flexbox.validators.InputValidator;
+import com.google.android.flexbox.validators.IntegerInputValidator;
+import com.google.android.flexbox.validators.NonNegativeDecimalInputValidator;
 
 import android.os.Bundle;
 import android.support.v4.app.FragmentActivity;
