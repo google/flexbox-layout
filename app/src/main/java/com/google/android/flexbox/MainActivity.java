@@ -14,7 +14,9 @@
  * limitations under the License.
  */
 
-package com.google.android.apps.flexbox;
+package com.google.android.flexbox;
+
+import com.google.android.apps.flexbox.R;
 
 import android.content.Intent;
 import android.os.Bundle;
@@ -52,7 +54,8 @@ public class MainActivity extends AppCompatActivity
         }
         toggle.syncState();
 
-        NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
+        NavigationView navigationView = (NavigationView) findViewById(
+                R.id.nav_view);
         RadioGroup radioGroup = (RadioGroup) navigationView.getHeaderView(0)
                 .findViewById(R.id.radiogroup_container_implementation);
         final FragmentManager fragmentManager = getSupportFragmentManager();

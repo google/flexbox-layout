@@ -14,18 +14,26 @@
  * limitations under the License.
  */
 
-package com.google.android.apps.flexbox.validators;
+package com.google.android.flexbox.recyclerview;
+
+import com.google.android.apps.flexbox.R;
+
+import android.support.v7.widget.RecyclerView;
+import android.view.View;
+import android.widget.TextView;
 
 /**
- * Interface to verify a given input.
+ * ViewHolder implementation for a flex item.
  */
-public interface InputValidator {
+public class FlexItemViewHolder extends RecyclerView.ViewHolder {
 
-    /**
-     * Verifies if the given input is valid.
-     *
-     * @param charSequence the input to be verified
-     * @return {@code true} if charSequence is valid, {@code false} otherwise
-     */
-    boolean isValidInput(CharSequence charSequence);
+    TextView mTextView;
+    View mItemView;
+
+    public FlexItemViewHolder(View itemView) {
+        super(itemView);
+
+        mItemView = itemView;
+        mTextView = (TextView) itemView.findViewById(R.id.textview);
+    }
 }

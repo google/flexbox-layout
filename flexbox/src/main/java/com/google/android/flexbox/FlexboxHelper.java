@@ -32,7 +32,7 @@ import java.util.List;
  */
 class FlexboxHelper {
 
-    private final FlexContainerInternal mFlexContainer;
+    private final FlexContainer mFlexContainer;
 
     /**
      * Holds reordered indices, which {@link FlexItem#getOrder()} parameters are taken
@@ -66,7 +66,7 @@ class FlexboxHelper {
      */
     SparseIntArray mIndexToFlexLine;
 
-    FlexboxHelper(FlexContainerInternal flexContainer) {
+    FlexboxHelper(FlexContainer flexContainer) {
         mFlexContainer = flexContainer;
     }
 
