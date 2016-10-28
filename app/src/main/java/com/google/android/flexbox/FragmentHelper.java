@@ -14,15 +14,9 @@
  * limitations under the License.
  */
 
-package com.google.android.apps.flexbox;
+package com.google.android.flexbox;
 
-import com.google.android.flexbox.AlignContent;
-import com.google.android.flexbox.AlignItems;
-import com.google.android.flexbox.FlexContainer;
-import com.google.android.flexbox.FlexDirection;
-import com.google.android.flexbox.FlexItem;
-import com.google.android.flexbox.FlexWrap;
-import com.google.android.flexbox.JustifyContent;
+import com.google.android.apps.flexbox.R;
 
 import android.content.SharedPreferences;
 import android.support.design.widget.NavigationView;
@@ -40,9 +34,9 @@ import android.widget.Spinner;
  */
 class FragmentHelper {
 
-    static final String DEFAULT_WIDTH = "120";
+    private static final String DEFAULT_WIDTH = "120";
 
-    static final String DEFAULT_HEIGHT = "80";
+    private static final String DEFAULT_HEIGHT = "80";
 
     private String ROW;
 
@@ -86,7 +80,8 @@ class FragmentHelper {
     void initializeViews() {
         mSharedPreferences = PreferenceManager.getDefaultSharedPreferences(mActivity);
         initializeStringResources();
-        NavigationView navigationView = (NavigationView) mActivity.findViewById(R.id.nav_view);
+        NavigationView navigationView = (NavigationView) mActivity.findViewById(
+                R.id.nav_view);
         if (navigationView != null) {
             navigationView.setNavigationItemSelectedListener(mActivity);
             Menu navigationMenu = navigationView.getMenu();

@@ -16,8 +16,6 @@
 
 package com.google.android.flexbox.test;
 
-import com.google.android.flexbox.FlexItem;
-
 import android.support.v7.widget.RecyclerView;
 import android.view.Gravity;
 import android.view.LayoutInflater;
@@ -32,14 +30,14 @@ import java.util.List;
  */
 class TestAdapter extends RecyclerView.Adapter<TestViewHolder> {
 
-    private List<FlexItem> mFlexItems;
+    private List<RecyclerView.LayoutParams> mLayoutParams;
 
     TestAdapter() {
-        this(new ArrayList<FlexItem>());
+        this(new ArrayList<RecyclerView.LayoutParams>());
     }
 
-    TestAdapter(List<FlexItem> flexItems) {
-        mFlexItems = flexItems;
+    TestAdapter(List<RecyclerView.LayoutParams> flexItems) {
+        mLayoutParams = flexItems;
     }
 
     @Override
@@ -54,22 +52,22 @@ class TestAdapter extends RecyclerView.Adapter<TestViewHolder> {
         holder.mTextView.setText(String.valueOf(position + 1));
         holder.mTextView.setBackgroundResource(R.drawable.flex_item_background);
         holder.mTextView.setGravity(Gravity.CENTER);
-        holder.mItemView.setLayoutParams((RecyclerView.LayoutParams) mFlexItems.get(position));
+        holder.mItemView.setLayoutParams(mLayoutParams.get(position));
     }
 
-    public void addFlexItem(FlexItem flexItem) {
-        mFlexItems.add(flexItem);
+    public void addItem(RecyclerView.LayoutParams flexItem) {
+        mLayoutParams.add(flexItem);
     }
 
-    public void removeFlexItem(int position) {
-        if (position < 0 || position >= mFlexItems.size()) {
+    public void removeItem(int position) {
+        if (position < 0 || position >= mLayoutParams.size()) {
             return;
         }
-        mFlexItems.remove(position);
+        mLayoutParams.remove(position);
     }
 
     @Override
     public int getItemCount() {
-        return mFlexItems.size();
+        return mLayoutParams.size();
     }
 }
