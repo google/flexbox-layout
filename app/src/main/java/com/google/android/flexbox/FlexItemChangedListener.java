@@ -14,21 +14,14 @@
  * limitations under the License.
  */
 
-package com.google.android.apps.flexbox.validators;
+package com.google.android.flexbox;
 
-import android.text.TextUtils;
+import com.google.android.flexbox.FlexItem;
 
 /**
- * Validator for non negative integers.
+ * A listener that listens to the change of a flex item
  */
-public class NonNegativeDecimalInputValidator implements InputValidator {
+public interface FlexItemChangedListener {
 
-    @Override
-    public boolean isValidInput(CharSequence charSequence) {
-        try {
-            return !TextUtils.isEmpty(charSequence) && Float.valueOf(charSequence.toString()) >= 0;
-        } catch (NumberFormatException | NullPointerException ignore) {
-            return false;
-        }
-    }
+    void onFlexItemChanged(FlexItem flexItem, int viewIndex);
 }

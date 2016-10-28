@@ -45,7 +45,7 @@ public class FlexboxHelperTest {
 
     private FlexboxHelper mFlexboxHelper;
 
-    private FlexContainerInternal mFlexContainer;
+    private FlexContainer mFlexContainer;
 
     @Before
     public void setUp() {

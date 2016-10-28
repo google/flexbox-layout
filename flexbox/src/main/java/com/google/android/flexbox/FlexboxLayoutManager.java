@@ -42,8 +42,7 @@ import static android.support.v7.widget.RecyclerView.NO_POSITION;
  * {@link RecyclerView} and offers the same capabilities of measure/layout its children
  * as the {@link FlexboxLayout}.
  */
-public class FlexboxLayoutManager extends RecyclerView.LayoutManager
-        implements FlexContainerInternal {
+public class FlexboxLayoutManager extends RecyclerView.LayoutManager implements FlexContainer {
 
     private static final String TAG = "FlexboxLayoutManager";
 
