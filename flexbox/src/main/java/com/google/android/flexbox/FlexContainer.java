@@ -24,7 +24,7 @@ import java.util.List;
  * An interface that has the common behavior as the flex container such as {@link FlexboxLayout}
  * and {@link FlexboxLayoutManager}.
  */
-public interface FlexContainer {
+interface FlexContainer {
 
     /**
      * @return the number of flex items contained in the flex container.
@@ -247,4 +247,19 @@ public interface FlexContainer {
      * @param flexLine the new added flex line
      */
     void onNewFlexLineAdded(FlexLine flexLine);
+
+    /**
+     * Sets the list of the flex lines that compose the flex container to the one received as an
+     * argument.
+     *
+     * @param flexLines the list of flex lines
+     */
+    void setFlexLines(List<FlexLine> flexLines);
+
+    /**
+     * @return the list of the flex lines including dummy flex lines (flex line that doesn't have
+     * any flex items in it but used for the alignment along the cross axis), which aren't included
+     * in the {@link FlexContainer#getFlexLines()}.
+     */
+    List<FlexLine> getFlexLinesInternal();
 }
