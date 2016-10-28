@@ -19,7 +19,6 @@ package com.google.android.flexbox.test;
 import com.google.android.flexbox.AlignContent;
 import com.google.android.flexbox.AlignItems;
 import com.google.android.flexbox.FlexDirection;
-import com.google.android.flexbox.FlexItem;
 import com.google.android.flexbox.FlexWrap;
 import com.google.android.flexbox.FlexboxLayoutManager;
 import com.google.android.flexbox.JustifyContent;
@@ -114,8 +113,8 @@ public class FlexboxLayoutManagerTest {
                 RecyclerView recyclerView = (RecyclerView) activity.findViewById(R.id.recyclerview);
                 recyclerView.setLayoutManager(layoutManager);
                 recyclerView.setAdapter(adapter);
-                adapter.addFlexItem(createFlexItem(activity, 120, 80));
-                adapter.addFlexItem(createFlexItem(activity, 120, 80));
+                adapter.addItem(createLayoutParams(activity, 120, 80));
+                adapter.addItem(createLayoutParams(activity, 120, 80));
             }
         });
         InstrumentationRegistry.getInstrumentation().waitForIdleSync();
@@ -142,10 +141,10 @@ public class FlexboxLayoutManagerTest {
                 RecyclerView recyclerView = (RecyclerView) activity.findViewById(R.id.recyclerview);
                 recyclerView.setLayoutManager(layoutManager);
                 recyclerView.setAdapter(adapter);
-                adapter.addFlexItem(createFlexItem(activity, 120, 80));
-                adapter.addFlexItem(createFlexItem(activity, 120, 80));
-                adapter.addFlexItem(createFlexItem(activity, 120, 80));
-                adapter.addFlexItem(createFlexItem(activity, 120, 80));
+                adapter.addItem(createLayoutParams(activity, 120, 80));
+                adapter.addItem(createLayoutParams(activity, 120, 80));
+                adapter.addItem(createLayoutParams(activity, 120, 80));
+                adapter.addItem(createLayoutParams(activity, 120, 80));
             }
         });
         InstrumentationRegistry.getInstrumentation().waitForIdleSync();
@@ -170,15 +169,15 @@ public class FlexboxLayoutManagerTest {
                 RecyclerView recyclerView = (RecyclerView) activity.findViewById(R.id.recyclerview);
                 recyclerView.setLayoutManager(layoutManager);
                 recyclerView.setAdapter(adapter);
-                adapter.addFlexItem(createFlexItem(activity, 150, 130));
-                adapter.addFlexItem(createFlexItem(activity, 150, 130));
-                adapter.addFlexItem(createFlexItem(activity, 150, 130));
-                adapter.addFlexItem(createFlexItem(activity, 150, 130));
-                adapter.addFlexItem(createFlexItem(activity, 150, 130));
-                adapter.addFlexItem(createFlexItem(activity, 150, 130));
-                adapter.addFlexItem(createFlexItem(activity, 150, 130));
-                adapter.addFlexItem(createFlexItem(activity, 150, 130));
-                adapter.addFlexItem(createFlexItem(activity, 150, 130));
+                adapter.addItem(createLayoutParams(activity, 150, 130));
+                adapter.addItem(createLayoutParams(activity, 150, 130));
+                adapter.addItem(createLayoutParams(activity, 150, 130));
+                adapter.addItem(createLayoutParams(activity, 150, 130));
+                adapter.addItem(createLayoutParams(activity, 150, 130));
+                adapter.addItem(createLayoutParams(activity, 150, 130));
+                adapter.addItem(createLayoutParams(activity, 150, 130));
+                adapter.addItem(createLayoutParams(activity, 150, 130));
+                adapter.addItem(createLayoutParams(activity, 150, 130));
                 // RecyclerView width: 400, height: 300.
                 // Computed FlexContainer width: 400, height: 650
             }
@@ -198,9 +197,9 @@ public class FlexboxLayoutManagerTest {
      * @param context the context
      * @param width   in DP
      * @param height  in DP
-     * @return the created {@link FlexItem} instance
+     * @return the created {@link RecyclerView.LayoutParams} instance
      */
-    private FlexItem createFlexItem(Context context, int width, int height) {
+    private RecyclerView.LayoutParams createLayoutParams(Context context, int width, int height) {
         return new FlexboxLayoutManager.LayoutParams(
                 TestUtil.dpToPixel(context, width),
                 TestUtil.dpToPixel(context, height));
