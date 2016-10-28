@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.google.android.apps.flexbox.validators;
+package com.google.android.flexbox.validators;
 
 import android.text.TextUtils;
 
