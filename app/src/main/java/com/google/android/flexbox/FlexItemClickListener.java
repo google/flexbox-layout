@@ -14,10 +14,7 @@
  * limitations under the License.
  */
 
-package com.google.android.apps.flexbox.listeners;
-
-import com.google.android.apps.flexbox.FlexItemEditFragment;
-import com.google.android.flexbox.FlexItem;
+package com.google.android.flexbox;
 
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
