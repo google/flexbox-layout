@@ -42,7 +42,7 @@ limitations under the License.
                 android:hint="@string/hint_order"
                 android:inputType="numberSigned"
                 android:lines="1"
-                android:singleLine="true" />
+                android:maxLines="1" />
         </android.support.design.widget.TextInputLayout>
 
         <android.support.design.widget.TextInputLayout
@@ -58,7 +58,7 @@ limitations under the License.
                 android:hint="@string/hint_flex_grow"
                 android:inputType="numberDecimal"
                 android:lines="1"
-                android:singleLine="true" />
+                android:maxLines="1" />
         </android.support.design.widget.TextInputLayout>
 
         <android.support.design.widget.TextInputLayout
@@ -74,7 +74,7 @@ limitations under the License.
                 android:hint="@string/hint_flex_shrink"
                 android:inputType="numberDecimal"
                 android:lines="1"
-                android:singleLine="true" />
+                android:maxLines="1" />
         </android.support.design.widget.TextInputLayout>
 
         <android.support.design.widget.TextInputLayout
@@ -90,7 +90,7 @@ limitations under the License.
                 android:hint="@string/hint_flex_basis_percent"
                 android:inputType="numberSigned"
                 android:lines="1"
-                android:singleLine="true" />
+                android:maxLines="1" />
         </android.support.design.widget.TextInputLayout>
 
         <android.support.design.widget.TextInputLayout
@@ -107,7 +107,7 @@ limitations under the License.
                 android:hint="@string/hint_width"
                 android:inputType="numberSigned"
                 android:lines="1"
-                android:singleLine="true" />
+                android:maxLines="1" />
         </android.support.design.widget.TextInputLayout>
 
         <android.support.design.widget.TextInputLayout
@@ -123,7 +123,7 @@ limitations under the License.
                 android:hint="@string/hint_height"
                 android:inputType="numberSigned"
                 android:lines="1"
-                android:singleLine="true" />
+                android:maxLines="1" />
         </android.support.design.widget.TextInputLayout>
 
         <android.support.design.widget.TextInputLayout
@@ -138,9 +138,9 @@ limitations under the License.
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:lines="1"
-                android:singleLine="true"
                 android:inputType="number"
-                android:hint="@string/hint_min_width" />
+                android:hint="@string/hint_min_width"
+                android:maxLines="1" />
         </android.support.design.widget.TextInputLayout>
 
         <android.support.design.widget.TextInputLayout
@@ -154,9 +154,9 @@ limitations under the License.
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:lines="1"
-                android:singleLine="true"
                 android:inputType="number"
-                android:hint="@string/hint_min_height" />
+                android:hint="@string/hint_min_height"
+                android:maxLines="1" />
         </android.support.design.widget.TextInputLayout>
 
         <android.support.design.widget.TextInputLayout
@@ -170,9 +170,9 @@ limitations under the License.
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:lines="1"
-                android:singleLine="true"
                 android:inputType="number"
-                android:hint="@string/hint_max_width" />
+                android:hint="@string/hint_max_width"
+                android:maxLines="1" />
         </android.support.design.widget.TextInputLayout>
 
         <android.support.design.widget.TextInputLayout
@@ -186,9 +186,9 @@ limitations under the License.
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:lines="1"
-                android:singleLine="true"
                 android:inputType="number"
-                android:hint="@string/hint_max_height" />
+                android:hint="@string/hint_max_height"
+                android:maxLines="1" />
         </android.support.design.widget.TextInputLayout>
 
         <CheckBox
