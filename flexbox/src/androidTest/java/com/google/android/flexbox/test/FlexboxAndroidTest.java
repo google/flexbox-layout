@@ -3742,6 +3742,55 @@ public class FlexboxAndroidTest {
         assertThat(text3.getRight(), is(text1.getWidth() + text3.getWidth()));
     }
 
+    @Test
+    @FlakyTest
+    public void testZeroWidth_wrapContentHeight_positiveFlexGrow() throws Throwable {
+        final FlexboxTestActivity activity = mActivityRule.getActivity();
+        mActivityRule.runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                activity.setContentView(R.layout.activity_zero_width_positive_flexgrow);
+            }
+        });
+        InstrumentationRegistry.getInstrumentation().waitForIdleSync();
+        FlexboxLayout flexboxLayout = (FlexboxLayout) activity.findViewById(R.id.flexbox_layout);
+        assertThat(flexboxLayout.getFlexDirection(), is(FlexboxLayout.FLEX_DIRECTION_ROW));
+
+        TextView text1 = (TextView) activity.findViewById(R.id.text1);
+        TextView text2 = (TextView) activity.findViewById(R.id.text2);
+        // Both text view's layout_width is set to 0dp, layout_height is set to wrap_content and
+        // layout_flexGrow is set to 1. And the text2 has a longer text than the text1.
+        // So if the cross size calculation (height) is wrong, the height of two text view do not
+        // match because text2 is trying to expand vertically.
+        // This assertion verifies that isn't happening. Finally both text views expand horizontally
+        // enough to contain their texts in one line.
+        assertThat(text1.getHeight(), is(text2.getHeight()));
+        assertThat(text1.getWidth() + text2.getWidth(),
+                isEqualAllowingError(flexboxLayout.getWidth()));
+    }
+
+    @Test
+    @FlakyTest
+    public void testZeroHeight_wrapContentWidth_positiveFlexGrow() throws Throwable {
+        final FlexboxTestActivity activity = mActivityRule.getActivity();
+        mActivityRule.runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                activity.setContentView(R.layout.activity_zero_height_positive_flexgrow);
+            }
+        });
+        InstrumentationRegistry.getInstrumentation().waitForIdleSync();
+
+        FlexboxLayout flexboxLayout = (FlexboxLayout) activity.findViewById(R.id.flexbox_layout);
+        assertThat(flexboxLayout.getFlexDirection(), is(FlexboxLayout.FLEX_DIRECTION_COLUMN));
+
+        TextView text1 = (TextView) activity.findViewById(R.id.text1);
+        TextView text2 = (TextView) activity.findViewById(R.id.text2);
+        assertThat(text1.getWidth(), is(not(text2.getWidth())));
+        assertThat(text1.getHeight() + text2.getHeight(),
+                isEqualAllowingError(flexboxLayout.getHeight()));
+    }
+
     private TextView createTextView(Context context, String text, int order) {
         TextView textView = new TextView(context);
         textView.setText(text);
