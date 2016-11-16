@@ -3791,6 +3791,50 @@ public class FlexboxAndroidTest {
                 isEqualAllowingError(flexboxLayout.getHeight()));
     }
 
+    @Test
+    @FlakyTest
+    public void testFlexDirection_row_alignItems_center_margin_oneSide() throws Throwable {
+        final FlexboxTestActivity activity = mActivityRule.getActivity();
+        mActivityRule.runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                activity.setContentView(
+                        R.layout.activity_direction_row_align_items_center_margin_oneside);
+            }
+        });
+        InstrumentationRegistry.getInstrumentation().waitForIdleSync();
+
+        FlexboxLayout flexboxLayout = (FlexboxLayout) activity.findViewById(R.id.flexbox_layout);
+        assertThat(flexboxLayout.getFlexDirection(), is(FlexboxLayout.FLEX_DIRECTION_ROW));
+
+        TextView text1 = (TextView) activity.findViewById(R.id.text1);
+        assertThat(text1.getTop(), isEqualAllowingError(TestUtil.dpToPixel(activity, 30)));
+        assertThat(flexboxLayout.getBottom() - text1.getBottom(),
+                isEqualAllowingError(TestUtil.dpToPixel(activity, 50)));
+    }
+
+    @Test
+    @FlakyTest
+    public void testFlexDirection_column_alignItems_center_margin_oneSide() throws Throwable {
+        final FlexboxTestActivity activity = mActivityRule.getActivity();
+        mActivityRule.runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                activity.setContentView(
+                        R.layout.activity_direction_column_align_items_center_margin_oneside);
+            }
+        });
+        InstrumentationRegistry.getInstrumentation().waitForIdleSync();
+
+        FlexboxLayout flexboxLayout = (FlexboxLayout) activity.findViewById(R.id.flexbox_layout);
+        assertThat(flexboxLayout.getFlexDirection(), is(FlexboxLayout.FLEX_DIRECTION_COLUMN));
+
+        TextView text1 = (TextView) activity.findViewById(R.id.text1);
+        assertThat(text1.getLeft(), isEqualAllowingError(TestUtil.dpToPixel(activity, 30)));
+        assertThat(flexboxLayout.getRight() - text1.getRight(),
+                isEqualAllowingError(TestUtil.dpToPixel(activity, 50)));
+    }
+
     private TextView createTextView(Context context, String text, int order) {
         TextView textView = new TextView(context);
         textView.setText(text);

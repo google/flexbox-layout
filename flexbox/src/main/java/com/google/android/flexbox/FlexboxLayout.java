@@ -22,6 +22,7 @@ import android.graphics.Canvas;
 import android.graphics.drawable.Drawable;
 import android.support.annotation.IntDef;
 import android.support.annotation.NonNull;
+import android.support.v4.view.MarginLayoutParamsCompat;
 import android.support.v4.view.ViewCompat;
 import android.util.AttributeSet;
 import android.util.SparseIntArray;
@@ -1868,15 +1869,14 @@ public class FlexboxLayout extends ViewGroup {
                 }
                 break;
             case ALIGN_ITEMS_CENTER:
-                int topFromCrossAxis = (crossSize - view.getMeasuredHeight()) / 2;
+                int topFromCrossAxis = (crossSize - view.getMeasuredHeight()
+                        + lp.topMargin - lp.bottomMargin) / 2;
                 if (flexWrap != FLEX_WRAP_WRAP_REVERSE) {
-                    view.layout(left, top + topFromCrossAxis + lp.topMargin - lp.bottomMargin,
-                            right, top + topFromCrossAxis + view.getMeasuredHeight() + lp.topMargin
-                                    - lp.bottomMargin);
+                    view.layout(left, top + topFromCrossAxis,
+                            right, top + topFromCrossAxis + view.getMeasuredHeight());
                 } else {
-                    view.layout(left, top - topFromCrossAxis + lp.topMargin - lp.bottomMargin,
-                            right, top - topFromCrossAxis + view.getMeasuredHeight() + lp.topMargin
-                                    - lp.bottomMargin);
+                    view.layout(left, top - topFromCrossAxis,
+                            right, top - topFromCrossAxis + view.getMeasuredHeight());
                 }
                 break;
         }
@@ -2074,15 +2074,13 @@ public class FlexboxLayout extends ViewGroup {
                 }
                 break;
             case ALIGN_ITEMS_CENTER:
-                int leftFromCrossAxis = (crossSize - view.getMeasuredWidth()) / 2;
+                int leftFromCrossAxis = (crossSize - view.getMeasuredWidth()
+                        + MarginLayoutParamsCompat.getMarginStart(lp)
+                        - MarginLayoutParamsCompat.getMarginEnd(lp)) / 2;
                 if (!isRtl) {
-                    view.layout(left + leftFromCrossAxis + lp.leftMargin - lp.rightMargin,
-                            top, right + leftFromCrossAxis + lp.leftMargin - lp.rightMargin,
-                            bottom);
+                    view.layout(left + leftFromCrossAxis, top, right + leftFromCrossAxis, bottom);
                 } else {
-                    view.layout(left - leftFromCrossAxis + lp.leftMargin - lp.rightMargin,
-                            top, right - leftFromCrossAxis + lp.leftMargin - lp.rightMargin,
-                            bottom);
+                    view.layout(left - leftFromCrossAxis, top, right - leftFromCrossAxis, bottom);
                 }
                 break;
         }
