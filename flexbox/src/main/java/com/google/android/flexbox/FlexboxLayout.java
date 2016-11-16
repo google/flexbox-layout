@@ -900,11 +900,11 @@ public class FlexboxLayout extends ViewGroup {
         int childIndex = 0;
         for (FlexLine flexLine : mFlexLines) {
             if (flexLine.mMainSize < mainSize) {
-                childIndex = expandFlexItems(flexLine, flexDirection, mainSize,
-                        paddingAlongMainAxis, childIndex);
+                childIndex = expandFlexItems(widthMeasureSpec, heightMeasureSpec, flexLine,
+                        flexDirection, mainSize, paddingAlongMainAxis, childIndex);
             } else {
-                childIndex = shrinkFlexItems(flexLine, flexDirection, mainSize,
-                        paddingAlongMainAxis, childIndex);
+                childIndex = shrinkFlexItems(widthMeasureSpec, heightMeasureSpec, flexLine,
+                        flexDirection, mainSize, paddingAlongMainAxis, childIndex);
             }
         }
     }
@@ -912,6 +912,8 @@ public class FlexboxLayout extends ViewGroup {
     /**
      * Expand the flex items along the main axis based on the individual flexGrow attribute.
      *
+     * @param widthMeasureSpec     the horizontal space requirements as imposed by the parent
+     * @param heightMeasureSpec    the vertical space requirements as imposed by the parent
      * @param flexLine             the flex line to which flex items belong
      * @param flexDirection        the flexDirection value for this FlexboxLayout
      * @param maxMainSize          the maximum main size. Expanded main size will be this size
@@ -925,8 +927,9 @@ public class FlexboxLayout extends ViewGroup {
      * @see #setFlexDirection(int)
      * @see LayoutParams#flexGrow
      */
-    private int expandFlexItems(FlexLine flexLine, @FlexDirection int flexDirection,
-            int maxMainSize, int paddingAlongMainAxis, int startIndex) {
+    private int expandFlexItems(int widthMeasureSpec, int heightMeasureSpec, FlexLine flexLine,
+            @FlexDirection int flexDirection, int maxMainSize, int paddingAlongMainAxis,
+            int startIndex) {
         int childIndex = startIndex;
         if (flexLine.mTotalFlexGrow <= 0 || maxMainSize < flexLine.mMainSize) {
             childIndex += flexLine.mItemCount;
@@ -936,6 +939,17 @@ public class FlexboxLayout extends ViewGroup {
         boolean needsReexpand = false;
         float unitSpace = (maxMainSize - flexLine.mMainSize) / flexLine.mTotalFlexGrow;
         flexLine.mMainSize = paddingAlongMainAxis + flexLine.mDividerLengthInMainSize;
+
+        // Setting the cross size of the flex line as the temporal value since the cross size of
+        // each flex item may be changed from the initial calculation
+        // (in the measureHorizontal/measureVertical method) even this method is part of the main
+        // size determination.
+        // E.g. If a TextView's layout_width is set to 0dp, layout_height is set to wrap_content,
+        // and layout_flexGrow is set to 1, the TextView is trying to expand to the vertical
+        // direction to enclose its content (in the measureHorizontal method), but
+        // the width will be expanded in this method. In that case, the height needs to be measured
+        // again with the expanded width.
+        flexLine.mCrossSize = Integer.MIN_VALUE;
         float accumulatedRoundError = 0;
         for (int i = 0; i < flexLine.mItemCount; i++) {
             View child = getReorderedChildAt(childIndex);
@@ -975,12 +989,12 @@ public class FlexboxLayout extends ViewGroup {
                             accumulatedRoundError += 1.0;
                         }
                     }
+                    int childHeightMeasureSpec = getChildHeightMeasureSpec(heightMeasureSpec, lp);
                     child.measure(MeasureSpec.makeMeasureSpec(newWidth, MeasureSpec.EXACTLY),
-                            MeasureSpec
-                                    .makeMeasureSpec(child.getMeasuredHeight(),
-                                            MeasureSpec.EXACTLY));
+                            childHeightMeasureSpec);
                 }
                 flexLine.mMainSize += child.getMeasuredWidth() + lp.leftMargin + lp.rightMargin;
+                flexLine.mCrossSize = Math.max(flexLine.mCrossSize, child.getMeasuredHeight());
             } else {
                 // The direction of the main axis is vertical
                 if (!mChildrenFrozen[childIndex]) {
@@ -1011,11 +1025,12 @@ public class FlexboxLayout extends ViewGroup {
                             accumulatedRoundError += 1.0;
                         }
                     }
-                    child.measure(MeasureSpec.makeMeasureSpec(child.getMeasuredWidth(),
-                            MeasureSpec.EXACTLY),
+                    int childWidthMeasureSpec = getChildWidthMeasureSpec(widthMeasureSpec, lp);
+                    child.measure(childWidthMeasureSpec,
                             MeasureSpec.makeMeasureSpec(newHeight, MeasureSpec.EXACTLY));
                 }
                 flexLine.mMainSize += child.getMeasuredHeight() + lp.topMargin + lp.bottomMargin;
+                flexLine.mCrossSize = Math.max(flexLine.mCrossSize, child.getMeasuredWidth());
             }
             childIndex++;
         }
@@ -1023,7 +1038,8 @@ public class FlexboxLayout extends ViewGroup {
         if (needsReexpand && sizeBeforeExpand != flexLine.mMainSize) {
             // Re-invoke the method with the same startIndex to distribute the positive free space
             // that wasn't fully distributed (because of maximum length constraint)
-            expandFlexItems(flexLine, flexDirection, maxMainSize, paddingAlongMainAxis, startIndex);
+            expandFlexItems(widthMeasureSpec, heightMeasureSpec, flexLine, flexDirection,
+                    maxMainSize, paddingAlongMainAxis, startIndex);
         }
         return childIndex;
     }
@@ -1031,6 +1047,8 @@ public class FlexboxLayout extends ViewGroup {
     /**
      * Shrink the flex items along the main axis based on the individual flexShrink attribute.
      *
+     * @param widthMeasureSpec     the horizontal space requirements as imposed by the parent
+     * @param heightMeasureSpec    the vertical space requirements as imposed by the parent
      * @param flexLine             the flex line to which flex items belong
      * @param flexDirection        the flexDirection value for this FlexboxLayout
      * @param maxMainSize          the maximum main size. Shrank main size will be this size
@@ -1044,8 +1062,9 @@ public class FlexboxLayout extends ViewGroup {
      * @see #setFlexDirection(int)
      * @see LayoutParams#flexShrink
      */
-    private int shrinkFlexItems(FlexLine flexLine, @FlexDirection int flexDirection,
-            int maxMainSize, int paddingAlongMainAxis, int startIndex) {
+    private int shrinkFlexItems(int widthMeasureSpec, int heightMeasureSpec, FlexLine flexLine,
+            @FlexDirection int flexDirection, int maxMainSize, int paddingAlongMainAxis,
+            int startIndex) {
         int childIndex = startIndex;
         int sizeBeforeShrink = flexLine.mMainSize;
         if (flexLine.mTotalFlexShrink <= 0 || maxMainSize > flexLine.mMainSize) {
@@ -1056,6 +1075,17 @@ public class FlexboxLayout extends ViewGroup {
         float unitShrink = (flexLine.mMainSize - maxMainSize) / flexLine.mTotalFlexShrink;
         float accumulatedRoundError = 0;
         flexLine.mMainSize = paddingAlongMainAxis + flexLine.mDividerLengthInMainSize;
+
+        // Setting the cross size of the flex line as the temporal value since the cross size of
+        // each flex item may be changed from the initial calculation
+        // (in the measureHorizontal/measureVertical method) even this method is part of the main
+        // size determination.
+        // E.g. If a TextView's layout_width is set to 0dp, layout_height is set to wrap_content,
+        // and layout_flexGrow is set to 1, the TextView is trying to expand to the vertical
+        // direction to enclose its content (in the measureHorizontal method), but
+        // the width will be expanded in this method. In that case, the height needs to be measured
+        // again with the expanded width.
+        flexLine.mCrossSize = Integer.MIN_VALUE;
         for (int i = 0; i < flexLine.mItemCount; i++) {
             View child = getReorderedChildAt(childIndex);
             if (child == null) {
@@ -1095,11 +1125,12 @@ public class FlexboxLayout extends ViewGroup {
                             accumulatedRoundError += 1;
                         }
                     }
+                    int childHeightMeasureSpec = getChildHeightMeasureSpec(heightMeasureSpec, lp);
                     child.measure(MeasureSpec.makeMeasureSpec(newWidth, MeasureSpec.EXACTLY),
-                            MeasureSpec.makeMeasureSpec(child.getMeasuredHeight(),
-                                    MeasureSpec.EXACTLY));
+                            childHeightMeasureSpec);
                 }
                 flexLine.mMainSize += child.getMeasuredWidth() + lp.leftMargin + lp.rightMargin;
+                flexLine.mCrossSize = Math.max(flexLine.mCrossSize, child.getMeasuredHeight());
             } else {
                 // The direction of main axis is vertical
                 if (!mChildrenFrozen[childIndex]) {
@@ -1126,11 +1157,12 @@ public class FlexboxLayout extends ViewGroup {
                             accumulatedRoundError += 1;
                         }
                     }
-                    child.measure(MeasureSpec.makeMeasureSpec(child.getMeasuredWidth(),
-                            MeasureSpec.EXACTLY),
+                    int childWidthMeasureSpec = getChildWidthMeasureSpec(widthMeasureSpec, lp);
+                    child.measure(childWidthMeasureSpec,
                             MeasureSpec.makeMeasureSpec(newHeight, MeasureSpec.EXACTLY));
                 }
                 flexLine.mMainSize += child.getMeasuredHeight() + lp.topMargin + lp.bottomMargin;
+                flexLine.mCrossSize = Math.max(flexLine.mCrossSize, child.getMeasuredWidth());
             }
             childIndex++;
         }
@@ -1138,9 +1170,40 @@ public class FlexboxLayout extends ViewGroup {
         if (needsReshrink && sizeBeforeShrink != flexLine.mMainSize) {
             // Re-invoke the method with the same startIndex to distribute the negative free space
             // that wasn't fully distributed (because some views length were not enough)
-            shrinkFlexItems(flexLine, flexDirection, maxMainSize, paddingAlongMainAxis, startIndex);
+            shrinkFlexItems(widthMeasureSpec, heightMeasureSpec, flexLine, flexDirection,
+                    maxMainSize, paddingAlongMainAxis, startIndex);
         }
         return childIndex;
+    }
+
+    private int getChildWidthMeasureSpec(int widthMeasureSpec, LayoutParams lp) {
+        int childWidthMeasureSpec = getChildMeasureSpec(widthMeasureSpec,
+                getPaddingLeft() + getPaddingRight() + lp.leftMargin
+                        + lp.rightMargin, lp.width);
+        int childWidth = MeasureSpec.getSize(childWidthMeasureSpec);
+        if (childWidth > lp.maxWidth) {
+            childWidthMeasureSpec = MeasureSpec.makeMeasureSpec(lp.maxWidth,
+                    MeasureSpec.getMode(childWidthMeasureSpec));
+        } else if (childWidth < lp.minWidth) {
+            childWidthMeasureSpec = MeasureSpec.makeMeasureSpec(lp.minWidth,
+                    MeasureSpec.getMode(childWidthMeasureSpec));
+        }
+        return childWidthMeasureSpec;
+    }
+
+    private int getChildHeightMeasureSpec(int heightMeasureSpec, LayoutParams lp) {
+        int childHeightMeasureSpec = getChildMeasureSpec(heightMeasureSpec,
+                getPaddingTop() + getPaddingBottom() + lp.topMargin
+                        + lp.bottomMargin, lp.height);
+        int childHeight = MeasureSpec.getSize(childHeightMeasureSpec);
+        if (childHeight > lp.maxHeight) {
+            childHeightMeasureSpec = MeasureSpec.makeMeasureSpec(lp.maxHeight,
+                    MeasureSpec.getMode(childHeightMeasureSpec));
+        } else if (childHeight < lp.minHeight) {
+            childHeightMeasureSpec = MeasureSpec.makeMeasureSpec(lp.minHeight,
+                    MeasureSpec.getMode(childHeightMeasureSpec));
+        }
+        return childHeightMeasureSpec;
     }
 
     /**
