@@ -1,8 +1,5 @@
 machine:
     environment:
-        CLOUDSDK_CORE_DISABLE_PROMPTS: 1
-        CLOUDSDK_PYTHON_SITEPACKAGES: 1
-        CLOUDSDK_INSTALL_DIR: /tmp
         MAX_RETRY: 4
     java:
         version: oraclejdk8
@@ -10,22 +7,6 @@ machine:
 dependencies:
     pre:
         - echo y | android update sdk --no-ui --all --filter "android-25,build-tools-25.0.0,tools,platform-tools,extra-android-m2repository"
-        # For some reasons, there is an issue with the pre-installed gcloud that
-        # PyOpenSSL is not available when trying to activate the service account.
-        # Re-installing the gcloud worked as a workaround.
-        # See https://discuss.circleci.com/t/deployment-to-appengine-fails-pyopenssl-not-available/2154
-
-        # Suppress the gcloud installation if the PR is from a forked repository
-        # Because environment variables configured from the Circle CI UI are not
-        # visible for the PRs from forked repositories.
-        - >
-            if [ -n "$GCLOUD_SERVICE_KEY" ]; then sudo apt-get remove python-virtualenv python-openssl python3-openssl ;
-                sudo apt-get update;
-                sudo apt-get install python-openssl python3-openssl ;
-                sudo rm -rf /opt/google-cloud-sdk/ ;
-                curl https://sdk.cloud.google.com | bash ;
-                source ~/.bashrc ;
-            fi
     cache_directories:
         - ~/.android
     override:
@@ -33,25 +14,29 @@ dependencies:
     post:
         - >
             if [ -n "$GCLOUD_SERVICE_KEY" ]; then echo ${GCLOUD_SERVICE_KEY} | base64 --decode > ${HOME}/client-secret.json ;
-                /tmp/google-cloud-sdk/bin/gcloud config set project ${GCLOUD_PROJECT} ;
-                /tmp/google-cloud-sdk/bin/gcloud --quiet components update ;
-                /tmp/google-cloud-sdk/bin/gcloud --quiet components install beta ;
-                /tmp/google-cloud-sdk/bin/gcloud auth activate-service-account ${GCLOUD_SERVICE_ACCOUNT} --key-file ${HOME}/client-secret.json ;
+                gcloud config set project ${GCLOUD_PROJECT} ;
+                sudo /opt/google-cloud-sdk/bin/gcloud --quiet components update ;
+                sudo /opt/google-cloud-sdk/bin/gcloud --quiet components install beta ;
+                gcloud auth activate-service-account ${GCLOUD_SERVICE_ACCOUNT} --key-file ${HOME}/client-secret.json ;
             fi
 
 test:
     override:
         - ./gradlew build assembleAndroidTest
         - >
+            # Suppress running the instrumentation tests if the PR is from a forked repository
+            # because environment variables configured from the Circle CI UI are not
+            # visible for the PRs from forked repositories that are required to run the tests
+            # on the Firebase Test Lab.
             if [ -n "$GCLOUD_SERVICE_KEY" ]; then set +e ;
                 counter=0 ;
                 result=1 ;
                 while [ $result != 0 -a $counter -lt $MAX_RETRY ]; do
-                    /tmp/google-cloud-sdk/bin/gcloud beta test android run --type instrumentation --app app/build/outputs/apk/app-debug.apk --test flexbox/build/outputs/apk/flexbox-debug-androidTest.apk --device-ids hammerhead,flounder,condor_umts --os-version-ids 19,21,23 --locales en --orientations portrait,landscape --results-bucket ${GCLOUD_TEST_BUCKET_LIBRARY} --timeout 180s ;
+                    gcloud beta test android run --type instrumentation --app app/build/outputs/apk/app-debug.apk --test flexbox/build/outputs/apk/flexbox-debug-androidTest.apk --device-ids hammerhead,flounder,condor_umts --os-version-ids 19,21,23 --locales en --orientations portrait,landscape --results-bucket ${GCLOUD_TEST_BUCKET_LIBRARY} --timeout 180s ;
                     result=$? ;
                     let counter=counter+1 ;
                 done
                 exit $result ;
             fi
     post:
-        - if [ -n "$GCLOUD_SERVICE_KEY" ]; then /tmp/google-cloud-sdk/bin/gsutil -m cp -r -U `/tmp/google-cloud-sdk/bin/gsutil ls gs://${GCLOUD_TEST_BUCKET_LIBRARY} | tail -1` $CIRCLE_ARTIFACTS/ | true ; fi
+        - if [ -n "$GCLOUD_SERVICE_KEY" ]; then gsutil -m cp -r -U `gsutil ls gs://${GCLOUD_TEST_BUCKET_LIBRARY} | tail -1` $CIRCLE_ARTIFACTS/ | true ; fi
