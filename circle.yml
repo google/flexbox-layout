@@ -23,11 +23,12 @@ dependencies:
 test:
     override:
         - ./gradlew build assembleAndroidTest
+
+        # Suppress running the instrumentation tests if the PR is from a forked repository
+        # because environment variables configured from the Circle CI UI are not
+        # visible for the PRs from forked repositories that are required to run the tests
+        # on the Firebase Test Lab.
         - >
-            # Suppress running the instrumentation tests if the PR is from a forked repository
-            # because environment variables configured from the Circle CI UI are not
-            # visible for the PRs from forked repositories that are required to run the tests
-            # on the Firebase Test Lab.
             if [ -n "$GCLOUD_SERVICE_KEY" ]; then set +e ;
                 counter=0 ;
                 result=1 ;
