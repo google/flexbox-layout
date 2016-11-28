@@ -164,8 +164,7 @@ public class FlexboxHelperTest {
         FlexboxHelper.FlexLinesResult result = mFlexboxHelper
                 .calculateHorizontalFlexLines(widthMeasureSpec, heightMeasureSpec);
         mFlexContainer.setFlexLines(result.mFlexLines);
-        boolean[] childrenFrozen = new boolean[4];
-        mFlexboxHelper.determineMainSize(widthMeasureSpec, heightMeasureSpec, childrenFrozen);
+        mFlexboxHelper.determineMainSize(widthMeasureSpec, heightMeasureSpec);
 
         assertThat(view1.getMeasuredWidth(), is(100));
         assertThat(view1.getMeasuredHeight(), is(100));
@@ -208,8 +207,7 @@ public class FlexboxHelperTest {
         FlexboxHelper.FlexLinesResult result = mFlexboxHelper
                 .calculateVerticalFlexLines(widthMeasureSpec, heightMeasureSpec);
         mFlexContainer.setFlexLines(result.mFlexLines);
-        boolean[] childrenFrozen = new boolean[4];
-        mFlexboxHelper.determineMainSize(widthMeasureSpec, heightMeasureSpec, childrenFrozen);
+        mFlexboxHelper.determineMainSize(widthMeasureSpec, heightMeasureSpec);
 
         assertThat(view1.getMeasuredWidth(), is(100));
         assertThat(view1.getMeasuredHeight(), is(100));
@@ -250,8 +248,7 @@ public class FlexboxHelperTest {
         FlexboxHelper.FlexLinesResult result = mFlexboxHelper
                 .calculateHorizontalFlexLines(widthMeasureSpec, heightMeasureSpec);
         mFlexContainer.setFlexLines(result.mFlexLines);
-        boolean[] childrenFrozen = new boolean[4];
-        mFlexboxHelper.determineMainSize(widthMeasureSpec, heightMeasureSpec, childrenFrozen);
+        mFlexboxHelper.determineMainSize(widthMeasureSpec, heightMeasureSpec);
 
         // Flex shrink is set to 1.0 (default value) for all views.
         // They should be shrank equally for the amount overflown the width
@@ -292,8 +289,7 @@ public class FlexboxHelperTest {
         FlexboxHelper.FlexLinesResult result = mFlexboxHelper
                 .calculateVerticalFlexLines(widthMeasureSpec, heightMeasureSpec);
         mFlexContainer.setFlexLines(result.mFlexLines);
-        boolean[] childrenFrozen = new boolean[4];
-        mFlexboxHelper.determineMainSize(widthMeasureSpec, heightMeasureSpec, childrenFrozen);
+        mFlexboxHelper.determineMainSize(widthMeasureSpec, heightMeasureSpec);
 
         // Flex shrink is set to 1.0 (default value) for all views.
         // They should be shrank equally for the amount overflown the height
@@ -335,8 +331,7 @@ public class FlexboxHelperTest {
         FlexboxHelper.FlexLinesResult result = mFlexboxHelper
                 .calculateHorizontalFlexLines(widthMeasureSpec, heightMeasureSpec);
         mFlexContainer.setFlexLines(result.mFlexLines);
-        boolean[] childrenFrozen = new boolean[4];
-        mFlexboxHelper.determineMainSize(widthMeasureSpec, heightMeasureSpec, childrenFrozen);
+        mFlexboxHelper.determineMainSize(widthMeasureSpec, heightMeasureSpec);
         mFlexboxHelper
                 .determineCrossSize(widthMeasureSpec, heightMeasureSpec, 0);
         mFlexboxHelper.stretchViews();
@@ -378,8 +373,7 @@ public class FlexboxHelperTest {
         FlexboxHelper.FlexLinesResult result = mFlexboxHelper
                 .calculateVerticalFlexLines(widthMeasureSpec, heightMeasureSpec);
         mFlexContainer.setFlexLines(result.mFlexLines);
-        boolean[] childrenFrozen = new boolean[4];
-        mFlexboxHelper.determineMainSize(widthMeasureSpec, heightMeasureSpec, childrenFrozen);
+        mFlexboxHelper.determineMainSize(widthMeasureSpec, heightMeasureSpec);
         mFlexboxHelper
                 .determineCrossSize(widthMeasureSpec, heightMeasureSpec, 0);
         mFlexboxHelper.stretchViews();
