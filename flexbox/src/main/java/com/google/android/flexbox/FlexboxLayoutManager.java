@@ -31,7 +31,6 @@ import android.view.ViewGroup;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 import static android.support.v7.widget.LinearLayoutManager.INVALID_OFFSET;
@@ -88,13 +87,6 @@ public class FlexboxLayoutManager extends RecyclerView.LayoutManager implements 
     private int mAlignContent;
 
     private List<FlexLine> mFlexLines = new ArrayList<>();
-
-    /**
-     * Holds the 'frozen' state of children during measure. If a view is frozen it will no longer
-     * expand or shrink regardless of flex grow/flex shrink attributes.
-     * Items are indexed by the child's reordered index.
-     */
-    private boolean[] mChildrenFrozen;
 
     private final FlexboxHelper mFlexboxHelper = new FlexboxHelper(this);
 
@@ -443,7 +435,8 @@ public class FlexboxLayoutManager extends RecyclerView.LayoutManager implements 
             return;
         }
         ensureOrientationHelper();
-        ensureChildrenFrozenArray(state);
+        mFlexboxHelper.ensureMeasureSpecCache(childCount);
+
         mLayoutState.mShouldRecycle = false;
         mAnchorInfo.reset();
         updateAnchorInfoForLayout(state, mAnchorInfo);
@@ -463,7 +456,7 @@ public class FlexboxLayoutManager extends RecyclerView.LayoutManager implements 
         mFlexLines.clear();
 
         // TODO: Change the code to calculate only the visible area
-        int paddingAlongCrossAxis = 0;
+        int paddingAlongCrossAxis;
         if (isMainAxisDirectionHorizontal()) {
             flexLinesResult = mFlexboxHelper
                     .calculateHorizontalFlexLines(widthMeasureSpec, heightMeasureSpec);
@@ -474,7 +467,7 @@ public class FlexboxLayoutManager extends RecyclerView.LayoutManager implements 
             paddingAlongCrossAxis = getPaddingLeft() + getPaddingRight();
         }
         mFlexLines = flexLinesResult.mFlexLines;
-        mFlexboxHelper.determineMainSize(widthMeasureSpec, heightMeasureSpec, mChildrenFrozen);
+        mFlexboxHelper.determineMainSize(widthMeasureSpec, heightMeasureSpec);
         if (DEBUG) {
             for (int i = 0, size = mFlexLines.size(); i < size; i++) {
                 FlexLine flexLine = mFlexLines.get(i);
@@ -730,6 +723,7 @@ public class FlexboxLayoutManager extends RecyclerView.LayoutManager implements 
 
     private int layoutFlexLineMainAxisHorizontal(RecyclerView.Recycler recycler,
             RecyclerView.State state, FlexLine flexLine, LayoutState layoutState) {
+        assert mFlexboxHelper.mMeasureSpecCache != null;
 
         int childLeft = getPaddingLeft();
         // Either childTop or childBottom is used depending on the layoutState.mLayoutDirection
@@ -749,7 +743,19 @@ public class FlexboxLayoutManager extends RecyclerView.LayoutManager implements 
             if (view == null) {
                 continue;
             }
-            measureChildWithMargins(view, 0, 0);
+
+            // Retrieve the measure spec from the cache because the view may be re-created when
+            // retrieved from Recycler, in that case measured width/height are set to 0 even
+            // each visible child should be measured at least once in the FlexboxHelper
+            long measureSpec = mFlexboxHelper.mMeasureSpecCache[i];
+            int widthSpec = mFlexboxHelper.extractWidthMeasureSpec(measureSpec);
+            int heightSpec = mFlexboxHelper.extractHeightMeasureSpec(measureSpec);
+            if (shouldMeasureChild(view, widthSpec, heightSpec,
+                    (RecyclerView.LayoutParams) view.getLayoutParams())) {
+                // TODO: Need to consider decorator length
+                view.measure(widthSpec, heightSpec);
+            }
+
             if (layoutState.mLayoutDirection == LayoutDirection.END) {
                 addView(view);
             } else {
@@ -843,14 +849,6 @@ public class FlexboxLayoutManager extends RecyclerView.LayoutManager implements 
         mLayoutState = new LayoutState();
     }
 
-    private void ensureChildrenFrozenArray(RecyclerView.State state) {
-        if (mChildrenFrozen == null || mChildrenFrozen.length < state.getItemCount()) {
-            mChildrenFrozen = new boolean[state.getItemCount()];
-        } else {
-            Arrays.fill(mChildrenFrozen, false);
-        }
-    }
-
     @Override
     public boolean canScrollHorizontally() {
         if (mFlexWrap == FlexWrap.NOWRAP) {
@@ -923,6 +921,38 @@ public class FlexboxLayoutManager extends RecyclerView.LayoutManager implements 
         }
         mLayoutState.mAvailable = absDy;
         mLayoutState.mAvailable -= mLayoutState.mScrollingOffset;
+    }
+
+    /**
+     * Copied from {@link android.support.v7.widget.RecyclerView.LayoutManager#shouldMeasureChild(View, int, int, RecyclerView.LayoutParams)}}
+     */
+    private boolean shouldMeasureChild(View child, int widthSpec, int heightSpec,
+            RecyclerView.LayoutParams lp) {
+        return child.isLayoutRequested()
+                || !isMeasurementCacheEnabled()
+                || !isMeasurementUpToDate(child.getWidth(), widthSpec, lp.width)
+                || !isMeasurementUpToDate(child.getHeight(), heightSpec, lp.height);
+    }
+
+    /**
+     * Copied from
+     * {@link android.support.v7.widget.RecyclerView.LayoutManager#isMeasurementUpToDate(int, int, int)}
+     */
+    private static boolean isMeasurementUpToDate(int childSize, int spec, int dimension) {
+        final int specMode = View.MeasureSpec.getMode(spec);
+        final int specSize = View.MeasureSpec.getSize(spec);
+        if (dimension > 0 && childSize != dimension) {
+            return false;
+        }
+        switch (specMode) {
+            case View.MeasureSpec.UNSPECIFIED:
+                return true;
+            case View.MeasureSpec.AT_MOST:
+                return specSize >= childSize;
+            case View.MeasureSpec.EXACTLY:
+                return  specSize == childSize;
+        }
+        return false;
     }
 
     /**

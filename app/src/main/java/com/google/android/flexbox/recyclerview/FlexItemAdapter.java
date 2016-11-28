@@ -54,7 +54,7 @@ public class FlexItemAdapter extends RecyclerView.Adapter<FlexItemViewHolder> {
         holder.mTextView.setText(String.valueOf(position + 1));
         holder.mTextView.setBackgroundResource(R.drawable.flex_item_background);
         holder.mTextView.setGravity(Gravity.CENTER);
-        holder.mItemView.setLayoutParams(mLayoutParams.get(position));
+        holder.mTextView.setLayoutParams(mLayoutParams.get(position));
     }
 
     public void addItem(RecyclerView.LayoutParams lp) {
