@@ -79,10 +79,8 @@ class FlexboxHelper {
     SparseIntArray mIndexToFlexLine;
 
     /**
-     * Cache the measured spec. The first 32 bit of represents the height measure spec, the last
+     * Cache the measured spec. The first 32 bit represents the height measure spec, the last
      * 32 bit represents the width measure spec of each flex item.
-     * The first 32 bit consists of the height measure spec and the last 32 bit consists of the
-     * width measure spec.
      * E.g. an entry is created like {@code (long) heightMeasureSpec << 32 | widthMeasureSpec}
      */
     @Nullable
@@ -603,7 +601,8 @@ class FlexboxHelper {
         if (mChildrenFrozen == null) {
             mChildrenFrozen = new boolean[size < INITIAL_CAPACITY ? INITIAL_CAPACITY : size];
         } else if (mChildrenFrozen.length < size) {
-            mChildrenFrozen = new boolean[mChildrenFrozen.length * 2];
+            int newCapacity = mChildrenFrozen.length * 2;
+            mChildrenFrozen = new boolean[newCapacity >= size ? newCapacity : size];
         } else {
             Arrays.fill(mChildrenFrozen, false);
         }
@@ -1234,7 +1233,8 @@ class FlexboxHelper {
         if (mMeasureSpecCache == null) {
             mMeasureSpecCache = new long[size < INITIAL_CAPACITY ? INITIAL_CAPACITY : size];
         } else if (mMeasureSpecCache.length < size) {
-            mMeasureSpecCache = new long[mMeasureSpecCache.length * 2];
+            int newCapacity = mMeasureSpecCache.length * 2;
+            mMeasureSpecCache = new long[newCapacity >= size ? newCapacity : size];
         }
     }
 
