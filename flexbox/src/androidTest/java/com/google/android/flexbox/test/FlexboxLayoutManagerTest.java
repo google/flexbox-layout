@@ -35,6 +35,7 @@ import android.support.test.rule.ActivityTestRule;
 import android.support.test.runner.AndroidJUnit4;
 import android.support.v7.widget.RecyclerView;
 
+import static com.google.android.flexbox.test.IsEqualAllowingError.isEqualAllowingError;
 import static org.hamcrest.Matchers.instanceOf;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.notNullValue;
@@ -191,15 +192,55 @@ public class FlexboxLayoutManagerTest {
         assertThat(layoutManager.getFlexLines().size(), is(5));
     }
 
+    @Test
+    @FlakyTest
+    public void testFlexGrow() throws Throwable {
+        final FlexboxTestActivity activity = mActivityRule.getActivity();
+        final FlexboxLayoutManager layoutManager = new FlexboxLayoutManager();
+        final TestAdapter adapter = new TestAdapter();
+        mActivityRule.runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                activity.setContentView(R.layout.recyclerview);
+                RecyclerView recyclerView = (RecyclerView) activity.findViewById(R.id.recyclerview);
+                recyclerView.setLayoutManager(layoutManager);
+                recyclerView.setAdapter(adapter);
+                FlexboxLayoutManager.LayoutParams lp1 = createLayoutParams(activity, 150, 130);
+                lp1.setFlexGrow(1.0f);
+                adapter.addItem(lp1);
+                FlexboxLayoutManager.LayoutParams lp2 = createLayoutParams(activity, 150, 130);
+                lp2.setFlexGrow(1.0f);
+                adapter.addItem(lp2);
+                FlexboxLayoutManager.LayoutParams lp3 = createLayoutParams(activity, 150, 130);
+                lp3.setFlexGrow(1.0f);
+                adapter.addItem(lp3);
+                // RecyclerView width: 400, height: 300.
+            }
+        });
+        InstrumentationRegistry.getInstrumentation().waitForIdleSync();
+
+        // The flexGrow parameters for all LayoutParams are set to 1.0, expecting each child to
+        // fill the horizontal remaining space
+        assertThat(layoutManager.getFlexItemCount(), is(3));
+        assertThat(layoutManager.getFlexLines().size(), is(2));
+        assertThat(layoutManager.getChildAt(0).getWidth(),
+                isEqualAllowingError(TestUtil.dpToPixel(activity, 200)));
+        assertThat(layoutManager.getChildAt(1).getWidth(),
+                isEqualAllowingError(TestUtil.dpToPixel(activity, 200)));
+        assertThat(layoutManager.getChildAt(2).getWidth(),
+                isEqualAllowingError(TestUtil.dpToPixel(activity, 400)));
+    }
+
     /**
      * Creates a new flex item.
      *
      * @param context the context
      * @param width   in DP
      * @param height  in DP
-     * @return the created {@link RecyclerView.LayoutParams} instance
+     * @return the created {@link FlexboxLayoutManager.LayoutParams} instance
      */
-    private RecyclerView.LayoutParams createLayoutParams(Context context, int width, int height) {
+    private FlexboxLayoutManager.LayoutParams createLayoutParams(Context context, int width,
+            int height) {
         return new FlexboxLayoutManager.LayoutParams(
                 TestUtil.dpToPixel(context, width),
                 TestUtil.dpToPixel(context, height));
