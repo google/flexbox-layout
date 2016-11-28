@@ -725,11 +725,44 @@ public class FlexboxLayoutManager extends RecyclerView.LayoutManager implements 
             RecyclerView.State state, FlexLine flexLine, LayoutState layoutState) {
         assert mFlexboxHelper.mMeasureSpecCache != null;
 
-        int childLeft = getPaddingLeft();
+        int paddingLeft = getPaddingLeft();
+        int paddingRight = getPaddingRight();
+        int parentWidth = getWidth();
+
         // Either childTop or childBottom is used depending on the layoutState.mLayoutDirection
         int childTop = layoutState.mOffset;
         int childBottom = layoutState.mOffset;
         int startPosition = layoutState.mPosition;
+
+        float childLeft;
+        float spaceBetweenItem = 0f;
+        switch (mJustifyContent) {
+            case JustifyContent.FLEX_START:
+                childLeft = paddingLeft;
+                break;
+            case JustifyContent.FLEX_END:
+                childLeft = parentWidth - flexLine.mMainSize + paddingRight;
+                break;
+            case JustifyContent.CENTER:
+                childLeft = paddingLeft + (parentWidth - flexLine.mMainSize) / 2f;
+                break;
+            case JustifyContent.SPACE_AROUND:
+                if (flexLine.mItemCount != 0) {
+                    spaceBetweenItem = (parentWidth - flexLine.mMainSize)
+                            / (float) flexLine.mItemCount;
+                }
+                childLeft = paddingLeft + spaceBetweenItem / 2f;
+                break;
+            case JustifyContent.SPACE_BETWEEN:
+                childLeft = paddingLeft;
+                float denominator = flexLine.mItemCount != 1 ? flexLine.mItemCount - 1 : 1f;
+                spaceBetweenItem = (parentWidth - flexLine.mMainSize) / denominator;
+                break;
+            default:
+                throw new IllegalStateException(
+                        "Invalid justifyContent is set: " + mJustifyContent);
+        }
+        spaceBetweenItem = Math.max(spaceBetweenItem, 0);
 
         // Used only when mLayoutDirection == LayoutDirection.START to remember the index
         // a flex item should be inserted
@@ -756,6 +789,9 @@ public class FlexboxLayoutManager extends RecyclerView.LayoutManager implements 
                 view.measure(widthSpec, heightSpec);
             }
 
+            LayoutParams lp = (LayoutParams) view.getLayoutParams();
+            childLeft += (lp.leftMargin + getLeftDecorationWidth(view));
+
             if (layoutState.mLayoutDirection == LayoutDirection.END) {
                 addView(view);
             } else {
@@ -764,13 +800,17 @@ public class FlexboxLayoutManager extends RecyclerView.LayoutManager implements 
             }
 
             if (layoutState.mLayoutDirection == LayoutDirection.END) {
-                layoutDecoratedWithMargins(view, childLeft, childTop,
-                        childLeft + view.getMeasuredWidth(), childTop + view.getMeasuredHeight());
+                mFlexboxHelper.layoutSingleChildHorizontal(view, flexLine,
+                        Math.round(childLeft), childTop,
+                        Math.round(childLeft) + view.getMeasuredWidth(),
+                        childTop + view.getMeasuredHeight());
             } else {
-                layoutDecoratedWithMargins(view, childLeft, childBottom - view.getMeasuredHeight(),
-                        childLeft + view.getMeasuredWidth(), childBottom);
+                mFlexboxHelper.layoutSingleChildHorizontal(view, flexLine,
+                        Math.round(childLeft), childBottom - view.getMeasuredHeight(),
+                        Math.round(childLeft) + view.getMeasuredWidth(), childBottom);
             }
-            childLeft += view.getMeasuredWidth();
+            childLeft += (view.getMeasuredWidth() + lp.rightMargin + getRightDecorationWidth(view)
+                    + spaceBetweenItem);
 
             // TODO: Consider RTL
             flexLine.updatePositionFromView(view, getDecoratedLeft(view), 0,
@@ -924,7 +964,8 @@ public class FlexboxLayoutManager extends RecyclerView.LayoutManager implements 
     }
 
     /**
-     * Copied from {@link android.support.v7.widget.RecyclerView.LayoutManager#shouldMeasureChild(View, int, int, RecyclerView.LayoutParams)}}
+     * Copied from {@link android.support.v7.widget.RecyclerView.LayoutManager#shouldMeasureChild(View,
+     * int, int, RecyclerView.LayoutParams)}}
      */
     private boolean shouldMeasureChild(View child, int widthSpec, int heightSpec,
             RecyclerView.LayoutParams lp) {
@@ -936,7 +977,8 @@ public class FlexboxLayoutManager extends RecyclerView.LayoutManager implements 
 
     /**
      * Copied from
-     * {@link android.support.v7.widget.RecyclerView.LayoutManager#isMeasurementUpToDate(int, int, int)}
+     * {@link android.support.v7.widget.RecyclerView.LayoutManager#isMeasurementUpToDate(int, int,
+     * int)}
      */
     private static boolean isMeasurementUpToDate(int childSize, int spec, int dimension) {
         final int specMode = View.MeasureSpec.getMode(spec);
@@ -950,7 +992,7 @@ public class FlexboxLayoutManager extends RecyclerView.LayoutManager implements 
             case View.MeasureSpec.AT_MOST:
                 return specSize >= childSize;
             case View.MeasureSpec.EXACTLY:
-                return  specSize == childSize;
+                return specSize == childSize;
         }
         return false;
     }
