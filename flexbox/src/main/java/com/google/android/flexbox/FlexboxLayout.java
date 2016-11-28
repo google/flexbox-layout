@@ -245,10 +245,6 @@ public class FlexboxLayout extends ViewGroup implements FlexContainer {
         if (mFlexboxHelper.isOrderChangedFromLastMeasurement()) {
             mFlexboxHelper.mReorderedIndices = mFlexboxHelper.createReorderedIndices();
         }
-        if (mChildrenFrozen == null
-                || mChildrenFrozen.length < getChildCount()) {
-            mChildrenFrozen = new boolean[getChildCount()];
-        }
 
         // TODO: Only calculate the children views which are affected from the last measure.
 
@@ -265,8 +261,6 @@ public class FlexboxLayout extends ViewGroup implements FlexContainer {
                 throw new IllegalStateException(
                         "Invalid value for the flex direction is set: " + mFlexDirection);
         }
-
-        Arrays.fill(mChildrenFrozen, false);
     }
 
     @Override
@@ -329,7 +323,7 @@ public class FlexboxLayout extends ViewGroup implements FlexContainer {
                 .calculateHorizontalFlexLines(widthMeasureSpec, heightMeasureSpec);
         mFlexLines = flexLinesResult.mFlexLines;
 
-        mFlexboxHelper.determineMainSize(widthMeasureSpec, heightMeasureSpec, mChildrenFrozen);
+        mFlexboxHelper.determineMainSize(widthMeasureSpec, heightMeasureSpec);
 
         // TODO: Consider the case any individual child's mAlignSelf is set to ALIGN_SELF_BASELINE
         if (mAlignItems == AlignItems.BASELINE) {
@@ -385,8 +379,7 @@ public class FlexboxLayout extends ViewGroup implements FlexContainer {
                 .calculateVerticalFlexLines(widthMeasureSpec, heightMeasureSpec);
         mFlexLines = flexLinesResult.mFlexLines;
 
-        mFlexboxHelper.determineMainSize(widthMeasureSpec, heightMeasureSpec,
-                mChildrenFrozen);
+        mFlexboxHelper.determineMainSize(widthMeasureSpec, heightMeasureSpec);
         mFlexboxHelper.determineCrossSize(widthMeasureSpec, heightMeasureSpec,
                 getPaddingLeft() + getPaddingRight());
         // Now cross size for each flex line is determined.
