@@ -20,6 +20,7 @@ import android.content.Context;
 import android.os.Parcel;
 import android.os.Parcelable;
 import android.support.annotation.IntDef;
+import android.support.v4.view.ViewCompat;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.OrientationHelper;
 import android.support.v7.widget.RecyclerView;
@@ -85,6 +86,11 @@ public class FlexboxLayoutManager extends RecyclerView.LayoutManager implements 
      * @see {@link FlexContainer#getAlignContent()}
      */
     private int mAlignContent;
+
+    /**
+     * True if the layout direction is right to left, false otherwise.
+     */
+    private boolean mIsRtl;
 
     private List<FlexLine> mFlexLines = new ArrayList<>();
 
@@ -482,7 +488,7 @@ public class FlexboxLayoutManager extends RecyclerView.LayoutManager implements 
 
         detachAndScrapAttachedViews(recycler);
 
-        // TODO: Consider RTL
+        mIsRtl = isLayoutRtl();
         updateLayoutStateToFillEnd(mAnchorInfo);
         int filledToEnd = fill(recycler, state, mLayoutState);
         if (DEBUG) {
@@ -493,7 +499,34 @@ public class FlexboxLayoutManager extends RecyclerView.LayoutManager implements 
         if (DEBUG) {
             Log.d(TAG, String.format("filled: %d toward start", filledToStart));
         }
+    }
 
+    private boolean isLayoutRtl() {
+        int layoutDirection = getLayoutDirection();
+        boolean isRtl;
+        switch (mFlexDirection) {
+            case FlexDirection.ROW:
+                isRtl = layoutDirection == ViewCompat.LAYOUT_DIRECTION_RTL;
+                break;
+            case FlexDirection.ROW_REVERSE:
+                isRtl = layoutDirection != ViewCompat.LAYOUT_DIRECTION_RTL;
+                break;
+            case FlexDirection.COLUMN:
+                isRtl = layoutDirection == ViewCompat.LAYOUT_DIRECTION_RTL;
+                if (mFlexWrap == FlexWrap.WRAP_REVERSE) {
+                    isRtl = !isRtl;
+                }
+                break;
+            case FlexDirection.COLUMN_REVERSE:
+                isRtl = layoutDirection == ViewCompat.LAYOUT_DIRECTION_RTL;
+                if (mFlexWrap == FlexWrap.WRAP_REVERSE) {
+                    isRtl = !isRtl;
+                }
+                break;
+            default:
+                isRtl = false;
+        }
+        return isRtl;
     }
 
     private void updateAnchorInfoForLayout(RecyclerView.State state, AnchorInfo anchorInfo) {
@@ -735,16 +768,22 @@ public class FlexboxLayoutManager extends RecyclerView.LayoutManager implements 
         int startPosition = layoutState.mPosition;
 
         float childLeft;
+
+        // Only used when mIsRtl is true
+        float childRight;
         float spaceBetweenItem = 0f;
         switch (mJustifyContent) {
             case JustifyContent.FLEX_START:
                 childLeft = paddingLeft;
+                childRight = parentWidth - paddingRight;
                 break;
             case JustifyContent.FLEX_END:
                 childLeft = parentWidth - flexLine.mMainSize + paddingRight;
+                childRight = flexLine.mMainSize - paddingLeft;
                 break;
             case JustifyContent.CENTER:
                 childLeft = paddingLeft + (parentWidth - flexLine.mMainSize) / 2f;
+                childRight = parentWidth - paddingRight - (parentWidth - flexLine.mMainSize) / 2f;
                 break;
             case JustifyContent.SPACE_AROUND:
                 if (flexLine.mItemCount != 0) {
@@ -752,11 +791,13 @@ public class FlexboxLayoutManager extends RecyclerView.LayoutManager implements 
                             / (float) flexLine.mItemCount;
                 }
                 childLeft = paddingLeft + spaceBetweenItem / 2f;
+                childRight = parentWidth - paddingRight - spaceBetweenItem / 2f;
                 break;
             case JustifyContent.SPACE_BETWEEN:
                 childLeft = paddingLeft;
                 float denominator = flexLine.mItemCount != 1 ? flexLine.mItemCount - 1 : 1f;
                 spaceBetweenItem = (parentWidth - flexLine.mMainSize) / denominator;
+                childRight = parentWidth - paddingRight;
                 break;
             default:
                 throw new IllegalStateException(
@@ -783,14 +824,14 @@ public class FlexboxLayoutManager extends RecyclerView.LayoutManager implements 
             long measureSpec = mFlexboxHelper.mMeasureSpecCache[i];
             int widthSpec = mFlexboxHelper.extractWidthMeasureSpec(measureSpec);
             int heightSpec = mFlexboxHelper.extractHeightMeasureSpec(measureSpec);
-            if (shouldMeasureChild(view, widthSpec, heightSpec,
-                    (RecyclerView.LayoutParams) view.getLayoutParams())) {
+            LayoutParams lp = (LayoutParams) view.getLayoutParams();
+            if (shouldMeasureChild(view, widthSpec, heightSpec, lp)) {
                 // TODO: Need to consider decorator length
                 view.measure(widthSpec, heightSpec);
             }
 
-            LayoutParams lp = (LayoutParams) view.getLayoutParams();
             childLeft += (lp.leftMargin + getLeftDecorationWidth(view));
+            childRight -= (lp.rightMargin + getRightDecorationWidth(view));
 
             if (layoutState.mLayoutDirection == LayoutDirection.END) {
                 addView(view);
@@ -800,19 +841,34 @@ public class FlexboxLayoutManager extends RecyclerView.LayoutManager implements 
             }
 
             if (layoutState.mLayoutDirection == LayoutDirection.END) {
-                mFlexboxHelper.layoutSingleChildHorizontal(view, flexLine,
-                        Math.round(childLeft), childTop,
-                        Math.round(childLeft) + view.getMeasuredWidth(),
-                        childTop + view.getMeasuredHeight());
+                if (mIsRtl) {
+                    mFlexboxHelper.layoutSingleChildHorizontal(view, flexLine,
+                            Math.round(childRight) - view.getMeasuredWidth(),
+                            childTop, Math.round(childRight),
+                            childTop + view.getMeasuredHeight());
+                } else {
+                    mFlexboxHelper.layoutSingleChildHorizontal(view, flexLine,
+                            Math.round(childLeft), childTop,
+                            Math.round(childLeft) + view.getMeasuredWidth(),
+                            childTop + view.getMeasuredHeight());
+                }
             } else {
-                mFlexboxHelper.layoutSingleChildHorizontal(view, flexLine,
-                        Math.round(childLeft), childBottom - view.getMeasuredHeight(),
-                        Math.round(childLeft) + view.getMeasuredWidth(), childBottom);
+                if (mIsRtl) {
+                    mFlexboxHelper.layoutSingleChildHorizontal(view, flexLine,
+                            Math.round(childRight) - view.getMeasuredWidth(),
+                            childBottom - view.getMeasuredHeight(), Math.round(childRight),
+                            childBottom);
+                } else {
+                    mFlexboxHelper.layoutSingleChildHorizontal(view, flexLine,
+                            Math.round(childLeft), childBottom - view.getMeasuredHeight(),
+                            Math.round(childLeft) + view.getMeasuredWidth(), childBottom);
+                }
             }
             childLeft += (view.getMeasuredWidth() + lp.rightMargin + getRightDecorationWidth(view)
                     + spaceBetweenItem);
+            childRight -= (view.getMeasuredWidth() + lp.leftMargin + getLeftDecorationWidth(view)
+                    + spaceBetweenItem);
 
-            // TODO: Consider RTL
             flexLine.updatePositionFromView(view, getDecoratedLeft(view), 0,
                     getDecoratedRight(view), 0);
         }
