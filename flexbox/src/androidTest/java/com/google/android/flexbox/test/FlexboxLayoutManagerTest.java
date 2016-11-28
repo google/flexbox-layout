@@ -231,6 +231,216 @@ public class FlexboxLayoutManagerTest {
                 isEqualAllowingError(TestUtil.dpToPixel(activity, 400)));
     }
 
+    @Test
+    @FlakyTest
+    public void testJustifyContent_flexStart_direction_row() throws Throwable {
+        final FlexboxTestActivity activity = mActivityRule.getActivity();
+        final FlexboxLayoutManager layoutManager = new FlexboxLayoutManager();
+        final TestAdapter adapter = new TestAdapter();
+        mActivityRule.runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                activity.setContentView(R.layout.recyclerview);
+                RecyclerView recyclerView = (RecyclerView) activity.findViewById(R.id.recyclerview);
+                recyclerView.setLayoutManager(layoutManager);
+                recyclerView.setAdapter(adapter);
+                FlexboxLayoutManager.LayoutParams lp1 = createLayoutParams(activity, 50, 100);
+                adapter.addItem(lp1);
+                FlexboxLayoutManager.LayoutParams lp2 = createLayoutParams(activity, 50, 100);
+                adapter.addItem(lp2);
+                FlexboxLayoutManager.LayoutParams lp3 = createLayoutParams(activity, 50, 100);
+                adapter.addItem(lp3);
+                layoutManager.setJustifyContent(JustifyContent.FLEX_START);
+                // RecyclerView width: 400, height: 300.
+            }
+        });
+        InstrumentationRegistry.getInstrumentation().waitForIdleSync();
+
+        assertThat(layoutManager.getJustifyContent(), is(JustifyContent.FLEX_START));
+        assertThat(layoutManager.getFlexItemCount(), is(3));
+        assertThat(layoutManager.getFlexLines().size(), is(1));
+        assertThat(layoutManager.getChildAt(0).getLeft(),
+                isEqualAllowingError(TestUtil.dpToPixel(activity, 0)));
+        assertThat(layoutManager.getChildAt(0).getRight(),
+                isEqualAllowingError(TestUtil.dpToPixel(activity, 50)));
+        assertThat(layoutManager.getChildAt(1).getLeft(),
+                isEqualAllowingError(TestUtil.dpToPixel(activity, 50)));
+        assertThat(layoutManager.getChildAt(1).getRight(),
+                isEqualAllowingError(TestUtil.dpToPixel(activity, 100)));
+        assertThat(layoutManager.getChildAt(2).getLeft(),
+                isEqualAllowingError(TestUtil.dpToPixel(activity, 100)));
+        assertThat(layoutManager.getChildAt(2).getRight(),
+                isEqualAllowingError(TestUtil.dpToPixel(activity, 150)));
+    }
+
+    @Test
+    @FlakyTest
+    public void testJustifyContent_flexEnd_direction_row() throws Throwable {
+        final FlexboxTestActivity activity = mActivityRule.getActivity();
+        final FlexboxLayoutManager layoutManager = new FlexboxLayoutManager();
+        final TestAdapter adapter = new TestAdapter();
+        mActivityRule.runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                activity.setContentView(R.layout.recyclerview);
+                RecyclerView recyclerView = (RecyclerView) activity.findViewById(R.id.recyclerview);
+                recyclerView.setLayoutManager(layoutManager);
+                recyclerView.setAdapter(adapter);
+                FlexboxLayoutManager.LayoutParams lp1 = createLayoutParams(activity, 50, 100);
+                adapter.addItem(lp1);
+                FlexboxLayoutManager.LayoutParams lp2 = createLayoutParams(activity, 50, 100);
+                adapter.addItem(lp2);
+                FlexboxLayoutManager.LayoutParams lp3 = createLayoutParams(activity, 50, 100);
+                adapter.addItem(lp3);
+                layoutManager.setJustifyContent(JustifyContent.FLEX_END);
+                // RecyclerView width: 400, height: 300.
+            }
+        });
+        InstrumentationRegistry.getInstrumentation().waitForIdleSync();
+
+        assertThat(layoutManager.getJustifyContent(), is(JustifyContent.FLEX_END));
+        assertThat(layoutManager.getFlexItemCount(), is(3));
+        assertThat(layoutManager.getFlexLines().size(), is(1));
+        assertThat(layoutManager.getChildAt(0).getLeft(),
+                isEqualAllowingError(TestUtil.dpToPixel(activity, 250)));
+        assertThat(layoutManager.getChildAt(0).getRight(),
+                isEqualAllowingError(TestUtil.dpToPixel(activity, 300)));
+        assertThat(layoutManager.getChildAt(1).getLeft(),
+                isEqualAllowingError(TestUtil.dpToPixel(activity, 300)));
+        assertThat(layoutManager.getChildAt(1).getRight(),
+                isEqualAllowingError(TestUtil.dpToPixel(activity, 350)));
+        assertThat(layoutManager.getChildAt(2).getLeft(),
+                isEqualAllowingError(TestUtil.dpToPixel(activity, 350)));
+        assertThat(layoutManager.getChildAt(2).getRight(),
+                isEqualAllowingError(TestUtil.dpToPixel(activity, 400)));
+    }
+
+    @Test
+    @FlakyTest
+    public void testJustifyContent_center_direction_row() throws Throwable {
+        final FlexboxTestActivity activity = mActivityRule.getActivity();
+        final FlexboxLayoutManager layoutManager = new FlexboxLayoutManager();
+        final TestAdapter adapter = new TestAdapter();
+        mActivityRule.runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                activity.setContentView(R.layout.recyclerview);
+                RecyclerView recyclerView = (RecyclerView) activity.findViewById(R.id.recyclerview);
+                recyclerView.setLayoutManager(layoutManager);
+                recyclerView.setAdapter(adapter);
+                FlexboxLayoutManager.LayoutParams lp1 = createLayoutParams(activity, 50, 100);
+                adapter.addItem(lp1);
+                FlexboxLayoutManager.LayoutParams lp2 = createLayoutParams(activity, 50, 100);
+                adapter.addItem(lp2);
+                FlexboxLayoutManager.LayoutParams lp3 = createLayoutParams(activity, 50, 100);
+                adapter.addItem(lp3);
+                layoutManager.setJustifyContent(JustifyContent.CENTER);
+                // RecyclerView width: 400, height: 300.
+            }
+        });
+        InstrumentationRegistry.getInstrumentation().waitForIdleSync();
+
+        assertThat(layoutManager.getJustifyContent(), is(JustifyContent.CENTER));
+        assertThat(layoutManager.getFlexItemCount(), is(3));
+        assertThat(layoutManager.getFlexLines().size(), is(1));
+        assertThat(layoutManager.getChildAt(0).getLeft(),
+                isEqualAllowingError(TestUtil.dpToPixel(activity, 125)));
+        assertThat(layoutManager.getChildAt(0).getRight(),
+                isEqualAllowingError(TestUtil.dpToPixel(activity, 175)));
+        assertThat(layoutManager.getChildAt(1).getLeft(),
+                isEqualAllowingError(TestUtil.dpToPixel(activity, 175)));
+        assertThat(layoutManager.getChildAt(1).getRight(),
+                isEqualAllowingError(TestUtil.dpToPixel(activity, 225)));
+        assertThat(layoutManager.getChildAt(2).getLeft(),
+                isEqualAllowingError(TestUtil.dpToPixel(activity, 225)));
+        assertThat(layoutManager.getChildAt(2).getRight(),
+                isEqualAllowingError(TestUtil.dpToPixel(activity, 275)));
+    }
+
+    @Test
+    @FlakyTest
+    public void testJustifyContent_spaceAround_direction_row() throws Throwable {
+        final FlexboxTestActivity activity = mActivityRule.getActivity();
+        final FlexboxLayoutManager layoutManager = new FlexboxLayoutManager();
+        final TestAdapter adapter = new TestAdapter();
+        mActivityRule.runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                activity.setContentView(R.layout.recyclerview);
+                RecyclerView recyclerView = (RecyclerView) activity.findViewById(R.id.recyclerview);
+                recyclerView.setLayoutManager(layoutManager);
+                recyclerView.setAdapter(adapter);
+                FlexboxLayoutManager.LayoutParams lp1 = createLayoutParams(activity, 50, 100);
+                adapter.addItem(lp1);
+                FlexboxLayoutManager.LayoutParams lp2 = createLayoutParams(activity, 50, 100);
+                adapter.addItem(lp2);
+                FlexboxLayoutManager.LayoutParams lp3 = createLayoutParams(activity, 50, 100);
+                adapter.addItem(lp3);
+                layoutManager.setJustifyContent(JustifyContent.SPACE_AROUND);
+                // RecyclerView width: 400, height: 300.
+            }
+        });
+        InstrumentationRegistry.getInstrumentation().waitForIdleSync();
+
+        assertThat(layoutManager.getJustifyContent(), is(JustifyContent.SPACE_AROUND));
+        assertThat(layoutManager.getFlexItemCount(), is(3));
+        assertThat(layoutManager.getFlexLines().size(), is(1));
+        assertThat(layoutManager.getChildAt(0).getLeft(),
+                isEqualAllowingError(TestUtil.dpToPixel(activity, 42)));
+        assertThat(layoutManager.getChildAt(0).getRight(),
+                isEqualAllowingError(TestUtil.dpToPixel(activity, 92)));
+        assertThat(layoutManager.getChildAt(1).getLeft(),
+                isEqualAllowingError(TestUtil.dpToPixel(activity, 175)));
+        assertThat(layoutManager.getChildAt(1).getRight(),
+                isEqualAllowingError(TestUtil.dpToPixel(activity, 225)));
+        assertThat(layoutManager.getChildAt(2).getLeft(),
+                isEqualAllowingError(TestUtil.dpToPixel(activity, 308)));
+        assertThat(layoutManager.getChildAt(2).getRight(),
+                isEqualAllowingError(TestUtil.dpToPixel(activity, 358)));
+    }
+
+    @Test
+    @FlakyTest
+    public void testJustifyContent_spaceBetween_direction_row() throws Throwable {
+        final FlexboxTestActivity activity = mActivityRule.getActivity();
+        final FlexboxLayoutManager layoutManager = new FlexboxLayoutManager();
+        final TestAdapter adapter = new TestAdapter();
+        mActivityRule.runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                activity.setContentView(R.layout.recyclerview);
+                RecyclerView recyclerView = (RecyclerView) activity.findViewById(R.id.recyclerview);
+                recyclerView.setLayoutManager(layoutManager);
+                recyclerView.setAdapter(adapter);
+                FlexboxLayoutManager.LayoutParams lp1 = createLayoutParams(activity, 50, 100);
+                adapter.addItem(lp1);
+                FlexboxLayoutManager.LayoutParams lp2 = createLayoutParams(activity, 50, 100);
+                adapter.addItem(lp2);
+                FlexboxLayoutManager.LayoutParams lp3 = createLayoutParams(activity, 50, 100);
+                adapter.addItem(lp3);
+                layoutManager.setJustifyContent(JustifyContent.SPACE_BETWEEN);
+                // RecyclerView width: 400, height: 300.
+            }
+        });
+        InstrumentationRegistry.getInstrumentation().waitForIdleSync();
+
+        assertThat(layoutManager.getJustifyContent(), is(JustifyContent.SPACE_BETWEEN));
+        assertThat(layoutManager.getFlexItemCount(), is(3));
+        assertThat(layoutManager.getFlexLines().size(), is(1));
+        assertThat(layoutManager.getChildAt(0).getLeft(),
+                isEqualAllowingError(TestUtil.dpToPixel(activity, 0)));
+        assertThat(layoutManager.getChildAt(0).getRight(),
+                isEqualAllowingError(TestUtil.dpToPixel(activity, 50)));
+        assertThat(layoutManager.getChildAt(1).getLeft(),
+                isEqualAllowingError(TestUtil.dpToPixel(activity, 175)));
+        assertThat(layoutManager.getChildAt(1).getRight(),
+                isEqualAllowingError(TestUtil.dpToPixel(activity, 225)));
+        assertThat(layoutManager.getChildAt(2).getLeft(),
+                isEqualAllowingError(TestUtil.dpToPixel(activity, 350)));
+        assertThat(layoutManager.getChildAt(2).getRight(),
+                isEqualAllowingError(TestUtil.dpToPixel(activity, 400)));
+    }
+
     /**
      * Creates a new flex item.
      *
