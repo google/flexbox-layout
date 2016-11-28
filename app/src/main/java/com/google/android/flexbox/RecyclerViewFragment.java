@@ -65,10 +65,10 @@ public class RecyclerViewFragment extends Fragment {
             addFab.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
-                    RecyclerView.LayoutParams lp = new FlexboxLayoutManager.LayoutParams(
+                    FlexboxLayoutManager.LayoutParams lp = new FlexboxLayoutManager.LayoutParams(
                             ViewGroup.LayoutParams.WRAP_CONTENT,
                             ViewGroup.LayoutParams.WRAP_CONTENT);
-                    fragmentHelper.setFlexItemAttributes((FlexItem) lp);
+                    fragmentHelper.setFlexItemAttributes(lp);
                     adapter.addItem(lp);
                     // TODO: Specify index?
                     adapter.notifyDataSetChanged();
