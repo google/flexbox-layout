@@ -1231,6 +1231,88 @@ class FlexboxHelper {
                         .makeMeasureSpec(view.getMeasuredHeight(), View.MeasureSpec.EXACTLY));
     }
 
+    /**
+     * Place a single View when the layout direction is horizontal
+     * ({@link FlexContainer#getFlexDirection()} is either {@link FlexDirection#ROW} or
+     * {@link FlexDirection#ROW_REVERSE}).
+     *
+     * @param view       the View to be placed
+     * @param flexLine   the {@link FlexLine} where the View belongs to
+     * @param left       the left position of the View, which the View's margin is already taken
+     *                   into account
+     * @param top        the top position of the flex line where the View belongs to. The actual
+     *                   View's top position is shifted depending on the flexWrap and alignItems
+     *                   attributes
+     * @param right      the right position of the View, which the View's margin is already taken
+     *                   into account
+     * @param bottom     the bottom position of the flex line where the View belongs to. The actual
+     *                   View's bottom position is shifted depending on the flexWrap and alignItems
+     *                   attributes
+     * @see FlexContainer#getAlignItems()
+     * @see FlexContainer#setAlignItems(int)
+     * @see FlexItem#getAlignSelf()
+     */
+    void layoutSingleChildHorizontal(View view, FlexLine flexLine, int left, int top, int right,
+            int bottom) {
+        FlexItem flexItem = (FlexItem) view.getLayoutParams();
+        int alignItems = mFlexContainer.getAlignItems();
+        if (flexItem.getAlignSelf() != AlignSelf.AUTO) {
+            // Expecting the values for alignItems and mAlignSelf match except for ALIGN_SELF_AUTO.
+            // Assigning the mAlignSelf value as alignItems should work.
+            alignItems = flexItem.getAlignSelf();
+        }
+        int crossSize = flexLine.mCrossSize;
+        switch (alignItems) {
+            case AlignItems.FLEX_START: // Intentional fall through
+            case AlignItems.STRETCH:
+                if (mFlexContainer.getFlexWrap() != FlexWrap.WRAP_REVERSE) {
+                    view.layout(left, top + flexItem.getMarginTop(), right,
+                            bottom + flexItem.getMarginTop());
+                } else {
+                    view.layout(left, top - flexItem.getMarginBottom(), right,
+                            bottom - flexItem.getMarginBottom());
+                }
+                break;
+            case AlignItems.BASELINE:
+                if (mFlexContainer.getFlexWrap() != FlexWrap.WRAP_REVERSE) {
+                    int marginTop = flexLine.mMaxBaseline - view.getBaseline();
+                    marginTop = Math.max(marginTop, flexItem.getMarginTop());
+                    view.layout(left, top + marginTop, right, bottom + marginTop);
+                } else {
+                    int marginBottom = flexLine.mMaxBaseline - view.getMeasuredHeight() + view
+                            .getBaseline();
+                    marginBottom = Math.max(marginBottom, flexItem.getMarginBottom());
+                    view.layout(left, top - marginBottom, right, bottom - marginBottom);
+                }
+                break;
+            case AlignItems.FLEX_END:
+                if (mFlexContainer.getFlexWrap() != FlexWrap.WRAP_REVERSE) {
+                    view.layout(left,
+                            top + crossSize - view.getMeasuredHeight() - flexItem.getMarginBottom(),
+                            right, top + crossSize - flexItem.getMarginBottom());
+                } else {
+                    // If the flexWrap == WRAP_REVERSE, the direction of the
+                    // flexEnd is flipped (from top to bottom).
+                    view.layout(left,
+                            top - crossSize + view.getMeasuredHeight() + flexItem.getMarginTop(),
+                            right, bottom - crossSize + view.getMeasuredHeight() + flexItem
+                                    .getMarginTop());
+                }
+                break;
+            case AlignItems.CENTER:
+                int topFromCrossAxis = (crossSize - view.getMeasuredHeight()
+                        + flexItem.getMarginTop() - flexItem.getMarginBottom()) / 2;
+                if (mFlexContainer.getFlexWrap() != FlexWrap.WRAP_REVERSE) {
+                    view.layout(left, top + topFromCrossAxis,
+                            right, top + topFromCrossAxis + view.getMeasuredHeight());
+                } else {
+                    view.layout(left, top - topFromCrossAxis,
+                            right, top - topFromCrossAxis + view.getMeasuredHeight());
+                }
+                break;
+        }
+    }
+
     void ensureMeasureSpecCache(int size) {
         if (mMeasureSpecCache == null) {
             mMeasureSpecCache = new long[size < INITIAL_CAPACITY ? INITIAL_CAPACITY : size];
