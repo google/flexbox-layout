@@ -28,12 +28,10 @@ import android.widget.TextView;
 public class FlexItemViewHolder extends RecyclerView.ViewHolder {
 
     TextView mTextView;
-    View mItemView;
 
     public FlexItemViewHolder(View itemView) {
         super(itemView);
 
-        mItemView = itemView;
         mTextView = (TextView) itemView.findViewById(R.id.textview);
     }
 }
