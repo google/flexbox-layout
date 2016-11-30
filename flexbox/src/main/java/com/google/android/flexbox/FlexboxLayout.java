@@ -23,7 +23,6 @@ import android.graphics.drawable.Drawable;
 import android.os.Parcel;
 import android.os.Parcelable;
 import android.support.annotation.IntDef;
-import android.support.v4.view.MarginLayoutParamsCompat;
 import android.support.v4.view.ViewCompat;
 import android.util.AttributeSet;
 import android.view.View;
@@ -806,22 +805,22 @@ public class FlexboxLayout extends ViewGroup implements FlexContainer {
                 }
                 if (isRtl) {
                     if (fromBottomToTop) {
-                        layoutSingleChildVertical(child, flexLine, true, mAlignItems,
+                        mFlexboxHelper.layoutSingleChildVertical(child, flexLine, true,
                                 childRight - child.getMeasuredWidth(),
                                 Math.round(childBottom) - child.getMeasuredHeight(), childRight,
                                 Math.round(childBottom));
                     } else {
-                        layoutSingleChildVertical(child, flexLine, true, mAlignItems,
+                        mFlexboxHelper.layoutSingleChildVertical(child, flexLine, true,
                                 childRight - child.getMeasuredWidth(), Math.round(childTop),
                                 childRight, Math.round(childTop) + child.getMeasuredHeight());
                     }
                 } else {
                     if (fromBottomToTop) {
-                        layoutSingleChildVertical(child, flexLine, false, mAlignItems,
+                        mFlexboxHelper.layoutSingleChildVertical(child, flexLine, false,
                                 childLeft, Math.round(childBottom) - child.getMeasuredHeight(),
                                 childLeft + child.getMeasuredWidth(), Math.round(childBottom));
                     } else {
-                        layoutSingleChildVertical(child, flexLine, false, mAlignItems,
+                        mFlexboxHelper.layoutSingleChildVertical(child, flexLine, false,
                                 childLeft, Math.round(childTop),
                                 childLeft + child.getMeasuredWidth(),
                                 Math.round(childTop) + child.getMeasuredHeight());
@@ -844,73 +843,6 @@ public class FlexboxLayout extends ViewGroup implements FlexContainer {
         }
     }
 
-    /**
-     * Place a single View when the layout direction is vertical ({@link #mFlexDirection} is
-     * either {@link FlexDirection#COLUMN} or {@link FlexDirection#COLUMN_REVERSE}).
-     *
-     * @param view       the View to be placed
-     * @param flexLine   the {@link FlexLine} where the View belongs to
-     * @param isRtl      {@code true} if the layout direction is right to left, {@code false}
-     *                   otherwise
-     * @param alignItems the align items attribute of this FlexboxLayout
-     * @param left       the left position of the flex line where the View belongs to. The actual
-     *                   View's left position is shifted depending on the isRtl and alignItems
-     *                   attributes
-     * @param top        the top position of the View, which the View's margin is already taken
-     *                   into account
-     * @param right      the right position of the flex line where the View belongs to. The actual
-     *                   View's right position is shifted depending on the isRtl and alignItems
-     *                   attributes
-     * @param bottom     the bottom position of the View, which the View's margin is already taken
-     *                   into account
-     * @see #getAlignItems()
-     * @see #setAlignItems(int)
-     * @see LayoutParams#mAlignSelf
-     */
-    private void layoutSingleChildVertical(View view, FlexLine flexLine, boolean isRtl,
-            int alignItems, int left, int top, int right, int bottom) {
-        LayoutParams lp = (LayoutParams) view.getLayoutParams();
-        if (lp.mAlignSelf != AlignSelf.AUTO) {
-            // Expecting the values for alignItems and mAlignSelf match except for ALIGN_SELF_AUTO.
-            // Assigning the mAlignSelf value as alignItems should work.
-            alignItems = lp.mAlignSelf;
-        }
-        int crossSize = flexLine.mCrossSize;
-        switch (alignItems) {
-            case AlignItems.FLEX_START: // Intentional fall through
-            case AlignItems.STRETCH: // Intentional fall through
-            case AlignItems.BASELINE:
-                if (!isRtl) {
-                    view.layout(left + lp.leftMargin, top, right + lp.leftMargin, bottom);
-                } else {
-                    view.layout(left - lp.rightMargin, top, right - lp.rightMargin, bottom);
-                }
-                break;
-            case AlignItems.FLEX_END:
-                if (!isRtl) {
-                    view.layout(left + crossSize - view.getMeasuredWidth() - lp.rightMargin,
-                            top, right + crossSize - view.getMeasuredWidth() - lp.rightMargin,
-                            bottom);
-                } else {
-                    // If the flexWrap == WRAP_REVERSE, the direction of the
-                    // flexEnd is flipped (from left to right).
-                    view.layout(left - crossSize + view.getMeasuredWidth() + lp.leftMargin, top,
-                            right - crossSize + view.getMeasuredWidth() + lp.leftMargin,
-                            bottom);
-                }
-                break;
-            case AlignItems.CENTER:
-                int leftFromCrossAxis = (crossSize - view.getMeasuredWidth()
-                        + MarginLayoutParamsCompat.getMarginStart(lp)
-                        - MarginLayoutParamsCompat.getMarginEnd(lp)) / 2;
-                if (!isRtl) {
-                    view.layout(left + leftFromCrossAxis, top, right + leftFromCrossAxis, bottom);
-                } else {
-                    view.layout(left - leftFromCrossAxis, top, right - leftFromCrossAxis, bottom);
-                }
-                break;
-        }
-    }
 
     @Override
     protected void onDraw(Canvas canvas) {
