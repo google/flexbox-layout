@@ -18,6 +18,7 @@ package com.google.android.flexbox;
 
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.v4.view.MarginLayoutParamsCompat;
 import android.support.v4.view.ViewCompat;
 import android.util.SparseIntArray;
 import android.view.View;
@@ -376,15 +377,16 @@ class FlexboxHelper {
                 continue;
             }
 
-            FlexboxLayout.LayoutParams lp = (FlexboxLayout.LayoutParams) child.getLayoutParams();
-            if (lp.getAlignSelf() == AlignItems.STRETCH) {
+            FlexItem flexItem = (FlexItem) child.getLayoutParams();
+            if (flexItem.getAlignSelf() == AlignItems.STRETCH) {
                 flexLine.mIndicesAlignSelfStretch.add(i);
             }
 
-            int childHeight = lp.height;
-            if (lp.getFlexBasisPercent() != FlexboxLayout.LayoutParams.FLEX_BASIS_PERCENT_DEFAULT
+            int childHeight = flexItem.getHeight();
+            if (flexItem.getFlexBasisPercent()
+                    != FlexboxLayout.LayoutParams.FLEX_BASIS_PERCENT_DEFAULT
                     && heightMode == View.MeasureSpec.EXACTLY) {
-                childHeight = Math.round(heightSize * lp.getFlexBasisPercent());
+                childHeight = Math.round(heightSize * flexItem.getFlexBasisPercent());
                 // Use the dimension from the layout_height attribute if the heightMode is not
                 // MeasureSpec.EXACTLY even if any fraction value is set to layout_flexBasisPercent.
                 // There are likely quite few use cases where assigning any fraction values
@@ -395,11 +397,13 @@ class FlexboxHelper {
             int childWidthMeasureSpec = mFlexContainer
                     .getChildWidthMeasureSpec(widthMeasureSpec,
                             mFlexContainer.getPaddingLeft() + mFlexContainer.getPaddingRight()
-                                    + lp.leftMargin + lp.rightMargin, lp.width);
+                                    + flexItem.getMarginLeft() + flexItem.getMarginRight(),
+                            flexItem.getWidth());
             int childHeightMeasureSpec = mFlexContainer
                     .getChildHeightMeasureSpec(heightMeasureSpec,
                             mFlexContainer.getPaddingTop() + mFlexContainer.getPaddingBottom()
-                                    + lp.topMargin + lp.bottomMargin, childHeight);
+                                    + flexItem.getMarginTop() + flexItem.getMarginBottom(),
+                            childHeight);
             child.measure(childWidthMeasureSpec, childHeightMeasureSpec);
             if (mMeasureSpecCache != null) {
                 mMeasureSpecCache[i] = makeCombinedMeasureSpec(
@@ -418,10 +422,13 @@ class FlexboxHelper {
             childState = ViewCompat
                     .combineMeasuredStates(childState, ViewCompat.getMeasuredState(child));
             largestWidthInColumn = Math.max(largestWidthInColumn,
-                    child.getMeasuredWidth() + lp.leftMargin + lp.rightMargin);
+                    child.getMeasuredWidth() + flexItem.getMarginLeft() + flexItem
+                            .getMarginRight());
 
             if (isWrapRequired(heightMode, heightSize, flexLine.mMainSize,
-                    child.getMeasuredHeight() + lp.topMargin + lp.bottomMargin, lp,
+                    child.getMeasuredHeight() + flexItem.getMarginTop() + flexItem
+                            .getMarginBottom(),
+                    flexItem,
                     i, indexInFlexLine)) {
                 if (flexLine.getItemCountNotGone() > 0) {
                     addFlexLine(flexLines, flexLine, i - 1);
@@ -430,15 +437,17 @@ class FlexboxHelper {
                 flexLine = new FlexLine();
                 flexLine.mItemCount = 1;
                 flexLine.mMainSize = paddingTop + paddingBottom;
-                largestWidthInColumn = child.getMeasuredWidth() + lp.leftMargin + lp.rightMargin;
+                largestWidthInColumn = child.getMeasuredWidth() + flexItem.getMarginLeft()
+                        + flexItem.getMarginRight();
                 indexInFlexLine = 0;
             } else {
                 flexLine.mItemCount++;
                 indexInFlexLine++;
             }
-            flexLine.mMainSize += child.getMeasuredHeight() + lp.topMargin + lp.bottomMargin;
-            flexLine.mTotalFlexGrow += lp.getFlexGrow();
-            flexLine.mTotalFlexShrink += lp.getFlexShrink();
+            flexLine.mMainSize += child.getMeasuredHeight() + flexItem.getMarginTop()
+                    + flexItem.getMarginBottom();
+            flexLine.mTotalFlexGrow += flexItem.getFlexGrow();
+            flexLine.mTotalFlexShrink += flexItem.getFlexShrink();
             // Temporarily set the cross axis length as the largest child width in the column
             // Expand along the cross axis depending on the mAlignContent property if needed
             // later
@@ -1236,18 +1245,18 @@ class FlexboxHelper {
      * ({@link FlexContainer#getFlexDirection()} is either {@link FlexDirection#ROW} or
      * {@link FlexDirection#ROW_REVERSE}).
      *
-     * @param view       the View to be placed
-     * @param flexLine   the {@link FlexLine} where the View belongs to
-     * @param left       the left position of the View, which the View's margin is already taken
-     *                   into account
-     * @param top        the top position of the flex line where the View belongs to. The actual
-     *                   View's top position is shifted depending on the flexWrap and alignItems
-     *                   attributes
-     * @param right      the right position of the View, which the View's margin is already taken
-     *                   into account
-     * @param bottom     the bottom position of the flex line where the View belongs to. The actual
-     *                   View's bottom position is shifted depending on the flexWrap and alignItems
-     *                   attributes
+     * @param view     the View to be placed
+     * @param flexLine the {@link FlexLine} where the View belongs to
+     * @param left     the left position of the View, which the View's margin is already taken
+     *                 into account
+     * @param top      the top position of the flex line where the View belongs to. The actual
+     *                 View's top position is shifted depending on the flexWrap and alignItems
+     *                 attributes
+     * @param right    the right position of the View, which the View's margin is already taken
+     *                 into account
+     * @param bottom   the bottom position of the flex line where the View belongs to. The actual
+     *                 View's bottom position is shifted depending on the flexWrap and alignItems
+     *                 attributes
      * @see FlexContainer#getAlignItems()
      * @see FlexContainer#setAlignItems(int)
      * @see FlexItem#getAlignSelf()
@@ -1308,6 +1317,83 @@ class FlexboxHelper {
                 } else {
                     view.layout(left, top - topFromCrossAxis,
                             right, top - topFromCrossAxis + view.getMeasuredHeight());
+                }
+                break;
+        }
+    }
+
+    /**
+     * Place a single View when the layout direction is vertical
+     * ({@link FlexContainer#getFlexDirection()} is either {@link FlexDirection#COLUMN} or
+     * {@link FlexDirection#COLUMN_REVERSE}).
+     *
+     * @param view     the View to be placed
+     * @param flexLine the {@link FlexLine} where the View belongs to
+     * @param isRtl    {@code true} if the layout direction is right to left, {@code false}
+     *                 otherwise
+     * @param left     the left position of the flex line where the View belongs to. The actual
+     *                 View's left position is shifted depending on the isRtl and alignItems
+     *                 attributes
+     * @param top      the top position of the View, which the View's margin is already taken
+     *                 into account
+     * @param right    the right position of the flex line where the View belongs to. The actual
+     *                 View's right position is shifted depending on the isRtl and alignItems
+     *                 attributes
+     * @param bottom   the bottom position of the View, which the View's margin is already taken
+     *                 into account
+     * @see FlexContainer#getAlignItems()
+     * @see FlexContainer#setAlignItems(int)
+     * @see FlexItem#getAlignSelf()
+     */
+    void layoutSingleChildVertical(View view, FlexLine flexLine, boolean isRtl,
+            int left, int top, int right, int bottom) {
+        FlexItem flexItem = (FlexItem) view.getLayoutParams();
+        int alignItems = mFlexContainer.getAlignItems();
+        if (flexItem.getAlignSelf() != AlignSelf.AUTO) {
+            // Expecting the values for alignItems and mAlignSelf match except for ALIGN_SELF_AUTO.
+            // Assigning the mAlignSelf value as alignItems should work.
+            alignItems = flexItem.getAlignSelf();
+        }
+        int crossSize = flexLine.mCrossSize;
+        switch (alignItems) {
+            case AlignItems.FLEX_START: // Intentional fall through
+            case AlignItems.STRETCH: // Intentional fall through
+            case AlignItems.BASELINE:
+                if (!isRtl) {
+                    view.layout(left + flexItem.getMarginLeft(), top,
+                            right + flexItem.getMarginLeft(), bottom);
+                } else {
+                    view.layout(left - flexItem.getMarginRight(), top,
+                            right - flexItem.getMarginRight(), bottom);
+                }
+                break;
+            case AlignItems.FLEX_END:
+                if (!isRtl) {
+                    view.layout(
+                            left + crossSize - view.getMeasuredWidth() - flexItem.getMarginRight(),
+                            top,
+                            right + crossSize - view.getMeasuredWidth() - flexItem.getMarginRight(),
+                            bottom);
+                } else {
+                    // If the flexWrap == WRAP_REVERSE, the direction of the
+                    // flexEnd is flipped (from left to right).
+                    view.layout(
+                            left - crossSize + view.getMeasuredWidth() + flexItem.getMarginLeft(),
+                            top,
+                            right - crossSize + view.getMeasuredWidth() + flexItem.getMarginLeft(),
+                            bottom);
+                }
+                break;
+            case AlignItems.CENTER:
+                ViewGroup.MarginLayoutParams lp = (ViewGroup.MarginLayoutParams)
+                        view.getLayoutParams();
+                int leftFromCrossAxis = (crossSize - view.getMeasuredWidth()
+                        + MarginLayoutParamsCompat.getMarginStart(lp)
+                        - MarginLayoutParamsCompat.getMarginEnd(lp)) / 2;
+                if (!isRtl) {
+                    view.layout(left + leftFromCrossAxis, top, right + leftFromCrossAxis, bottom);
+                } else {
+                    view.layout(left - leftFromCrossAxis, top, right - leftFromCrossAxis, bottom);
                 }
                 break;
         }
