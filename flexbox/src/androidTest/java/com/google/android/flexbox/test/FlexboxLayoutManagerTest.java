@@ -29,12 +29,20 @@ import org.junit.runner.RunWith;
 
 import android.content.Context;
 import android.support.test.InstrumentationRegistry;
+import android.support.test.espresso.ViewAction;
+import android.support.test.espresso.action.CoordinatesProvider;
+import android.support.test.espresso.action.GeneralLocation;
+import android.support.test.espresso.action.GeneralSwipeAction;
+import android.support.test.espresso.action.Press;
+import android.support.test.espresso.action.Swipe;
 import android.support.test.filters.FlakyTest;
 import android.support.test.filters.MediumTest;
 import android.support.test.rule.ActivityTestRule;
 import android.support.test.runner.AndroidJUnit4;
 import android.support.v7.widget.RecyclerView;
 
+import static android.support.test.espresso.Espresso.onView;
+import static android.support.test.espresso.matcher.ViewMatchers.withId;
 import static com.google.android.flexbox.test.IsEqualAllowingError.isEqualAllowingError;
 import static org.hamcrest.Matchers.instanceOf;
 import static org.hamcrest.Matchers.is;
@@ -170,17 +178,17 @@ public class FlexboxLayoutManagerTest {
                 RecyclerView recyclerView = (RecyclerView) activity.findViewById(R.id.recyclerview);
                 recyclerView.setLayoutManager(layoutManager);
                 recyclerView.setAdapter(adapter);
-                adapter.addItem(createLayoutParams(activity, 150, 130));
-                adapter.addItem(createLayoutParams(activity, 150, 130));
-                adapter.addItem(createLayoutParams(activity, 150, 130));
-                adapter.addItem(createLayoutParams(activity, 150, 130));
-                adapter.addItem(createLayoutParams(activity, 150, 130));
-                adapter.addItem(createLayoutParams(activity, 150, 130));
-                adapter.addItem(createLayoutParams(activity, 150, 130));
-                adapter.addItem(createLayoutParams(activity, 150, 130));
-                adapter.addItem(createLayoutParams(activity, 150, 130));
-                // RecyclerView width: 400, height: 300.
-                // Computed FlexContainer width: 400, height: 650
+                adapter.addItem(createLayoutParams(activity, 150, 90));
+                adapter.addItem(createLayoutParams(activity, 150, 90));
+                adapter.addItem(createLayoutParams(activity, 150, 90));
+                adapter.addItem(createLayoutParams(activity, 150, 90));
+                adapter.addItem(createLayoutParams(activity, 150, 90));
+                adapter.addItem(createLayoutParams(activity, 150, 90));
+                adapter.addItem(createLayoutParams(activity, 150, 90));
+                adapter.addItem(createLayoutParams(activity, 150, 90));
+                adapter.addItem(createLayoutParams(activity, 150, 90));
+                // RecyclerView width: 320, height: 240.
+                // Computed FlexContainer width: 320, height: 450 
             }
         });
         InstrumentationRegistry.getInstrumentation().waitForIdleSync();
@@ -189,6 +197,54 @@ public class FlexboxLayoutManagerTest {
         // (invisible) so are not included in the count of of the getChildCount.
         assertThat(layoutManager.getFlexItemCount(), is(9));
         assertThat(layoutManager.getChildCount(), is(6));
+
+        // At first only the visible area of the flex lines are calculated
+        assertThat(layoutManager.getFlexLines().size(), is(3));
+    }
+
+    @Test
+    @FlakyTest
+    public void testAddViewHolders_direction_row_scrollVertically() throws Throwable {
+        final FlexboxTestActivity activity = mActivityRule.getActivity();
+        final FlexboxLayoutManager layoutManager = new FlexboxLayoutManager();
+        final TestAdapter adapter = new TestAdapter();
+        mActivityRule.runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                activity.setContentView(R.layout.recyclerview);
+                RecyclerView recyclerView = (RecyclerView) activity.findViewById(R.id.recyclerview);
+                recyclerView.setLayoutManager(layoutManager);
+                recyclerView.setAdapter(adapter);
+                adapter.addItem(createLayoutParams(activity, 150, 90));
+                adapter.addItem(createLayoutParams(activity, 150, 90));
+                adapter.addItem(createLayoutParams(activity, 150, 90));
+                adapter.addItem(createLayoutParams(activity, 150, 90));
+                adapter.addItem(createLayoutParams(activity, 150, 90));
+                adapter.addItem(createLayoutParams(activity, 150, 90));
+                adapter.addItem(createLayoutParams(activity, 150, 90));
+                adapter.addItem(createLayoutParams(activity, 150, 90));
+                adapter.addItem(createLayoutParams(activity, 150, 90));
+                // RecyclerView width: 320, height: 240.
+                // Computed FlexContainer width: 320, height: 450 
+            }
+        });
+        InstrumentationRegistry.getInstrumentation().waitForIdleSync();
+
+        // In total 9 items are added but the seventh item and the items follow aren't attached
+        // (invisible) so are not included in the count of of the getChildCount.
+        assertThat(layoutManager.getFlexItemCount(), is(9));
+        assertThat(layoutManager.getChildCount(), is(6));
+        // At first only the visible area of the flex lines are calculated
+        assertThat(layoutManager.getFlexLines().size(), is(3));
+
+        onView(withId(R.id.recyclerview)).perform(swipe(GeneralLocation.BOTTOM_CENTER,
+                GeneralLocation.TOP_CENTER));
+        assertThat(layoutManager.getFlexItemCount(), is(9));
+        // The RecyclerView is swiped to top until it reaches the bottom of the view.
+        // The number of the visible views should be 5
+        assertThat(layoutManager.getChildCount(), is(5));
+        // Since the RecyclerView is swiped to the bottom, all flex lines should be calculated
+        // by now
         assertThat(layoutManager.getFlexLines().size(), is(5));
     }
 
@@ -214,7 +270,7 @@ public class FlexboxLayoutManagerTest {
                 FlexboxLayoutManager.LayoutParams lp3 = createLayoutParams(activity, 150, 130);
                 lp3.setFlexGrow(1.0f);
                 adapter.addItem(lp3);
-                // RecyclerView width: 400, height: 300.
+                // RecyclerView width: 320, height: 240.
             }
         });
         InstrumentationRegistry.getInstrumentation().waitForIdleSync();
@@ -224,11 +280,11 @@ public class FlexboxLayoutManagerTest {
         assertThat(layoutManager.getFlexItemCount(), is(3));
         assertThat(layoutManager.getFlexLines().size(), is(2));
         assertThat(layoutManager.getChildAt(0).getWidth(),
-                isEqualAllowingError(TestUtil.dpToPixel(activity, 200)));
+                isEqualAllowingError(TestUtil.dpToPixel(activity, 160)));
         assertThat(layoutManager.getChildAt(1).getWidth(),
-                isEqualAllowingError(TestUtil.dpToPixel(activity, 200)));
+                isEqualAllowingError(TestUtil.dpToPixel(activity, 160)));
         assertThat(layoutManager.getChildAt(2).getWidth(),
-                isEqualAllowingError(TestUtil.dpToPixel(activity, 400)));
+                isEqualAllowingError(TestUtil.dpToPixel(activity, 320)));
     }
 
     @Test
@@ -244,17 +300,19 @@ public class FlexboxLayoutManagerTest {
                 RecyclerView recyclerView = (RecyclerView) activity.findViewById(R.id.recyclerview);
                 recyclerView.setLayoutManager(layoutManager);
                 recyclerView.setAdapter(adapter);
-                adapter.addItem(createLayoutParams(activity, 150, 130));
-                adapter.addItem(createLayoutParams(activity, 150, 130));
-                adapter.addItem(createLayoutParams(activity, 150, 130));
-                adapter.addItem(createLayoutParams(activity, 150, 130));
-                adapter.addItem(createLayoutParams(activity, 150, 130));
-                adapter.addItem(createLayoutParams(activity, 150, 130));
-                adapter.addItem(createLayoutParams(activity, 150, 130));
-                adapter.addItem(createLayoutParams(activity, 150, 130));
-                adapter.addItem(createLayoutParams(activity, 150, 130));
-                // RecyclerView width: 400, height: 300.
-                // Computed FlexContainer width: 650, height: 300
+                adapter.addItem(createLayoutParams(activity, 120, 100));
+                adapter.addItem(createLayoutParams(activity, 120, 100));
+                adapter.addItem(createLayoutParams(activity, 120, 100));
+                adapter.addItem(createLayoutParams(activity, 120, 100));
+                adapter.addItem(createLayoutParams(activity, 120, 100));
+                adapter.addItem(createLayoutParams(activity, 120, 100));
+                adapter.addItem(createLayoutParams(activity, 120, 100));
+                adapter.addItem(createLayoutParams(activity, 120, 100));
+                adapter.addItem(createLayoutParams(activity, 120, 100));
+
+                layoutManager.setFlexDirection(FlexDirection.COLUMN);
+                // RecyclerView width: 320, height: 240.
+                // Computed FlexContainer width: 450, height: 240
             }
         });
         InstrumentationRegistry.getInstrumentation().waitForIdleSync();
@@ -263,6 +321,56 @@ public class FlexboxLayoutManagerTest {
         // (invisible) so are not included in the count of of the getChildCount.
         assertThat(layoutManager.getFlexItemCount(), is(9));
         assertThat(layoutManager.getChildCount(), is(6));
+
+        // At first only the visible area of the flex lines are calculated
+        assertThat(layoutManager.getFlexLines().size(), is(3));
+    }
+
+    @Test
+    @FlakyTest
+    public void testAddViewHolders_direction_column_scrollHorizontally() throws Throwable {
+        final FlexboxTestActivity activity = mActivityRule.getActivity();
+        final FlexboxLayoutManager layoutManager = new FlexboxLayoutManager();
+        final TestAdapter adapter = new TestAdapter();
+        mActivityRule.runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                activity.setContentView(R.layout.recyclerview);
+                RecyclerView recyclerView = (RecyclerView) activity.findViewById(R.id.recyclerview);
+                recyclerView.setLayoutManager(layoutManager);
+                recyclerView.setAdapter(adapter);
+                adapter.addItem(createLayoutParams(activity, 120, 100));
+                adapter.addItem(createLayoutParams(activity, 120, 100));
+                adapter.addItem(createLayoutParams(activity, 120, 100));
+                adapter.addItem(createLayoutParams(activity, 120, 100));
+                adapter.addItem(createLayoutParams(activity, 120, 100));
+                adapter.addItem(createLayoutParams(activity, 120, 100));
+                adapter.addItem(createLayoutParams(activity, 120, 100));
+                adapter.addItem(createLayoutParams(activity, 120, 100));
+                adapter.addItem(createLayoutParams(activity, 120, 100));
+
+                layoutManager.setFlexDirection(FlexDirection.COLUMN);
+                // RecyclerView width: 320, height: 240.
+                // Computed FlexContainer width: 500, height: 240
+            }
+        });
+        InstrumentationRegistry.getInstrumentation().waitForIdleSync();
+
+        // In total 9 items are added but the seventh item and the items follow aren't attached
+        // (invisible) so are not included in the count of of the getChildCount.
+        assertThat(layoutManager.getFlexItemCount(), is(9));
+        assertThat(layoutManager.getChildCount(), is(6));
+        // At first only the visible area of the flex lines are calculated
+        assertThat(layoutManager.getFlexLines().size(), is(3));
+
+        onView(withId(R.id.recyclerview)).perform(swipe(GeneralLocation.CENTER_RIGHT,
+                GeneralLocation.CENTER_LEFT));
+        assertThat(layoutManager.getFlexItemCount(), is(9));
+        // The RecyclerView is swiped to top until it reaches the right edge of the view.
+        // The number of the visible views should be 5
+        assertThat(layoutManager.getChildCount(), is(5));
+        // Since the RecyclerView is swiped to the bottom, all flex lines should be calculated
+        // by now
         assertThat(layoutManager.getFlexLines().size(), is(5));
     }
 
@@ -286,7 +394,7 @@ public class FlexboxLayoutManagerTest {
                 FlexboxLayoutManager.LayoutParams lp3 = createLayoutParams(activity, 50, 100);
                 adapter.addItem(lp3);
                 layoutManager.setJustifyContent(JustifyContent.FLEX_START);
-                // RecyclerView width: 400, height: 300.
+                // RecyclerView width: 320, height: 240.
             }
         });
         InstrumentationRegistry.getInstrumentation().waitForIdleSync();
@@ -328,7 +436,7 @@ public class FlexboxLayoutManagerTest {
                 FlexboxLayoutManager.LayoutParams lp3 = createLayoutParams(activity, 50, 100);
                 adapter.addItem(lp3);
                 layoutManager.setJustifyContent(JustifyContent.FLEX_END);
-                // RecyclerView width: 400, height: 300.
+                // RecyclerView width: 320, height: 240.
             }
         });
         InstrumentationRegistry.getInstrumentation().waitForIdleSync();
@@ -337,17 +445,17 @@ public class FlexboxLayoutManagerTest {
         assertThat(layoutManager.getFlexItemCount(), is(3));
         assertThat(layoutManager.getFlexLines().size(), is(1));
         assertThat(layoutManager.getChildAt(0).getLeft(),
-                isEqualAllowingError(TestUtil.dpToPixel(activity, 250)));
+                isEqualAllowingError(TestUtil.dpToPixel(activity, 170)));
         assertThat(layoutManager.getChildAt(0).getRight(),
-                isEqualAllowingError(TestUtil.dpToPixel(activity, 300)));
+                isEqualAllowingError(TestUtil.dpToPixel(activity, 220)));
         assertThat(layoutManager.getChildAt(1).getLeft(),
-                isEqualAllowingError(TestUtil.dpToPixel(activity, 300)));
+                isEqualAllowingError(TestUtil.dpToPixel(activity, 220)));
         assertThat(layoutManager.getChildAt(1).getRight(),
-                isEqualAllowingError(TestUtil.dpToPixel(activity, 350)));
+                isEqualAllowingError(TestUtil.dpToPixel(activity, 270)));
         assertThat(layoutManager.getChildAt(2).getLeft(),
-                isEqualAllowingError(TestUtil.dpToPixel(activity, 350)));
+                isEqualAllowingError(TestUtil.dpToPixel(activity, 270)));
         assertThat(layoutManager.getChildAt(2).getRight(),
-                isEqualAllowingError(TestUtil.dpToPixel(activity, 400)));
+                isEqualAllowingError(TestUtil.dpToPixel(activity, 320)));
     }
 
     @Test
@@ -370,7 +478,7 @@ public class FlexboxLayoutManagerTest {
                 FlexboxLayoutManager.LayoutParams lp3 = createLayoutParams(activity, 50, 100);
                 adapter.addItem(lp3);
                 layoutManager.setJustifyContent(JustifyContent.CENTER);
-                // RecyclerView width: 400, height: 300.
+                // RecyclerView width: 320, height: 240.
             }
         });
         InstrumentationRegistry.getInstrumentation().waitForIdleSync();
@@ -379,17 +487,17 @@ public class FlexboxLayoutManagerTest {
         assertThat(layoutManager.getFlexItemCount(), is(3));
         assertThat(layoutManager.getFlexLines().size(), is(1));
         assertThat(layoutManager.getChildAt(0).getLeft(),
-                isEqualAllowingError(TestUtil.dpToPixel(activity, 125)));
+                isEqualAllowingError(TestUtil.dpToPixel(activity, 85)));
         assertThat(layoutManager.getChildAt(0).getRight(),
-                isEqualAllowingError(TestUtil.dpToPixel(activity, 175)));
+                isEqualAllowingError(TestUtil.dpToPixel(activity, 135)));
         assertThat(layoutManager.getChildAt(1).getLeft(),
-                isEqualAllowingError(TestUtil.dpToPixel(activity, 175)));
+                isEqualAllowingError(TestUtil.dpToPixel(activity, 135)));
         assertThat(layoutManager.getChildAt(1).getRight(),
-                isEqualAllowingError(TestUtil.dpToPixel(activity, 225)));
+                isEqualAllowingError(TestUtil.dpToPixel(activity, 185)));
         assertThat(layoutManager.getChildAt(2).getLeft(),
-                isEqualAllowingError(TestUtil.dpToPixel(activity, 225)));
+                isEqualAllowingError(TestUtil.dpToPixel(activity, 185)));
         assertThat(layoutManager.getChildAt(2).getRight(),
-                isEqualAllowingError(TestUtil.dpToPixel(activity, 275)));
+                isEqualAllowingError(TestUtil.dpToPixel(activity, 235)));
     }
 
     @Test
@@ -412,7 +520,7 @@ public class FlexboxLayoutManagerTest {
                 FlexboxLayoutManager.LayoutParams lp3 = createLayoutParams(activity, 50, 100);
                 adapter.addItem(lp3);
                 layoutManager.setJustifyContent(JustifyContent.SPACE_AROUND);
-                // RecyclerView width: 400, height: 300.
+                // RecyclerView width: 320, height: 240.
             }
         });
         InstrumentationRegistry.getInstrumentation().waitForIdleSync();
@@ -421,17 +529,17 @@ public class FlexboxLayoutManagerTest {
         assertThat(layoutManager.getFlexItemCount(), is(3));
         assertThat(layoutManager.getFlexLines().size(), is(1));
         assertThat(layoutManager.getChildAt(0).getLeft(),
-                isEqualAllowingError(TestUtil.dpToPixel(activity, 42)));
+                isEqualAllowingError(TestUtil.dpToPixel(activity, 28)));
         assertThat(layoutManager.getChildAt(0).getRight(),
-                isEqualAllowingError(TestUtil.dpToPixel(activity, 92)));
+                isEqualAllowingError(TestUtil.dpToPixel(activity, 78)));
         assertThat(layoutManager.getChildAt(1).getLeft(),
-                isEqualAllowingError(TestUtil.dpToPixel(activity, 175)));
+                isEqualAllowingError(TestUtil.dpToPixel(activity, 135)));
         assertThat(layoutManager.getChildAt(1).getRight(),
-                isEqualAllowingError(TestUtil.dpToPixel(activity, 225)));
+                isEqualAllowingError(TestUtil.dpToPixel(activity, 185)));
         assertThat(layoutManager.getChildAt(2).getLeft(),
-                isEqualAllowingError(TestUtil.dpToPixel(activity, 308)));
+                isEqualAllowingError(TestUtil.dpToPixel(activity, 242)));
         assertThat(layoutManager.getChildAt(2).getRight(),
-                isEqualAllowingError(TestUtil.dpToPixel(activity, 358)));
+                isEqualAllowingError(TestUtil.dpToPixel(activity, 292)));
     }
 
     @Test
@@ -454,7 +562,7 @@ public class FlexboxLayoutManagerTest {
                 FlexboxLayoutManager.LayoutParams lp3 = createLayoutParams(activity, 50, 100);
                 adapter.addItem(lp3);
                 layoutManager.setJustifyContent(JustifyContent.SPACE_BETWEEN);
-                // RecyclerView width: 400, height: 300.
+                // RecyclerView width: 320, height: 240.
             }
         });
         InstrumentationRegistry.getInstrumentation().waitForIdleSync();
@@ -467,13 +575,13 @@ public class FlexboxLayoutManagerTest {
         assertThat(layoutManager.getChildAt(0).getRight(),
                 isEqualAllowingError(TestUtil.dpToPixel(activity, 50)));
         assertThat(layoutManager.getChildAt(1).getLeft(),
-                isEqualAllowingError(TestUtil.dpToPixel(activity, 175)));
+                isEqualAllowingError(TestUtil.dpToPixel(activity, 135)));
         assertThat(layoutManager.getChildAt(1).getRight(),
-                isEqualAllowingError(TestUtil.dpToPixel(activity, 225)));
+                isEqualAllowingError(TestUtil.dpToPixel(activity, 185)));
         assertThat(layoutManager.getChildAt(2).getLeft(),
-                isEqualAllowingError(TestUtil.dpToPixel(activity, 350)));
+                isEqualAllowingError(TestUtil.dpToPixel(activity, 270)));
         assertThat(layoutManager.getChildAt(2).getRight(),
-                isEqualAllowingError(TestUtil.dpToPixel(activity, 400)));
+                isEqualAllowingError(TestUtil.dpToPixel(activity, 320)));
     }
 
     @Test
@@ -497,7 +605,7 @@ public class FlexboxLayoutManagerTest {
                 adapter.addItem(lp3);
                 layoutManager.setFlexDirection(FlexDirection.ROW_REVERSE);
                 layoutManager.setJustifyContent(JustifyContent.FLEX_START);
-                // RecyclerView width: 400, height: 300.
+                // RecyclerView width: 320, height: 240.
             }
         });
         InstrumentationRegistry.getInstrumentation().waitForIdleSync();
@@ -507,17 +615,17 @@ public class FlexboxLayoutManagerTest {
         assertThat(layoutManager.getFlexItemCount(), is(3));
         assertThat(layoutManager.getFlexLines().size(), is(1));
         assertThat(layoutManager.getChildAt(0).getLeft(),
-                isEqualAllowingError(TestUtil.dpToPixel(activity, 350)));
+                isEqualAllowingError(TestUtil.dpToPixel(activity, 270)));
         assertThat(layoutManager.getChildAt(0).getRight(),
-                isEqualAllowingError(TestUtil.dpToPixel(activity, 400)));
+                isEqualAllowingError(TestUtil.dpToPixel(activity, 320)));
         assertThat(layoutManager.getChildAt(1).getLeft(),
-                isEqualAllowingError(TestUtil.dpToPixel(activity, 300)));
+                isEqualAllowingError(TestUtil.dpToPixel(activity, 220)));
         assertThat(layoutManager.getChildAt(1).getRight(),
-                isEqualAllowingError(TestUtil.dpToPixel(activity, 350)));
+                isEqualAllowingError(TestUtil.dpToPixel(activity, 270)));
         assertThat(layoutManager.getChildAt(2).getLeft(),
-                isEqualAllowingError(TestUtil.dpToPixel(activity, 250)));
+                isEqualAllowingError(TestUtil.dpToPixel(activity, 170)));
         assertThat(layoutManager.getChildAt(2).getRight(),
-                isEqualAllowingError(TestUtil.dpToPixel(activity, 300)));
+                isEqualAllowingError(TestUtil.dpToPixel(activity, 220)));
     }
 
     @Test
@@ -541,7 +649,7 @@ public class FlexboxLayoutManagerTest {
                 adapter.addItem(lp3);
                 layoutManager.setFlexDirection(FlexDirection.ROW_REVERSE);
                 layoutManager.setJustifyContent(JustifyContent.FLEX_END);
-                // RecyclerView width: 400, height: 300.
+                // RecyclerView width: 320, height: 240.
             }
         });
         InstrumentationRegistry.getInstrumentation().waitForIdleSync();
@@ -585,7 +693,7 @@ public class FlexboxLayoutManagerTest {
                 adapter.addItem(lp3);
                 layoutManager.setFlexDirection(FlexDirection.ROW_REVERSE);
                 layoutManager.setJustifyContent(JustifyContent.CENTER);
-                // RecyclerView width: 400, height: 300.
+                // RecyclerView width: 320, height: 240.
             }
         });
         InstrumentationRegistry.getInstrumentation().waitForIdleSync();
@@ -595,17 +703,17 @@ public class FlexboxLayoutManagerTest {
         assertThat(layoutManager.getFlexItemCount(), is(3));
         assertThat(layoutManager.getFlexLines().size(), is(1));
         assertThat(layoutManager.getChildAt(0).getLeft(),
-                isEqualAllowingError(TestUtil.dpToPixel(activity, 225)));
+                isEqualAllowingError(TestUtil.dpToPixel(activity, 185)));
         assertThat(layoutManager.getChildAt(0).getRight(),
-                isEqualAllowingError(TestUtil.dpToPixel(activity, 275)));
+                isEqualAllowingError(TestUtil.dpToPixel(activity, 235)));
         assertThat(layoutManager.getChildAt(1).getLeft(),
-                isEqualAllowingError(TestUtil.dpToPixel(activity, 175)));
+                isEqualAllowingError(TestUtil.dpToPixel(activity, 135)));
         assertThat(layoutManager.getChildAt(1).getRight(),
-                isEqualAllowingError(TestUtil.dpToPixel(activity, 225)));
+                isEqualAllowingError(TestUtil.dpToPixel(activity, 185)));
         assertThat(layoutManager.getChildAt(2).getLeft(),
-                isEqualAllowingError(TestUtil.dpToPixel(activity, 125)));
+                isEqualAllowingError(TestUtil.dpToPixel(activity, 85)));
         assertThat(layoutManager.getChildAt(2).getRight(),
-                isEqualAllowingError(TestUtil.dpToPixel(activity, 175)));
+                isEqualAllowingError(TestUtil.dpToPixel(activity, 135)));
     }
 
     @Test
@@ -629,7 +737,7 @@ public class FlexboxLayoutManagerTest {
                 adapter.addItem(lp3);
                 layoutManager.setFlexDirection(FlexDirection.ROW_REVERSE);
                 layoutManager.setJustifyContent(JustifyContent.SPACE_AROUND);
-                // RecyclerView width: 400, height: 300.
+                // RecyclerView width: 320, height: 240.
             }
         });
         InstrumentationRegistry.getInstrumentation().waitForIdleSync();
@@ -639,17 +747,17 @@ public class FlexboxLayoutManagerTest {
         assertThat(layoutManager.getFlexItemCount(), is(3));
         assertThat(layoutManager.getFlexLines().size(), is(1));
         assertThat(layoutManager.getChildAt(0).getLeft(),
-                isEqualAllowingError(TestUtil.dpToPixel(activity, 308)));
+                isEqualAllowingError(TestUtil.dpToPixel(activity, 242)));
         assertThat(layoutManager.getChildAt(0).getRight(),
-                isEqualAllowingError(TestUtil.dpToPixel(activity, 358)));
+                isEqualAllowingError(TestUtil.dpToPixel(activity, 292)));
         assertThat(layoutManager.getChildAt(1).getLeft(),
-                isEqualAllowingError(TestUtil.dpToPixel(activity, 175)));
+                isEqualAllowingError(TestUtil.dpToPixel(activity, 135)));
         assertThat(layoutManager.getChildAt(1).getRight(),
-                isEqualAllowingError(TestUtil.dpToPixel(activity, 225)));
+                isEqualAllowingError(TestUtil.dpToPixel(activity, 185)));
         assertThat(layoutManager.getChildAt(2).getLeft(),
-                isEqualAllowingError(TestUtil.dpToPixel(activity, 42)));
+                isEqualAllowingError(TestUtil.dpToPixel(activity, 28)));
         assertThat(layoutManager.getChildAt(2).getRight(),
-                isEqualAllowingError(TestUtil.dpToPixel(activity, 92)));
+                isEqualAllowingError(TestUtil.dpToPixel(activity, 78)));
     }
 
     @Test
@@ -673,7 +781,7 @@ public class FlexboxLayoutManagerTest {
                 adapter.addItem(lp3);
                 layoutManager.setFlexDirection(FlexDirection.ROW_REVERSE);
                 layoutManager.setJustifyContent(JustifyContent.SPACE_BETWEEN);
-                // RecyclerView width: 400, height: 300.
+                // RecyclerView width: 320, height: 240.
             }
         });
         InstrumentationRegistry.getInstrumentation().waitForIdleSync();
@@ -683,13 +791,13 @@ public class FlexboxLayoutManagerTest {
         assertThat(layoutManager.getFlexItemCount(), is(3));
         assertThat(layoutManager.getFlexLines().size(), is(1));
         assertThat(layoutManager.getChildAt(0).getLeft(),
-                isEqualAllowingError(TestUtil.dpToPixel(activity, 350)));
+                isEqualAllowingError(TestUtil.dpToPixel(activity, 270)));
         assertThat(layoutManager.getChildAt(0).getRight(),
-                isEqualAllowingError(TestUtil.dpToPixel(activity, 400)));
+                isEqualAllowingError(TestUtil.dpToPixel(activity, 320)));
         assertThat(layoutManager.getChildAt(1).getLeft(),
-                isEqualAllowingError(TestUtil.dpToPixel(activity, 175)));
+                isEqualAllowingError(TestUtil.dpToPixel(activity, 135)));
         assertThat(layoutManager.getChildAt(1).getRight(),
-                isEqualAllowingError(TestUtil.dpToPixel(activity, 225)));
+                isEqualAllowingError(TestUtil.dpToPixel(activity, 185)));
         assertThat(layoutManager.getChildAt(2).getLeft(),
                 isEqualAllowingError(TestUtil.dpToPixel(activity, 0)));
         assertThat(layoutManager.getChildAt(2).getRight(),
@@ -717,7 +825,7 @@ public class FlexboxLayoutManagerTest {
                 adapter.addItem(lp3);
                 layoutManager.setFlexDirection(FlexDirection.COLUMN);
                 layoutManager.setJustifyContent(JustifyContent.FLEX_START);
-                // RecyclerView width: 400, height: 300.
+                // RecyclerView width: 320, height: 240.
             }
         });
         InstrumentationRegistry.getInstrumentation().waitForIdleSync();
@@ -761,7 +869,7 @@ public class FlexboxLayoutManagerTest {
                 adapter.addItem(lp3);
                 layoutManager.setFlexDirection(FlexDirection.COLUMN);
                 layoutManager.setJustifyContent(JustifyContent.FLEX_END);
-                // RecyclerView width: 400, height: 300.
+                // RecyclerView width: 320, height: 240.
             }
         });
         InstrumentationRegistry.getInstrumentation().waitForIdleSync();
@@ -771,17 +879,17 @@ public class FlexboxLayoutManagerTest {
         assertThat(layoutManager.getFlexItemCount(), is(3));
         assertThat(layoutManager.getFlexLines().size(), is(1));
         assertThat(layoutManager.getChildAt(0).getTop(),
-                isEqualAllowingError(TestUtil.dpToPixel(activity, 150)));
+                isEqualAllowingError(TestUtil.dpToPixel(activity, 90)));
         assertThat(layoutManager.getChildAt(0).getBottom(),
-                isEqualAllowingError(TestUtil.dpToPixel(activity, 200)));
+                isEqualAllowingError(TestUtil.dpToPixel(activity, 140)));
         assertThat(layoutManager.getChildAt(1).getTop(),
-                isEqualAllowingError(TestUtil.dpToPixel(activity, 200)));
+                isEqualAllowingError(TestUtil.dpToPixel(activity, 140)));
         assertThat(layoutManager.getChildAt(1).getBottom(),
-                isEqualAllowingError(TestUtil.dpToPixel(activity, 250)));
+                isEqualAllowingError(TestUtil.dpToPixel(activity, 190)));
         assertThat(layoutManager.getChildAt(2).getTop(),
-                isEqualAllowingError(TestUtil.dpToPixel(activity, 250)));
+                isEqualAllowingError(TestUtil.dpToPixel(activity, 190)));
         assertThat(layoutManager.getChildAt(2).getBottom(),
-                isEqualAllowingError(TestUtil.dpToPixel(activity, 300)));
+                isEqualAllowingError(TestUtil.dpToPixel(activity, 240)));
     }
 
     @Test
@@ -805,7 +913,7 @@ public class FlexboxLayoutManagerTest {
                 adapter.addItem(lp3);
                 layoutManager.setFlexDirection(FlexDirection.COLUMN);
                 layoutManager.setJustifyContent(JustifyContent.CENTER);
-                // RecyclerView width: 400, height: 300.
+                // RecyclerView width: 320, height: 240.
             }
         });
         InstrumentationRegistry.getInstrumentation().waitForIdleSync();
@@ -815,17 +923,17 @@ public class FlexboxLayoutManagerTest {
         assertThat(layoutManager.getFlexItemCount(), is(3));
         assertThat(layoutManager.getFlexLines().size(), is(1));
         assertThat(layoutManager.getChildAt(0).getTop(),
-                isEqualAllowingError(TestUtil.dpToPixel(activity, 75)));
+                isEqualAllowingError(TestUtil.dpToPixel(activity, 45)));
         assertThat(layoutManager.getChildAt(0).getBottom(),
-                isEqualAllowingError(TestUtil.dpToPixel(activity, 125)));
+                isEqualAllowingError(TestUtil.dpToPixel(activity, 95)));
         assertThat(layoutManager.getChildAt(1).getTop(),
-                isEqualAllowingError(TestUtil.dpToPixel(activity, 125)));
+                isEqualAllowingError(TestUtil.dpToPixel(activity, 95)));
         assertThat(layoutManager.getChildAt(1).getBottom(),
-                isEqualAllowingError(TestUtil.dpToPixel(activity, 175)));
+                isEqualAllowingError(TestUtil.dpToPixel(activity, 145)));
         assertThat(layoutManager.getChildAt(2).getTop(),
-                isEqualAllowingError(TestUtil.dpToPixel(activity, 175)));
+                isEqualAllowingError(TestUtil.dpToPixel(activity, 145)));
         assertThat(layoutManager.getChildAt(2).getBottom(),
-                isEqualAllowingError(TestUtil.dpToPixel(activity, 225)));
+                isEqualAllowingError(TestUtil.dpToPixel(activity, 195)));
     }
 
     @Test
@@ -849,7 +957,7 @@ public class FlexboxLayoutManagerTest {
                 adapter.addItem(lp3);
                 layoutManager.setFlexDirection(FlexDirection.COLUMN);
                 layoutManager.setJustifyContent(JustifyContent.SPACE_AROUND);
-                // RecyclerView width: 400, height: 300.
+                // RecyclerView width: 320, height: 240.
             }
         });
         InstrumentationRegistry.getInstrumentation().waitForIdleSync();
@@ -859,17 +967,17 @@ public class FlexboxLayoutManagerTest {
         assertThat(layoutManager.getFlexItemCount(), is(3));
         assertThat(layoutManager.getFlexLines().size(), is(1));
         assertThat(layoutManager.getChildAt(0).getTop(),
-                isEqualAllowingError(TestUtil.dpToPixel(activity, 25)));
+                isEqualAllowingError(TestUtil.dpToPixel(activity, 15)));
         assertThat(layoutManager.getChildAt(0).getBottom(),
-                isEqualAllowingError(TestUtil.dpToPixel(activity, 75)));
+                isEqualAllowingError(TestUtil.dpToPixel(activity, 65)));
         assertThat(layoutManager.getChildAt(1).getTop(),
-                isEqualAllowingError(TestUtil.dpToPixel(activity, 125)));
+                isEqualAllowingError(TestUtil.dpToPixel(activity, 95)));
         assertThat(layoutManager.getChildAt(1).getBottom(),
-                isEqualAllowingError(TestUtil.dpToPixel(activity, 175)));
+                isEqualAllowingError(TestUtil.dpToPixel(activity, 145)));
         assertThat(layoutManager.getChildAt(2).getTop(),
-                isEqualAllowingError(TestUtil.dpToPixel(activity, 225)));
+                isEqualAllowingError(TestUtil.dpToPixel(activity, 175)));
         assertThat(layoutManager.getChildAt(2).getBottom(),
-                isEqualAllowingError(TestUtil.dpToPixel(activity, 275)));
+                isEqualAllowingError(TestUtil.dpToPixel(activity, 225)));
     }
 
     @Test
@@ -893,7 +1001,7 @@ public class FlexboxLayoutManagerTest {
                 adapter.addItem(lp3);
                 layoutManager.setFlexDirection(FlexDirection.COLUMN);
                 layoutManager.setJustifyContent(JustifyContent.SPACE_BETWEEN);
-                // RecyclerView width: 400, height: 300.
+                // RecyclerView width: 320, height: 240.
             }
         });
         InstrumentationRegistry.getInstrumentation().waitForIdleSync();
@@ -907,13 +1015,13 @@ public class FlexboxLayoutManagerTest {
         assertThat(layoutManager.getChildAt(0).getBottom(),
                 isEqualAllowingError(TestUtil.dpToPixel(activity, 50)));
         assertThat(layoutManager.getChildAt(1).getTop(),
-                isEqualAllowingError(TestUtil.dpToPixel(activity, 125)));
+                isEqualAllowingError(TestUtil.dpToPixel(activity, 95)));
         assertThat(layoutManager.getChildAt(1).getBottom(),
-                isEqualAllowingError(TestUtil.dpToPixel(activity, 175)));
+                isEqualAllowingError(TestUtil.dpToPixel(activity, 145)));
         assertThat(layoutManager.getChildAt(2).getTop(),
-                isEqualAllowingError(TestUtil.dpToPixel(activity, 250)));
+                isEqualAllowingError(TestUtil.dpToPixel(activity, 190)));
         assertThat(layoutManager.getChildAt(2).getBottom(),
-                isEqualAllowingError(TestUtil.dpToPixel(activity, 300)));
+                isEqualAllowingError(TestUtil.dpToPixel(activity, 240)));
     }
 
     @Test
@@ -937,7 +1045,7 @@ public class FlexboxLayoutManagerTest {
                 adapter.addItem(lp3);
                 layoutManager.setFlexDirection(FlexDirection.COLUMN_REVERSE);
                 layoutManager.setJustifyContent(JustifyContent.FLEX_START);
-                // RecyclerView width: 400, height: 300.
+                // RecyclerView width: 320, height: 240.
             }
         });
         InstrumentationRegistry.getInstrumentation().waitForIdleSync();
@@ -947,17 +1055,17 @@ public class FlexboxLayoutManagerTest {
         assertThat(layoutManager.getFlexItemCount(), is(3));
         assertThat(layoutManager.getFlexLines().size(), is(1));
         assertThat(layoutManager.getChildAt(0).getTop(),
-                isEqualAllowingError(TestUtil.dpToPixel(activity, 250)));
+                isEqualAllowingError(TestUtil.dpToPixel(activity, 190)));
         assertThat(layoutManager.getChildAt(0).getBottom(),
-                isEqualAllowingError(TestUtil.dpToPixel(activity, 300)));
+                isEqualAllowingError(TestUtil.dpToPixel(activity, 240)));
         assertThat(layoutManager.getChildAt(1).getTop(),
-                isEqualAllowingError(TestUtil.dpToPixel(activity, 200)));
+                isEqualAllowingError(TestUtil.dpToPixel(activity, 140)));
         assertThat(layoutManager.getChildAt(1).getBottom(),
-                isEqualAllowingError(TestUtil.dpToPixel(activity, 250)));
+                isEqualAllowingError(TestUtil.dpToPixel(activity, 190)));
         assertThat(layoutManager.getChildAt(2).getTop(),
-                isEqualAllowingError(TestUtil.dpToPixel(activity, 150)));
+                isEqualAllowingError(TestUtil.dpToPixel(activity, 90)));
         assertThat(layoutManager.getChildAt(2).getBottom(),
-                isEqualAllowingError(TestUtil.dpToPixel(activity, 200)));
+                isEqualAllowingError(TestUtil.dpToPixel(activity, 140)));
     }
 
     @Test
@@ -981,7 +1089,7 @@ public class FlexboxLayoutManagerTest {
                 adapter.addItem(lp3);
                 layoutManager.setFlexDirection(FlexDirection.COLUMN_REVERSE);
                 layoutManager.setJustifyContent(JustifyContent.FLEX_END);
-                // RecyclerView width: 400, height: 300.
+                // RecyclerView width: 320, height: 240.
             }
         });
         InstrumentationRegistry.getInstrumentation().waitForIdleSync();
@@ -1025,7 +1133,7 @@ public class FlexboxLayoutManagerTest {
                 adapter.addItem(lp3);
                 layoutManager.setFlexDirection(FlexDirection.COLUMN_REVERSE);
                 layoutManager.setJustifyContent(JustifyContent.CENTER);
-                // RecyclerView width: 400, height: 300.
+                // RecyclerView width: 320, height: 240.
             }
         });
         InstrumentationRegistry.getInstrumentation().waitForIdleSync();
@@ -1035,17 +1143,17 @@ public class FlexboxLayoutManagerTest {
         assertThat(layoutManager.getFlexItemCount(), is(3));
         assertThat(layoutManager.getFlexLines().size(), is(1));
         assertThat(layoutManager.getChildAt(0).getTop(),
-                isEqualAllowingError(TestUtil.dpToPixel(activity, 175)));
+                isEqualAllowingError(TestUtil.dpToPixel(activity, 145)));
         assertThat(layoutManager.getChildAt(0).getBottom(),
-                isEqualAllowingError(TestUtil.dpToPixel(activity, 225)));
+                isEqualAllowingError(TestUtil.dpToPixel(activity, 195)));
         assertThat(layoutManager.getChildAt(1).getTop(),
-                isEqualAllowingError(TestUtil.dpToPixel(activity, 125)));
+                isEqualAllowingError(TestUtil.dpToPixel(activity, 95)));
         assertThat(layoutManager.getChildAt(1).getBottom(),
-                isEqualAllowingError(TestUtil.dpToPixel(activity, 175)));
+                isEqualAllowingError(TestUtil.dpToPixel(activity, 145)));
         assertThat(layoutManager.getChildAt(2).getTop(),
-                isEqualAllowingError(TestUtil.dpToPixel(activity, 75)));
+                isEqualAllowingError(TestUtil.dpToPixel(activity, 45)));
         assertThat(layoutManager.getChildAt(2).getBottom(),
-                isEqualAllowingError(TestUtil.dpToPixel(activity, 125)));
+                isEqualAllowingError(TestUtil.dpToPixel(activity, 95)));
     }
 
     @Test
@@ -1069,7 +1177,7 @@ public class FlexboxLayoutManagerTest {
                 adapter.addItem(lp3);
                 layoutManager.setFlexDirection(FlexDirection.COLUMN_REVERSE);
                 layoutManager.setJustifyContent(JustifyContent.SPACE_AROUND);
-                // RecyclerView width: 400, height: 300.
+                // RecyclerView width: 320, height: 240.
             }
         });
         InstrumentationRegistry.getInstrumentation().waitForIdleSync();
@@ -1079,17 +1187,17 @@ public class FlexboxLayoutManagerTest {
         assertThat(layoutManager.getFlexItemCount(), is(3));
         assertThat(layoutManager.getFlexLines().size(), is(1));
         assertThat(layoutManager.getChildAt(0).getTop(),
-                isEqualAllowingError(TestUtil.dpToPixel(activity, 225)));
-        assertThat(layoutManager.getChildAt(0).getBottom(),
-                isEqualAllowingError(TestUtil.dpToPixel(activity, 275)));
-        assertThat(layoutManager.getChildAt(1).getTop(),
-                isEqualAllowingError(TestUtil.dpToPixel(activity, 125)));
-        assertThat(layoutManager.getChildAt(1).getBottom(),
                 isEqualAllowingError(TestUtil.dpToPixel(activity, 175)));
+        assertThat(layoutManager.getChildAt(0).getBottom(),
+                isEqualAllowingError(TestUtil.dpToPixel(activity, 225)));
+        assertThat(layoutManager.getChildAt(1).getTop(),
+                isEqualAllowingError(TestUtil.dpToPixel(activity, 95)));
+        assertThat(layoutManager.getChildAt(1).getBottom(),
+                isEqualAllowingError(TestUtil.dpToPixel(activity, 145)));
         assertThat(layoutManager.getChildAt(2).getTop(),
-                isEqualAllowingError(TestUtil.dpToPixel(activity, 25)));
+                isEqualAllowingError(TestUtil.dpToPixel(activity, 15)));
         assertThat(layoutManager.getChildAt(2).getBottom(),
-                isEqualAllowingError(TestUtil.dpToPixel(activity, 75)));
+                isEqualAllowingError(TestUtil.dpToPixel(activity, 65)));
     }
 
     @Test
@@ -1113,7 +1221,7 @@ public class FlexboxLayoutManagerTest {
                 adapter.addItem(lp3);
                 layoutManager.setFlexDirection(FlexDirection.COLUMN_REVERSE);
                 layoutManager.setJustifyContent(JustifyContent.SPACE_BETWEEN);
-                // RecyclerView width: 400, height: 300.
+                // RecyclerView width: 320, height: 240.
             }
         });
         InstrumentationRegistry.getInstrumentation().waitForIdleSync();
@@ -1123,18 +1231,19 @@ public class FlexboxLayoutManagerTest {
         assertThat(layoutManager.getFlexItemCount(), is(3));
         assertThat(layoutManager.getFlexLines().size(), is(1));
         assertThat(layoutManager.getChildAt(0).getTop(),
-                isEqualAllowingError(TestUtil.dpToPixel(activity, 250)));
+                isEqualAllowingError(TestUtil.dpToPixel(activity, 190)));
         assertThat(layoutManager.getChildAt(0).getBottom(),
-                isEqualAllowingError(TestUtil.dpToPixel(activity, 300)));
+                isEqualAllowingError(TestUtil.dpToPixel(activity, 240)));
         assertThat(layoutManager.getChildAt(1).getTop(),
-                isEqualAllowingError(TestUtil.dpToPixel(activity, 125)));
+                isEqualAllowingError(TestUtil.dpToPixel(activity, 95)));
         assertThat(layoutManager.getChildAt(1).getBottom(),
-                isEqualAllowingError(TestUtil.dpToPixel(activity, 175)));
+                isEqualAllowingError(TestUtil.dpToPixel(activity, 145)));
         assertThat(layoutManager.getChildAt(2).getTop(),
                 isEqualAllowingError(TestUtil.dpToPixel(activity, 0)));
         assertThat(layoutManager.getChildAt(2).getBottom(),
                 isEqualAllowingError(TestUtil.dpToPixel(activity, 50)));
     }
+
 
     /**
      * Creates a new flex item.
@@ -1150,4 +1259,9 @@ public class FlexboxLayoutManagerTest {
                 TestUtil.dpToPixel(context, width),
                 TestUtil.dpToPixel(context, height));
     }
+
+    private static ViewAction swipe(CoordinatesProvider from, CoordinatesProvider to) {
+        return new GeneralSwipeAction(Swipe.FAST, from, to, Press.FINGER);
+    }
 }
+
