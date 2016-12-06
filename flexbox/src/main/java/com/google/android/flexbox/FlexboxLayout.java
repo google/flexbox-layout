@@ -25,6 +25,7 @@ import android.os.Parcelable;
 import android.support.annotation.IntDef;
 import android.support.v4.view.ViewCompat;
 import android.util.AttributeSet;
+import android.util.SparseIntArray;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.LinearLayout;
@@ -172,6 +173,20 @@ public class FlexboxLayout extends ViewGroup implements FlexContainer {
     /** The width of the {@link #mDividerDrawableVertical}. */
     private int mDividerVerticalWidth;
 
+    /**
+     * Holds reordered indices, which {@link FlexItem#getOrder()} parameters are taken
+     * into account
+     */
+    private int[] mReorderedIndices;
+
+    /**
+     * Caches the {@link FlexItem#getOrder()} attributes for children views.
+     * Key: the index of the view reordered indices using the {@link FlexItem#getOrder()}
+     * isn't taken into account)
+     * Value: the value for the order attribute
+     */
+    private SparseIntArray mOrderCache;
+
     private FlexboxHelper mFlexboxHelper = new FlexboxHelper(this);
 
     private List<FlexLine> mFlexLines = new ArrayList<>();
@@ -233,8 +248,11 @@ public class FlexboxLayout extends ViewGroup implements FlexContainer {
     protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
         super.onMeasure(widthMeasureSpec, heightMeasureSpec);
 
-        if (mFlexboxHelper.isOrderChangedFromLastMeasurement()) {
-            mFlexboxHelper.mReorderedIndices = mFlexboxHelper.createReorderedIndices();
+        if (mOrderCache == null) {
+            mOrderCache = new SparseIntArray(getChildCount());
+        }
+        if (mFlexboxHelper.isOrderChangedFromLastMeasurement(mOrderCache)) {
+            mReorderedIndices = mFlexboxHelper.createReorderedIndices(mOrderCache);
         }
 
         // TODO: Only calculate the children views which are affected from the last measure.
@@ -274,10 +292,10 @@ public class FlexboxLayout extends ViewGroup implements FlexContainer {
      * returns {@code null}.
      */
     public View getReorderedChildAt(int index) {
-        if (index < 0 || index >= mFlexboxHelper.mReorderedIndices.length) {
+        if (index < 0 || index >= mReorderedIndices.length) {
             return null;
         }
-        return getChildAt(mFlexboxHelper.mReorderedIndices[index]);
+        return getChildAt(mReorderedIndices[index]);
     }
 
     @Override
@@ -287,12 +305,15 @@ public class FlexboxLayout extends ViewGroup implements FlexContainer {
 
     @Override
     public void addView(View child, int index, ViewGroup.LayoutParams params) {
+        if (mOrderCache == null) {
+            mOrderCache = new SparseIntArray(getChildCount());
+        }
         // Create an array for the reordered indices before the View is added in the parent
         // ViewGroup since otherwise reordered indices won't be in effect before the
         // FlexboxLayout's onMeasure is called.
         // Because requestLayout is requested in the super.addView method.
-        mFlexboxHelper.mReorderedIndices = mFlexboxHelper
-                .createReorderedIndices(child, index, params);
+        mReorderedIndices = mFlexboxHelper
+                .createReorderedIndices(child, index, params, mOrderCache);
         super.addView(child, index, params);
     }
 
