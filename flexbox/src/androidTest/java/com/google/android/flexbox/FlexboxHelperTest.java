@@ -30,6 +30,7 @@ import android.view.View;
 
 import static com.google.android.flexbox.test.IsEqualAllowingError.isEqualAllowingError;
 import static junit.framework.Assert.assertEquals;
+import static junit.framework.Assert.assertNotNull;
 import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertThat;
 
@@ -77,6 +78,7 @@ public class FlexboxHelperTest {
         int heightMeasureSpec = View.MeasureSpec
                 .makeMeasureSpec(1000, View.MeasureSpec.UNSPECIFIED);
 
+        mFlexboxHelper.ensureIndexToFlexLine(mFlexContainer.getFlexItemCount());
         FlexboxHelper.FlexLinesResult result = mFlexboxHelper
                 .calculateHorizontalFlexLines(widthMeasureSpec, heightMeasureSpec);
 
@@ -88,10 +90,11 @@ public class FlexboxHelperTest {
         assertEquals(100, result.mFlexLines.get(1).getCrossSize());
         assertEquals(100, result.mFlexLines.get(2).getCrossSize());
 
-        assertEquals(0, mFlexboxHelper.mIndexToFlexLine.get(0));
-        assertEquals(0, mFlexboxHelper.mIndexToFlexLine.get(1));
-        assertEquals(1, mFlexboxHelper.mIndexToFlexLine.get(2));
-        assertEquals(2, mFlexboxHelper.mIndexToFlexLine.get(3));
+        assertNotNull(mFlexboxHelper.mIndexToFlexLine);
+        assertEquals(0, mFlexboxHelper.mIndexToFlexLine[0]);
+        assertEquals(0, mFlexboxHelper.mIndexToFlexLine[1]);
+        assertEquals(1, mFlexboxHelper.mIndexToFlexLine[2]);
+        assertEquals(2, mFlexboxHelper.mIndexToFlexLine[3]);
     }
 
     @Test
@@ -118,6 +121,7 @@ public class FlexboxHelperTest {
         int widthMeasureSpec = View.MeasureSpec.makeMeasureSpec(1000, View.MeasureSpec.UNSPECIFIED);
         int heightMeasureSpec = View.MeasureSpec.makeMeasureSpec(500, View.MeasureSpec.EXACTLY);
 
+        mFlexboxHelper.ensureIndexToFlexLine(mFlexContainer.getFlexItemCount());
         FlexboxHelper.FlexLinesResult result = mFlexboxHelper
                 .calculateVerticalFlexLines(widthMeasureSpec, heightMeasureSpec);
 
@@ -129,10 +133,11 @@ public class FlexboxHelperTest {
         assertEquals(100, result.mFlexLines.get(1).getCrossSize());
         assertEquals(100, result.mFlexLines.get(2).getCrossSize());
 
-        assertEquals(0, mFlexboxHelper.mIndexToFlexLine.get(0));
-        assertEquals(0, mFlexboxHelper.mIndexToFlexLine.get(1));
-        assertEquals(1, mFlexboxHelper.mIndexToFlexLine.get(2));
-        assertEquals(2, mFlexboxHelper.mIndexToFlexLine.get(3));
+        assertNotNull(mFlexboxHelper.mIndexToFlexLine);
+        assertEquals(0, mFlexboxHelper.mIndexToFlexLine[0]);
+        assertEquals(0, mFlexboxHelper.mIndexToFlexLine[1]);
+        assertEquals(1, mFlexboxHelper.mIndexToFlexLine[2]);
+        assertEquals(2, mFlexboxHelper.mIndexToFlexLine[3]);
     }
 
     @Test
