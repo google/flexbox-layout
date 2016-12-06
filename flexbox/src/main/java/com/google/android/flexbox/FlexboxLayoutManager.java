@@ -217,6 +217,7 @@ public class FlexboxLayoutManager extends RecyclerView.LayoutManager implements 
         if (mFlexDirection != flexDirection) {
             mFlexDirection = flexDirection;
             mOrientationHelper = null;
+            mFlexLines.clear();
             requestLayout();
         }
     }
@@ -232,6 +233,7 @@ public class FlexboxLayoutManager extends RecyclerView.LayoutManager implements 
         if (mFlexWrap != flexWrap) {
             mFlexWrap = flexWrap;
             mOrientationHelper = null;
+            mFlexLines.clear();
             requestLayout();
         }
     }
@@ -260,6 +262,7 @@ public class FlexboxLayoutManager extends RecyclerView.LayoutManager implements 
     public void setAlignItems(@AlignItems int alignItems) {
         if (mAlignItems != alignItems) {
             mAlignItems = alignItems;
+            mFlexLines.clear();
             requestLayout();
         }
     }
@@ -274,6 +277,7 @@ public class FlexboxLayoutManager extends RecyclerView.LayoutManager implements 
     public void setAlignContent(@AlignContent int alignContent) {
         if (mAlignContent != alignContent) {
             mAlignContent = alignContent;
+            mFlexLines.clear();
             requestLayout();
         }
     }
@@ -337,19 +341,22 @@ public class FlexboxLayoutManager extends RecyclerView.LayoutManager implements 
     }
 
     /**
-     * Returns a View, which is reordered by taking {@link LayoutParams#mOrder} parameters
-     * into account.
+     * Returns a View for the given index.
+     * The order attribute ({@link FlexItem#getOrder()}) is not supported by this class since
+     * otherwise all view holders need to be inflated at least once even though only the visible
+     * part of the layout is needed.
+     * Implementing just to conform the {@link FlexContainer} interface.
      *
      * @param index the index of the view
-     * @return the reordered view, which {@link LayoutParams@mOrder} is taken into account.
+     * @return the view for the given index.
      * If the index is negative or out of bounds of the number of contained views,
      * returns {@code null}.
      */
     public View getReorderedChildAt(int index) {
-        if (index < 0 || index >= mFlexboxHelper.mReorderedIndices.length) {
+        if (index < 0 || index >= mState.getItemCount()) {
             return null;
         }
-        return mRecycler.getViewForPosition(mFlexboxHelper.mReorderedIndices[index]);
+        return mRecycler.getViewForPosition(index);
     }
 
     @Override
@@ -447,38 +454,67 @@ public class FlexboxLayoutManager extends RecyclerView.LayoutManager implements 
         ensureOrientationHelper();
         ensureLayoutState();
         mFlexboxHelper.ensureMeasureSpecCache(childCount);
+        mFlexboxHelper.ensureIndexToFlexLine(childCount);
 
         mLayoutState.mShouldRecycle = false;
         mAnchorInfo.reset();
         updateAnchorInfoForLayout(state, mAnchorInfo);
 
-        // TODO: If we support the order attribute, we need to inflate the all ViewHolders in the
-        // adapter instead of inflating only the visible ViewHolders, which is inefficient given
-        // that this is part of RecyclerView
-        if (mFlexboxHelper.isOrderChangedFromLastMeasurement()) {
-            mFlexboxHelper.mReorderedIndices = mFlexboxHelper.createReorderedIndices();
-        }
+        // Unlike the FlexboxLayout, the order attribute is not supported, we don't calculated the
+        // order attribute because preparing the order attribute requires all
+        // view holders to be inflated at least once, which is inefficient if the number of items
+        // is large
 
+        resolveLayoutDirection();
+        updateLayoutStateToFillEnd(mAnchorInfo);
+
+        // Calculate the flex lines until the calculated cross size reaches the
+        // LayoutState#mAvailable (or until the end of the flex container)
         //noinspection ResourceType
         int widthMeasureSpec = View.MeasureSpec.makeMeasureSpec(getWidth(), getWidthMode());
         //noinspection ResourceType
         int heightMeasureSpec = View.MeasureSpec.makeMeasureSpec(getHeight(), getHeightMode());
         FlexboxHelper.FlexLinesResult flexLinesResult;
-        mFlexLines.clear();
-
-        // TODO: Change the code to calculate only the visible area
-        int paddingAlongCrossAxis;
         if (isMainAxisDirectionHorizontal()) {
-            flexLinesResult = mFlexboxHelper
-                    .calculateHorizontalFlexLines(widthMeasureSpec, heightMeasureSpec);
-            paddingAlongCrossAxis = getPaddingTop() + getPaddingBottom();
+            if (mFlexLines.size() > 0) {
+                // Remove the already calculated flex lines from the anchor position and
+                // calculate beyond the available amount (visible area that needs to be filled)
+                mFlexboxHelper.clearFlexLines(mFlexLines, mAnchorInfo.mPosition);
+                flexLinesResult = mFlexboxHelper
+                        .calculateHorizontalFlexLines(widthMeasureSpec, heightMeasureSpec,
+                                mLayoutState.mAvailable, mAnchorInfo.mPosition, mFlexLines);
+            } else {
+                mFlexboxHelper.ensureIndexToFlexLine(childCount);
+                flexLinesResult = mFlexboxHelper
+                        .calculateHorizontalFlexLines(widthMeasureSpec, heightMeasureSpec,
+                                mLayoutState.mAvailable);
+            }
         } else {
-            flexLinesResult = mFlexboxHelper
-                    .calculateVerticalFlexLines(widthMeasureSpec, heightMeasureSpec);
-            paddingAlongCrossAxis = getPaddingLeft() + getPaddingRight();
+            if (mFlexLines.size() > 0) {
+                // Remove the already calculated flex lines from the anchor position and
+                // calculate beyond the available amount (visible area that needs to be filled)
+                mFlexboxHelper.clearFlexLines(mFlexLines, mAnchorInfo.mPosition);
+                flexLinesResult = mFlexboxHelper
+                        .calculateVerticalFlexLines(widthMeasureSpec, heightMeasureSpec,
+                                mLayoutState.mAvailable, mAnchorInfo.mPosition, mFlexLines);
+            } else {
+                mFlexboxHelper.ensureIndexToFlexLine(childCount);
+                flexLinesResult = mFlexboxHelper
+                        .calculateVerticalFlexLines(widthMeasureSpec, heightMeasureSpec,
+                                mLayoutState.mAvailable);
+            }
         }
         mFlexLines = flexLinesResult.mFlexLines;
-        mFlexboxHelper.determineMainSize(widthMeasureSpec, heightMeasureSpec);
+        mFlexboxHelper.determineMainSize(widthMeasureSpec, heightMeasureSpec,
+                mAnchorInfo.mPosition);
+        // Unlike the FlexboxLayout not calling FlexboxHelper#determineCrossSize because
+        // the align content attribute (which is used to determine the cross size) is only effective
+        // when the size of flex line is equal or more than 2 and the parent height
+        // (length along the cross size) is fixed. But in RecyclerView, these two conditions can't
+        // be true at the same time. Because it's scrollable along the cross axis
+        // or even if not (when flex wrap is "nowrap") the size of the flex lines should be 1.
+        mFlexboxHelper.stretchViews(mAnchorInfo.mPosition);
+
         if (DEBUG) {
             for (int i = 0, size = mFlexLines.size(); i < size; i++) {
                 FlexLine flexLine = mFlexLines.get(i);
@@ -487,14 +523,8 @@ public class FlexboxLayoutManager extends RecyclerView.LayoutManager implements 
                         flexLine.getItemCount()));
             }
         }
-        mFlexboxHelper.determineCrossSize(widthMeasureSpec, heightMeasureSpec,
-                paddingAlongCrossAxis);
-        mFlexboxHelper.stretchViews();
 
         detachAndScrapAttachedViews(recycler);
-
-        resolveLayoutDirection();
-        updateLayoutStateToFillEnd(mAnchorInfo);
         int filledToEnd = fill(recycler, state, mLayoutState);
         if (DEBUG) {
             Log.d(TAG, String.format("filled: %d toward end", filledToEnd));
@@ -1104,10 +1134,10 @@ public class FlexboxLayoutManager extends RecyclerView.LayoutManager implements 
     }
 
     /**
-     * @param delta the delta for the amount that is being scrolled
-     *              (either horizontally or vertically)
+     * @param delta    the delta for the amount that is being scrolled
+     *                 (either horizontally or vertically)
      * @param recycler the Recycler instance
-     * @param state the Recycler.State instance
+     * @param state    the Recycler.State instance
      * @return the amount actually scrolled
      */
     private int handleScrolling(int delta, RecyclerView.Recycler recycler,
@@ -1134,37 +1164,59 @@ public class FlexboxLayoutManager extends RecyclerView.LayoutManager implements 
     }
 
     private void updateLayoutState(@LayoutDirection int layoutDirection, int absDelta) {
+        assert mFlexboxHelper.mIndexToFlexLine != null;
         // TODO: Consider updating LayoutState#mExtra to support better smooth scrolling
         mLayoutState.mLayoutDirection = layoutDirection;
         if (layoutDirection == LayoutDirection.END) {
             View lastVisible = getChildAt(getChildCount() - 1);
             mLayoutState.mItemDirection = ItemDirection.TAIL;
             mLayoutState.mPosition = getPosition(lastVisible) + mLayoutState.mItemDirection;
-            mLayoutState.mFlexLinePosition =
-                    mFlexboxHelper.mIndexToFlexLine
-                            .get(mLayoutState.mPosition, 0);
-
+            if (mFlexboxHelper.mIndexToFlexLine.length <= mLayoutState.mPosition) {
+                mLayoutState.mFlexLinePosition = NO_POSITION;
+            } else {
+                mLayoutState.mFlexLinePosition
+                        = mFlexboxHelper.mIndexToFlexLine[mLayoutState.mPosition];
+            }
             mLayoutState.mOffset = mOrientationHelper.getDecoratedEnd(lastVisible);
             mLayoutState.mScrollingOffset = mOrientationHelper.getDecoratedEnd(lastVisible)
                     - mOrientationHelper.getEndAfterPadding();
+
+            // If the RecyclerView tries to scroll beyond the already calculated
+            // flex container, need to calculate until the amount that needs to be filled
+            if ((mLayoutState.mFlexLinePosition == NO_POSITION
+                    || mLayoutState.mFlexLinePosition > mFlexLines.size() - 1) &&
+                    mLayoutState.mPosition <= getFlexItemCount()) {
+                //noinspection ResourceType
+                int widthMeasureSpec = View.MeasureSpec.makeMeasureSpec(getWidth(), getWidthMode());
+                //noinspection ResourceType
+                int heightMeasureSpec = View.MeasureSpec
+                        .makeMeasureSpec(getHeight(), getHeightMode());
+                int needsToFill = absDelta - mLayoutState.mScrollingOffset;
+                if (needsToFill > 0) {
+                    mFlexboxHelper.calculateHorizontalFlexLines(
+                            widthMeasureSpec, heightMeasureSpec, needsToFill,
+                            mLayoutState.mPosition, mFlexLines);
+                }
+            }
         } else {
             View firstVisible = getChildAt(0);
             mLayoutState.mItemDirection = ItemDirection.TAIL;
             int position = getPosition(firstVisible);
-            FlexLine currentLine = mFlexLines.get(mFlexboxHelper.mIndexToFlexLine.get(position, 0));
+            int flexLinePosition = mFlexboxHelper.mIndexToFlexLine[position];
+            if (flexLinePosition == NO_POSITION) {
+                flexLinePosition = 0;
+            }
+            FlexLine currentLine = mFlexLines.get(flexLinePosition);
             // The position of the next item toward start should be on the next flex line,
             // shifting the position by the number of the items in the current line.
             mLayoutState.mPosition = position - currentLine.getItemCount();
-            mLayoutState.mFlexLinePosition =
-                    mFlexboxHelper.mIndexToFlexLine
-                            .get(mLayoutState.mPosition, 0);
+            mLayoutState.mFlexLinePosition = flexLinePosition;
 
             mLayoutState.mOffset = mOrientationHelper.getDecoratedStart(firstVisible);
             mLayoutState.mScrollingOffset = -mOrientationHelper.getDecoratedStart(firstVisible)
                     + mOrientationHelper.getStartAfterPadding();
         }
-        mLayoutState.mAvailable = absDelta;
-        mLayoutState.mAvailable -= mLayoutState.mScrollingOffset;
+        mLayoutState.mAvailable = absDelta - mLayoutState.mScrollingOffset;
     }
 
     /**
@@ -1210,11 +1262,6 @@ public class FlexboxLayoutManager extends RecyclerView.LayoutManager implements 
      * is serialized/de-serialized as an {@link Parcelable}.
      */
     public static class LayoutParams extends RecyclerView.LayoutParams implements FlexItem {
-
-        /**
-         * @see FlexItem#getOrder()
-         */
-        private int mOrder = FlexItem.ORDER_DEFAULT;
 
         /**
          * @see FlexItem#getFlexGrow()
@@ -1415,7 +1462,6 @@ public class FlexboxLayoutManager extends RecyclerView.LayoutManager implements 
         public LayoutParams(LayoutParams source) {
             super(source);
 
-            mOrder = source.mOrder;
             mFlexGrow = source.mFlexGrow;
             mFlexShrink = source.mFlexShrink;
             mAlignSelf = source.mAlignSelf;
@@ -1429,12 +1475,14 @@ public class FlexboxLayoutManager extends RecyclerView.LayoutManager implements 
 
         @Override
         public int getOrder() {
-            return mOrder;
+            return FlexItem.ORDER_DEFAULT;
         }
 
         @Override
         public void setOrder(int order) {
-            mOrder = order;
+            Log.w(TAG, "Setting the order in the "
+                    + "FlexboxLayoutManager is not supported(ignored). Use FlexboxLayout "
+                    + "if you need to reorder using the attribute.");
         }
 
         @Override
@@ -1444,7 +1492,6 @@ public class FlexboxLayoutManager extends RecyclerView.LayoutManager implements 
 
         @Override
         public void writeToParcel(Parcel dest, int flags) {
-            dest.writeInt(this.mOrder);
             dest.writeFloat(this.mFlexGrow);
             dest.writeFloat(this.mFlexShrink);
             dest.writeInt(this.mAlignSelf);
@@ -1464,7 +1511,6 @@ public class FlexboxLayoutManager extends RecyclerView.LayoutManager implements 
 
         protected LayoutParams(Parcel in) {
             super(WRAP_CONTENT, WRAP_CONTENT);
-            this.mOrder = in.readInt();
             this.mFlexGrow = in.readFloat();
             this.mFlexShrink = in.readFloat();
             this.mAlignSelf = in.readInt();
@@ -1541,8 +1587,34 @@ public class FlexboxLayoutManager extends RecyclerView.LayoutManager implements 
             } else {
                 mCoordinate = mOrientationHelper.getDecoratedStart(view);
             }
-            mPosition = getPosition(view);
-            mFlexLinePosition = mFlexboxHelper.mIndexToFlexLine.get(mPosition, 0);
+            int position = getPosition(view);
+            // It's likely that the view is the first item in a flex line, but if not get the
+            // index of the first item in the same line because the calculation of the flex lines
+            // expects that it starts from the first item in a flex line
+            mPosition = getFirstItemIndexInLine(position);
+            assert mFlexboxHelper.mIndexToFlexLine != null;
+            int flexLinePosition = mFlexboxHelper.mIndexToFlexLine[mPosition];
+            mFlexLinePosition = flexLinePosition != NO_POSITION ? flexLinePosition : 0;
+        }
+
+        /**
+         * @param index the index in which the flex is determined
+         * @return the index of the flex item that is the first item in the same line
+         */
+        private int getFirstItemIndexInLine(int index) {
+            assert mFlexboxHelper.mIndexToFlexLine != null;
+            int flexLinePosition = mFlexboxHelper.mIndexToFlexLine[index];
+            if (index == 0 || mFlexboxHelper.mIndexToFlexLine[index - 1] != flexLinePosition) {
+                return index;
+            }
+            for (int i = index - 1; i > 0; i--) {
+                int first = mFlexboxHelper.mIndexToFlexLine[i];
+                int second = mFlexboxHelper.mIndexToFlexLine[i - 1];
+                if (first != second) {
+                    return first;
+                }
+            }
+            return 0;
         }
 
         @Override
