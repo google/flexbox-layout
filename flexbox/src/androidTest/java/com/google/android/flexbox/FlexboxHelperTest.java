@@ -95,6 +95,16 @@ public class FlexboxHelperTest {
         assertEquals(0, mFlexboxHelper.mIndexToFlexLine[1]);
         assertEquals(1, mFlexboxHelper.mIndexToFlexLine[2]);
         assertEquals(2, mFlexboxHelper.mIndexToFlexLine[3]);
+
+        FlexLine firstLine = result.mFlexLines.get(0);
+        assertEquals(0, firstLine.mFirstIndex);
+        assertEquals(1, firstLine.mLastIndex);
+        FlexLine secondLine = result.mFlexLines.get(1);
+        assertEquals(2, secondLine.mFirstIndex);
+        assertEquals(2, secondLine.mLastIndex);
+        FlexLine thirdLine = result.mFlexLines.get(2);
+        assertEquals(3, thirdLine.mFirstIndex);
+        assertEquals(3, thirdLine.mLastIndex);
     }
 
     @Test
@@ -138,6 +148,16 @@ public class FlexboxHelperTest {
         assertEquals(0, mFlexboxHelper.mIndexToFlexLine[1]);
         assertEquals(1, mFlexboxHelper.mIndexToFlexLine[2]);
         assertEquals(2, mFlexboxHelper.mIndexToFlexLine[3]);
+
+        FlexLine firstLine = result.mFlexLines.get(0);
+        assertEquals(0, firstLine.mFirstIndex);
+        assertEquals(1, firstLine.mLastIndex);
+        FlexLine secondLine = result.mFlexLines.get(1);
+        assertEquals(2, secondLine.mFirstIndex);
+        assertEquals(2, secondLine.mLastIndex);
+        FlexLine thirdLine = result.mFlexLines.get(2);
+        assertEquals(3, thirdLine.mFirstIndex);
+        assertEquals(3, thirdLine.mLastIndex);
     }
 
     @Test
