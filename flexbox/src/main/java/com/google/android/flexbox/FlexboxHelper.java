@@ -833,6 +833,7 @@ class FlexboxHelper {
         // direction to enclose its content (in the measureHorizontal method), but
         // the width will be expanded in this method. In that case, the height needs to be measured
         // again with the expanded width.
+        int largestCrossSize = 0;
         if (!calledRecursively) {
             flexLine.mCrossSize = Integer.MIN_VALUE;
         }
@@ -893,6 +894,8 @@ class FlexboxHelper {
                     int childWidthMeasureSpec = View.MeasureSpec.makeMeasureSpec(newWidth,
                             View.MeasureSpec.EXACTLY);
                     child.measure(childWidthMeasureSpec, childHeightMeasureSpec);
+                    largestCrossSize = Math.max(largestCrossSize, child.getMeasuredHeight()
+                            + flexItem.getMarginTop() + flexItem.getMarginBottom());
                     if (mMeasureSpecCache != null) {
                         mMeasureSpecCache[childIndex] = makeCombinedMeasureSpec(
                                 childWidthMeasureSpec,
@@ -901,7 +904,6 @@ class FlexboxHelper {
                 }
                 flexLine.mMainSize += child.getMeasuredWidth() + flexItem.getMarginLeft()
                         + flexItem.getMarginRight();
-                flexLine.mCrossSize = Math.max(flexLine.mCrossSize, child.getMeasuredHeight());
             } else {
                 // The direction of the main axis is vertical
                 if (!mChildrenFrozen[childIndex] && flexItem.getFlexGrow() > 0f) {
@@ -949,6 +951,8 @@ class FlexboxHelper {
                     int childHeightMeasureSpec = View.MeasureSpec.makeMeasureSpec(newHeight,
                             View.MeasureSpec.EXACTLY);
                     child.measure(childWidthMeasureSpec, childHeightMeasureSpec);
+                    largestCrossSize = Math.max(largestCrossSize, child.getMeasuredWidth()
+                            + flexItem.getMarginLeft() + flexItem.getMarginRight());
                     if (mMeasureSpecCache != null) {
                         mMeasureSpecCache[childIndex] = makeCombinedMeasureSpec(
                                 childWidthMeasureSpec,
@@ -957,8 +961,8 @@ class FlexboxHelper {
                 }
                 flexLine.mMainSize += child.getMeasuredHeight() + flexItem.getMarginTop()
                         + flexItem.getMarginBottom();
-                flexLine.mCrossSize = Math.max(flexLine.mCrossSize, child.getMeasuredWidth());
             }
+            flexLine.mCrossSize = Math.max(flexLine.mCrossSize, largestCrossSize);
             childIndex++;
         }
 
@@ -1011,6 +1015,7 @@ class FlexboxHelper {
         // direction to enclose its content (in the measureHorizontal method), but
         // the width will be expanded in this method. In that case, the height needs to be measured
         // again with the expanded width.
+        int largestCrossSize = 0;
         if (!calledRecursively) {
             flexLine.mCrossSize = Integer.MIN_VALUE;
         }
@@ -1069,6 +1074,8 @@ class FlexboxHelper {
                     int childWidthMeasureSpec =
                             View.MeasureSpec.makeMeasureSpec(newWidth, View.MeasureSpec.EXACTLY);
                     child.measure(childWidthMeasureSpec, childHeightMeasureSpec);
+                    largestCrossSize = Math.max(largestCrossSize, child.getMeasuredHeight() +
+                            flexItem.getMarginTop() + flexItem.getMarginBottom());
                     if (mMeasureSpecCache != null) {
                         mMeasureSpecCache[childIndex] = makeCombinedMeasureSpec(
                                 childWidthMeasureSpec,
@@ -1077,7 +1084,6 @@ class FlexboxHelper {
                 }
                 flexLine.mMainSize += child.getMeasuredWidth() + flexItem.getMarginLeft()
                         + flexItem.getMarginRight();
-                flexLine.mCrossSize = Math.max(flexLine.mCrossSize, child.getMeasuredHeight());
             } else {
                 // The direction of main axis is vertical
                 if (!mChildrenFrozen[childIndex] && flexItem.getFlexShrink() > 0f) {
@@ -1120,6 +1126,8 @@ class FlexboxHelper {
                     int childHeightMeasureSpec =
                             View.MeasureSpec.makeMeasureSpec(newHeight, View.MeasureSpec.EXACTLY);
                     child.measure(childWidthMeasureSpec, childHeightMeasureSpec);
+                    largestCrossSize = Math.max(largestCrossSize, child.getMeasuredWidth() +
+                            flexItem.getMarginLeft() + flexItem.getMarginRight());
                     if (mMeasureSpecCache != null) {
                         mMeasureSpecCache[childIndex] = makeCombinedMeasureSpec(
                                 childWidthMeasureSpec,
@@ -1128,8 +1136,8 @@ class FlexboxHelper {
                 }
                 flexLine.mMainSize += child.getMeasuredHeight() + flexItem.getMarginTop()
                         + flexItem.getMarginBottom();
-                flexLine.mCrossSize = Math.max(flexLine.mCrossSize, child.getMeasuredWidth());
             }
+            flexLine.mCrossSize = Math.max(flexLine.mCrossSize, largestCrossSize);
             childIndex++;
         }
 
