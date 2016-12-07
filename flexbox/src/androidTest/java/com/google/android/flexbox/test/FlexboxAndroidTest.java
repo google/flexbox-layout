@@ -3835,6 +3835,130 @@ public class FlexboxAndroidTest {
                 isEqualAllowingError(TestUtil.dpToPixel(activity, 50)));
     }
 
+    @Test
+    @FlakyTest
+    public void testChildBottomMarginIncluded_flexContainerWrapContent_directionRow_flexGrow()
+            throws Throwable {
+        // This test is to verify the case where:
+        //   - layout_height is set to wrap_content for the FlexboxLayout
+        //   - Bottom (or top) margin is set to a child
+        //   - The child which the has the bottom (top) margin has the largest height in the
+        //     same flex line (or only a single child exists)
+        //   - The child has a positive layout_flexGrow attribute set
+        //  If these conditions were met, the height of the FlexboxLayout didn't take the bottom
+        //  margin on the child into account
+        //  See https://github.com/google/flexbox-layout/issues/154
+        final FlexboxTestActivity activity = mActivityRule.getActivity();
+        mActivityRule.runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                activity.setContentView(
+                        R.layout.activity_wrap_content_child_bottom_margin_row_grow);
+            }
+        });
+        InstrumentationRegistry.getInstrumentation().waitForIdleSync();
+
+        FlexboxLayout flexboxLayout = (FlexboxLayout) activity.findViewById(R.id.flexbox_layout);
+
+        // layout_height for text1: 24dp, layout_marginBottom: 12dp
+        assertThat(flexboxLayout.getHeight(),
+                isEqualAllowingError(TestUtil.dpToPixel(activity, 36)));
+    }
+
+    @Test
+    @FlakyTest
+    public void testChildEndMarginIncluded_flexContainerWrapContent_directionColumn_flexGrow()
+            throws Throwable {
+        // This test is to verify the case where:
+        //   - layout_width is set to wrap_content for the FlexboxLayout
+        //   - End (or start) margin is set to a child
+        //   - The child which the has the end (start) margin has the largest width in the
+        //     same flex line (or only a single child exists)
+        //   - The child has a positive layout_flexGrow attribute set
+        //  If these conditions were met, the width of the FlexboxLayout didn't take the bottom
+        //  margin on the child into account
+        //  See https://github.com/google/flexbox-layout/issues/154
+        final FlexboxTestActivity activity = mActivityRule.getActivity();
+        mActivityRule.runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                activity.setContentView(
+                        R.layout.activity_wrap_content_child_bottom_margin_column_grow);
+            }
+        });
+        InstrumentationRegistry.getInstrumentation().waitForIdleSync();
+
+        FlexboxLayout flexboxLayout = (FlexboxLayout) activity.findViewById(R.id.flexbox_layout);
+
+        // layout_width for text1: 24dp, layout_marginEnd: 12dp
+        assertThat(flexboxLayout.getWidth(),
+                isEqualAllowingError(TestUtil.dpToPixel(activity, 36)));
+    }
+
+    @Test
+    @FlakyTest
+    public void testChildBottomMarginIncluded_flexContainerWrapContent_directionRow_flexShrink()
+            throws Throwable {
+        // This test is to verify the case where:
+        //   - layout_height is set to wrap_content for the FlexboxLayout
+        //   - flex_wrap is set to nowrap for the FlexboxLayout
+        //   - Bottom (or top) margin is set to a child
+        //   - The child which the has the bottom (top) margin has the largest height in the
+        //     same flex line
+        //   - The child has a positive layout_flexShrink attribute set
+        //   - The sum of children width overflows parent's width (shrink will happen)
+        //  If these conditions were met, the height of the FlexboxLayout didn't take the bottom
+        //  margin on the child into account
+        //  See https://github.com/google/flexbox-layout/issues/154
+        final FlexboxTestActivity activity = mActivityRule.getActivity();
+        mActivityRule.runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                activity.setContentView(
+                        R.layout.activity_wrap_content_child_bottom_margin_row_shrink);
+            }
+        });
+        InstrumentationRegistry.getInstrumentation().waitForIdleSync();
+
+        FlexboxLayout flexboxLayout = (FlexboxLayout) activity.findViewById(R.id.flexbox_layout);
+
+        // layout_height for text1: 24dp, layout_marginBottom: 12dp
+        assertThat(flexboxLayout.getHeight(),
+                isEqualAllowingError(TestUtil.dpToPixel(activity, 36)));
+    }
+
+    @Test
+    @FlakyTest
+    public void testChildBottomMarginIncluded_flexContainerWrapContent_directionColumn_flexShrink()
+            throws Throwable {
+        // This test is to verify the case where:
+        //   - layout_width is set to wrap_content for the FlexboxLayout
+        //   - flex_wrap is set to nowrap for the FlexboxLayout
+        //   - End (or start) margin is set to a child
+        //   - The child which the has the end (start) margin has the largest width in the
+        //     same flex line
+        //   - The child has a positive layout_flexShrink attribute set
+        //   - The sum of children height overflows parent's height (shrink will happen)
+        //  If these conditions were met, the height of the FlexboxLayout didn't take the bottom
+        //  margin on the child into account
+        //  See https://github.com/google/flexbox-layout/issues/154
+        final FlexboxTestActivity activity = mActivityRule.getActivity();
+        mActivityRule.runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                activity.setContentView(
+                        R.layout.activity_wrap_content_child_bottom_margin_column_shrink);
+            }
+        });
+        InstrumentationRegistry.getInstrumentation().waitForIdleSync();
+
+        FlexboxLayout flexboxLayout = (FlexboxLayout) activity.findViewById(R.id.flexbox_layout);
+
+        // layout_width for text1: 24dp, layout_marginEnd: 12dp
+        assertThat(flexboxLayout.getWidth(),
+                isEqualAllowingError(TestUtil.dpToPixel(activity, 36)));
+    }
+
     private TextView createTextView(Context context, String text, int order) {
         TextView textView = new TextView(context);
         textView.setText(text);
