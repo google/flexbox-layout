@@ -85,6 +85,10 @@ public class FlexLine {
      */
     List<Integer> mIndicesAlignSelfStretch = new ArrayList<>();
 
+    int mFirstIndex;
+
+    int mLastIndex;
+
     /**
      * @return the distance in pixels from the top edge of this view's parent
      * to the top edge of this FlexLine.
