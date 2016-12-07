@@ -47,6 +47,7 @@ import static com.google.android.flexbox.test.IsEqualAllowingError.isEqualAllowi
 import static org.hamcrest.Matchers.instanceOf;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.notNullValue;
+import static org.hamcrest.core.IsNot.not;
 import static org.junit.Assert.assertThat;
 
 /**
@@ -1244,6 +1245,181 @@ public class FlexboxLayoutManagerTest {
                 isEqualAllowingError(TestUtil.dpToPixel(activity, 50)));
     }
 
+    @Test
+    @FlakyTest
+    public void testLargeItem_scrollFast_direction_row() throws Throwable {
+        final FlexboxTestActivity activity = mActivityRule.getActivity();
+        final FlexboxLayoutManager layoutManager = new FlexboxLayoutManager();
+        final TestAdapter adapter = new TestAdapter();
+        mActivityRule.runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                activity.setContentView(R.layout.recyclerview);
+                RecyclerView recyclerView = (RecyclerView) activity.findViewById(R.id.recyclerview);
+                recyclerView.setLayoutManager(layoutManager);
+                recyclerView.setAdapter(adapter);
+                for (int i = 0; i < 200; i++) {
+                    FlexboxLayoutManager.LayoutParams lp = createLayoutParams(activity, 100, 50);
+                    adapter.addItem(lp);
+                }
+                // RecyclerView width: 320, height: 240.
+            }
+        });
+        InstrumentationRegistry.getInstrumentation().waitForIdleSync();
+
+        assertThat(layoutManager.getFlexDirection(), is(FlexDirection.ROW));
+        assertThat(layoutManager.getFlexItemCount(), is(200));
+        // Only the visible items
+        assertThat(layoutManager.getChildCount(), is(not(200)));
+        onView(withId(R.id.recyclerview)).perform(swipe(GeneralLocation.BOTTOM_CENTER,
+                GeneralLocation.TOP_CENTER));
+        onView(withId(R.id.recyclerview)).perform(swipe(GeneralLocation.BOTTOM_CENTER,
+                GeneralLocation.TOP_CENTER));
+        onView(withId(R.id.recyclerview)).perform(swipe(GeneralLocation.BOTTOM_CENTER,
+                GeneralLocation.TOP_CENTER));
+        onView(withId(R.id.recyclerview)).perform(swipe(GeneralLocation.BOTTOM_CENTER,
+                GeneralLocation.TOP_CENTER));
+        onView(withId(R.id.recyclerview)).perform(swipe(GeneralLocation.BOTTOM_CENTER,
+                GeneralLocation.TOP_CENTER));
+        onView(withId(R.id.recyclerview)).perform(swipe(GeneralLocation.BOTTOM_CENTER,
+                GeneralLocation.TOP_CENTER));
+        onView(withId(R.id.recyclerview)).perform(swipe(GeneralLocation.BOTTOM_CENTER,
+                GeneralLocation.TOP_CENTER));
+        onView(withId(R.id.recyclerview)).perform(swipe(GeneralLocation.BOTTOM_CENTER,
+                GeneralLocation.TOP_CENTER));
+        onView(withId(R.id.recyclerview)).perform(swipe(GeneralLocation.BOTTOM_CENTER,
+                GeneralLocation.TOP_CENTER));
+        onView(withId(R.id.recyclerview)).perform(swipe(GeneralLocation.BOTTOM_CENTER,
+                GeneralLocation.TOP_CENTER));
+        onView(withId(R.id.recyclerview)).perform(swipe(GeneralLocation.BOTTOM_CENTER,
+                GeneralLocation.TOP_CENTER));
+        onView(withId(R.id.recyclerview)).perform(swipe(GeneralLocation.BOTTOM_CENTER,
+                GeneralLocation.TOP_CENTER));
+        // Should be scrolled to the bottom by now
+        assertThat(layoutManager.getFlexItemCount(), is(200));
+        // Only the visible items
+        assertThat(layoutManager.getChildCount(), is(not(200)));
+
+        onView(withId(R.id.recyclerview)).perform(swipe(GeneralLocation.TOP_CENTER,
+                GeneralLocation.BOTTOM_CENTER));
+        onView(withId(R.id.recyclerview)).perform(swipe(GeneralLocation.TOP_CENTER,
+                GeneralLocation.BOTTOM_CENTER));
+        onView(withId(R.id.recyclerview)).perform(swipe(GeneralLocation.TOP_CENTER,
+                GeneralLocation.BOTTOM_CENTER));
+        onView(withId(R.id.recyclerview)).perform(swipe(GeneralLocation.TOP_CENTER,
+                GeneralLocation.BOTTOM_CENTER));
+        onView(withId(R.id.recyclerview)).perform(swipe(GeneralLocation.TOP_CENTER,
+                GeneralLocation.BOTTOM_CENTER));
+        onView(withId(R.id.recyclerview)).perform(swipe(GeneralLocation.TOP_CENTER,
+                GeneralLocation.BOTTOM_CENTER));
+        onView(withId(R.id.recyclerview)).perform(swipe(GeneralLocation.TOP_CENTER,
+                GeneralLocation.BOTTOM_CENTER));
+        onView(withId(R.id.recyclerview)).perform(swipe(GeneralLocation.TOP_CENTER,
+                GeneralLocation.BOTTOM_CENTER));
+        onView(withId(R.id.recyclerview)).perform(swipe(GeneralLocation.TOP_CENTER,
+                GeneralLocation.BOTTOM_CENTER));
+        onView(withId(R.id.recyclerview)).perform(swipe(GeneralLocation.TOP_CENTER,
+                GeneralLocation.BOTTOM_CENTER));
+        onView(withId(R.id.recyclerview)).perform(swipe(GeneralLocation.TOP_CENTER,
+                GeneralLocation.BOTTOM_CENTER));
+        onView(withId(R.id.recyclerview)).perform(swipe(GeneralLocation.TOP_CENTER,
+                GeneralLocation.BOTTOM_CENTER));
+        // Should be scrolled to the top
+        assertThat(layoutManager.getFlexItemCount(), is(200));
+        // Only the visible items
+        assertThat(layoutManager.getChildCount(), is(not(200)));
+    }
+
+    @Test
+    @FlakyTest
+    public void testLargeItem_scrollFast_direction_column() throws Throwable {
+        final FlexboxTestActivity activity = mActivityRule.getActivity();
+        final FlexboxLayoutManager layoutManager = new FlexboxLayoutManager();
+        final TestAdapter adapter = new TestAdapter();
+        mActivityRule.runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                activity.setContentView(R.layout.recyclerview);
+                RecyclerView recyclerView = (RecyclerView) activity.findViewById(R.id.recyclerview);
+                layoutManager.setFlexDirection(FlexDirection.COLUMN);
+                recyclerView.setLayoutManager(layoutManager);
+                recyclerView.setAdapter(adapter);
+                for (int i = 0; i < 200; i++) {
+                    FlexboxLayoutManager.LayoutParams lp = createLayoutParams(activity, 70, 80);
+                    adapter.addItem(lp);
+                }
+                // RecyclerView width: 320, height: 240.
+            }
+        });
+        InstrumentationRegistry.getInstrumentation().waitForIdleSync();
+
+        assertThat(layoutManager.getFlexDirection(), is(FlexDirection.COLUMN));
+        assertThat(layoutManager.getFlexItemCount(), is(200));
+        // Only the visible items
+        assertThat(layoutManager.getChildCount(), is(not(200)));
+        onView(withId(R.id.recyclerview)).perform(swipe(GeneralLocation.CENTER_RIGHT,
+                GeneralLocation.CENTER_LEFT));
+        onView(withId(R.id.recyclerview)).perform(swipe(GeneralLocation.CENTER_RIGHT,
+                GeneralLocation.CENTER_LEFT));
+        onView(withId(R.id.recyclerview)).perform(swipe(GeneralLocation.CENTER_RIGHT,
+                GeneralLocation.CENTER_LEFT));
+        onView(withId(R.id.recyclerview)).perform(swipe(GeneralLocation.CENTER_RIGHT,
+                GeneralLocation.CENTER_LEFT));
+        onView(withId(R.id.recyclerview)).perform(swipe(GeneralLocation.CENTER_RIGHT,
+                GeneralLocation.CENTER_LEFT));
+        onView(withId(R.id.recyclerview)).perform(swipe(GeneralLocation.CENTER_RIGHT,
+                GeneralLocation.CENTER_LEFT));
+        onView(withId(R.id.recyclerview)).perform(swipe(GeneralLocation.CENTER_RIGHT,
+                GeneralLocation.CENTER_LEFT));
+        onView(withId(R.id.recyclerview)).perform(swipe(GeneralLocation.CENTER_RIGHT,
+                GeneralLocation.CENTER_LEFT));
+        onView(withId(R.id.recyclerview)).perform(swipe(GeneralLocation.CENTER_RIGHT,
+                GeneralLocation.CENTER_LEFT));
+        onView(withId(R.id.recyclerview)).perform(swipe(GeneralLocation.CENTER_RIGHT,
+                GeneralLocation.CENTER_LEFT));
+        onView(withId(R.id.recyclerview)).perform(swipe(GeneralLocation.CENTER_RIGHT,
+                GeneralLocation.CENTER_LEFT));
+        onView(withId(R.id.recyclerview)).perform(swipe(GeneralLocation.CENTER_RIGHT,
+                GeneralLocation.CENTER_LEFT));
+        onView(withId(R.id.recyclerview)).perform(swipe(GeneralLocation.CENTER_RIGHT,
+                GeneralLocation.CENTER_LEFT));
+
+        // Should be scrolled to the right edge by now
+        assertThat(layoutManager.getFlexItemCount(), is(200));
+        // Only the visible items
+        assertThat(layoutManager.getChildCount(), is(not(200)));
+
+        onView(withId(R.id.recyclerview)).perform(swipe(GeneralLocation.CENTER_LEFT,
+                GeneralLocation.CENTER_RIGHT));
+        onView(withId(R.id.recyclerview)).perform(swipe(GeneralLocation.CENTER_LEFT,
+                GeneralLocation.CENTER_RIGHT));
+        onView(withId(R.id.recyclerview)).perform(swipe(GeneralLocation.CENTER_LEFT,
+                GeneralLocation.CENTER_RIGHT));
+        onView(withId(R.id.recyclerview)).perform(swipe(GeneralLocation.CENTER_LEFT,
+                GeneralLocation.CENTER_RIGHT));
+        onView(withId(R.id.recyclerview)).perform(swipe(GeneralLocation.CENTER_LEFT,
+                GeneralLocation.CENTER_RIGHT));
+        onView(withId(R.id.recyclerview)).perform(swipe(GeneralLocation.CENTER_LEFT,
+                GeneralLocation.CENTER_RIGHT));
+        onView(withId(R.id.recyclerview)).perform(swipe(GeneralLocation.CENTER_LEFT,
+                GeneralLocation.CENTER_RIGHT));
+        onView(withId(R.id.recyclerview)).perform(swipe(GeneralLocation.CENTER_LEFT,
+                GeneralLocation.CENTER_RIGHT));
+        onView(withId(R.id.recyclerview)).perform(swipe(GeneralLocation.CENTER_LEFT,
+                GeneralLocation.CENTER_RIGHT));
+        onView(withId(R.id.recyclerview)).perform(swipe(GeneralLocation.CENTER_LEFT,
+                GeneralLocation.CENTER_RIGHT));
+        onView(withId(R.id.recyclerview)).perform(swipe(GeneralLocation.CENTER_LEFT,
+                GeneralLocation.CENTER_RIGHT));
+        onView(withId(R.id.recyclerview)).perform(swipe(GeneralLocation.CENTER_LEFT,
+                GeneralLocation.CENTER_RIGHT));
+        onView(withId(R.id.recyclerview)).perform(swipe(GeneralLocation.CENTER_LEFT,
+                GeneralLocation.CENTER_RIGHT));
+        // Should be scrolled to the left edge by now
+        assertThat(layoutManager.getFlexItemCount(), is(200));
+        // Only the visible items
+        assertThat(layoutManager.getChildCount(), is(not(200)));
+    }
 
     /**
      * Creates a new flex item.
