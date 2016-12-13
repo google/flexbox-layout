@@ -716,63 +716,94 @@ public class FlexboxLayoutManager extends RecyclerView.LayoutManager implements 
             return;
         }
         if (layoutState.mLayoutDirection == LayoutDirection.START) {
-            recycleViewsFromEnd(recycler, layoutState);
+            // TODO: Consider the case mFlexWrap is set to nowrap and view is recycled individually
+            recycleFlexLinesFromEnd(recycler, layoutState);
         } else {
-            recycleViewsFromStart(recycler, layoutState);
+            recycleFlexLinesFromStart(recycler, layoutState);
         }
     }
 
-    private void recycleViewsFromEnd(RecyclerView.Recycler recycler, LayoutState layoutState) {
-        final int childCount = getChildCount();
+    private void recycleFlexLinesFromStart(RecyclerView.Recycler recycler,
+            LayoutState layoutState) {
         if (layoutState.mScrollingOffset < 0) {
             return;
         }
-        int limit = mOrientationHelper.getEnd() - layoutState.mScrollingOffset;
-
-        // TODO: Consider the case scrolling happens along the main axis. (mFlexWrap == NOWRAP)
-        for (int i = childCount - 1; i >= 0; i--) {
-            View child = getChildAt(i);
-            if (mOrientationHelper.getDecoratedStart(child) < limit) {
-                recycleChildren(recycler, childCount - 1, i);
-                return;
-            }
-        }
-    }
-
-    private void recycleViewsFromStart(RecyclerView.Recycler recycler, LayoutState layoutState) {
-        if (layoutState.mScrollingOffset < 0) {
-            return;
-        }
+        assert mFlexboxHelper.mIndexToFlexLine != null;
         int childCount = getChildCount();
 
-        // TODO: Consider the case scrolling happens along the main axis. (mFlexWrap == NOWRAP)
+        View firstView = getChildAt(0);
+
+        int currentLineIndex = mFlexboxHelper.mIndexToFlexLine[getPosition(firstView)];
+        FlexLine flexLine = mFlexLines.get(currentLineIndex);
+        int recycleTo = -1;
         for (int i = 0; i < childCount; i++) {
-            View child = getChildAt(i);
-            if (mOrientationHelper.getDecoratedEnd(child) > layoutState.mScrollingOffset) {
-                recycleChildren(recycler, 0, i);
-                return;
+            View view = getChildAt(i);
+            if (mOrientationHelper.getDecoratedEnd(view) <= layoutState.mScrollingOffset) {
+                if (flexLine.mLastIndex == getPosition(view)) {
+                    // Recycle the views in a flex line if all views end positions are lower than
+                    // the scrolling offset because the views are laid out as a flex line unit.
+                    // We need to also recycle the views as an unit of a flex line
+                    recycleTo = i;
+                    if (currentLineIndex >= mFlexLines.size() - 1) {
+                        // Reached to the last line
+                        break;
+                    } else {
+                        currentLineIndex += layoutState.mLayoutDirection;
+                        flexLine = mFlexLines.get(currentLineIndex);
+                    }
+                }
+            } else {
+                break;
             }
         }
+        recycleChildren(recycler, 0, recycleTo);
+    }
+
+    private void recycleFlexLinesFromEnd(RecyclerView.Recycler recycler, LayoutState layoutState) {
+        if (layoutState.mScrollingOffset < 0) {
+            return;
+        }
+        assert mFlexboxHelper.mIndexToFlexLine != null;
+        int limit = mOrientationHelper.getEnd() - layoutState.mScrollingOffset;
+        int childCount = getChildCount();
+
+        View lastView = getChildAt(childCount - 1);
+        int currentLineIndex = mFlexboxHelper.mIndexToFlexLine[getPosition(lastView)];
+        int recycleTo = childCount - 1;
+        int recycleFrom = childCount;
+        FlexLine flexLine = mFlexLines.get(currentLineIndex);
+        for (int i = childCount - 1; i >= 0; i--) {
+            View view = getChildAt(i);
+            if (mOrientationHelper.getDecoratedStart(view) >= limit) {
+                if (flexLine.mFirstIndex == getPosition(view)) {
+                    // Recycle the views in a flex line if all views start positions are beyond the
+                    // limit because the views are laid out as a flex line unit. We need to also
+                    // recycle the views as an unit of a flex line
+                    recycleFrom = i;
+                    if (currentLineIndex <= 0) {
+                        // Reached to the first flex line
+                        break;
+                    } else {
+                        currentLineIndex += layoutState.mLayoutDirection;
+                        flexLine = mFlexLines.get(currentLineIndex);
+                    }
+                }
+            } else {
+                break;
+            }
+        }
+        recycleChildren(recycler, recycleFrom, recycleTo);
     }
 
     /**
      * Recycles children between given indices.
      *
      * @param startIndex inclusive
-     * @param endIndex   exclusive
+     * @param endIndex   inclusive
      */
     private void recycleChildren(RecyclerView.Recycler recycler, int startIndex, int endIndex) {
-        if (startIndex == endIndex) {
-            return;
-        }
-        if (endIndex > startIndex) {
-            for (int i = endIndex - 1; i >= startIndex; i--) {
-                removeAndRecycleViewAt(i, recycler);
-            }
-        } else {
-            for (int i = startIndex; i > endIndex; i--) {
-                removeAndRecycleViewAt(i, recycler);
-            }
+        for (int i = endIndex; i >= startIndex; i--) {
+            removeAndRecycleViewAt(i, recycler);
         }
     }
 
