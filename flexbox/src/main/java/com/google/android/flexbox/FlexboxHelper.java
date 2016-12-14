@@ -18,6 +18,7 @@ package com.google.android.flexbox;
 
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.annotation.VisibleForTesting;
 import android.support.v4.view.MarginLayoutParamsCompat;
 import android.support.v4.view.ViewCompat;
 import android.util.SparseIntArray;
@@ -76,6 +77,15 @@ class FlexboxHelper {
      */
     @Nullable
     long[] mMeasureSpecCache;
+
+    /**
+     * Cache a flex item's measured width and height. The first 32 bit represents the height, the last
+     * 32 bit represents the width of each flex item.
+     * E.g. an entry is created like
+     * {@code (long) view.getMeasuredHeight() << 32 | view.getMeasuredWidth()}
+     */
+    @Nullable
+    private long[] mMeasuredSizeCache;
 
     FlexboxHelper(FlexContainer flexContainer) {
         mFlexContainer = flexContainer;
@@ -313,11 +323,7 @@ class FlexboxHelper {
                                     + flexItem.getMarginTop()
                                     + flexItem.getMarginBottom(), flexItem.getHeight());
             child.measure(childWidthMeasureSpec, childHeightMeasureSpec);
-            if (mMeasureSpecCache != null) {
-                mMeasureSpecCache[i] = makeCombinedMeasureSpec(
-                        childWidthMeasureSpec,
-                        childHeightMeasureSpec);
-            }
+            updateMeasureCache(i, childWidthMeasureSpec, childHeightMeasureSpec, child);
 
             // Check the size constraint after the first measurement for the child
             // To prevent the child's width/height violate the size constraints imposed by the
@@ -522,11 +528,7 @@ class FlexboxHelper {
                                     + flexItem.getMarginTop() + flexItem.getMarginBottom(),
                             childHeight);
             child.measure(childWidthMeasureSpec, childHeightMeasureSpec);
-            if (mMeasureSpecCache != null) {
-                mMeasureSpecCache[i] = makeCombinedMeasureSpec(
-                        childWidthMeasureSpec,
-                        childHeightMeasureSpec);
-            }
+            updateMeasureCache(i, childWidthMeasureSpec, childHeightMeasureSpec, child);
 
             // Check the size constraint after the first measurement for the child
             // To prevent the child's width/height violate the size constraints imposed by the
@@ -673,9 +675,7 @@ class FlexboxHelper {
             int heightSpec = View.MeasureSpec
                     .makeMeasureSpec(childHeight, View.MeasureSpec.EXACTLY);
             view.measure(widthSpec, heightSpec);
-            if (mMeasureSpecCache != null) {
-                mMeasureSpecCache[index] = makeCombinedMeasureSpec(widthSpec, heightSpec);
-            }
+            updateMeasureCache(index, widthSpec, heightSpec, view);
         }
     }
 
@@ -812,14 +812,13 @@ class FlexboxHelper {
                 if (!mChildrenFrozen[childIndex] && flexItem.getFlexGrow() > 0f) {
 
                     int childMeasuredWidth = child.getMeasuredWidth();
-                    if (mMeasureSpecCache != null) {
-                        // Retrieve the measured width from the measure spec cache because there
+                    if (mMeasuredSizeCache != null) {
+                        // Retrieve the measured width from the cache because there
                         // are some cases that the view is re-created from the last measure, thus
                         // View#getMeasuredWidth returns 0.
                         // E.g. if the flex container is FlexboxLayoutManager, the case happens
                         // frequently
-                        int childWidthSpec = extractWidthMeasureSpec(mMeasureSpecCache[childIndex]);
-                        childMeasuredWidth = View.MeasureSpec.getSize(childWidthSpec);
+                        childMeasuredWidth = extractLowerInt(mMeasuredSizeCache[childIndex]);
                     }
                     float rawCalculatedWidth = childMeasuredWidth
                             + unitSpace * flexItem.getFlexGrow();
@@ -855,11 +854,8 @@ class FlexboxHelper {
                     child.measure(childWidthMeasureSpec, childHeightMeasureSpec);
                     largestCrossSize = Math.max(largestCrossSize, child.getMeasuredHeight()
                             + flexItem.getMarginTop() + flexItem.getMarginBottom());
-                    if (mMeasureSpecCache != null) {
-                        mMeasureSpecCache[childIndex] = makeCombinedMeasureSpec(
-                                childWidthMeasureSpec,
-                                childHeightMeasureSpec);
-                    }
+                    updateMeasureCache(childIndex, childWidthMeasureSpec, childHeightMeasureSpec,
+                            child);
                 }
                 flexLine.mMainSize += child.getMeasuredWidth() + flexItem.getMarginLeft()
                         + flexItem.getMarginRight();
@@ -867,15 +863,14 @@ class FlexboxHelper {
                 // The direction of the main axis is vertical
                 if (!mChildrenFrozen[childIndex] && flexItem.getFlexGrow() > 0f) {
                     int childMeasuredHeight = child.getMeasuredHeight();
-                    if (mMeasureSpecCache != null) {
-                        // Retrieve the measured height from the measure spec cache because there
+                    if (mMeasuredSizeCache != null) {
+                        // Retrieve the measured height from the cache because there
                         // are some cases that the view is re-created from the last measure, thus
                         // View#getMeasuredHeight returns 0.
                         // E.g. if the flex container is FlexboxLayoutManager, that case happens
                         // frequently
-                        int childHeightSpec =
-                                extractHeightMeasureSpec(mMeasureSpecCache[childIndex]);
-                        childMeasuredHeight = View.MeasureSpec.getSize(childHeightSpec);
+                        childMeasuredHeight =
+                                extractHigherInt(mMeasuredSizeCache[childIndex]);
                     }
                     float rawCalculatedHeight = childMeasuredHeight
                             + unitSpace * flexItem.getFlexGrow();
@@ -912,11 +907,8 @@ class FlexboxHelper {
                     child.measure(childWidthMeasureSpec, childHeightMeasureSpec);
                     largestCrossSize = Math.max(largestCrossSize, child.getMeasuredWidth()
                             + flexItem.getMarginLeft() + flexItem.getMarginRight());
-                    if (mMeasureSpecCache != null) {
-                        mMeasureSpecCache[childIndex] = makeCombinedMeasureSpec(
-                                childWidthMeasureSpec,
-                                childHeightMeasureSpec);
-                    }
+                    updateMeasureCache(childIndex, childWidthMeasureSpec, childHeightMeasureSpec,
+                            child);
                 }
                 flexLine.mMainSize += child.getMeasuredHeight() + flexItem.getMarginTop()
                         + flexItem.getMarginBottom();
@@ -992,14 +984,13 @@ class FlexboxHelper {
                 // The direction of main axis is horizontal
                 if (!mChildrenFrozen[childIndex] && flexItem.getFlexShrink() > 0f) {
                     int childMeasuredWidth = child.getMeasuredWidth();
-                    if (mMeasureSpecCache != null) {
-                        // Retrieve the measured width from the measure spec cache because there
+                    if (mMeasuredSizeCache != null) {
+                        // Retrieve the measured width from the cache because there
                         // are some cases that the view is re-created from the last measure, thus
                         // View#getMeasuredWidth returns 0.
-                        // E.g. if the flex container is FlexboxLayoutManager, that case happens
+                        // E.g. if the flex container is FlexboxLayoutManager, the case happens
                         // frequently
-                        int childWidthSpec = extractWidthMeasureSpec(mMeasureSpecCache[childIndex]);
-                        childMeasuredWidth = View.MeasureSpec.getSize(childWidthSpec);
+                        childMeasuredWidth = extractLowerInt(mMeasuredSizeCache[childIndex]);
                     }
                     float rawCalculatedWidth = childMeasuredWidth
                             - unitShrink * flexItem.getFlexShrink();
@@ -1035,11 +1026,8 @@ class FlexboxHelper {
                     child.measure(childWidthMeasureSpec, childHeightMeasureSpec);
                     largestCrossSize = Math.max(largestCrossSize, child.getMeasuredHeight() +
                             flexItem.getMarginTop() + flexItem.getMarginBottom());
-                    if (mMeasureSpecCache != null) {
-                        mMeasureSpecCache[childIndex] = makeCombinedMeasureSpec(
-                                childWidthMeasureSpec,
-                                childHeightMeasureSpec);
-                    }
+                    updateMeasureCache(childIndex, childWidthMeasureSpec, childHeightMeasureSpec,
+                            child);
                 }
                 flexLine.mMainSize += child.getMeasuredWidth() + flexItem.getMarginLeft()
                         + flexItem.getMarginRight();
@@ -1047,15 +1035,13 @@ class FlexboxHelper {
                 // The direction of main axis is vertical
                 if (!mChildrenFrozen[childIndex] && flexItem.getFlexShrink() > 0f) {
                     int childMeasuredHeight = child.getMeasuredHeight();
-                    if (mMeasureSpecCache != null) {
-                        // Retrieve the measured height from the measure spec cache because there
+                    if (mMeasuredSizeCache != null) {
+                        // Retrieve the measured height from the cache because there
                         // are some cases that the view is re-created from the last measure, thus
                         // View#getMeasuredHeight returns 0.
-                        // E.g. if the flex container is FlexboxLayoutManager, the case happens
+                        // E.g. if the flex container is FlexboxLayoutManager, that case happens
                         // frequently
-                        int childHeightSpec =
-                                extractHeightMeasureSpec(mMeasureSpecCache[childIndex]);
-                        childMeasuredHeight = View.MeasureSpec.getSize(childHeightSpec);
+                        childMeasuredHeight = extractHigherInt(mMeasuredSizeCache[childIndex]);
                     }
                     float rawCalculatedHeight = childMeasuredHeight
                             - unitShrink * flexItem.getFlexShrink();
@@ -1087,11 +1073,8 @@ class FlexboxHelper {
                     child.measure(childWidthMeasureSpec, childHeightMeasureSpec);
                     largestCrossSize = Math.max(largestCrossSize, child.getMeasuredWidth() +
                             flexItem.getMarginLeft() + flexItem.getMarginRight());
-                    if (mMeasureSpecCache != null) {
-                        mMeasureSpecCache[childIndex] = makeCombinedMeasureSpec(
-                                childWidthMeasureSpec,
-                                childHeightMeasureSpec);
-                    }
+                    updateMeasureCache(childIndex, childWidthMeasureSpec, childHeightMeasureSpec,
+                            child);
                 }
                 flexLine.mMainSize += child.getMeasuredHeight() + flexItem.getMarginTop()
                         + flexItem.getMarginBottom();
@@ -1328,11 +1311,11 @@ class FlexboxHelper {
                     switch (flexDirection) {
                         case FlexDirection.ROW: // Intentional fall through
                         case FlexDirection.ROW_REVERSE:
-                            stretchViewVertically(view, flexLine.mCrossSize);
+                            stretchViewVertically(view, flexLine.mCrossSize, viewIndex);
                             break;
                         case FlexDirection.COLUMN:
                         case FlexDirection.COLUMN_REVERSE:
-                            stretchViewHorizontally(view, flexLine.mCrossSize);
+                            stretchViewHorizontally(view, flexLine.mCrossSize, viewIndex);
                             break;
                         default:
                             throw new IllegalArgumentException(
@@ -1347,11 +1330,11 @@ class FlexboxHelper {
                     switch (flexDirection) {
                         case FlexDirection.ROW: // Intentional fall through
                         case FlexDirection.ROW_REVERSE:
-                            stretchViewVertically(view, flexLine.mCrossSize);
+                            stretchViewVertically(view, flexLine.mCrossSize, index);
                             break;
                         case FlexDirection.COLUMN:
                         case FlexDirection.COLUMN_REVERSE:
-                            stretchViewHorizontally(view, flexLine.mCrossSize);
+                            stretchViewHorizontally(view, flexLine.mCrossSize, index);
                             break;
                         default:
                             throw new IllegalArgumentException(
@@ -1367,15 +1350,32 @@ class FlexboxHelper {
      *
      * @param view      the View to be stretched
      * @param crossSize the cross size
+     * @param index     the index of the view
      */
-    private void stretchViewVertically(View view, int crossSize) {
-        // TODO: For FlexboxLayoutManager, retrieve the measured width from the cache
-        FlexboxLayout.LayoutParams lp = (FlexboxLayout.LayoutParams) view.getLayoutParams();
-        int newHeight = crossSize - lp.topMargin - lp.bottomMargin;
-        newHeight = Math.max(newHeight, 0);
-        view.measure(View.MeasureSpec
-                        .makeMeasureSpec(view.getMeasuredWidth(), View.MeasureSpec.EXACTLY),
-                View.MeasureSpec.makeMeasureSpec(newHeight, View.MeasureSpec.EXACTLY));
+    private void stretchViewVertically(View view, int crossSize, int index) {
+        FlexItem flexItem = (FlexItem) view.getLayoutParams();
+        int newHeight = crossSize - flexItem.getMarginTop() - flexItem.getMarginBottom();
+        newHeight = Math.max(newHeight, flexItem.getMinHeight());
+        newHeight = Math.min(newHeight, flexItem.getMaxHeight());
+        int childWidthSpec;
+        int measuredWidth;
+        if (mMeasuredSizeCache != null) {
+            // Retrieve the measured height from the cache because there
+            // are some cases that the view is re-created from the last measure, thus
+            // View#getMeasuredHeight returns 0.
+            // E.g. if the flex container is FlexboxLayoutManager, that case happens
+            // frequently
+            measuredWidth = extractLowerInt(mMeasuredSizeCache[index]);
+        } else {
+            measuredWidth = view.getMeasuredWidth();
+        }
+        childWidthSpec = View.MeasureSpec.makeMeasureSpec(measuredWidth,
+                View.MeasureSpec.EXACTLY);
+
+        int childHeightSpec = View.MeasureSpec.makeMeasureSpec(newHeight, View.MeasureSpec.EXACTLY);
+        view.measure(childWidthSpec, childHeightSpec);
+
+        updateMeasureCache(index, childWidthSpec, childHeightSpec, view);
     }
 
     /**
@@ -1383,16 +1383,30 @@ class FlexboxHelper {
      *
      * @param view      the View to be stretched
      * @param crossSize the cross size
+     * @param index     the index of the view
      */
-    private void stretchViewHorizontally(View view, int crossSize) {
-        // TODO: For FlexboxLayoutManager, retrieve the measured height from the cache
-        FlexboxLayout.LayoutParams lp = (FlexboxLayout.LayoutParams) view.getLayoutParams();
-        int newWidth = crossSize - lp.leftMargin - lp.rightMargin;
-        newWidth = Math.max(newWidth, 0);
-        view.measure(View.MeasureSpec
-                        .makeMeasureSpec(newWidth, View.MeasureSpec.EXACTLY),
-                View.MeasureSpec
-                        .makeMeasureSpec(view.getMeasuredHeight(), View.MeasureSpec.EXACTLY));
+    private void stretchViewHorizontally(View view, int crossSize, int index) {
+        FlexItem flexItem = (FlexItem) view.getLayoutParams();
+        int newWidth = crossSize - flexItem.getMarginLeft() - flexItem.getMarginRight();
+        newWidth = Math.max(newWidth, flexItem.getMinWidth());
+        newWidth = Math.min(newWidth, flexItem.getMaxWidth());
+        int childHeightSpec;
+        int measuredHeight;
+        if (mMeasuredSizeCache != null) {
+            // Retrieve the measured height from the cache because there
+            // are some cases that the view is re-created from the last measure, thus
+            // View#getMeasuredHeight returns 0.
+            // E.g. if the flex container is FlexboxLayoutManager, that case happens
+            // frequently
+            measuredHeight = extractHigherInt(mMeasuredSizeCache[index]);
+        } else {
+            measuredHeight = view.getMeasuredHeight();
+        }
+        childHeightSpec = View.MeasureSpec.makeMeasureSpec(measuredHeight,
+                View.MeasureSpec.EXACTLY);
+        int childWidthSpec = View.MeasureSpec.makeMeasureSpec(newWidth, View.MeasureSpec.EXACTLY);
+        view.measure(childWidthSpec, childHeightSpec);
+        updateMeasureCache(index, childWidthSpec, childHeightSpec, view);
     }
 
     /**
@@ -1554,6 +1568,16 @@ class FlexboxHelper {
         }
     }
 
+    void ensureMeasuredSizeCache(int size) {
+        if (mMeasuredSizeCache == null) {
+            mMeasuredSizeCache = new long[size < INITIAL_CAPACITY ? INITIAL_CAPACITY : size];
+        } else if (mMeasuredSizeCache.length < size) {
+            int newCapacity = mMeasuredSizeCache.length * 2;
+            newCapacity = newCapacity >= size ? newCapacity : size;
+            mMeasuredSizeCache = Arrays.copyOf(mMeasuredSizeCache, newCapacity);
+        }
+    }
+
     void ensureMeasureSpecCache(int size) {
         if (mMeasureSpecCache == null) {
             mMeasureSpecCache = new long[size < INITIAL_CAPACITY ? INITIAL_CAPACITY : size];
@@ -1567,18 +1591,18 @@ class FlexboxHelper {
     /**
      * @param measureSpec the long value that consists of width and height measure specs
      * @return the width measure spec from the combined long value
-     * @see #makeCombinedMeasureSpec(int, int)
+     * @see #makeCombinedLong(int, int)
      */
-    int extractWidthMeasureSpec(long measureSpec) {
-        return (int) (measureSpec & MEASURE_SPEC_WIDTH_MASK);
+    int extractLowerInt(long measureSpec) {
+        return (int) measureSpec;
     }
 
     /**
      * @param measureSpec the long value that consists of width and height measure specs
      * @return the height measure spec from the combined long value
-     * @see #makeCombinedMeasureSpec(int, int)
+     * @see #makeCombinedLong(int, int)
      */
-    int extractHeightMeasureSpec(long measureSpec) {
+    int extractHigherInt(long measureSpec) {
         return (int) (measureSpec >> 32);
     }
 
@@ -1590,11 +1614,27 @@ class FlexboxHelper {
      * @param widthMeasureSpec  the width measure spec to consist the result long value
      * @param heightMeasureSpec the height measure spec to consist the result long value
      * @return the combined long value
-     * @see #extractWidthMeasureSpec(long)
-     * @see #extractHeightMeasureSpec(long)
+     * @see #extractLowerInt(long)
+     * @see #extractHigherInt(long)
      */
-    private long makeCombinedMeasureSpec(int widthMeasureSpec, int heightMeasureSpec) {
-        return (long) heightMeasureSpec << 32 | widthMeasureSpec;
+    @VisibleForTesting
+    long makeCombinedLong(int widthMeasureSpec, int heightMeasureSpec) {
+        // Suppress sign extension for the low bytes
+        return (long) heightMeasureSpec << 32 | (long) widthMeasureSpec & MEASURE_SPEC_WIDTH_MASK;
+    }
+
+    private void updateMeasureCache(int index, int widthMeasureSpec, int heightMeasureSpec,
+            View view) {
+        if (mMeasureSpecCache != null) {
+            mMeasureSpecCache[index] = makeCombinedLong(
+                    widthMeasureSpec,
+                    heightMeasureSpec);
+        }
+        if (mMeasuredSizeCache != null) {
+            mMeasuredSizeCache[index] = makeCombinedLong(
+                    view.getMeasuredWidth(),
+                    view.getMeasuredHeight());
+        }
     }
 
     void ensureIndexToFlexLine(int size) {
