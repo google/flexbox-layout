@@ -454,6 +454,7 @@ public class FlexboxLayoutManager extends RecyclerView.LayoutManager implements 
         ensureOrientationHelper();
         ensureLayoutState();
         mFlexboxHelper.ensureMeasureSpecCache(childCount);
+        mFlexboxHelper.ensureMeasuredSizeCache(childCount);
         mFlexboxHelper.ensureIndexToFlexLine(childCount);
 
         mLayoutState.mShouldRecycle = false;
@@ -884,8 +885,8 @@ public class FlexboxLayoutManager extends RecyclerView.LayoutManager implements 
             // retrieved from Recycler, in that case measured width/height are set to 0 even
             // each visible child should be measured at least once in the FlexboxHelper
             long measureSpec = mFlexboxHelper.mMeasureSpecCache[i];
-            int widthSpec = mFlexboxHelper.extractWidthMeasureSpec(measureSpec);
-            int heightSpec = mFlexboxHelper.extractHeightMeasureSpec(measureSpec);
+            int widthSpec = mFlexboxHelper.extractLowerInt(measureSpec);
+            int heightSpec = mFlexboxHelper.extractHigherInt(measureSpec);
             LayoutParams lp = (LayoutParams) view.getLayoutParams();
             if (shouldMeasureChild(view, widthSpec, heightSpec, lp)) {
                 // TODO: Need to consider decorator length
@@ -1007,8 +1008,8 @@ public class FlexboxLayoutManager extends RecyclerView.LayoutManager implements 
             // retrieved from Recycler, in that case measured width/height are set to 0 even
             // each visible child should be measured at least once in the FlexboxHelper
             long measureSpec = mFlexboxHelper.mMeasureSpecCache[i];
-            int widthSpec = mFlexboxHelper.extractWidthMeasureSpec(measureSpec);
-            int heightSpec = mFlexboxHelper.extractHeightMeasureSpec(measureSpec);
+            int widthSpec = mFlexboxHelper.extractLowerInt(measureSpec);
+            int heightSpec = mFlexboxHelper.extractHigherInt(measureSpec);
             LayoutParams lp = (LayoutParams) view.getLayoutParams();
             if (shouldMeasureChild(view, widthSpec, heightSpec, lp)) {
                 // TODO: Need to consider decorator length
