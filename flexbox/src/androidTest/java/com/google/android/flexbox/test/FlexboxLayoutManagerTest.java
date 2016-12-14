@@ -18,6 +18,7 @@ package com.google.android.flexbox.test;
 
 import com.google.android.flexbox.AlignContent;
 import com.google.android.flexbox.AlignItems;
+import com.google.android.flexbox.AlignSelf;
 import com.google.android.flexbox.FlexDirection;
 import com.google.android.flexbox.FlexWrap;
 import com.google.android.flexbox.FlexboxLayoutManager;
@@ -1419,6 +1420,164 @@ public class FlexboxLayoutManagerTest {
         assertThat(layoutManager.getFlexItemCount(), is(200));
         // Only the visible items
         assertThat(layoutManager.getChildCount(), is(not(200)));
+    }
+
+    @Test
+    @FlakyTest
+    public void testAlignItems_stretch_direction_row() throws Throwable {
+        final FlexboxTestActivity activity = mActivityRule.getActivity();
+        final FlexboxLayoutManager layoutManager = new FlexboxLayoutManager();
+        final TestAdapter adapter = new TestAdapter();
+        mActivityRule.runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                activity.setContentView(R.layout.recyclerview);
+                RecyclerView recyclerView = (RecyclerView) activity.findViewById(R.id.recyclerview);
+                layoutManager.setFlexDirection(FlexDirection.ROW);
+                layoutManager.setAlignItems(AlignItems.STRETCH);
+                recyclerView.setLayoutManager(layoutManager);
+                recyclerView.setAdapter(adapter);
+                FlexboxLayoutManager.LayoutParams lp1 = createLayoutParams(activity, 70, 80);
+                adapter.addItem(lp1);
+                FlexboxLayoutManager.LayoutParams lp2 = createLayoutParams(activity, 70, 50);
+                adapter.addItem(lp2);
+                FlexboxLayoutManager.LayoutParams lp3 = createLayoutParams(activity, 70, 30);
+                adapter.addItem(lp3);
+                // RecyclerView width: 320, height: 240.
+            }
+        });
+        InstrumentationRegistry.getInstrumentation().waitForIdleSync();
+
+        assertThat(layoutManager.getFlexDirection(), is(FlexDirection.ROW));
+        assertThat(layoutManager.getAlignItems(), is(AlignItems.STRETCH));
+        assertThat(layoutManager.getFlexItemCount(), is(3));
+        assertThat(layoutManager.getFlexLines().size(), is(1));
+        // Verify all items heights are stretched
+        assertThat(layoutManager.getChildAt(0).getHeight(),
+                isEqualAllowingError(TestUtil.dpToPixel(activity, 80)));
+        assertThat(layoutManager.getChildAt(1).getHeight(),
+                isEqualAllowingError(TestUtil.dpToPixel(activity, 80)));
+        assertThat(layoutManager.getChildAt(2).getHeight(),
+                isEqualAllowingError(TestUtil.dpToPixel(activity, 80)));
+    }
+
+    @Test
+    @FlakyTest
+    public void testAlignItems_stretch_direction_column() throws Throwable {
+        final FlexboxTestActivity activity = mActivityRule.getActivity();
+        final FlexboxLayoutManager layoutManager = new FlexboxLayoutManager();
+        final TestAdapter adapter = new TestAdapter();
+        mActivityRule.runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                activity.setContentView(R.layout.recyclerview);
+                RecyclerView recyclerView = (RecyclerView) activity.findViewById(R.id.recyclerview);
+                layoutManager.setFlexDirection(FlexDirection.COLUMN);
+                layoutManager.setAlignItems(AlignItems.STRETCH);
+                recyclerView.setLayoutManager(layoutManager);
+                recyclerView.setAdapter(adapter);
+                FlexboxLayoutManager.LayoutParams lp1 = createLayoutParams(activity, 80, 70);
+                adapter.addItem(lp1);
+                FlexboxLayoutManager.LayoutParams lp2 = createLayoutParams(activity, 50, 70);
+                adapter.addItem(lp2);
+                FlexboxLayoutManager.LayoutParams lp3 = createLayoutParams(activity, 30, 70);
+                adapter.addItem(lp3);
+                // RecyclerView width: 320, height: 240.
+            }
+        });
+        InstrumentationRegistry.getInstrumentation().waitForIdleSync();
+
+        assertThat(layoutManager.getFlexDirection(), is(FlexDirection.COLUMN));
+        assertThat(layoutManager.getAlignItems(), is(AlignItems.STRETCH));
+        assertThat(layoutManager.getFlexItemCount(), is(3));
+        assertThat(layoutManager.getFlexLines().size(), is(1));
+        // Verify all items widths are stretched
+        assertThat(layoutManager.getChildAt(0).getWidth(),
+                isEqualAllowingError(TestUtil.dpToPixel(activity, 80)));
+        assertThat(layoutManager.getChildAt(1).getWidth(),
+                isEqualAllowingError(TestUtil.dpToPixel(activity, 80)));
+        assertThat(layoutManager.getChildAt(2).getWidth(),
+                isEqualAllowingError(TestUtil.dpToPixel(activity, 80)));
+    }
+
+    @Test
+    @FlakyTest
+    public void testAlignSelf_stretch_direction_row() throws Throwable {
+        final FlexboxTestActivity activity = mActivityRule.getActivity();
+        final FlexboxLayoutManager layoutManager = new FlexboxLayoutManager();
+        final TestAdapter adapter = new TestAdapter();
+        mActivityRule.runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                activity.setContentView(R.layout.recyclerview);
+                RecyclerView recyclerView = (RecyclerView) activity.findViewById(R.id.recyclerview);
+                layoutManager.setFlexDirection(FlexDirection.ROW);
+                layoutManager.setAlignItems(AlignItems.FLEX_START);
+                recyclerView.setLayoutManager(layoutManager);
+                recyclerView.setAdapter(adapter);
+                FlexboxLayoutManager.LayoutParams lp1 = createLayoutParams(activity, 70, 80);
+                adapter.addItem(lp1);
+                FlexboxLayoutManager.LayoutParams lp2 = createLayoutParams(activity, 70, 50);
+                adapter.addItem(lp2);
+                FlexboxLayoutManager.LayoutParams lp3 = createLayoutParams(activity, 70, 30);
+                lp3.setAlignSelf(AlignSelf.STRETCH);
+                adapter.addItem(lp3);
+                // RecyclerView width: 320, height: 240.
+            }
+        });
+        InstrumentationRegistry.getInstrumentation().waitForIdleSync();
+
+        assertThat(layoutManager.getFlexDirection(), is(FlexDirection.ROW));
+        assertThat(layoutManager.getAlignItems(), is(AlignItems.FLEX_START));
+        assertThat(layoutManager.getFlexItemCount(), is(3));
+        assertThat(layoutManager.getFlexLines().size(), is(1));
+        // Verify the item whose align self is set to stretch is stretched
+        assertThat(layoutManager.getChildAt(0).getHeight(),
+                isEqualAllowingError(TestUtil.dpToPixel(activity, 80)));
+        assertThat(layoutManager.getChildAt(1).getHeight(),
+                isEqualAllowingError(TestUtil.dpToPixel(activity, 50)));
+        assertThat(layoutManager.getChildAt(2).getHeight(),
+                isEqualAllowingError(TestUtil.dpToPixel(activity, 80)));
+    }
+
+    @Test
+    @FlakyTest
+    public void testAlignSelf_stretch_direction_column() throws Throwable {
+        final FlexboxTestActivity activity = mActivityRule.getActivity();
+        final FlexboxLayoutManager layoutManager = new FlexboxLayoutManager();
+        final TestAdapter adapter = new TestAdapter();
+        mActivityRule.runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                activity.setContentView(R.layout.recyclerview);
+                RecyclerView recyclerView = (RecyclerView) activity.findViewById(R.id.recyclerview);
+                layoutManager.setFlexDirection(FlexDirection.COLUMN);
+                layoutManager.setAlignItems(AlignItems.FLEX_START);
+                recyclerView.setLayoutManager(layoutManager);
+                recyclerView.setAdapter(adapter);
+                FlexboxLayoutManager.LayoutParams lp1 = createLayoutParams(activity, 80, 70);
+                adapter.addItem(lp1);
+                FlexboxLayoutManager.LayoutParams lp2 = createLayoutParams(activity, 50, 70);
+                adapter.addItem(lp2);
+                FlexboxLayoutManager.LayoutParams lp3 = createLayoutParams(activity, 30, 70);
+                lp3.setAlignSelf(AlignSelf.STRETCH);
+                adapter.addItem(lp3);
+                // RecyclerView width: 320, height: 240.
+            }
+        });
+        InstrumentationRegistry.getInstrumentation().waitForIdleSync();
+
+        assertThat(layoutManager.getFlexDirection(), is(FlexDirection.COLUMN));
+        assertThat(layoutManager.getAlignItems(), is(AlignItems.FLEX_START));
+        assertThat(layoutManager.getFlexItemCount(), is(3));
+        assertThat(layoutManager.getFlexLines().size(), is(1));
+        // Verify the item whose align self is set to stretch is stretched
+        assertThat(layoutManager.getChildAt(0).getWidth(),
+                isEqualAllowingError(TestUtil.dpToPixel(activity, 80)));
+        assertThat(layoutManager.getChildAt(1).getWidth(),
+                isEqualAllowingError(TestUtil.dpToPixel(activity, 50)));
+        assertThat(layoutManager.getChildAt(2).getWidth(),
+                isEqualAllowingError(TestUtil.dpToPixel(activity, 80)));
     }
 
     /**
