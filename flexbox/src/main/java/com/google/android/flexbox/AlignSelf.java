@@ -37,4 +37,19 @@ public @interface AlignSelf {
      * the {@link AlignItems} attribute from its parent.
      */
     int AUTO = -1;
+
+    /** This item's edge is placed on the cross start line. */
+    int FLEX_START = AlignItems.FLEX_START;
+
+    /** This item's edge is placed on the cross end line. */
+    int FLEX_END = AlignItems.FLEX_END;
+
+    /** This item's edge is centered along the cross axis. */
+    int CENTER = AlignItems.CENTER;
+
+    /** This items is aligned based on their text's baselines. */
+    int BASELINE = AlignItems.BASELINE;
+
+    /** This item is stretched to fill the flex line's cross size. */
+    int STRETCH = AlignItems.STRETCH;
 }
