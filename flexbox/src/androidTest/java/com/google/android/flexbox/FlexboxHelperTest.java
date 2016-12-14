@@ -411,4 +411,25 @@ public class FlexboxHelperTest {
         assertThat(view3.getMeasuredWidth(), isEqualAllowingError(333));
         assertThat(view4.getMeasuredWidth(), isEqualAllowingError(333));
     }
+
+    @Test
+    public void testMakeCombinedLong() {
+        int higher = -1;
+        int lower = 10;
+        long combined = mFlexboxHelper.makeCombinedLong(lower, higher);
+        assertThat(mFlexboxHelper.extractHigherInt(combined), is(higher));
+        assertThat(mFlexboxHelper.extractLowerInt(combined), is(lower));
+
+        higher = Integer.MAX_VALUE;
+        lower = Integer.MIN_VALUE;
+        combined = mFlexboxHelper.makeCombinedLong(lower, higher);
+        assertThat(mFlexboxHelper.extractHigherInt(combined), is(higher));
+        assertThat(mFlexboxHelper.extractLowerInt(combined), is(lower));
+
+        higher = View.MeasureSpec.makeMeasureSpec(500, View.MeasureSpec.EXACTLY);
+        lower = View.MeasureSpec.makeMeasureSpec(300, View.MeasureSpec.UNSPECIFIED);
+        combined = mFlexboxHelper.makeCombinedLong(lower, higher);
+        assertThat(mFlexboxHelper.extractHigherInt(combined), is(higher));
+        assertThat(mFlexboxHelper.extractLowerInt(combined), is(lower));
+    }
 }
