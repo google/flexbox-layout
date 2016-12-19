@@ -297,6 +297,7 @@ public class FlexboxAndroidTest {
         List<FlexLine> flexLines = flexboxLayout.getFlexLines();
         assertThat(flexLines.size(), is(2));
         FlexLine flexLine1 = flexLines.get(0);
+        FlexboxTestActivity activity = mActivityRule.getActivity();
         assertThat(flexLine1.getLeft(), is(TestUtil.dpToPixel(activity, 0)));
         assertThat(flexLine1.getTop(), is(TestUtil.dpToPixel(activity, 0)));
         assertThat(flexLine1.getRight(), is(TestUtil.dpToPixel(activity, 320)));
@@ -333,6 +334,7 @@ public class FlexboxAndroidTest {
         List<FlexLine> flexLines = flexboxLayout.getFlexLines();
         assertThat(flexLines.size(), is(1));
         FlexLine flexLine = flexLines.get(0);
+        FlexboxTestActivity activity = mActivityRule.getActivity();
         assertThat(flexLine.getLeft(), is(TestUtil.dpToPixel(activity, 0)));
         assertThat(flexLine.getTop(), is(TestUtil.dpToPixel(activity, 0)));
         assertThat(flexLine.getRight(), is(TestUtil.dpToPixel(activity, 480)));
