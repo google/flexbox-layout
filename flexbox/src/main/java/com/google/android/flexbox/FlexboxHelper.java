@@ -344,6 +344,7 @@ class FlexboxHelper {
                     flexItem, i, indexInFlexLine)) {
                 if (flexLine.getItemCountNotGone() > 0) {
                     addFlexLine(flexLines, flexLine,  i > 0 ? i - 1 : 0);
+                    sumCrossSize += flexLine.mCrossSize;
                 }
 
                 flexLine = new FlexLine();
@@ -551,6 +552,7 @@ class FlexboxHelper {
                     i, indexInFlexLine)) {
                 if (flexLine.getItemCountNotGone() > 0) {
                     addFlexLine(flexLines, flexLine, i > 0 ? i - 1 : 0);
+                    sumCrossSize += flexLine.mCrossSize;
                 }
 
                 flexLine = new FlexLine();
