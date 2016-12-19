@@ -1177,7 +1177,7 @@ public class FlexboxAndroidTest {
                 activity.setContentView(R.layout.activity_justify_content_with_gone);
                 FlexboxLayout flexboxLayout = (FlexboxLayout) activity
                         .findViewById(R.id.flexbox_layout);
-                flexboxLayout.setJustifyContent(FlexboxLayout.JUSTIFY_CONTENT_SPACE_AROUND);
+                flexboxLayout.setJustifyContent(JustifyContent.SPACE_AROUND);
             }
         });
         InstrumentationRegistry.getInstrumentation().waitForIdleSync();
@@ -1185,7 +1185,7 @@ public class FlexboxAndroidTest {
         FlexboxLayout flexboxLayout = (FlexboxLayout) activity.findViewById(R.id.flexbox_layout);
 
         assertThat(flexboxLayout.getJustifyContent(),
-                is(FlexboxLayout.JUSTIFY_CONTENT_SPACE_AROUND));
+                is(JustifyContent.SPACE_AROUND));
 
         TextView textView1 = (TextView) activity.findViewById(R.id.text1);
         TextView textView3 = (TextView) activity.findViewById(R.id.text3);
@@ -1207,7 +1207,7 @@ public class FlexboxAndroidTest {
                 activity.setContentView(R.layout.activity_justify_content_with_gone);
                 FlexboxLayout flexboxLayout = (FlexboxLayout) activity
                         .findViewById(R.id.flexbox_layout);
-                flexboxLayout.setJustifyContent(FlexboxLayout.JUSTIFY_CONTENT_SPACE_BETWEEN);
+                flexboxLayout.setJustifyContent(JustifyContent.SPACE_BETWEEN);
             }
         });
         InstrumentationRegistry.getInstrumentation().waitForIdleSync();
@@ -1215,7 +1215,7 @@ public class FlexboxAndroidTest {
         FlexboxLayout flexboxLayout = (FlexboxLayout) activity.findViewById(R.id.flexbox_layout);
 
         assertThat(flexboxLayout.getJustifyContent(),
-                is(FlexboxLayout.JUSTIFY_CONTENT_SPACE_BETWEEN));
+                is(JustifyContent.SPACE_BETWEEN));
 
         onView(withId(R.id.text1)).check(isLeftAlignedWith(withId(R.id.flexbox_layout)));
         onView(withId(R.id.text3)).check(isRightAlignedWith(withId(R.id.flexbox_layout)));
@@ -1236,8 +1236,8 @@ public class FlexboxAndroidTest {
                 activity.setContentView(R.layout.activity_justify_content_with_gone);
                 FlexboxLayout flexboxLayout = (FlexboxLayout) activity
                         .findViewById(R.id.flexbox_layout);
-                flexboxLayout.setFlexDirection(FlexboxLayout.FLEX_DIRECTION_COLUMN);
-                flexboxLayout.setJustifyContent(FlexboxLayout.JUSTIFY_CONTENT_SPACE_AROUND);
+                flexboxLayout.setFlexDirection(FlexDirection.COLUMN);
+                flexboxLayout.setJustifyContent(JustifyContent.SPACE_AROUND);
             }
         });
         InstrumentationRegistry.getInstrumentation().waitForIdleSync();
@@ -1245,9 +1245,9 @@ public class FlexboxAndroidTest {
         FlexboxLayout flexboxLayout = (FlexboxLayout) activity.findViewById(R.id.flexbox_layout);
 
         assertThat(flexboxLayout.getFlexDirection(),
-                is(FlexboxLayout.FLEX_DIRECTION_COLUMN));
+                is(FlexDirection.COLUMN));
         assertThat(flexboxLayout.getJustifyContent(),
-                is(FlexboxLayout.JUSTIFY_CONTENT_SPACE_AROUND));
+                is(JustifyContent.SPACE_AROUND));
 
         TextView textView1 = (TextView) activity.findViewById(R.id.text1);
         TextView textView3 = (TextView) activity.findViewById(R.id.text3);
@@ -1269,8 +1269,8 @@ public class FlexboxAndroidTest {
                 activity.setContentView(R.layout.activity_justify_content_with_gone);
                 FlexboxLayout flexboxLayout = (FlexboxLayout) activity
                         .findViewById(R.id.flexbox_layout);
-                flexboxLayout.setFlexDirection(FlexboxLayout.FLEX_DIRECTION_COLUMN);
-                flexboxLayout.setJustifyContent(FlexboxLayout.JUSTIFY_CONTENT_SPACE_BETWEEN);
+                flexboxLayout.setFlexDirection(FlexDirection.COLUMN);
+                flexboxLayout.setJustifyContent(JustifyContent.SPACE_BETWEEN);
             }
         });
         InstrumentationRegistry.getInstrumentation().waitForIdleSync();
@@ -1278,9 +1278,9 @@ public class FlexboxAndroidTest {
         FlexboxLayout flexboxLayout = (FlexboxLayout) activity.findViewById(R.id.flexbox_layout);
 
         assertThat(flexboxLayout.getFlexDirection(),
-                is(FlexboxLayout.FLEX_DIRECTION_COLUMN));
+                is(FlexDirection.COLUMN));
         assertThat(flexboxLayout.getJustifyContent(),
-                is(FlexboxLayout.JUSTIFY_CONTENT_SPACE_BETWEEN));
+                is(JustifyContent.SPACE_BETWEEN));
 
         onView(withId(R.id.text1)).check(isTopAlignedWith(withId(R.id.flexbox_layout)));
         onView(withId(R.id.text3)).check(isBottomAlignedWith(withId(R.id.flexbox_layout)));
