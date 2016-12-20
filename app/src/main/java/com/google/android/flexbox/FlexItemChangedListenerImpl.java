@@ -17,6 +17,7 @@
 package com.google.android.flexbox;
 
 import android.view.View;
+import android.view.ViewGroup;
 
 /**
  * Default implementation for the {@link FlexItemChangedListener}.
@@ -32,6 +33,6 @@ public class FlexItemChangedListenerImpl implements FlexItemChangedListener {
     @Override
     public void onFlexItemChanged(FlexItem flexItem, int viewIndex) {
         View view = mFlexContainer.getFlexItemAt(viewIndex);
-        view.setLayoutParams((FlexboxLayout.LayoutParams) flexItem);
+        view.setLayoutParams((ViewGroup.LayoutParams) flexItem);
     }
 }
