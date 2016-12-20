@@ -56,9 +56,9 @@ public class FlexItemAdapter extends RecyclerView.Adapter<FlexItemViewHolder> {
 
     @Override
     public void onBindViewHolder(FlexItemViewHolder holder, int position) {
-        int adapterPositino = holder.getAdapterPosition();
+        int adapterPosition = holder.getAdapterPosition();
         holder.itemView.setOnClickListener(new FlexItemClickListener(mActivity,
-                new FlexItemChangedListenerImpl(mLayoutManager), adapterPositino));
+                new FlexItemChangedListenerImpl(mLayoutManager), adapterPosition));
         holder.bindTo(mLayoutParams.get(position));
     }
 
