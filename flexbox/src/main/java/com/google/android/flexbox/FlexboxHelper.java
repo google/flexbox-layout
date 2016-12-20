@@ -733,7 +733,13 @@ class FlexboxHelper {
                 throw new IllegalArgumentException("Invalid flex direction: " + flexDirection);
         }
 
-        for (FlexLine flexLine : mFlexContainer.getFlexLinesInternal()) {
+        int flexLineIndex = 0;
+        if (mIndexToFlexLine != null) {
+            flexLineIndex = mIndexToFlexLine[fromIndex];
+        }
+        List<FlexLine> flexLines = mFlexContainer.getFlexLinesInternal();
+        for (int i = flexLineIndex, size = flexLines.size(); i < size; i++) {
+            FlexLine flexLine = flexLines.get(i);
             if (flexLine.mMainSize < mainSize) {
                 fromIndex = expandFlexItems(widthMeasureSpec, heightMeasureSpec, flexLine,
                         mainSize, paddingAlongMainAxis, fromIndex, false);
@@ -1301,10 +1307,19 @@ class FlexboxHelper {
         int flexDirection = mFlexContainer.getFlexDirection();
         if (mFlexContainer.getAlignItems() == AlignItems.STRETCH) {
             int viewIndex = fromIndex;
-            for (FlexLine flexLine : mFlexContainer.getFlexLinesInternal()) {
-                for (int i = 0, itemCount = flexLine.mItemCount; i < itemCount;
-                        i++, viewIndex++) {
+            int flexLineIndex = 0;
+            if (mIndexToFlexLine != null) {
+                flexLineIndex = mIndexToFlexLine[fromIndex];
+            }
+            List<FlexLine> flexLines = mFlexContainer.getFlexLinesInternal();
+            for (int i = flexLineIndex, size = flexLines.size(); i < size; i++) {
+                FlexLine flexLine = flexLines.get(i);
+                for (int j = 0, itemCount = flexLine.mItemCount; j < itemCount;
+                        j++, viewIndex++) {
                     View view = mFlexContainer.getReorderedFlexItemAt(viewIndex);
+                    if (view == null || view.getVisibility() == View.GONE) {
+                        continue;
+                    }
                     FlexItem flexItem = (FlexItem) view.getLayoutParams();
                     if (flexItem.getAlignSelf() != AlignSelf.AUTO &&
                             flexItem.getAlignSelf() != AlignItems.STRETCH) {
