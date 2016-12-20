@@ -19,19 +19,27 @@ package com.google.android.flexbox.recyclerview;
 import com.google.android.apps.flexbox.R;
 
 import android.support.v7.widget.RecyclerView;
+import android.view.Gravity;
 import android.view.View;
 import android.widget.TextView;
 
 /**
  * ViewHolder implementation for a flex item.
  */
-public class FlexItemViewHolder extends RecyclerView.ViewHolder {
+class FlexItemViewHolder extends RecyclerView.ViewHolder {
 
-    TextView mTextView;
+    private TextView mTextView;
 
-    public FlexItemViewHolder(View itemView) {
+    FlexItemViewHolder(View itemView) {
         super(itemView);
-
         mTextView = (TextView) itemView.findViewById(R.id.textview);
+    }
+
+    void bindTo(RecyclerView.LayoutParams layoutParams) {
+        int adapterPosition = getAdapterPosition();
+        mTextView.setText(String.valueOf(adapterPosition + 1));
+        mTextView.setBackgroundResource(R.drawable.flex_item_background);
+        mTextView.setGravity(Gravity.CENTER);
+        mTextView.setLayoutParams(layoutParams);
     }
 }
