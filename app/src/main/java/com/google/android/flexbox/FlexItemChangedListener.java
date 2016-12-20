@@ -16,8 +16,6 @@
 
 package com.google.android.flexbox;
 
-import com.google.android.flexbox.FlexItem;
-
 /**
  * A listener that listens to the change of a flex item
  */

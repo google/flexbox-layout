@@ -17,9 +17,12 @@
 package com.google.android.flexbox.recyclerview;
 
 import com.google.android.apps.flexbox.R;
+import com.google.android.flexbox.FlexItemChangedListenerImpl;
+import com.google.android.flexbox.FlexItemClickListener;
+import com.google.android.flexbox.FlexboxLayoutManager;
 
+import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.RecyclerView;
-import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -32,14 +35,16 @@ import java.util.List;
  */
 public class FlexItemAdapter extends RecyclerView.Adapter<FlexItemViewHolder> {
 
+    private AppCompatActivity mActivity;
+
+    private FlexboxLayoutManager mLayoutManager;
+
     private List<RecyclerView.LayoutParams> mLayoutParams;
 
-    public FlexItemAdapter() {
-        this(new ArrayList<RecyclerView.LayoutParams>());
-    }
-
-    public FlexItemAdapter(List<RecyclerView.LayoutParams> flexItems) {
-        mLayoutParams = flexItems;
+    public FlexItemAdapter(AppCompatActivity activity, FlexboxLayoutManager layoutManager) {
+        mActivity = activity;
+        mLayoutManager = layoutManager;
+        mLayoutParams = new ArrayList<>();
     }
 
     @Override
@@ -51,10 +56,10 @@ public class FlexItemAdapter extends RecyclerView.Adapter<FlexItemViewHolder> {
 
     @Override
     public void onBindViewHolder(FlexItemViewHolder holder, int position) {
-        holder.mTextView.setText(String.valueOf(position + 1));
-        holder.mTextView.setBackgroundResource(R.drawable.flex_item_background);
-        holder.mTextView.setGravity(Gravity.CENTER);
-        holder.mTextView.setLayoutParams(mLayoutParams.get(position));
+        int adapterPosition = holder.getAdapterPosition();
+        holder.itemView.setOnClickListener(new FlexItemClickListener(mActivity,
+                new FlexItemChangedListenerImpl(mLayoutManager), adapterPosition));
+        holder.bindTo(mLayoutParams.get(position));
     }
 
     public void addItem(RecyclerView.LayoutParams lp) {
