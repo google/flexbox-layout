@@ -461,10 +461,10 @@ public class FlexboxLayoutManager extends RecyclerView.LayoutManager implements 
         mAnchorInfo.reset();
         updateAnchorInfoForLayout(state, mAnchorInfo);
 
-        // Unlike the FlexboxLayout, the order attribute is not supported, we don't calculated the
+        // Unlike the FlexboxLayout, the order attribute is not supported, we don't calculate the
         // order attribute because preparing the order attribute requires all
         // view holders to be inflated at least once, which is inefficient if the number of items
-        // is large
+        // in the adapter is large
 
         resolveLayoutDirection();
         updateLayoutStateToFillEnd(mAnchorInfo);
