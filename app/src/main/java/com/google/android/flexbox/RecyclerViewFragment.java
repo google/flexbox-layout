@@ -52,13 +52,13 @@ public class RecyclerViewFragment extends Fragment {
         RecyclerView recyclerView = (RecyclerView) view.findViewById(
                 R.id.recyclerview);
         final FlexboxLayoutManager flexboxLayoutManager = new FlexboxLayoutManager();
-        recyclerView.setLayoutManager(flexboxLayoutManager);
-        final FlexItemAdapter adapter = new FlexItemAdapter();
-        recyclerView.setAdapter(adapter);
-
         final MainActivity activity = (MainActivity) getActivity();
+        recyclerView.setLayoutManager(flexboxLayoutManager);
+        final FlexItemAdapter adapter = new FlexItemAdapter(activity, flexboxLayoutManager);
+        recyclerView.setAdapter(adapter);
         final FragmentHelper fragmentHelper = new FragmentHelper(activity, flexboxLayoutManager);
         fragmentHelper.initializeViews();
+
         FloatingActionButton addFab = (FloatingActionButton) activity.findViewById(
                 R.id.add_fab);
         if (addFab != null) {
@@ -70,7 +70,6 @@ public class RecyclerViewFragment extends Fragment {
                             ViewGroup.LayoutParams.WRAP_CONTENT);
                     fragmentHelper.setFlexItemAttributes(lp);
                     adapter.addItem(lp);
-                    // TODO: Specify index?
                     adapter.notifyDataSetChanged();
                 }
             });
