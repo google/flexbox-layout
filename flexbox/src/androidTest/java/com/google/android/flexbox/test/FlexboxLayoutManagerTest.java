@@ -1740,6 +1740,67 @@ public class FlexboxLayoutManagerTest {
 
         assertThat(layoutManager.getChildAt(positionInSecondLine).getBottom(),
                 isEqualAllowingError(TestUtil.dpToPixel(activity, 210))); // 80 + 130
+        // Verify that the view in the same line's cross axis position is correct
+        assertThat(layoutManager.getChildAt(positionInSecondLine - 1).getBottom(),
+                isEqualAllowingError(TestUtil.dpToPixel(activity, 160))); // 80 + 80
+    }
+
+    @Test
+    @FlakyTest
+    public void testScrollToLeft_middleItem_as_anchorPosition() throws Throwable {
+        final FlexboxTestActivity activity = mActivityRule.getActivity();
+        final FlexboxLayoutManager layoutManager = new FlexboxLayoutManager();
+        final TestAdapter adapter = new TestAdapter();
+        final int positionInSecondLine = 6;
+        mActivityRule.runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                activity.setContentView(R.layout.recyclerview);
+                RecyclerView recyclerView = (RecyclerView) activity.findViewById(R.id.recyclerview);
+                layoutManager.setFlexDirection(FlexDirection.COLUMN);
+                recyclerView.setLayoutManager(layoutManager);
+                recyclerView.setAdapter(adapter);
+                for (int i = 0; i < 50; i++) {
+                    FlexboxLayoutManager.LayoutParams lp = createLayoutParams(activity, 80, 50);
+                    if (i == positionInSecondLine) {
+                        // Change the width from other items in the second line, not the first item
+                        // in the second line
+                        lp = createLayoutParams(activity, 130, 50);
+                    }
+                    adapter.addItem(lp);
+                }
+                // RecyclerView width: 320, height: 240.
+                // Each line has 4 (240 / 50) flex items and 12 (50 / 4) lines in total
+            }
+        });
+        InstrumentationRegistry.getInstrumentation().waitForIdleSync();
+        assertThat(layoutManager.getFlexDirection(), is(FlexDirection.COLUMN));
+
+        onView(withId(R.id.recyclerview)).perform(swipe(GeneralLocation.CENTER_RIGHT,
+                GeneralLocation.CENTER_LEFT));
+        onView(withId(R.id.recyclerview)).perform(swipe(GeneralLocation.CENTER_RIGHT,
+                GeneralLocation.CENTER_LEFT));
+        onView(withId(R.id.recyclerview)).perform(swipe(GeneralLocation.CENTER_RIGHT,
+                GeneralLocation.CENTER_LEFT));
+        onView(withId(R.id.recyclerview)).perform(swipe(GeneralLocation.CENTER_RIGHT,
+                GeneralLocation.CENTER_LEFT));
+        // By this moment reached to the right edge
+
+        // Now scrolling to the left to see if the views in the first flex line is correctly placed
+        onView(withId(R.id.recyclerview)).perform(swipe(GeneralLocation.CENTER_LEFT,
+                GeneralLocation.CENTER_RIGHT));
+        onView(withId(R.id.recyclerview)).perform(swipe(GeneralLocation.CENTER_LEFT,
+                GeneralLocation.CENTER_RIGHT));
+        onView(withId(R.id.recyclerview)).perform(swipe(GeneralLocation.CENTER_LEFT,
+                GeneralLocation.CENTER_RIGHT));
+        onView(withId(R.id.recyclerview)).perform(swipe(GeneralLocation.CENTER_LEFT,
+                GeneralLocation.CENTER_RIGHT));
+
+        assertThat(layoutManager.getChildAt(positionInSecondLine).getRight(),
+                isEqualAllowingError(TestUtil.dpToPixel(activity, 210))); // 80 + 130
+        // Verify that the view in the same line's cross axis position is correct
+        assertThat(layoutManager.getChildAt(positionInSecondLine - 1).getRight(),
+                isEqualAllowingError(TestUtil.dpToPixel(activity, 160))); // 80 + 80
     }
 
     @Test
