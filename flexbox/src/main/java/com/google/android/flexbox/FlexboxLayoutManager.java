@@ -825,9 +825,10 @@ public class FlexboxLayoutManager extends RecyclerView.LayoutManager implements 
         int paddingRight = getPaddingRight();
         int parentWidth = getWidth();
 
-        // Either childTop or childBottom is used depending on the layoutState.mLayoutDirection
         int childTop = layoutState.mOffset;
-        int childBottom = layoutState.mOffset;
+        if (layoutState.mLayoutDirection == LayoutDirection.START) {
+            childTop = childTop - flexLine.mCrossSize;
+        }
         int startPosition = layoutState.mPosition;
 
         float childLeft;
@@ -903,29 +904,16 @@ public class FlexboxLayoutManager extends RecyclerView.LayoutManager implements 
                 indexInFlexLine++;
             }
 
-            if (layoutState.mLayoutDirection == LayoutDirection.END) {
-                if (mIsRtl) {
-                    mFlexboxHelper.layoutSingleChildHorizontal(view, flexLine,
-                            Math.round(childRight) - view.getMeasuredWidth(),
-                            childTop, Math.round(childRight),
-                            childTop + view.getMeasuredHeight());
-                } else {
-                    mFlexboxHelper.layoutSingleChildHorizontal(view, flexLine,
-                            Math.round(childLeft), childTop,
-                            Math.round(childLeft) + view.getMeasuredWidth(),
-                            childTop + view.getMeasuredHeight());
-                }
+            if (mIsRtl) {
+                mFlexboxHelper.layoutSingleChildHorizontal(view, flexLine,
+                        Math.round(childRight) - view.getMeasuredWidth(),
+                        childTop, Math.round(childRight),
+                        childTop + view.getMeasuredHeight());
             } else {
-                if (mIsRtl) {
-                    mFlexboxHelper.layoutSingleChildHorizontal(view, flexLine,
-                            Math.round(childRight) - view.getMeasuredWidth(),
-                            childBottom - view.getMeasuredHeight(), Math.round(childRight),
-                            childBottom);
-                } else {
-                    mFlexboxHelper.layoutSingleChildHorizontal(view, flexLine,
-                            Math.round(childLeft), childBottom - view.getMeasuredHeight(),
-                            Math.round(childLeft) + view.getMeasuredWidth(), childBottom);
-                }
+                mFlexboxHelper.layoutSingleChildHorizontal(view, flexLine,
+                        Math.round(childLeft), childTop,
+                        Math.round(childLeft) + view.getMeasuredWidth(),
+                        childTop + view.getMeasuredHeight());
             }
             childLeft += (view.getMeasuredWidth() + lp.rightMargin + getRightDecorationWidth(view)
                     + spaceBetweenItem);
@@ -949,7 +937,9 @@ public class FlexboxLayoutManager extends RecyclerView.LayoutManager implements 
 
         // Either childLeft or childRight is used depending on the layoutState.mLayoutDirection
         int childLeft = layoutState.mOffset;
-        int childRight = layoutState.mOffset;
+        if (layoutState.mLayoutDirection == LayoutDirection.START) {
+            childLeft = childLeft - flexLine.mCrossSize;
+        }
         int startPosition = layoutState.mPosition;
 
         float childTop;
@@ -1026,28 +1016,15 @@ public class FlexboxLayoutManager extends RecyclerView.LayoutManager implements 
                 indexInFlexLine++;
             }
 
-            if (layoutState.mLayoutDirection == LayoutDirection.END) {
-                if (mFromBottomToTop) {
-                    mFlexboxHelper.layoutSingleChildVertical(view, flexLine, mIsRtl,
-                            childLeft, Math.round(childBottom) - view.getMeasuredHeight(),
-                            childLeft + view.getMeasuredWidth(), Math.round(childBottom));
-                } else {
-                    mFlexboxHelper.layoutSingleChildVertical(view, flexLine, mIsRtl,
-                            childLeft, Math.round(childTop),
-                            childLeft + view.getMeasuredWidth(),
-                            Math.round(childTop) + view.getMeasuredHeight());
-                }
+            if (mFromBottomToTop) {
+                mFlexboxHelper.layoutSingleChildVertical(view, flexLine, mIsRtl,
+                        childLeft, Math.round(childBottom) - view.getMeasuredHeight(),
+                        childLeft + view.getMeasuredWidth(), Math.round(childBottom));
             } else {
-                if (mFromBottomToTop) {
-                    mFlexboxHelper.layoutSingleChildVertical(view, flexLine, mIsRtl,
-                            childRight - view.getMeasuredWidth(),
-                            Math.round(childBottom) - view.getMeasuredHeight(), childRight,
-                            Math.round(childBottom));
-                } else {
-                    mFlexboxHelper.layoutSingleChildVertical(view, flexLine, mIsRtl,
-                            childRight - view.getMeasuredWidth(), Math.round(childTop),
-                            childRight, Math.round(childTop) + view.getMeasuredHeight());
-                }
+                mFlexboxHelper.layoutSingleChildVertical(view, flexLine, mIsRtl,
+                        childLeft, Math.round(childTop),
+                        childLeft + view.getMeasuredWidth(),
+                        Math.round(childTop) + view.getMeasuredHeight());
             }
             childTop += (view.getMeasuredHeight() + lp.topMargin + getTopDecorationHeight(view)
                     + spaceBetweenItem);
