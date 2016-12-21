@@ -215,9 +215,16 @@ public class FlexboxLayoutManager extends RecyclerView.LayoutManager implements 
     @Override
     public void setFlexDirection(@FlexDirection int flexDirection) {
         if (mFlexDirection != flexDirection) {
+            if (isMainAxisDirectionHorizontal() &&
+                    (flexDirection == FlexDirection.COLUMN ||
+                            flexDirection == FlexDirection.COLUMN_REVERSE)) {
+                // Remove the existing views if the direction changes perpendicularly since no
+                // existing AnchorInfo, LayoutState can't be used anymore
+                removeAllViews();
+                clearFlexLines();
+            }
             mFlexDirection = flexDirection;
             mOrientationHelper = null;
-            clearFlexLines();
             requestLayout();
         }
     }
@@ -234,6 +241,7 @@ public class FlexboxLayoutManager extends RecyclerView.LayoutManager implements 
             mFlexWrap = flexWrap;
             mOrientationHelper = null;
             clearFlexLines();
+            removeAllViews();
             requestLayout();
         }
     }
@@ -262,7 +270,6 @@ public class FlexboxLayoutManager extends RecyclerView.LayoutManager implements 
     public void setAlignItems(@AlignItems int alignItems) {
         if (mAlignItems != alignItems) {
             mAlignItems = alignItems;
-            clearFlexLines();
             requestLayout();
         }
     }
@@ -1182,7 +1189,7 @@ public class FlexboxLayoutManager extends RecyclerView.LayoutManager implements 
             for (int i = getChildCount() - 2, to = getChildCount() - lastVisibleLine.mItemCount;
                     i > to; i--) {
                 View viewInSameLine = getChildAt(i);
-                if (mIsRtl && mainAxisHorizontal) {
+                if (mIsRtl && !mainAxisHorizontal) {
                     // The end edge of the view is left, should be the minimum left edge
                     // where the next view should be placed
                     mLayoutState.mOffset = Math.min(mLayoutState.mOffset,
@@ -1240,7 +1247,7 @@ public class FlexboxLayoutManager extends RecyclerView.LayoutManager implements 
             for (int i = 1, to = firstVisibleLine.mItemCount;
                     i < to; i++) {
                 View viewInSameLine = getChildAt(i);
-                if (mIsRtl && mainAxisHorizontal) {
+                if (mIsRtl && !mainAxisHorizontal) {
                     mLayoutState.mOffset = Math.max(mLayoutState.mOffset,
                             mOrientationHelper.getDecoratedStart(viewInSameLine));
                 } else {
@@ -1699,21 +1706,21 @@ public class FlexboxLayoutManager extends RecyclerView.LayoutManager implements 
         private int mPosition;
 
         /** Pixel offset where layout should start */
-        int mOffset;
+        private int mOffset;
 
         /**
          * Used when LayoutState is constructed in a scrolling state.
          * It should be set the amount of scrolling we can make without creating a new view.
          * Settings this is required for efficient view recycling.
          */
-        int mScrollingOffset;
+        private int mScrollingOffset;
 
         /**
          * The most recent
          * {@link #scrollVerticallyBy(int, RecyclerView.Recycler, RecyclerView.State)} or
          * {@link #scrollHorizontallyBy(int, RecyclerView.Recycler, RecyclerView.State)} amount.
          */
-        int mLastScrollDelta;
+        private int mLastScrollDelta;
 
         @ItemDirection
         private int mItemDirection = ItemDirection.TAIL;
