@@ -41,6 +41,7 @@ import android.support.test.filters.MediumTest;
 import android.support.test.rule.ActivityTestRule;
 import android.support.test.runner.AndroidJUnit4;
 import android.support.v7.widget.RecyclerView;
+import android.view.View;
 
 import static android.support.test.espresso.Espresso.onView;
 import static android.support.test.espresso.matcher.ViewMatchers.withId;
@@ -1680,6 +1681,116 @@ public class FlexboxLayoutManagerTest {
 
         assertThat(layoutManager.getChildAt(layoutManager.getChildCount() - 1).getWidth(),
                 isEqualAllowingError(TestUtil.dpToPixel(activity, 70)));
+    }
+
+    @Test
+    @FlakyTest
+    public void testScrollToTop_middleItem_as_anchorPosition() throws Throwable {
+        // There was an issue that the anchor position was based on the first item in the first
+        // visible flex line when scrolling to top. But the anchor position should be based on the
+        // flex line position (view which has the minimum top position in the same flex line)
+        // This test verifies the issue is fixed.
+        final FlexboxTestActivity activity = mActivityRule.getActivity();
+        final FlexboxLayoutManager layoutManager = new FlexboxLayoutManager();
+        final TestAdapter adapter = new TestAdapter();
+        final int positionInSecondLine = 6;
+        mActivityRule.runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                activity.setContentView(R.layout.recyclerview);
+                RecyclerView recyclerView = (RecyclerView) activity.findViewById(R.id.recyclerview);
+                layoutManager.setFlexDirection(FlexDirection.ROW);
+                recyclerView.setLayoutManager(layoutManager);
+                recyclerView.setAdapter(adapter);
+                for (int i = 0; i < 50; i++) {
+                    FlexboxLayoutManager.LayoutParams lp = createLayoutParams(activity, 70, 80);
+                    if (i == positionInSecondLine) {
+                        // Change the height from other items in the second line, not the first item
+                        // in the second line
+                        lp = createLayoutParams(activity, 70, 130);
+                    }
+                    adapter.addItem(lp);
+                }
+                // RecyclerView width: 320, height: 240.
+                // Each line has 4 (320 / 70) flex items and 12 (50 / 4) lines in total
+            }
+        });
+        InstrumentationRegistry.getInstrumentation().waitForIdleSync();
+        assertThat(layoutManager.getFlexDirection(), is(FlexDirection.ROW));
+
+        onView(withId(R.id.recyclerview)).perform(swipe(GeneralLocation.BOTTOM_CENTER,
+                GeneralLocation.TOP_CENTER));
+        onView(withId(R.id.recyclerview)).perform(swipe(GeneralLocation.BOTTOM_CENTER,
+                GeneralLocation.TOP_CENTER));
+        onView(withId(R.id.recyclerview)).perform(swipe(GeneralLocation.BOTTOM_CENTER,
+                GeneralLocation.TOP_CENTER));
+        onView(withId(R.id.recyclerview)).perform(swipe(GeneralLocation.BOTTOM_CENTER,
+                GeneralLocation.TOP_CENTER));
+        // By this moment reached to the bottom
+
+        // Now scrolling to the top to see if the views in the first flex line is correctly placed
+        onView(withId(R.id.recyclerview)).perform(swipe(GeneralLocation.TOP_CENTER,
+                GeneralLocation.BOTTOM_CENTER));
+        onView(withId(R.id.recyclerview)).perform(swipe(GeneralLocation.TOP_CENTER,
+                GeneralLocation.BOTTOM_CENTER));
+        onView(withId(R.id.recyclerview)).perform(swipe(GeneralLocation.TOP_CENTER,
+                GeneralLocation.BOTTOM_CENTER));
+        onView(withId(R.id.recyclerview)).perform(swipe(GeneralLocation.TOP_CENTER,
+                GeneralLocation.BOTTOM_CENTER));
+
+        assertThat(layoutManager.getChildAt(positionInSecondLine).getBottom(),
+                isEqualAllowingError(TestUtil.dpToPixel(activity, 210))); // 80 + 130
+    }
+
+    @Test
+    @FlakyTest
+    public void testScrollToBottom_middleItem_as_anchorPosition() throws Throwable {
+        // There was an issue that the anchor position was based on the last item in the last
+        // visible flex line when scrolling to bottom. But the anchor position should be based on the
+        // flex line position (view which has the maximum bottom position in the same flex line)
+        // This test verifies the issue is fixed.
+        final FlexboxTestActivity activity = mActivityRule.getActivity();
+        final FlexboxLayoutManager layoutManager = new FlexboxLayoutManager();
+        final TestAdapter adapter = new TestAdapter();
+        final int positionInSecondBottomLine = 45;
+        mActivityRule.runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                activity.setContentView(R.layout.recyclerview);
+                layoutManager.setFlexDirection(FlexDirection.ROW);
+                RecyclerView recyclerView = (RecyclerView) activity.findViewById(R.id.recyclerview);
+                recyclerView.setLayoutManager(layoutManager);
+                recyclerView.setAdapter(adapter);
+                for (int i = 0; i < 50; i++) {
+                    FlexboxLayoutManager.LayoutParams lp = createLayoutParams(activity, 70, 80);
+                    if (i == positionInSecondBottomLine) {
+                        // Change the height from other items in the second bottom line
+                        lp = createLayoutParams(activity, 70, 130);
+                    }
+                    adapter.addItem(lp);
+                }
+                // RecyclerView width: 320, height: 240.
+                // Each line has 4 (320 / 70) flex items and 12 (50 / 4) lines in total
+            }
+        });
+        InstrumentationRegistry.getInstrumentation().waitForIdleSync();
+        assertThat(layoutManager.getFlexDirection(), is(FlexDirection.ROW));
+
+        onView(withId(R.id.recyclerview)).perform(swipe(GeneralLocation.BOTTOM_CENTER,
+                GeneralLocation.TOP_CENTER));
+        onView(withId(R.id.recyclerview)).perform(swipe(GeneralLocation.BOTTOM_CENTER,
+                GeneralLocation.TOP_CENTER));
+        onView(withId(R.id.recyclerview)).perform(swipe(GeneralLocation.BOTTOM_CENTER,
+                GeneralLocation.TOP_CENTER));
+        onView(withId(R.id.recyclerview)).perform(swipe(GeneralLocation.BOTTOM_CENTER,
+                GeneralLocation.TOP_CENTER));
+        // By this moment reached to the bottom
+
+        // 4 comes from the number of flex items - positionInSecondBottomLine
+        RecyclerView recyclerView = (RecyclerView) activity.findViewById(R.id.recyclerview);
+        View anchorView = layoutManager.getChildAt(layoutManager.getChildCount() - 4);
+        assertThat(recyclerView.getBottom() - anchorView.getTop(),
+                isEqualAllowingError(TestUtil.dpToPixel(activity, 210))); // 80 + 130
     }
 
     /**
