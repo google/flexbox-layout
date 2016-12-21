@@ -1191,17 +1191,39 @@ public class FlexboxLayoutManager extends RecyclerView.LayoutManager implements 
         assert mFlexboxHelper.mIndexToFlexLine != null;
         // TODO: Consider updating LayoutState#mExtra to support better smooth scrolling
         mLayoutState.mLayoutDirection = layoutDirection;
+        boolean mainAxisHorizontal = isMainAxisDirectionHorizontal();
         if (layoutDirection == LayoutDirection.END) {
             View lastVisible = getChildAt(getChildCount() - 1);
+            mLayoutState.mOffset = mOrientationHelper.getDecoratedEnd(lastVisible);
+            int lastVisiblePosition = getPosition(lastVisible);
+            int lastVisibleLinePosition = mFlexboxHelper.mIndexToFlexLine[lastVisiblePosition];
+            FlexLine lastVisibleLine = mFlexLines.get(lastVisibleLinePosition);
+
+            // Loop through the views in the same line of the last visible view because the
+            // next view should be placed to the end of the flex line to which the last visible view
+            // belongs
+            for (int i = getChildCount() - 2, to = getChildCount() - lastVisibleLine.mItemCount;
+                    i > to; i--) {
+                View viewInSameLine = getChildAt(i);
+                if (mIsRtl && mainAxisHorizontal) {
+                    // The end edge of the view is left, should be the minimum left edge
+                    // where the next view should be placed
+                    mLayoutState.mOffset = Math.min(mLayoutState.mOffset,
+                            mOrientationHelper.getDecoratedEnd(viewInSameLine));
+                } else {
+                    mLayoutState.mOffset = Math.max(mLayoutState.mOffset,
+                            mOrientationHelper.getDecoratedEnd(viewInSameLine));
+                }
+            }
+
             mLayoutState.mItemDirection = ItemDirection.TAIL;
-            mLayoutState.mPosition = getPosition(lastVisible) + mLayoutState.mItemDirection;
+            mLayoutState.mPosition = lastVisiblePosition + mLayoutState.mItemDirection;
             if (mFlexboxHelper.mIndexToFlexLine.length <= mLayoutState.mPosition) {
                 mLayoutState.mFlexLinePosition = NO_POSITION;
             } else {
                 mLayoutState.mFlexLinePosition
                         = mFlexboxHelper.mIndexToFlexLine[mLayoutState.mPosition];
             }
-            mLayoutState.mOffset = mOrientationHelper.getDecoratedEnd(lastVisible);
             mLayoutState.mScrollingOffset = mOrientationHelper.getDecoratedEnd(lastVisible)
                     - mOrientationHelper.getEndAfterPadding();
 
@@ -1217,7 +1239,7 @@ public class FlexboxLayoutManager extends RecyclerView.LayoutManager implements 
                         .makeMeasureSpec(getHeight(), getHeightMode());
                 int needsToFill = absDelta - mLayoutState.mScrollingOffset;
                 if (needsToFill > 0) {
-                    if (isMainAxisDirectionHorizontal()) {
+                    if (mainAxisHorizontal) {
                         mFlexboxHelper.calculateHorizontalFlexLines(
                                 widthMeasureSpec, heightMeasureSpec, needsToFill,
                                 mLayoutState.mPosition, mFlexLines);
@@ -1230,19 +1252,36 @@ public class FlexboxLayoutManager extends RecyclerView.LayoutManager implements 
             }
         } else {
             View firstVisible = getChildAt(0);
+            mLayoutState.mOffset = mOrientationHelper.getDecoratedEnd(firstVisible);
+            int firstVisiblePosition = getPosition(firstVisible);
+            int firstVisibleLinePosition = mFlexboxHelper.mIndexToFlexLine[firstVisiblePosition];
+            FlexLine firstVisibleLine = mFlexLines.get(firstVisibleLinePosition);
+
+            // Loop through the views in the same line of the first visible view because the
+            // next view should be placed to the start of the flex line to which the first visible
+            // view belongs
+            for (int i = 1, to = firstVisibleLine.mItemCount;
+                    i < to; i++) {
+                View viewInSameLine = getChildAt(i);
+                if (mIsRtl && mainAxisHorizontal) {
+                    mLayoutState.mOffset = Math.max(mLayoutState.mOffset,
+                            mOrientationHelper.getDecoratedStart(viewInSameLine));
+                } else {
+                    mLayoutState.mOffset = Math.min(mLayoutState.mOffset,
+                            mOrientationHelper.getDecoratedStart(viewInSameLine));
+                }
+            }
+
             mLayoutState.mItemDirection = ItemDirection.TAIL;
-            int position = getPosition(firstVisible);
-            int flexLinePosition = mFlexboxHelper.mIndexToFlexLine[position];
+            int flexLinePosition = mFlexboxHelper.mIndexToFlexLine[firstVisiblePosition];
             if (flexLinePosition == NO_POSITION) {
                 flexLinePosition = 0;
             }
             FlexLine currentLine = mFlexLines.get(flexLinePosition);
             // The position of the next item toward start should be on the next flex line,
             // shifting the position by the number of the items in the current line.
-            mLayoutState.mPosition = position - currentLine.getItemCount();
+            mLayoutState.mPosition = firstVisiblePosition - currentLine.getItemCount();
             mLayoutState.mFlexLinePosition = flexLinePosition > 0 ? flexLinePosition - 1 : 0;
-
-            mLayoutState.mOffset = mOrientationHelper.getDecoratedStart(firstVisible);
             mLayoutState.mScrollingOffset = -mOrientationHelper.getDecoratedStart(firstVisible)
                     + mOrientationHelper.getStartAfterPadding();
         }
