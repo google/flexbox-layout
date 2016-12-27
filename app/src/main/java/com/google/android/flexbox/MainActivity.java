@@ -59,24 +59,21 @@ public class MainActivity extends AppCompatActivity
         RadioGroup radioGroup = (RadioGroup) navigationView.getHeaderView(0)
                 .findViewById(R.id.radiogroup_container_implementation);
         final FragmentManager fragmentManager = getSupportFragmentManager();
+
         radioGroup.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(RadioGroup radioGroup, int checkedId) {
                 if (checkedId == R.id.radiobutton_viewgroup) {
                     replaceToFlexboxLayoutFragment(fragmentManager);
                 } else {
-                    RecyclerViewFragment fragment = (RecyclerViewFragment)
-                            fragmentManager.findFragmentByTag(RECYCLERVIEW_FRAGMENT);
-                    if (fragment == null) {
-                        fragment = RecyclerViewFragment.newInstance();
-                    }
-                    fragmentManager.beginTransaction()
-                            .replace(R.id.container, fragment, RECYCLERVIEW_FRAGMENT).commit();
+                    replaceToRecyclerViewFragment(fragmentManager);
                 }
             }
         });
 
-        replaceToFlexboxLayoutFragment(fragmentManager);
+        if (savedInstanceState == null) {
+            replaceToFlexboxLayoutFragment(fragmentManager);
+        }
     }
 
     private void replaceToFlexboxLayoutFragment(FragmentManager fragmentManager) {
@@ -87,6 +84,16 @@ public class MainActivity extends AppCompatActivity
         }
         fragmentManager.beginTransaction()
                 .replace(R.id.container, fragment, FLEXBOXLAYOUT_FRAGMENT).commit();
+    }
+
+    private void replaceToRecyclerViewFragment(FragmentManager fragmentManager) {
+        RecyclerViewFragment fragment = (RecyclerViewFragment)
+                fragmentManager.findFragmentByTag(RECYCLERVIEW_FRAGMENT);
+        if (fragment == null) {
+            fragment = RecyclerViewFragment.newInstance();
+        }
+        fragmentManager.beginTransaction()
+                .replace(R.id.container, fragment, RECYCLERVIEW_FRAGMENT).commit();
     }
 
     @Override
