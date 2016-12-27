@@ -16,7 +16,6 @@
 
 package com.google.android.flexbox.test;
 
-import com.google.android.flexbox.AlignContent;
 import com.google.android.flexbox.AlignItems;
 import com.google.android.flexbox.AlignSelf;
 import com.google.android.flexbox.FlexDirection;
@@ -79,7 +78,7 @@ public class FlexboxLayoutManagerTest {
         assertThat(layoutManager, is(instanceOf(FlexboxLayoutManager.class)));
         FlexboxLayoutManager flexboxLayoutManager = (FlexboxLayoutManager) layoutManager;
         assertThat(flexboxLayoutManager.getFlexDirection(), is(FlexDirection.ROW_REVERSE));
-        assertThat(flexboxLayoutManager.getFlexWrap(), is(FlexWrap.WRAP_REVERSE));
+        assertThat(flexboxLayoutManager.getFlexWrap(), is(FlexWrap.WRAP));
     }
 
     @Test
@@ -98,18 +97,16 @@ public class FlexboxLayoutManagerTest {
         assertThat(layoutManager, is(instanceOf(FlexboxLayoutManager.class)));
         FlexboxLayoutManager flexboxLayoutManager = (FlexboxLayoutManager) layoutManager;
         assertThat(flexboxLayoutManager.getFlexDirection(), is(FlexDirection.ROW_REVERSE));
-        assertThat(flexboxLayoutManager.getFlexWrap(), is(FlexWrap.WRAP_REVERSE));
+        assertThat(flexboxLayoutManager.getFlexWrap(), is(FlexWrap.WRAP));
 
         flexboxLayoutManager.setFlexDirection(FlexDirection.COLUMN);
         flexboxLayoutManager.setFlexWrap(FlexWrap.NOWRAP);
         flexboxLayoutManager.setJustifyContent(JustifyContent.CENTER);
         flexboxLayoutManager.setAlignItems(AlignItems.FLEX_END);
-        flexboxLayoutManager.setAlignContent(AlignContent.SPACE_BETWEEN);
         assertThat(flexboxLayoutManager.getFlexDirection(), is(FlexDirection.COLUMN));
         assertThat(flexboxLayoutManager.getFlexWrap(), is(FlexWrap.NOWRAP));
         assertThat(flexboxLayoutManager.getJustifyContent(), is(JustifyContent.CENTER));
         assertThat(flexboxLayoutManager.getAlignItems(), is(AlignItems.FLEX_END));
-        assertThat(flexboxLayoutManager.getAlignContent(), is(AlignContent.SPACE_BETWEEN));
     }
 
     @Test
