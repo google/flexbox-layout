@@ -137,6 +137,10 @@ public class FlexItemEditFragment extends DialogFragment {
         orderEdit.addTextChangedListener(
                 new FlexEditTextWatcher(orderTextInput, new IntegerInputValidator(),
                         R.string.must_be_integer));
+        if (mFlexItem instanceof FlexboxLayoutManager.LayoutParams) {
+            // Order is not enabled in FlexboxLayoutManager
+            orderEdit.setEnabled(false);
+        }
 
         final TextInputLayout flexGrowInput = (TextInputLayout) view
                 .findViewById(R.id.input_layout_flex_grow);
