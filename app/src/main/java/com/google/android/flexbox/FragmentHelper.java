@@ -27,6 +27,7 @@ import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Spinner;
+import android.widget.Toast;
 
 /**
  * Helper class that has the common logic for initializing the Fragment for the play ground demo
@@ -71,6 +72,7 @@ class FragmentHelper {
     private FlexContainer mFlexContainer;
 
     private SharedPreferences mSharedPreferences;
+
 
     FragmentHelper(MainActivity mainActivity, FlexContainer flexContainer) {
         mActivity = mainActivity;
@@ -124,9 +126,12 @@ class FragmentHelper {
         flexItem.setHeight(Util.dpToPixel(mActivity,
                 readPreferenceAsInteger(mActivity.getString(R.string.new_height_key),
                         DEFAULT_HEIGHT)));
-        flexItem.setOrder(
-                readPreferenceAsInteger(mActivity.getString(R.string.new_flex_item_order_key),
-                        "1"));
+        // Order is not supported in the FlexboxLayoutManager
+        if (!(flexItem instanceof FlexboxLayoutManager.LayoutParams)) {
+            flexItem.setOrder(
+                    readPreferenceAsInteger(mActivity.getString(R.string.new_flex_item_order_key),
+                            "1"));
+        }
         flexItem.setFlexGrow(
                 readPreferenceAsFloat(mActivity.getString(R.string.new_flex_grow_key), "0.0"));
         flexItem.setFlexShrink(
@@ -228,7 +233,15 @@ class FragmentHelper {
                         } else if (selected.equals(WRAP_REVERSE)) {
                             flexWrap = FlexWrap.WRAP_REVERSE;
                         }
-                        mFlexContainer.setFlexWrap(flexWrap);
+
+                        if (mFlexContainer instanceof FlexboxLayoutManager &&
+                                flexWrap == FlexWrap.WRAP_REVERSE) {
+                            Toast.makeText(mActivity,
+                                    R.string.wrap_reverse_not_supported,
+                                    Toast.LENGTH_SHORT).show();
+                        } else {
+                            mFlexContainer.setFlexWrap(flexWrap);
+                        }
                     }
 
                     @Override
@@ -370,7 +383,13 @@ class FragmentHelper {
                         } else if (selected.equals(STRETCH)) {
                             alignContent = AlignContent.STRETCH;
                         }
-                        mFlexContainer.setAlignContent(alignContent);
+
+                        if (mFlexContainer instanceof FlexboxLayoutManager) {
+                            Toast.makeText(mActivity, R.string.align_content_not_supported,
+                                    Toast.LENGTH_SHORT).show();
+                        } else {
+                            mFlexContainer.setAlignContent(alignContent);
+                        }
                     }
 
                     @Override
