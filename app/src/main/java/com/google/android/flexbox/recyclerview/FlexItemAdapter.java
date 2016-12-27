@@ -28,6 +28,7 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 /**
@@ -39,7 +40,7 @@ public class FlexItemAdapter extends RecyclerView.Adapter<FlexItemViewHolder> {
 
     private FlexboxLayoutManager mLayoutManager;
 
-    private List<RecyclerView.LayoutParams> mLayoutParams;
+    private List<FlexboxLayoutManager.LayoutParams> mLayoutParams;
 
     public FlexItemAdapter(AppCompatActivity activity, FlexboxLayoutManager layoutManager) {
         mActivity = activity;
@@ -62,7 +63,7 @@ public class FlexItemAdapter extends RecyclerView.Adapter<FlexItemViewHolder> {
         holder.bindTo(mLayoutParams.get(position));
     }
 
-    public void addItem(RecyclerView.LayoutParams lp) {
+    public void addItem(FlexboxLayoutManager.LayoutParams lp) {
         mLayoutParams.add(lp);
     }
 
@@ -71,6 +72,10 @@ public class FlexItemAdapter extends RecyclerView.Adapter<FlexItemViewHolder> {
             return;
         }
         mLayoutParams.remove(position);
+    }
+
+    public List<FlexboxLayoutManager.LayoutParams> getItems() {
+        return Collections.unmodifiableList(mLayoutParams);
     }
 
     @Override

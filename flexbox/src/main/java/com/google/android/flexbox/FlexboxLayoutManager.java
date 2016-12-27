@@ -80,14 +80,6 @@ public class FlexboxLayoutManager extends RecyclerView.LayoutManager implements 
     private int mAlignItems;
 
     /**
-     * The current value of the {@link AlignContent}, the default value is
-     * {@link AlignContent#STRETCH}.
-     *
-     * @see {@link FlexContainer#getAlignContent()}
-     */
-    private int mAlignContent;
-
-    /**
      * True if the layout direction is right to left, false otherwise.
      */
     private boolean mIsRtl;
@@ -173,10 +165,6 @@ public class FlexboxLayoutManager extends RecyclerView.LayoutManager implements 
      * {@link FlexDirection}, i.e. if reverseLayout is {@code true}, {@link FlexDirection#ROW} is
      * changed to {@link FlexDirection#ROW_REVERSE}. Similarly {@link FlexDirection#COLUMN} is
      * changed to {@link FlexDirection#COLUMN_REVERSE}.
-     *
-     * {@code android.support.v7.recyclerview:stackFromEnd} maps to the {@link FlexWrap},
-     * if stackFromEnd is set to {@code true} -> {@link FlexWrap#WRAP_REVERSE} otherwise ->
-     * {@link FlexWrap#WRAP}.
      */
     public FlexboxLayoutManager(Context context, AttributeSet attrs, int defStyleAttr,
             int defStyleRes) {
@@ -197,11 +185,8 @@ public class FlexboxLayoutManager extends RecyclerView.LayoutManager implements 
                 }
                 break;
         }
-        if (properties.stackFromEnd) {
-            setFlexWrap(FlexWrap.WRAP_REVERSE);
-        } else {
-            setFlexWrap(FlexWrap.WRAP);
-        }
+
+        setFlexWrap(FlexWrap.WRAP);
         setAutoMeasureEnabled(true);
     }
 
@@ -215,9 +200,12 @@ public class FlexboxLayoutManager extends RecyclerView.LayoutManager implements 
     @Override
     public void setFlexDirection(@FlexDirection int flexDirection) {
         if (mFlexDirection != flexDirection) {
+            if (isMainAxisDirectionChanging(flexDirection)) {
+                removeAllViews();
+                clearFlexLines();
+            }
             mFlexDirection = flexDirection;
             mOrientationHelper = null;
-            clearFlexLines();
             requestLayout();
         }
     }
@@ -230,10 +218,17 @@ public class FlexboxLayoutManager extends RecyclerView.LayoutManager implements 
 
     @Override
     public void setFlexWrap(@FlexWrap int flexWrap) {
+        if (flexWrap == FlexWrap.WRAP_REVERSE) {
+            throw new UnsupportedOperationException("wrap_reverse is not supported in "
+                    + "FlexboxLayoutManager");
+        }
         if (mFlexWrap != flexWrap) {
+            if (mFlexWrap == FlexWrap.NOWRAP || flexWrap == FlexWrap.NOWRAP) {
+                removeAllViews();
+                clearFlexLines();
+            }
             mFlexWrap = flexWrap;
             mOrientationHelper = null;
-            clearFlexLines();
             requestLayout();
         }
     }
@@ -261,8 +256,11 @@ public class FlexboxLayoutManager extends RecyclerView.LayoutManager implements 
     @Override
     public void setAlignItems(@AlignItems int alignItems) {
         if (mAlignItems != alignItems) {
+            if (mAlignItems == AlignItems.STRETCH || alignItems == AlignItems.STRETCH) {
+                removeAllViews();
+                clearFlexLines();
+            }
             mAlignItems = alignItems;
-            clearFlexLines();
             requestLayout();
         }
     }
@@ -270,16 +268,14 @@ public class FlexboxLayoutManager extends RecyclerView.LayoutManager implements 
     @AlignContent
     @Override
     public int getAlignContent() {
-        return mAlignContent;
+        return AlignContent.STRETCH;
     }
 
     @Override
     public void setAlignContent(@AlignContent int alignContent) {
-        if (mAlignContent != alignContent) {
-            mAlignContent = alignContent;
-            clearFlexLines();
-            requestLayout();
-        }
+        throw new UnsupportedOperationException("Setting the alignContent in the "
+                + "FlexboxLayoutManager is not supported. Use FlexboxLayout "
+                + "if you need to reorder using the attribute.");
     }
 
     @Override
@@ -1042,6 +1038,20 @@ public class FlexboxLayoutManager extends RecyclerView.LayoutManager implements 
         return mFlexDirection == FlexDirection.ROW || mFlexDirection == FlexDirection.ROW_REVERSE;
     }
 
+    private boolean isMainAxisDirectionVertical() {
+        return mFlexDirection == FlexDirection.COLUMN
+                || mFlexDirection == FlexDirection.COLUMN_REVERSE;
+    }
+
+    private boolean isMainAxisDirectionChanging(@FlexDirection int newDirection) {
+        boolean mainAxisHorizontal = isMainAxisDirectionHorizontal();
+        boolean mainAxisVertical = isMainAxisDirectionVertical();
+        return (mainAxisHorizontal && newDirection == FlexDirection.COLUMN ||
+                mainAxisHorizontal && newDirection == FlexDirection.COLUMN_REVERSE) ||
+                (mainAxisVertical && newDirection == FlexDirection.ROW ||
+                        mainAxisVertical && newDirection == FlexDirection.ROW_REVERSE);
+    }
+
     private void updateLayoutStateToFillEnd(AnchorInfo anchorInfo) {
         mLayoutState.mAvailable = mOrientationHelper.getEndAfterPadding() - anchorInfo.mCoordinate;
         mLayoutState.mPosition = anchorInfo.mPosition;
@@ -1179,9 +1189,12 @@ public class FlexboxLayoutManager extends RecyclerView.LayoutManager implements 
             // Loop through the views in the same line of the last visible view because the
             // next view should be placed to the end of the flex line to which the last visible view
             // belongs
-            for (int i = getChildCount() - 2, to = getChildCount() - lastVisibleLine.mItemCount;
+            for (int i = getChildCount() - 2, to = getChildCount() - lastVisibleLine.mItemCount - 1;
                     i > to; i--) {
                 View viewInSameLine = getChildAt(i);
+                if (viewInSameLine == null || viewInSameLine.getVisibility() == View.GONE) {
+                    continue;
+                }
                 if (mIsRtl && mainAxisHorizontal) {
                     // The end edge of the view is left, should be the minimum left edge
                     // where the next view should be placed
@@ -1225,6 +1238,9 @@ public class FlexboxLayoutManager extends RecyclerView.LayoutManager implements 
                                 widthMeasureSpec, heightMeasureSpec, needsToFill,
                                 mLayoutState.mPosition, mFlexLines);
                     }
+                    mFlexboxHelper.determineMainSize(widthMeasureSpec, heightMeasureSpec,
+                            mLayoutState.mPosition);
+                    mFlexboxHelper.stretchViews(mLayoutState.mPosition);
                 }
             }
         } else {
@@ -1531,8 +1547,8 @@ public class FlexboxLayoutManager extends RecyclerView.LayoutManager implements 
 
         @Override
         public void setOrder(int order) {
-            Log.w(TAG, "Setting the order in the "
-                    + "FlexboxLayoutManager is not supported(ignored). Use FlexboxLayout "
+            throw new UnsupportedOperationException("Setting the order in the "
+                    + "FlexboxLayoutManager is not supported. Use FlexboxLayout "
                     + "if you need to reorder using the attribute.");
         }
 
