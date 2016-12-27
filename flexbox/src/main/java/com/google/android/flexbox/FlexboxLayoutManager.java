@@ -1195,7 +1195,7 @@ public class FlexboxLayoutManager extends RecyclerView.LayoutManager implements 
                 if (viewInSameLine == null || viewInSameLine.getVisibility() == View.GONE) {
                     continue;
                 }
-                if (mIsRtl && mainAxisHorizontal) {
+                if (mIsRtl && !mainAxisHorizontal) {
                     // The end edge of the view is left, should be the minimum left edge
                     // where the next view should be placed
                     mLayoutState.mOffset = Math.min(mLayoutState.mOffset,
@@ -1245,7 +1245,7 @@ public class FlexboxLayoutManager extends RecyclerView.LayoutManager implements 
             }
         } else {
             View firstVisible = getChildAt(0);
-            mLayoutState.mOffset = mOrientationHelper.getDecoratedEnd(firstVisible);
+            mLayoutState.mOffset = mOrientationHelper.getDecoratedStart(firstVisible);
             int firstVisiblePosition = getPosition(firstVisible);
             int firstVisibleLinePosition = mFlexboxHelper.mIndexToFlexLine[firstVisiblePosition];
             FlexLine firstVisibleLine = mFlexLines.get(firstVisibleLinePosition);
@@ -1256,7 +1256,7 @@ public class FlexboxLayoutManager extends RecyclerView.LayoutManager implements 
             for (int i = 1, to = firstVisibleLine.mItemCount;
                     i < to; i++) {
                 View viewInSameLine = getChildAt(i);
-                if (mIsRtl && mainAxisHorizontal) {
+                if (mIsRtl && !mainAxisHorizontal) {
                     mLayoutState.mOffset = Math.max(mLayoutState.mOffset,
                             mOrientationHelper.getDecoratedStart(viewInSameLine));
                 } else {
