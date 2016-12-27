@@ -28,15 +28,21 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import java.util.ArrayList;
+
 /**
  * Fragment that contains the {@link RecyclerView} and the {@link FlexboxLayoutManager} as its
  * LayoutManager for the flexbox playground.
  */
 public class RecyclerViewFragment extends Fragment {
 
+    private static final String FLEX_ITEMS_KEY = "flex_items";
+
     public static RecyclerViewFragment newInstance() {
         return new RecyclerViewFragment();
     }
+
+    private FlexItemAdapter mAdapter;
 
     @Nullable
     @Override
@@ -54,8 +60,19 @@ public class RecyclerViewFragment extends Fragment {
         final FlexboxLayoutManager flexboxLayoutManager = new FlexboxLayoutManager();
         final MainActivity activity = (MainActivity) getActivity();
         recyclerView.setLayoutManager(flexboxLayoutManager);
-        final FlexItemAdapter adapter = new FlexItemAdapter(activity, flexboxLayoutManager);
-        recyclerView.setAdapter(adapter);
+        if (mAdapter == null) {
+            mAdapter = new FlexItemAdapter(activity, flexboxLayoutManager);
+        }
+        recyclerView.setAdapter(mAdapter);
+        if (savedInstanceState != null) {
+            ArrayList<FlexboxLayoutManager.LayoutParams> layoutParams = savedInstanceState
+                    .getParcelableArrayList(FLEX_ITEMS_KEY);
+            assert layoutParams != null;
+            for (int i = 0; i < layoutParams.size(); i++) {
+                mAdapter.addItem(layoutParams.get(i));
+            }
+            mAdapter.notifyDataSetChanged();
+        }
         final FragmentHelper fragmentHelper = new FragmentHelper(activity, flexboxLayoutManager);
         fragmentHelper.initializeViews();
 
@@ -69,8 +86,8 @@ public class RecyclerViewFragment extends Fragment {
                             ViewGroup.LayoutParams.WRAP_CONTENT,
                             ViewGroup.LayoutParams.WRAP_CONTENT);
                     fragmentHelper.setFlexItemAttributes(lp);
-                    adapter.addItem(lp);
-                    adapter.notifyDataSetChanged();
+                    mAdapter.addItem(lp);
+                    mAdapter.notifyDataSetChanged();
                 }
             });
         }
@@ -80,15 +97,21 @@ public class RecyclerViewFragment extends Fragment {
             removeFab.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    if (adapter.getItemCount() == 0) {
+                    if (mAdapter.getItemCount() == 0) {
                         return;
                     }
-                    adapter.removeItem(adapter.getItemCount() - 1);
+                    mAdapter.removeItem(mAdapter.getItemCount() - 1);
 
                     // TODO: Specify index?
-                    adapter.notifyDataSetChanged();
+                    mAdapter.notifyDataSetChanged();
                 }
             });
         }
+    }
+
+    @Override
+    public void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+        outState.putParcelableArrayList(FLEX_ITEMS_KEY, new ArrayList<>(mAdapter.getItems()));
     }
 }
