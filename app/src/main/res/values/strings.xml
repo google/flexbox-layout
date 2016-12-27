@@ -131,4 +131,6 @@ limitations under the License.
     <string name="viewgroup">ViewGroup</string>
     <string name="recyclerview">RecyclerView</string>
     <string name="underlying_implementation">Underlying implementation</string>
+    <string name="align_content_not_supported">Setting the alignContent in FlexboxLayoutManager is not supported. Ignoring.</string>
+    <string name="wrap_reverse_not_supported">wrap_reverse is not supporeted in the FlexboxLayoutManager.</string>
 </resources>
