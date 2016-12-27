@@ -701,6 +701,9 @@ class FlexboxHelper {
      */
     void determineMainSize(int widthMeasureSpec, int heightMeasureSpec, int fromIndex) {
         ensureChildrenFrozen(mFlexContainer.getFlexItemCount());
+        if (fromIndex >= mFlexContainer.getFlexItemCount()) {
+            return;
+        }
         int mainSize;
         int paddingAlongMainAxis;
         int flexDirection = mFlexContainer.getFlexDirection();
@@ -1304,6 +1307,9 @@ class FlexboxHelper {
      * @see FlexboxLayout.LayoutParams#mAlignSelf
      */
     void stretchViews(int fromIndex) {
+        if (fromIndex >= mFlexContainer.getFlexItemCount()) {
+            return;
+        }
         int flexDirection = mFlexContainer.getFlexDirection();
         if (mFlexContainer.getAlignItems() == AlignItems.STRETCH) {
             int viewIndex = fromIndex;
