@@ -430,6 +430,13 @@ public class FlexboxLayoutManager extends RecyclerView.LayoutManager implements 
 
     @Override
     public void onLayoutChildren(RecyclerView.Recycler recycler, RecyclerView.State state) {
+        // Layout algorithm:
+        // 1) Find an anchor coordinate and anchor flex line position. If not found, the coordinate
+        //    starts from zero.
+        // 2) From the anchor position to the visible area, calculate the flex lines that needs to
+        //    be filled.
+        // 3) Fill toward end from the anchor position
+        // 4) Fill toward start from the anchor position
         if (DEBUG) {
             Log.d(TAG,
                     String.format("onLayoutChildren. recycler.getScrapList.size(): %s, state: %s",
@@ -464,6 +471,13 @@ public class FlexboxLayoutManager extends RecyclerView.LayoutManager implements 
 
         resolveLayoutDirection();
         updateLayoutStateToFillEnd(mAnchorInfo);
+
+        // Remove the existing views instead of scrapping it because otherwise some properties
+        // initialized during the onBind phase of each view are gone (like click listeners)
+        // after the layout phase. Because each view is first retrieved during the calculation of
+        // the flex lines (FlexboxHelper#calculate{Horizontal|vertical}FlexLines). If these are
+        // retrieved from the scrap in the layout phase, each view skips the onBind.
+        removeAndRecycleAllViews(recycler);
 
         // Calculate the flex lines until the calculated cross size reaches the
         // LayoutState#mAvailable (or until the end of the flex container)
@@ -521,7 +535,6 @@ public class FlexboxLayoutManager extends RecyclerView.LayoutManager implements 
             }
         }
 
-        detachAndScrapAttachedViews(recycler);
         int filledToEnd = fill(recycler, state, mLayoutState);
         if (DEBUG) {
             Log.d(TAG, String.format("filled: %d toward end", filledToEnd));
