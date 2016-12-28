@@ -420,7 +420,9 @@ public class FlexItemEditFragment extends DialogFragment {
 
             switch (mTextInputLayout.getId()) {
                 case R.id.input_layout_order:
-                    mFlexItem.setOrder(value.intValue());
+                    if (!(mFlexItem instanceof FlexboxLayoutManager.LayoutParams)) {
+                        mFlexItem.setOrder(value.intValue());
+                    }
                     break;
                 case R.id.input_layout_flex_grow:
                     mFlexItem.setFlexGrow(value.floatValue());
