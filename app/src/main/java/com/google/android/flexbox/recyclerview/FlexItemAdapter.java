@@ -17,7 +17,7 @@
 package com.google.android.flexbox.recyclerview;
 
 import com.google.android.apps.flexbox.R;
-import com.google.android.flexbox.FlexItemChangedListenerImpl;
+import com.google.android.flexbox.FlexItemChangedListenerImplRecyclerView;
 import com.google.android.flexbox.FlexItemClickListener;
 import com.google.android.flexbox.FlexboxLayoutManager;
 
@@ -59,7 +59,8 @@ public class FlexItemAdapter extends RecyclerView.Adapter<FlexItemViewHolder> {
     public void onBindViewHolder(FlexItemViewHolder holder, int position) {
         int adapterPosition = holder.getAdapterPosition();
         holder.itemView.setOnClickListener(new FlexItemClickListener(mActivity,
-                new FlexItemChangedListenerImpl(mLayoutManager), adapterPosition));
+                new FlexItemChangedListenerImplRecyclerView(mLayoutManager, this),
+                adapterPosition));
         holder.bindTo(mLayoutParams.get(position));
     }
 
