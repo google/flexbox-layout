@@ -75,6 +75,13 @@ public class FlexItemEditFragment extends DialogFragment {
 
     private FlexItem mFlexItem;
 
+    /**
+     * Instance of a {@link FlexItem} being edited. At first it's created as another instance from
+     * the {@link #mFlexItem} because otherwise changes before clicking the ok button will be
+     * reflected if the {@link #mFlexItem} is changed directly.
+     */
+    private FlexItem mFlexItemInEdit;
+
     private FlexItemChangedListener mFlexItemChangedListener;
 
     private Context mContext;
@@ -112,6 +119,7 @@ public class FlexItemEditFragment extends DialogFragment {
         }
         Bundle args = getArguments();
         mFlexItem = args.getParcelable(FLEX_ITEM_KEY);
+        mFlexItemInEdit = createNewFlexItem(mFlexItem);
         mViewIndex = args.getInt(VIEW_INDEX_KEY);
 
         Activity activity = getActivity();
@@ -274,6 +282,7 @@ public class FlexItemEditFragment extends DialogFragment {
         view.findViewById(R.id.button_cancel).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                copyFlexItemValues(mFlexItem, mFlexItemInEdit);
                 dismiss();
             }
         });
@@ -291,6 +300,7 @@ public class FlexItemEditFragment extends DialogFragment {
                     return;
                 }
                 if (mFlexItemChangedListener != null) {
+                    copyFlexItemValues(mFlexItemInEdit, mFlexItem);
                     mFlexItemChangedListener.onFlexItemChanged(mFlexItem, mViewIndex);
                 }
                 dismiss();
@@ -420,42 +430,73 @@ public class FlexItemEditFragment extends DialogFragment {
 
             switch (mTextInputLayout.getId()) {
                 case R.id.input_layout_order:
-                    if (!(mFlexItem instanceof FlexboxLayoutManager.LayoutParams)) {
-                        mFlexItem.setOrder(value.intValue());
+                    if (!(mFlexItemInEdit instanceof FlexboxLayoutManager.LayoutParams)) {
+                        mFlexItemInEdit.setOrder(value.intValue());
                     }
                     break;
                 case R.id.input_layout_flex_grow:
-                    mFlexItem.setFlexGrow(value.floatValue());
+                    mFlexItemInEdit.setFlexGrow(value.floatValue());
                     break;
                 case R.id.input_layout_flex_shrink:
-                    mFlexItem.setFlexShrink(value.floatValue());
+                    mFlexItemInEdit.setFlexShrink(value.floatValue());
                     break;
                 case R.id.input_layout_width:
-                    mFlexItem.setWidth(Util.dpToPixel(mContext, value.intValue()));
+                    mFlexItemInEdit.setWidth(Util.dpToPixel(mContext, value.intValue()));
                     break;
                 case R.id.input_layout_height:
-                    mFlexItem.setHeight(Util.dpToPixel(mContext, value.intValue()));
+                    mFlexItemInEdit.setHeight(Util.dpToPixel(mContext, value.intValue()));
                     break;
                 case R.id.input_layout_flex_basis_percent:
                     if (value.intValue() != FlexboxLayout.LayoutParams.FLEX_BASIS_PERCENT_DEFAULT) {
-                        mFlexItem.setFlexBasisPercent((float) (value.intValue() / 100.0));
+                        mFlexItemInEdit.setFlexBasisPercent((float) (value.intValue() / 100.0));
                     } else {
-                        mFlexItem.setFlexBasisPercent(FlexItem.FLEX_BASIS_PERCENT_DEFAULT);
+                        mFlexItemInEdit.setFlexBasisPercent(FlexItem.FLEX_BASIS_PERCENT_DEFAULT);
                     }
                     break;
                 case R.id.input_layout_min_width:
-                    mFlexItem.setMinWidth(Util.dpToPixel(mContext, value.intValue()));
+                    mFlexItemInEdit.setMinWidth(Util.dpToPixel(mContext, value.intValue()));
                     break;
                 case R.id.input_layout_min_height:
-                    mFlexItem.setMinHeight(Util.dpToPixel(mContext, value.intValue()));
+                    mFlexItemInEdit.setMinHeight(Util.dpToPixel(mContext, value.intValue()));
                     break;
                 case R.id.input_layout_max_width:
-                    mFlexItem.setMaxWidth(Util.dpToPixel(mContext, value.intValue()));
+                    mFlexItemInEdit.setMaxWidth(Util.dpToPixel(mContext, value.intValue()));
                     break;
                 case R.id.input_layout_max_height:
-                    mFlexItem.setMaxHeight(Util.dpToPixel(mContext, value.intValue()));
+                    mFlexItemInEdit.setMaxHeight(Util.dpToPixel(mContext, value.intValue()));
                     break;
             }
         }
+    }
+
+    private FlexItem createNewFlexItem(FlexItem item) {
+        if (item instanceof FlexboxLayout.LayoutParams) {
+            FlexItem newItem = new FlexboxLayout.LayoutParams(item.getWidth(), item.getHeight());
+            copyFlexItemValues(item, newItem);
+            return newItem;
+        } else if (item instanceof FlexboxLayoutManager.LayoutParams) {
+            FlexItem newItem = new FlexboxLayoutManager.LayoutParams(item.getWidth(),
+                    item.getHeight());
+            copyFlexItemValues(item, newItem);
+            return newItem;
+        }
+        throw new IllegalArgumentException("Unknown FlexItem: " + item);
+    }
+
+    private void copyFlexItemValues(FlexItem from, FlexItem to) {
+        if (!(from instanceof FlexboxLayoutManager.LayoutParams)) {
+            to.setOrder(from.getOrder());
+        }
+        to.setFlexGrow(from.getFlexGrow());
+        to.setFlexShrink(from.getFlexShrink());
+        to.setFlexBasisPercent(from.getFlexBasisPercent());
+        to.setHeight(from.getHeight());
+        to.setWidth(from.getWidth());
+        to.setMaxHeight(from.getMaxHeight());
+        to.setMinHeight(from.getMinHeight());
+        to.setMaxWidth(from.getMaxWidth());
+        to.setMinWidth(from.getMinWidth());
+        to.setAlignSelf(from.getAlignSelf());
+        to.setWrapBefore(from.isWrapBefore());
     }
 }
