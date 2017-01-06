@@ -26,12 +26,10 @@ import android.widget.TextView;
 class TestViewHolder extends RecyclerView.ViewHolder {
 
     TextView mTextView;
-    View mItemView;
 
     TestViewHolder(View itemView) {
         super(itemView);
 
-        mItemView = itemView;
         mTextView = (TextView) itemView.findViewById(R.id.textview);
     }
 }
