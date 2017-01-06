@@ -16,6 +16,8 @@
 
 package com.google.android.flexbox.test;
 
+import com.google.android.flexbox.FlexboxLayoutManager;
+
 import android.support.v7.widget.RecyclerView;
 import android.view.Gravity;
 import android.view.LayoutInflater;
@@ -30,13 +32,13 @@ import java.util.List;
  */
 class TestAdapter extends RecyclerView.Adapter<TestViewHolder> {
 
-    private List<RecyclerView.LayoutParams> mLayoutParams;
+    private List<FlexboxLayoutManager.LayoutParams> mLayoutParams;
 
     TestAdapter() {
-        this(new ArrayList<RecyclerView.LayoutParams>());
+        this(new ArrayList<FlexboxLayoutManager.LayoutParams>());
     }
 
-    TestAdapter(List<RecyclerView.LayoutParams> flexItems) {
+    TestAdapter(List<FlexboxLayoutManager.LayoutParams> flexItems) {
         mLayoutParams = flexItems;
     }
 
@@ -52,10 +54,10 @@ class TestAdapter extends RecyclerView.Adapter<TestViewHolder> {
         holder.mTextView.setText(String.valueOf(position + 1));
         holder.mTextView.setBackgroundResource(R.drawable.flex_item_background);
         holder.mTextView.setGravity(Gravity.CENTER);
-        holder.mItemView.setLayoutParams(mLayoutParams.get(position));
+        holder.mTextView.setLayoutParams(mLayoutParams.get(position));
     }
 
-    public void addItem(RecyclerView.LayoutParams flexItem) {
+    public void addItem(FlexboxLayoutManager.LayoutParams flexItem) {
         mLayoutParams.add(flexItem);
     }
 
@@ -64,6 +66,10 @@ class TestAdapter extends RecyclerView.Adapter<TestViewHolder> {
             return;
         }
         mLayoutParams.remove(position);
+    }
+
+    public FlexboxLayoutManager.LayoutParams getItemAt(int index) {
+        return mLayoutParams.get(index);
     }
 
     @Override

@@ -1900,6 +1900,72 @@ public class FlexboxLayoutManagerTest {
         assertThat(((TextView) layoutManager.getChildAt(0)).getText().toString(), is("1"));
     }
 
+    @Test
+    @FlakyTest
+    public void testFlexGrow_only_oneItem_has_positive_direction_row() throws Throwable {
+        final FlexboxTestActivity activity = mActivityRule.getActivity();
+        final FlexboxLayoutManager layoutManager = new FlexboxLayoutManager();
+        final TestAdapter adapter = new TestAdapter();
+        mActivityRule.runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                activity.setContentView(R.layout.recyclerview);
+                RecyclerView recyclerView = (RecyclerView) activity.findViewById(R.id.recyclerview);
+                layoutManager.setFlexDirection(FlexDirection.ROW);
+                recyclerView.setLayoutManager(layoutManager);
+                recyclerView.setAdapter(adapter);
+                for (int i = 0; i < 4; i++) {
+                    FlexboxLayoutManager.LayoutParams lp = createLayoutParams(activity, 100, 80);
+                    adapter.addItem(lp);
+                }
+                // RecyclerView width: 320, height: 240.
+                // Flex line 1: 3 items
+                // Flex line 2: 1 item
+                // Give the second item in the first line a positive flex grow
+                adapter.getItemAt(0).setHeight(TestUtil.dpToPixel(activity, 140));
+                adapter.getItemAt(1).setFlexGrow(1.0f);
+            }
+        });
+        InstrumentationRegistry.getInstrumentation().waitForIdleSync();
+        assertThat(layoutManager.getFlexDirection(), is(FlexDirection.ROW));
+        // Verify the vertical position (cross size) of the second line is correctly positioned
+        assertThat(layoutManager.getChildAt(3).getTop(),
+                isEqualAllowingError(TestUtil.dpToPixel(activity, 140)));
+    }
+
+    @Test
+    @FlakyTest
+    public void testFlexGrow_only_oneItem_has_positive_direction_column() throws Throwable {
+        final FlexboxTestActivity activity = mActivityRule.getActivity();
+        final FlexboxLayoutManager layoutManager = new FlexboxLayoutManager();
+        final TestAdapter adapter = new TestAdapter();
+        mActivityRule.runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                activity.setContentView(R.layout.recyclerview);
+                RecyclerView recyclerView = (RecyclerView) activity.findViewById(R.id.recyclerview);
+                layoutManager.setFlexDirection(FlexDirection.COLUMN);
+                recyclerView.setLayoutManager(layoutManager);
+                recyclerView.setAdapter(adapter);
+                for (int i = 0; i < 4; i++) {
+                    FlexboxLayoutManager.LayoutParams lp = createLayoutParams(activity, 70, 70);
+                    adapter.addItem(lp);
+                }
+                // RecyclerView width: 320, height: 240.
+                // Flex line 1: 3 items
+                // Flex line 2: 1 item
+                // Give the second item in the first line a positive flex grow
+                adapter.getItemAt(0).setWidth(TestUtil.dpToPixel(activity, 120));
+                adapter.getItemAt(1).setFlexGrow(1.0f);
+            }
+        });
+        InstrumentationRegistry.getInstrumentation().waitForIdleSync();
+        assertThat(layoutManager.getFlexDirection(), is(FlexDirection.COLUMN));
+        // Verify the horizontal position (cross size) of the second line is correctly positioned
+        assertThat(layoutManager.getChildAt(3).getLeft(),
+                isEqualAllowingError(TestUtil.dpToPixel(activity, 120)));
+    }
+
     /**
      * Creates a new flex item.
      *
