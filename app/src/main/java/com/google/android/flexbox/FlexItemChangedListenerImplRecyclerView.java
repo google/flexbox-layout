@@ -40,6 +40,9 @@ public class FlexItemChangedListenerImplRecyclerView implements FlexItemChangedL
     public void onFlexItemChanged(FlexItem flexItem, int viewIndex) {
         View view = mFlexContainer.getFlexItemAt(viewIndex);
         view.setLayoutParams((ViewGroup.LayoutParams) flexItem);
-        mAdapter.notifyItemChanged(viewIndex);
+        mAdapter.notifyDataSetChanged();
+        // TODO: An Exception is thrown if notifyItemChanged(int) is used.
+        // Investigate that, but using LinearLayoutManager also produces the same Exception
+        // java.lang.IllegalArgumentException: Called attach on a child which is not detached:
     }
 }

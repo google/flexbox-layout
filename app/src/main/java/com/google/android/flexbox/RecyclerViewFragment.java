@@ -16,9 +16,6 @@
 
 package com.google.android.flexbox;
 
-import com.google.android.apps.flexbox.R;
-import com.google.android.flexbox.recyclerview.FlexItemAdapter;
-
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.design.widget.FloatingActionButton;
@@ -27,7 +24,8 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-
+import com.google.android.apps.flexbox.R;
+import com.google.android.flexbox.recyclerview.FlexItemAdapter;
 import java.util.ArrayList;
 
 /**
@@ -87,7 +85,6 @@ public class RecyclerViewFragment extends Fragment {
                             ViewGroup.LayoutParams.WRAP_CONTENT);
                     fragmentHelper.setFlexItemAttributes(lp);
                     mAdapter.addItem(lp);
-                    mAdapter.notifyDataSetChanged();
                 }
             });
         }
@@ -101,9 +98,6 @@ public class RecyclerViewFragment extends Fragment {
                         return;
                     }
                     mAdapter.removeItem(mAdapter.getItemCount() - 1);
-
-                    // TODO: Specify index?
-                    mAdapter.notifyDataSetChanged();
                 }
             });
         }

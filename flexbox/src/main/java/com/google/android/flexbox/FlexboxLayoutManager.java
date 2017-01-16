@@ -333,6 +333,15 @@ public class FlexboxLayoutManager extends RecyclerView.LayoutManager implements 
      */
     @Override
     public View getFlexItemAt(int index) {
+        // Look up from the scrap first to avoid the same view holder is created from the adpater
+        // again
+        List<RecyclerView.ViewHolder> scrapList = mRecycler.getScrapList();
+        for (int i = 0, scrapCount = scrapList.size(); i < scrapCount; i++) {
+            RecyclerView.ViewHolder viewHolder = scrapList.get(i);
+            if (viewHolder.getAdapterPosition() == index) {
+                return viewHolder.itemView;
+            }
+        }
         return mRecycler.getViewForPosition(index);
     }
 
@@ -341,23 +350,17 @@ public class FlexboxLayoutManager extends RecyclerView.LayoutManager implements 
      * The order attribute ({@link FlexItem#getOrder()}) is not supported by this class since
      * otherwise all view holders need to be inflated at least once even though only the visible
      * part of the layout is needed.
-     * Implementing just to conform the {@link FlexContainer} interface.
+     * Implementing this method just to make this class conform to the
+     * {@link FlexContainer} interface.
      *
      * @param index the index of the view
      * @return the view for the given index.
      * If the index is negative or out of bounds of the number of contained views,
      * returns {@code null}.
      */
-    public View getReorderedChildAt(int index) {
-        if (index < 0 || index >= mState.getItemCount()) {
-            return null;
-        }
-        return mRecycler.getViewForPosition(index);
-    }
-
     @Override
     public View getReorderedFlexItemAt(int index) {
-        return getReorderedChildAt(index);
+        return getFlexItemAt(index);
     }
 
     @Override
@@ -438,10 +441,8 @@ public class FlexboxLayoutManager extends RecyclerView.LayoutManager implements 
         // 3) Fill toward end from the anchor position
         // 4) Fill toward start from the anchor position
         if (DEBUG) {
-            Log.d(TAG,
-                    String.format("onLayoutChildren. recycler.getScrapList.size(): %s, state: %s",
-                            recycler.getScrapList().size(), state));
             Log.d(TAG, String.format("getChildCount: %d", getChildCount()));
+            Log.d(TAG, "State: " + state);
         }
 
         // Assign the Recycler and the State as the member variables so that
@@ -458,6 +459,7 @@ public class FlexboxLayoutManager extends RecyclerView.LayoutManager implements 
         ensureLayoutState();
         mFlexboxHelper.ensureMeasureSpecCache(childCount);
         mFlexboxHelper.ensureMeasuredSizeCache(childCount);
+
         mFlexboxHelper.ensureIndexToFlexLine(childCount);
 
         mLayoutState.mShouldRecycle = false;
@@ -471,13 +473,12 @@ public class FlexboxLayoutManager extends RecyclerView.LayoutManager implements 
 
         resolveLayoutDirection();
         updateLayoutStateToFillEnd(mAnchorInfo);
-
-        // Remove the existing views instead of scrapping it because otherwise some properties
-        // initialized during the onBind phase of each view are gone (like click listeners)
-        // after the layout phase. Because each view is first retrieved during the calculation of
-        // the flex lines (FlexboxHelper#calculate{Horizontal|vertical}FlexLines). If these are
-        // retrieved from the scrap in the layout phase, each view skips the onBind.
-        removeAndRecycleAllViews(recycler);
+        detachAndScrapAttachedViews(recycler);
+        if (DEBUG) {
+            Log.d(TAG,
+                    String.format("onLayoutChildren. recycler.getScrapList.size(): %s, state: %s",
+                            recycler.getScrapList().size(), state));
+        }
 
         // Calculate the flex lines until the calculated cross size reaches the
         // LayoutState#mAvailable (or until the end of the flex container)
@@ -886,9 +887,16 @@ public class FlexboxLayoutManager extends RecyclerView.LayoutManager implements 
             if (!layoutState.hasMore(state, mFlexLines)) {
                 break;
             }
-            View view = layoutState.next(recycler);
+            View view = getFlexItemAt(i);
             if (view == null) {
                 continue;
+            }
+
+            if (layoutState.mLayoutDirection == LayoutDirection.END) {
+                addView(view);
+            } else {
+                addView(view, indexInFlexLine);
+                indexInFlexLine++;
             }
 
             // Retrieve the measure spec from the cache because the view may be re-created when
@@ -905,13 +913,6 @@ public class FlexboxLayoutManager extends RecyclerView.LayoutManager implements 
 
             childLeft += (lp.leftMargin + getLeftDecorationWidth(view));
             childRight -= (lp.rightMargin + getRightDecorationWidth(view));
-
-            if (layoutState.mLayoutDirection == LayoutDirection.END) {
-                addView(view);
-            } else {
-                addView(view, indexInFlexLine);
-                indexInFlexLine++;
-            }
 
             if (mIsRtl) {
                 mFlexboxHelper.layoutSingleChildHorizontal(view, flexLine,
@@ -998,7 +999,8 @@ public class FlexboxLayoutManager extends RecyclerView.LayoutManager implements 
             if (!layoutState.hasMore(state, mFlexLines)) {
                 break;
             }
-            View view = layoutState.next(recycler);
+            View view = getFlexItemAt(i);
+
             if (view == null) {
                 continue;
             }
@@ -1099,13 +1101,13 @@ public class FlexboxLayoutManager extends RecyclerView.LayoutManager implements 
         // There are two cases for each of main axis direction. When the main axis direction is
         // horizontal:
         // -- Scroll horizontally when mFlexWrap == FlexWrap.NOWRAP. In this case scroll happens
-        //    along the main axis 
+        //    along the main axis
         // -- Scroll vertically when mFlexWrap != FlexWrap.NOWRAP. In this case scroll happens
         //    along the cross axis
-        // 
+        //
         // When scroll direction is vertical:
         // -- Scroll vertically when mFlexWrap == FlexWrap.NOWRAP. In this case scroll happens
-        //    along the main axis 
+        //    along the main axis
         // -- Scroll horizontally when mFlexWrap != FlexWrap.NOWRAP. In this case scroll happens
         //    along the cross axis
         if (isMainAxisDirectionHorizontal()) {
@@ -1758,18 +1760,6 @@ public class FlexboxLayoutManager extends RecyclerView.LayoutManager implements 
         private boolean hasMore(RecyclerView.State state, List<FlexLine> flexLines) {
             return mPosition >= 0 && mPosition < state.getItemCount() &&
                     mFlexLinePosition >= 0 && mFlexLinePosition < flexLines.size();
-        }
-
-        /**
-         * Gets the view for the next element that we should render.
-         * Also updates current item index to the next item, based on {@link #mItemDirection}
-         *
-         * @return The next element that we should render.
-         */
-        private View next(RecyclerView.Recycler recycler) {
-            final View view = recycler.getViewForPosition(mPosition);
-            mPosition += mItemDirection;
-            return view;
         }
 
         @Override
