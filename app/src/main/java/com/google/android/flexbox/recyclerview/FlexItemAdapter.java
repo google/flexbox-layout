@@ -58,6 +58,7 @@ public class FlexItemAdapter extends RecyclerView.Adapter<FlexItemViewHolder> {
     @Override
     public void onBindViewHolder(FlexItemViewHolder holder, int position) {
         int adapterPosition = holder.getAdapterPosition();
+        // TODO: More optimized set the click listener inside the view holder
         holder.itemView.setOnClickListener(new FlexItemClickListener(mActivity,
                 new FlexItemChangedListenerImplRecyclerView(mLayoutManager, this),
                 adapterPosition));
@@ -66,6 +67,7 @@ public class FlexItemAdapter extends RecyclerView.Adapter<FlexItemViewHolder> {
 
     public void addItem(FlexboxLayoutManager.LayoutParams lp) {
         mLayoutParams.add(lp);
+        notifyItemInserted(mLayoutParams.size() - 1);
     }
 
     public void removeItem(int position) {
@@ -73,6 +75,8 @@ public class FlexItemAdapter extends RecyclerView.Adapter<FlexItemViewHolder> {
             return;
         }
         mLayoutParams.remove(position);
+        notifyItemRemoved(mLayoutParams.size());
+        notifyItemRangeChanged(position, mLayoutParams.size());
     }
 
     public List<FlexboxLayoutManager.LayoutParams> getItems() {
