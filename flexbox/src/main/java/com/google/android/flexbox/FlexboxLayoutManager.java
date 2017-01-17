@@ -333,7 +333,7 @@ public class FlexboxLayoutManager extends RecyclerView.LayoutManager implements 
      */
     @Override
     public View getFlexItemAt(int index) {
-        // Look up from the scrap first to avoid the same view holder is created from the adpater
+        // Look up from the scrap first to avoid the same view holder is created from the adapter
         // again
         List<RecyclerView.ViewHolder> scrapList = mRecycler.getScrapList();
         for (int i = 0, scrapCount = scrapList.size(); i < scrapCount; i++) {
@@ -455,6 +455,7 @@ public class FlexboxLayoutManager extends RecyclerView.LayoutManager implements 
         if (childCount == 0 && state.isPreLayout()) {
             return;
         }
+        resolveLayoutDirection();
         ensureOrientationHelper();
         ensureLayoutState();
         mFlexboxHelper.ensureMeasureSpecCache(childCount);
@@ -471,7 +472,6 @@ public class FlexboxLayoutManager extends RecyclerView.LayoutManager implements 
         // view holders to be inflated at least once, which is inefficient if the number of items
         // in the adapter is large
 
-        resolveLayoutDirection();
         updateLayoutStateToFillEnd(mAnchorInfo);
         detachAndScrapAttachedViews(recycler);
         if (DEBUG) {
@@ -633,12 +633,44 @@ public class FlexboxLayoutManager extends RecyclerView.LayoutManager implements 
         return false;
     }
 
+    /**
+     * Find the reference view to be used as an anchor. It tries to find the view who has the
+     * maximum/minimum start/end (differs depending on if the container if RTL and the main axis
+     * direction) coordinate in the first visible flex line.
+     *
+     * @param state the current RecyclerView state
+     * @return the reference view
+     */
     private View findFirstReferenceChild(RecyclerView.State state) {
-        return findReferenceChild(0, getChildCount(), state.getItemCount());
+        assert mFlexboxHelper.mIndexToFlexLine != null;
+        View firstFound = findReferenceChild(0, getChildCount(), state.getItemCount());
+        if (firstFound == null) {
+            return null;
+        }
+        int firstFoundPosition = getPosition(firstFound);
+        int firstFoundLinePosition = mFlexboxHelper.mIndexToFlexLine[firstFoundPosition];
+        FlexLine firstFoundLine = mFlexLines.get(firstFoundLinePosition);
+        return findFirstReferenceViewInLine(firstFound, firstFoundLine);
     }
 
+    /**
+     * Find the reference view to be used as an anchor. It tries to find the view who has the
+     * maximum/minimum start/end (differs depending on if the container if RTL and the main axis
+     * direction) coordinate in the last visible flex line.
+     *
+     * @param state the current RecyclerView state
+     * @return the reference view
+     */
     private View findLastReferenceChild(RecyclerView.State state) {
-        return findReferenceChild(getChildCount() - 1, -1, state.getItemCount());
+        assert mFlexboxHelper.mIndexToFlexLine != null;
+        View lastFound = findReferenceChild(getChildCount() - 1, -1, state.getItemCount());
+        if (lastFound == null) {
+            return null;
+        }
+        int lastFoundPosition = getPosition(lastFound);
+        int lastFoundLinePosition = mFlexboxHelper.mIndexToFlexLine[lastFoundPosition];
+        FlexLine lastFoundLine = mFlexLines.get(lastFoundLinePosition);
+        return findLastReferenceViewInLine(lastFound, lastFoundLine);
     }
 
     /**
@@ -741,7 +773,6 @@ public class FlexboxLayoutManager extends RecyclerView.LayoutManager implements 
         }
         assert mFlexboxHelper.mIndexToFlexLine != null;
         int childCount = getChildCount();
-
         View firstView = getChildAt(0);
 
         int currentLineIndex = mFlexboxHelper.mIndexToFlexLine[getPosition(firstView)];
@@ -1201,26 +1232,11 @@ public class FlexboxLayoutManager extends RecyclerView.LayoutManager implements 
             int lastVisibleLinePosition = mFlexboxHelper.mIndexToFlexLine[lastVisiblePosition];
             FlexLine lastVisibleLine = mFlexLines.get(lastVisibleLinePosition);
 
-            // Loop through the views in the same line of the last visible view because the
-            // next view should be placed to the end of the flex line to which the last visible view
-            // belongs
-            for (int i = getChildCount() - 2, to = getChildCount() - lastVisibleLine.mItemCount - 1;
-                    i > to; i--) {
-                View viewInSameLine = getChildAt(i);
-                if (viewInSameLine == null || viewInSameLine.getVisibility() == View.GONE) {
-                    continue;
-                }
-                if (mIsRtl && !mainAxisHorizontal) {
-                    // The end edge of the view is left, should be the minimum left edge
-                    // where the next view should be placed
-                    mLayoutState.mOffset = Math.min(mLayoutState.mOffset,
-                            mOrientationHelper.getDecoratedEnd(viewInSameLine));
-                } else {
-                    mLayoutState.mOffset = Math.max(mLayoutState.mOffset,
-                            mOrientationHelper.getDecoratedEnd(viewInSameLine));
-                }
-            }
+            // The reference view which has the maximum end (or minimum if the layout is RTL and
+            // the main axis direction is horizontal) coordinate in  the last visible flex line.
+            View referenceView = findLastReferenceViewInLine(lastVisible, lastVisibleLine);
 
+            mLayoutState.mOffset = mOrientationHelper.getDecoratedEnd(referenceView);
             mLayoutState.mItemDirection = ItemDirection.TAIL;
             mLayoutState.mPosition = lastVisiblePosition + mLayoutState.mItemDirection;
             if (mFlexboxHelper.mIndexToFlexLine.length <= mLayoutState.mPosition) {
@@ -1229,7 +1245,7 @@ public class FlexboxLayoutManager extends RecyclerView.LayoutManager implements 
                 mLayoutState.mFlexLinePosition
                         = mFlexboxHelper.mIndexToFlexLine[mLayoutState.mPosition];
             }
-            mLayoutState.mScrollingOffset = mOrientationHelper.getDecoratedEnd(lastVisible)
+            mLayoutState.mScrollingOffset = mOrientationHelper.getDecoratedEnd(referenceView)
                     - mOrientationHelper.getEndAfterPadding();
 
             // If the RecyclerView tries to scroll beyond the already calculated
@@ -1260,26 +1276,17 @@ public class FlexboxLayoutManager extends RecyclerView.LayoutManager implements 
             }
         } else {
             View firstVisible = getChildAt(0);
+
             mLayoutState.mOffset = mOrientationHelper.getDecoratedStart(firstVisible);
             int firstVisiblePosition = getPosition(firstVisible);
             int firstVisibleLinePosition = mFlexboxHelper.mIndexToFlexLine[firstVisiblePosition];
             FlexLine firstVisibleLine = mFlexLines.get(firstVisibleLinePosition);
 
-            // Loop through the views in the same line of the first visible view because the
-            // next view should be placed to the start of the flex line to which the first visible
-            // view belongs
-            for (int i = 1, to = firstVisibleLine.mItemCount;
-                    i < to; i++) {
-                View viewInSameLine = getChildAt(i);
-                if (mIsRtl && !mainAxisHorizontal) {
-                    mLayoutState.mOffset = Math.max(mLayoutState.mOffset,
-                            mOrientationHelper.getDecoratedStart(viewInSameLine));
-                } else {
-                    mLayoutState.mOffset = Math.min(mLayoutState.mOffset,
-                            mOrientationHelper.getDecoratedStart(viewInSameLine));
-                }
-            }
+            // The reference view which has the minimum start (or maximum if the layout is RTL and
+            // the main axis direction is horizontal) coordinate in the first visible flex line
+            View referenceView = findFirstReferenceViewInLine(firstVisible, firstVisibleLine);
 
+            mLayoutState.mOffset = mOrientationHelper.getDecoratedStart(referenceView);
             mLayoutState.mItemDirection = ItemDirection.TAIL;
             int flexLinePosition = mFlexboxHelper.mIndexToFlexLine[firstVisiblePosition];
             if (flexLinePosition == NO_POSITION) {
@@ -1290,14 +1297,79 @@ public class FlexboxLayoutManager extends RecyclerView.LayoutManager implements 
             // shifting the position by the number of the items in the current line.
             mLayoutState.mPosition = firstVisiblePosition - currentLine.getItemCount();
             mLayoutState.mFlexLinePosition = flexLinePosition > 0 ? flexLinePosition - 1 : 0;
-            mLayoutState.mScrollingOffset = -mOrientationHelper.getDecoratedStart(firstVisible)
+            mLayoutState.mScrollingOffset = -mOrientationHelper.getDecoratedStart(referenceView)
                     + mOrientationHelper.getStartAfterPadding();
         }
         mLayoutState.mAvailable = absDelta - mLayoutState.mScrollingOffset;
     }
 
     /**
-     * Copied from {@link android.support.v7.widget.RecyclerView.LayoutManager#shouldMeasureChild(View,
+     * Loop through the first visible flex line to find the reference view, which has the minimum
+     * start (or maximum if the layout is RTL and main axis direction is horizontal) coordinate.
+     * @param firstView the first visible view
+     * @param firstVisibleLine the first visible flex line
+     * @return the reference view
+     */
+    private View findFirstReferenceViewInLine(View firstView, FlexLine firstVisibleLine) {
+        boolean mainAxisHorizontal = isMainAxisDirectionHorizontal();
+        View referenceView = firstView;
+        for (int i = 1, to = firstVisibleLine.mItemCount;
+                i < to; i++) {
+            View viewInSameLine = getChildAt(i);
+            if (viewInSameLine == null || viewInSameLine.getVisibility() == View.GONE) {
+                continue;
+            }
+            if (mIsRtl && !mainAxisHorizontal) {
+                if (mOrientationHelper.getDecoratedStart(referenceView)
+                        < mOrientationHelper.getDecoratedStart(viewInSameLine)) {
+                    referenceView = viewInSameLine;
+                }
+            } else {
+                if (mOrientationHelper.getDecoratedStart(referenceView)
+                        > mOrientationHelper.getDecoratedStart(viewInSameLine)) {
+                    referenceView = viewInSameLine;
+                }
+            }
+        }
+        return referenceView;
+    }
+
+    /**
+     * Loop through the last visible flex line to find the reference view, which has the maximum
+     * end (or minimum if the layout is RTL and main axis direction is horizontal) coordinate.
+     * @param lastView the last visible view
+     * @param lastVisibleLine the last visible flex line
+     * @return the reference view
+     */
+    private View findLastReferenceViewInLine(View lastView, FlexLine lastVisibleLine) {
+        boolean mainAxisHorizontal = isMainAxisDirectionHorizontal();
+        View referenceView = lastView;
+        for (int i = getChildCount() - 2, to = getChildCount() - lastVisibleLine.mItemCount - 1;
+                i > to; i--) {
+            View viewInSameLine = getChildAt(i);
+            if (viewInSameLine == null || viewInSameLine.getVisibility() == View.GONE) {
+                continue;
+            }
+            if (mIsRtl && !mainAxisHorizontal) {
+                // The end edge of the view is left, should be the minimum left edge
+                // where the next view should be placed
+                if (mOrientationHelper.getDecoratedEnd(referenceView) >
+                        mOrientationHelper.getDecoratedEnd(viewInSameLine)) {
+                    referenceView = viewInSameLine;
+                }
+            } else {
+                if (mOrientationHelper.getDecoratedEnd(referenceView) <
+                        mOrientationHelper.getDecoratedEnd(viewInSameLine)) {
+                    referenceView = viewInSameLine;
+                }
+            }
+        }
+        return referenceView;
+    }
+
+    /**
+     * Copied from {@link android.support.v7.widget.RecyclerView.LayoutManager#shouldMeasureChild
+     * (View,
      * int, int, RecyclerView.LayoutParams)}}
      */
     private boolean shouldMeasureChild(View child, int widthSpec, int heightSpec,
