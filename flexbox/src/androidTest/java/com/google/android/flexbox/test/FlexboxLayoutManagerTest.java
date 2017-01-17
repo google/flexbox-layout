@@ -1966,6 +1966,115 @@ public class FlexboxLayoutManagerTest {
                 isEqualAllowingError(TestUtil.dpToPixel(activity, 120)));
     }
 
+    @Test
+    @FlakyTest
+    public void testFirstReferenceView_middleOf_line_used_as_anchor() throws Throwable {
+        final FlexboxTestActivity activity = mActivityRule.getActivity();
+        final FlexboxLayoutManager layoutManager = new FlexboxLayoutManager();
+        final TestAdapter adapter = new TestAdapter();
+        mActivityRule.runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                activity.setContentView(R.layout.recyclerview);
+                RecyclerView recyclerView = (RecyclerView) activity.findViewById(R.id.recyclerview);
+                layoutManager.setFlexDirection(FlexDirection.ROW);
+                layoutManager.setAlignItems(AlignItems.FLEX_END);
+                recyclerView.setLayoutManager(layoutManager);
+                recyclerView.setAdapter(adapter);
+                FlexboxLayoutManager.LayoutParams lp1 = createLayoutParams(activity, 100, 80);
+                adapter.addItem(lp1);
+                // The second view in the first line has the maximum height in the same line
+                FlexboxLayoutManager.LayoutParams lp2 = createLayoutParams(activity, 100, 180);
+                adapter.addItem(lp2);
+                FlexboxLayoutManager.LayoutParams lp3 = createLayoutParams(activity, 100, 80);
+                adapter.addItem(lp3);
+                for (int i = 0; i < 30; i++) {
+                    FlexboxLayoutManager.LayoutParams lp = createLayoutParams(activity, 100, 80);
+                    adapter.addItem(lp);
+                }
+                // RecyclerView width: 320, height: 240.
+            }
+        });
+        InstrumentationRegistry.getInstrumentation().waitForIdleSync();
+        onView(withId(R.id.recyclerview)).perform(swipe(GeneralLocation.BOTTOM_CENTER,
+                GeneralLocation.TOP_CENTER));
+        onView(withId(R.id.recyclerview)).perform(swipe(GeneralLocation.BOTTOM_CENTER,
+                GeneralLocation.TOP_CENTER));
+        onView(withId(R.id.recyclerview)).perform(swipe(GeneralLocation.BOTTOM_CENTER,
+                GeneralLocation.TOP_CENTER));
+        onView(withId(R.id.recyclerview)).perform(swipe(GeneralLocation.BOTTOM_CENTER,
+                GeneralLocation.TOP_CENTER));
+        // By this moment reached to the bottom
+
+        // Now scrolling to the top to see if the views in the first flex line is correctly placed
+        onView(withId(R.id.recyclerview)).perform(swipe(GeneralLocation.TOP_CENTER,
+                GeneralLocation.BOTTOM_CENTER));
+        onView(withId(R.id.recyclerview)).perform(swipe(GeneralLocation.TOP_CENTER,
+                GeneralLocation.BOTTOM_CENTER));
+        onView(withId(R.id.recyclerview)).perform(swipe(GeneralLocation.TOP_CENTER,
+                GeneralLocation.BOTTOM_CENTER));
+        onView(withId(R.id.recyclerview)).perform(swipe(GeneralLocation.TOP_CENTER,
+                GeneralLocation.BOTTOM_CENTER));
+
+        assertThat(layoutManager.getFlexDirection(), is(FlexDirection.ROW));
+
+        // The top coordinate of the first view should be the height of the second view minus the
+        // height of the first view (180 - 80)
+        assertThat(layoutManager.getChildAt(0).getTop(),
+                isEqualAllowingError(TestUtil.dpToPixel(activity, 100)));
+    }
+
+    @Test
+    @FlakyTest
+    public void testLastReferenceView_middleOf_line_used_as_anchor() throws Throwable {
+        final FlexboxTestActivity activity = mActivityRule.getActivity();
+        final FlexboxLayoutManager layoutManager = new FlexboxLayoutManager();
+        final TestAdapter adapter = new TestAdapter();
+        mActivityRule.runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                activity.setContentView(R.layout.recyclerview);
+                RecyclerView recyclerView = (RecyclerView) activity.findViewById(R.id.recyclerview);
+                layoutManager.setFlexDirection(FlexDirection.ROW);
+                layoutManager.setAlignItems(AlignItems.FLEX_START);
+                recyclerView.setLayoutManager(layoutManager);
+                recyclerView.setAdapter(adapter);
+
+                for (int i = 0; i < 30; i++) {
+                    FlexboxLayoutManager.LayoutParams lp = createLayoutParams(activity, 100, 80);
+                    adapter.addItem(lp);
+                }
+                FlexboxLayoutManager.LayoutParams lp1 = createLayoutParams(activity, 100, 80);
+                adapter.addItem(lp1);
+                // The second view in the last line has the maximum height in the same line
+                FlexboxLayoutManager.LayoutParams lp2 = createLayoutParams(activity, 100, 180);
+                adapter.addItem(lp2);
+                FlexboxLayoutManager.LayoutParams lp3 = createLayoutParams(activity, 100, 80);
+                adapter.addItem(lp3);
+                // RecyclerView width: 320, height: 240.
+            }
+        });
+        InstrumentationRegistry.getInstrumentation().waitForIdleSync();
+        onView(withId(R.id.recyclerview)).perform(swipe(GeneralLocation.BOTTOM_CENTER,
+                GeneralLocation.TOP_CENTER));
+        onView(withId(R.id.recyclerview)).perform(swipe(GeneralLocation.BOTTOM_CENTER,
+                GeneralLocation.TOP_CENTER));
+        onView(withId(R.id.recyclerview)).perform(swipe(GeneralLocation.BOTTOM_CENTER,
+                GeneralLocation.TOP_CENTER));
+        onView(withId(R.id.recyclerview)).perform(swipe(GeneralLocation.BOTTOM_CENTER,
+                GeneralLocation.TOP_CENTER));
+        // By this moment reached to the bottom
+
+        assertThat(layoutManager.getFlexDirection(), is(FlexDirection.ROW));
+
+        // The bottom coordinate of the first view in the last line should be the height of the
+        // second view in the last line minus the height of the first view in the last line
+        // (180 - 80)
+        assertThat(layoutManager.getChildAt(layoutManager.getChildCount() - 2).getBottom() -
+                layoutManager.getChildAt(layoutManager.getChildCount() - 3).getBottom(),
+                isEqualAllowingError(TestUtil.dpToPixel(activity, 100)));
+    }
+
     /**
      * Creates a new flex item.
      *
