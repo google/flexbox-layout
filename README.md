@@ -322,10 +322,10 @@ Xamarin binding is now available on [NuGet](https://www.nuget.org/packages/Flexb
 The `app` module works as a playground demo app for trying various values for the supported attributes.
 You can install it by
 ```
-./gradlew app:installDebug
+./gradlew demo-playground:installDebug
 ```
 
-## Cat gallery deom app
+## Cat gallery demo app
 The `demo-cat-gallery` module showcases the usage of the FlexboxLayoutManager inside the RecyclerView
 that handles various sizes of views aligned nicely regardless of the device width like the
 Google Photo app without loading all the images on the memory.
