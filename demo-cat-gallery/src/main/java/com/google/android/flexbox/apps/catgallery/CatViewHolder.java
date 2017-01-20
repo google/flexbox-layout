@@ -19,6 +19,7 @@ package com.google.android.flexbox.apps.catgallery;
 import android.graphics.drawable.Drawable;
 import android.support.v7.widget.RecyclerView;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.ImageView;
 
 import com.google.android.flexbox.FlexboxLayoutManager;
@@ -37,8 +38,11 @@ class CatViewHolder extends RecyclerView.ViewHolder {
 
     void bindTo(Drawable drawable) {
         mImageView.setImageDrawable(drawable);
-        FlexboxLayoutManager.LayoutParams lp = (FlexboxLayoutManager.LayoutParams)
-                mImageView.getLayoutParams();
-        lp.setFlexGrow(1.0f);
+        ViewGroup.LayoutParams lp = mImageView.getLayoutParams();
+        if (lp instanceof FlexboxLayoutManager.LayoutParams) {
+            FlexboxLayoutManager.LayoutParams flexboxLp = (FlexboxLayoutManager.LayoutParams)
+                    mImageView.getLayoutParams();
+            flexboxLp.setFlexGrow(1.0f);
+        }
     }
 }
