@@ -16,18 +16,22 @@
 
 package com.google.android.flexbox.test;
 
-import com.google.android.flexbox.AlignItems;
-import com.google.android.flexbox.AlignSelf;
-import com.google.android.flexbox.FlexDirection;
-import com.google.android.flexbox.FlexWrap;
-import com.google.android.flexbox.FlexboxLayoutManager;
-import com.google.android.flexbox.JustifyContent;
+import static android.support.test.espresso.Espresso.onView;
+import static android.support.test.espresso.matcher.ViewMatchers.withId;
 
-import org.junit.Rule;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import static com.google.android.flexbox.test.IsEqualAllowingError.isEqualAllowingError;
+
+import static junit.framework.Assert.assertTrue;
+
+import static org.hamcrest.Matchers.instanceOf;
+import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.notNullValue;
+import static org.hamcrest.core.IsNot.not;
+import static org.junit.Assert.assertThat;
 
 import android.content.Context;
+import android.content.pm.ActivityInfo;
+import android.content.res.Configuration;
 import android.support.test.InstrumentationRegistry;
 import android.support.test.espresso.ViewAction;
 import android.support.test.espresso.action.CoordinatesProvider;
@@ -43,14 +47,16 @@ import android.support.v7.widget.RecyclerView;
 import android.view.View;
 import android.widget.TextView;
 
-import static android.support.test.espresso.Espresso.onView;
-import static android.support.test.espresso.matcher.ViewMatchers.withId;
-import static com.google.android.flexbox.test.IsEqualAllowingError.isEqualAllowingError;
-import static org.hamcrest.Matchers.instanceOf;
-import static org.hamcrest.Matchers.is;
-import static org.hamcrest.Matchers.notNullValue;
-import static org.hamcrest.core.IsNot.not;
-import static org.junit.Assert.assertThat;
+import com.google.android.flexbox.AlignItems;
+import com.google.android.flexbox.AlignSelf;
+import com.google.android.flexbox.FlexDirection;
+import com.google.android.flexbox.FlexWrap;
+import com.google.android.flexbox.FlexboxLayoutManager;
+import com.google.android.flexbox.JustifyContent;
+
+import org.junit.Rule;
+import org.junit.Test;
+import org.junit.runner.RunWith;
 
 /**
  * Integration tests for {@link FlexboxLayoutManager}.
@@ -1805,7 +1811,8 @@ public class FlexboxLayoutManagerTest {
     @FlakyTest
     public void testScrollToBottom_middleItem_as_anchorPosition() throws Throwable {
         // There was an issue that the anchor position was based on the last item in the last
-        // visible flex line when scrolling to bottom. But the anchor position should be based on the
+        // visible flex line when scrolling to bottom. But the anchor position should be based on
+        // the
         // flex line position (view which has the maximum bottom position in the same flex line)
         // This test verifies the issue is fixed.
         final FlexboxTestActivity activity = mActivityRule.getActivity();
@@ -2071,8 +2078,108 @@ public class FlexboxLayoutManagerTest {
         // second view in the last line minus the height of the first view in the last line
         // (180 - 80)
         assertThat(layoutManager.getChildAt(layoutManager.getChildCount() - 2).getBottom() -
-                layoutManager.getChildAt(layoutManager.getChildCount() - 3).getBottom(),
+                        layoutManager.getChildAt(layoutManager.getChildCount() - 3).getBottom(),
                 isEqualAllowingError(TestUtil.dpToPixel(activity, 100)));
+    }
+
+    @Test
+    @FlakyTest
+    public void testRotateScreen_direction_row() throws Throwable {
+        final FlexboxTestActivity activity = mActivityRule.getActivity();
+        final FlexboxLayoutManager layoutManager = new FlexboxLayoutManager();
+        final TestAdapter adapter = new TestAdapter();
+        mActivityRule.runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                activity.setContentView(R.layout.recyclerview);
+                RecyclerView recyclerView = (RecyclerView) activity.findViewById(R.id.recyclerview);
+                layoutManager.setFlexDirection(FlexDirection.ROW);
+                layoutManager.setAlignItems(AlignItems.STRETCH);
+                recyclerView.setLayoutManager(layoutManager);
+                recyclerView.setAdapter(adapter);
+
+                for (int i = 0; i < 30; i++) {
+                    FlexboxLayoutManager.LayoutParams lp = createLayoutParams(activity, 100, 100);
+                    adapter.addItem(lp);
+                }
+                // RecyclerView width: 320, height: 240.
+            }
+        });
+        InstrumentationRegistry.getInstrumentation().waitForIdleSync();
+        onView(withId(R.id.recyclerview)).perform(swipe(GeneralLocation.BOTTOM_CENTER,
+                GeneralLocation.CENTER));
+
+        assertThat(layoutManager.getFlexDirection(), is(FlexDirection.ROW));
+        View anchorView = layoutManager.getChildAt(0);
+        int offset = anchorView.getTop();
+        assertTrue(offset < 0);
+
+        mActivityRule.runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                int orientation = activity.getResources().getConfiguration().orientation;
+                if (orientation == Configuration.ORIENTATION_PORTRAIT) {
+                    activity.setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
+                } else {
+                    activity.setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
+                }
+            }
+        });
+        InstrumentationRegistry.getInstrumentation().waitForIdleSync();
+
+        // Verify that offset position is preserved for the first visible view after the rotation
+        View anchorAfterRotate = layoutManager.getChildAt(0);
+        assertTrue(anchorAfterRotate.getTop() < 0);
+    }
+
+    @Test
+    @FlakyTest
+    public void testRotateScreen_direction_column() throws Throwable {
+        final FlexboxTestActivity activity = mActivityRule.getActivity();
+        final FlexboxLayoutManager layoutManager = new FlexboxLayoutManager();
+        final TestAdapter adapter = new TestAdapter();
+        mActivityRule.runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                activity.setContentView(R.layout.recyclerview);
+                RecyclerView recyclerView = (RecyclerView) activity.findViewById(R.id.recyclerview);
+                layoutManager.setFlexDirection(FlexDirection.COLUMN);
+                layoutManager.setAlignItems(AlignItems.STRETCH);
+                recyclerView.setLayoutManager(layoutManager);
+                recyclerView.setAdapter(adapter);
+
+                for (int i = 0; i < 30; i++) {
+                    FlexboxLayoutManager.LayoutParams lp = createLayoutParams(activity, 100, 80);
+                    adapter.addItem(lp);
+                }
+                // RecyclerView width: 320, height: 240.
+            }
+        });
+        InstrumentationRegistry.getInstrumentation().waitForIdleSync();
+        onView(withId(R.id.recyclerview)).perform(swipe(GeneralLocation.CENTER_RIGHT,
+                GeneralLocation.CENTER));
+
+        assertThat(layoutManager.getFlexDirection(), is(FlexDirection.COLUMN));
+        View anchorView = layoutManager.getChildAt(0);
+        int offset = anchorView.getLeft();
+        assertTrue(offset < 0);
+
+        mActivityRule.runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                int orientation = activity.getResources().getConfiguration().orientation;
+                if (orientation == Configuration.ORIENTATION_PORTRAIT) {
+                    activity.setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
+                } else {
+                    activity.setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
+                }
+            }
+        });
+        InstrumentationRegistry.getInstrumentation().waitForIdleSync();
+
+        // Verify that offset position is preserved for the first visible view after the rotation
+        View anchorAfterRotate = layoutManager.getChildAt(0);
+        assertTrue(anchorAfterRotate.getLeft() < 0);
     }
 
     /**
@@ -2093,5 +2200,6 @@ public class FlexboxLayoutManagerTest {
     private static ViewAction swipe(CoordinatesProvider from, CoordinatesProvider to) {
         return new GeneralSwipeAction(Swipe.FAST, from, to, Press.FINGER);
     }
+
 }
 
