@@ -1980,10 +1980,18 @@ public class FlexboxLayoutManager extends RecyclerView.LayoutManager implements 
         }
     }
 
+    /**
+     * The saved state that needs to be restored after the RecyclerView is recreated.
+     */
     private static class SavedState implements Parcelable {
 
+        /** The adapter position of the first visible view */
         private int mAnchorPosition;
 
+        /**
+         * The offset of the first visible view.
+         * E.g. if this value is set as -30, the fist visible view's top is off screen by 30 pixels
+         */
         private int mAnchorOffset;
 
         @Override
@@ -2006,8 +2014,8 @@ public class FlexboxLayoutManager extends RecyclerView.LayoutManager implements 
         }
 
         private SavedState(SavedState savedState) {
-            mAnchorOffset = savedState.mAnchorOffset;
             mAnchorPosition = savedState.mAnchorPosition;
+            mAnchorOffset = savedState.mAnchorOffset;
         }
 
         private void invalidateAnchor() {
