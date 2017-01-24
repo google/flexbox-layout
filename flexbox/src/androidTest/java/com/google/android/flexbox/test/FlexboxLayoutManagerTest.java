@@ -19,6 +19,8 @@ package com.google.android.flexbox.test;
 import static android.support.test.espresso.Espresso.onView;
 import static android.support.test.espresso.matcher.ViewMatchers.withId;
 
+import static com.google.android.flexbox.FlexboxItemDecoration.HORIZONTAL;
+import static com.google.android.flexbox.FlexboxItemDecoration.VERTICAL;
 import static com.google.android.flexbox.test.IsEqualAllowingError.isEqualAllowingError;
 
 import static junit.framework.Assert.assertTrue;
@@ -32,6 +34,7 @@ import static org.junit.Assert.assertThat;
 import android.content.Context;
 import android.content.pm.ActivityInfo;
 import android.content.res.Configuration;
+import android.graphics.drawable.Drawable;
 import android.support.test.InstrumentationRegistry;
 import android.support.test.espresso.ViewAction;
 import android.support.test.espresso.action.CoordinatesProvider;
@@ -43,6 +46,7 @@ import android.support.test.filters.FlakyTest;
 import android.support.test.filters.MediumTest;
 import android.support.test.rule.ActivityTestRule;
 import android.support.test.runner.AndroidJUnit4;
+import android.support.v4.content.res.ResourcesCompat;
 import android.support.v7.widget.RecyclerView;
 import android.view.View;
 import android.widget.TextView;
@@ -51,6 +55,7 @@ import com.google.android.flexbox.AlignItems;
 import com.google.android.flexbox.AlignSelf;
 import com.google.android.flexbox.FlexDirection;
 import com.google.android.flexbox.FlexWrap;
+import com.google.android.flexbox.FlexboxItemDecoration;
 import com.google.android.flexbox.FlexboxLayoutManager;
 import com.google.android.flexbox.JustifyContent;
 
@@ -2149,7 +2154,7 @@ public class FlexboxLayoutManagerTest {
                 recyclerView.setAdapter(adapter);
 
                 for (int i = 0; i < 30; i++) {
-                    FlexboxLayoutManager.LayoutParams lp = createLayoutParams(activity, 100, 80);
+                    FlexboxLayoutManager.LayoutParams lp = createLayoutParams(activity, 100, 100);
                     adapter.addItem(lp);
                 }
                 // RecyclerView width: 320, height: 240.
@@ -2180,6 +2185,396 @@ public class FlexboxLayoutManagerTest {
         // Verify that offset position is preserved for the first visible view after the rotation
         View anchorAfterRotate = layoutManager.getChildAt(0);
         assertTrue(anchorAfterRotate.getLeft() < 0);
+    }
+
+    @Test
+    @FlakyTest
+    public void testDecoration_direction_row() throws Throwable {
+        final FlexboxTestActivity activity = mActivityRule.getActivity();
+        final FlexboxLayoutManager layoutManager = new FlexboxLayoutManager();
+        final TestAdapter adapter = new TestAdapter();
+        final Drawable drawable = ResourcesCompat.getDrawable(activity.getResources(),
+                R.drawable.divider, null);
+        final FlexboxItemDecoration itemDecoration = new FlexboxItemDecoration(activity);
+        itemDecoration.setDrawable(drawable);
+
+        mActivityRule.runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                activity.setContentView(R.layout.recyclerview);
+                RecyclerView recyclerView = (RecyclerView) activity.findViewById(R.id.recyclerview);
+                layoutManager.setFlexDirection(FlexDirection.ROW);
+                recyclerView.setLayoutManager(layoutManager);
+                recyclerView.addItemDecoration(itemDecoration);
+                recyclerView.setAdapter(adapter);
+
+                for (int i = 0; i < 10; i++) {
+                    FlexboxLayoutManager.LayoutParams lp = createLayoutParams(activity, 90, 100);
+                    adapter.addItem(lp);
+                }
+                // RecyclerView width: 320, height: 240.
+            }
+        });
+        InstrumentationRegistry.getInstrumentation().waitForIdleSync();
+
+        assertThat(layoutManager.getFlexDirection(), is(FlexDirection.ROW));
+        View view2 = layoutManager.getChildAt(1);
+        // 90 (view width) + 10 (divider width)
+        assertThat(view2.getLeft(), isEqualAllowingError(TestUtil.dpToPixel(activity, 100), 2));
+        View view3 = layoutManager.getChildAt(2);
+        // 90 (view width) + 10 (divider width) + 90(view width) + 10 (divider width)
+        assertThat(view3.getLeft(), isEqualAllowingError(TestUtil.dpToPixel(activity, 200), 2));
+        View view4 = layoutManager.getChildAt(3);
+        // 100 (view height) + 15 (divider height)
+        assertThat(view4.getTop(), isEqualAllowingError(TestUtil.dpToPixel(activity, 115), 2));
+        View view7 = layoutManager.getChildAt(6);
+        // 100 (view height) + 15 (divider height) + 100 (view height) + 15 (divider height)
+        assertThat(view7.getTop(), isEqualAllowingError(TestUtil.dpToPixel(activity, 230), 2));
+
+        mActivityRule.runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                RecyclerView recyclerView = (RecyclerView) activity.findViewById(R.id.recyclerview);
+                recyclerView.removeItemDecoration(itemDecoration);
+                itemDecoration.setOrientation(HORIZONTAL);
+                recyclerView.addItemDecoration(itemDecoration);
+            }
+        });
+        InstrumentationRegistry.getInstrumentation().waitForIdleSync();
+
+        view2 = layoutManager.getChildAt(1);
+        // 90 (view width)
+        assertThat(view2.getLeft(), isEqualAllowingError(TestUtil.dpToPixel(activity, 90), 2));
+        view3 = layoutManager.getChildAt(2);
+        // 90 (view width) + 90(view width)
+        assertThat(view3.getLeft(), isEqualAllowingError(TestUtil.dpToPixel(activity, 180), 2));
+        view4 = layoutManager.getChildAt(3);
+        // 100 (view height) + 15 (divider height)
+        assertThat(view4.getTop(), isEqualAllowingError(TestUtil.dpToPixel(activity, 115), 2));
+        view7 = layoutManager.getChildAt(6);
+        // 100 (view height) + 15 (divider height) + 100 (view height) + 15 (divider height)
+        assertThat(view7.getTop(), isEqualAllowingError(TestUtil.dpToPixel(activity, 230), 2));
+
+        mActivityRule.runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                RecyclerView recyclerView = (RecyclerView) activity.findViewById(R.id.recyclerview);
+                recyclerView.removeItemDecoration(itemDecoration);
+                itemDecoration.setOrientation(VERTICAL);
+                recyclerView.addItemDecoration(itemDecoration);
+            }
+        });
+        InstrumentationRegistry.getInstrumentation().waitForIdleSync();
+
+        view2 = layoutManager.getChildAt(1);
+        // 90 (view width) + 10 (divider width)
+        assertThat(view2.getLeft(), isEqualAllowingError(TestUtil.dpToPixel(activity, 100), 2));
+        view3 = layoutManager.getChildAt(2);
+        // 90 (view width) + 10 (divider width) + 90(view width) + 10 (divider width)
+        assertThat(view3.getLeft(), isEqualAllowingError(TestUtil.dpToPixel(activity, 200), 2));
+        view4 = layoutManager.getChildAt(3);
+        // 100 (view height)
+        assertThat(view4.getTop(), isEqualAllowingError(TestUtil.dpToPixel(activity, 100), 2));
+        view7 = layoutManager.getChildAt(6);
+        // 100 (view height) + 100 (view height)
+        assertThat(view7.getTop(), isEqualAllowingError(TestUtil.dpToPixel(activity, 200), 2));
+    }
+
+    @Test
+    @FlakyTest
+    public void testDecoration_direction_rowReverse() throws Throwable {
+        final FlexboxTestActivity activity = mActivityRule.getActivity();
+        final FlexboxLayoutManager layoutManager = new FlexboxLayoutManager();
+        final TestAdapter adapter = new TestAdapter();
+        final Drawable drawable = ResourcesCompat.getDrawable(activity.getResources(),
+                R.drawable.divider, null);
+        final FlexboxItemDecoration itemDecoration = new FlexboxItemDecoration(activity);
+        itemDecoration.setDrawable(drawable);
+
+        mActivityRule.runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                activity.setContentView(R.layout.recyclerview);
+                RecyclerView recyclerView = (RecyclerView) activity.findViewById(R.id.recyclerview);
+                layoutManager.setFlexDirection(FlexDirection.ROW_REVERSE);
+                recyclerView.setLayoutManager(layoutManager);
+                recyclerView.addItemDecoration(itemDecoration);
+                recyclerView.setAdapter(adapter);
+
+                for (int i = 0; i < 10; i++) {
+                    FlexboxLayoutManager.LayoutParams lp = createLayoutParams(activity, 90, 100);
+                    adapter.addItem(lp);
+                }
+                // RecyclerView width: 320, height: 240.
+            }
+        });
+        InstrumentationRegistry.getInstrumentation().waitForIdleSync();
+
+        assertThat(layoutManager.getFlexDirection(), is(FlexDirection.ROW_REVERSE));
+        View view1 = layoutManager.getChildAt(0);
+        View view2 = layoutManager.getChildAt(1);
+        // 90 (view width) + 10 (divider width)
+        assertThat(view1.getRight() - view2.getRight(),
+                isEqualAllowingError(TestUtil.dpToPixel(activity, 100), 2));
+        View view3 = layoutManager.getChildAt(2);
+        // 90 (view width) + 10 (divider width) + 90(view width) + 10 (divider width)
+        assertThat(view1.getRight() - view3.getRight(),
+                isEqualAllowingError(TestUtil.dpToPixel(activity, 200), 2));
+        View view4 = layoutManager.getChildAt(3);
+        // 100 (view height) + 15 (divider height)
+        assertThat(view4.getTop(), isEqualAllowingError(TestUtil.dpToPixel(activity, 115), 2));
+        View view7 = layoutManager.getChildAt(6);
+        // 100 (view height) + 15 (divider height) + 100 (view height) + 15 (divider height)
+        assertThat(view7.getTop(), isEqualAllowingError(TestUtil.dpToPixel(activity, 230), 2));
+
+        mActivityRule.runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                RecyclerView recyclerView = (RecyclerView) activity.findViewById(R.id.recyclerview);
+                recyclerView.removeItemDecoration(itemDecoration);
+                itemDecoration.setOrientation(HORIZONTAL);
+                recyclerView.addItemDecoration(itemDecoration);
+            }
+        });
+        InstrumentationRegistry.getInstrumentation().waitForIdleSync();
+
+        view1 = layoutManager.getChildAt(0);
+        view2 = layoutManager.getChildAt(1);
+        // 90 (view width)
+        assertThat(view1.getRight() - view2.getRight(),
+                isEqualAllowingError(TestUtil.dpToPixel(activity, 90), 2));
+        view3 = layoutManager.getChildAt(2);
+        // 90 (view width) + 90(view width)
+        assertThat(view1.getRight() - view3.getRight(),
+                isEqualAllowingError(TestUtil.dpToPixel(activity, 180), 2));
+        view4 = layoutManager.getChildAt(3);
+        // 100 (view height) + 15 (divider height)
+        assertThat(view4.getTop(), isEqualAllowingError(TestUtil.dpToPixel(activity, 115), 2));
+        view7 = layoutManager.getChildAt(6);
+        // 100 (view height) + 15 (divider height) + 100 (view height) + 15 (divider height)
+        assertThat(view7.getTop(), isEqualAllowingError(TestUtil.dpToPixel(activity, 230), 2));
+
+        mActivityRule.runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                RecyclerView recyclerView = (RecyclerView) activity.findViewById(R.id.recyclerview);
+                recyclerView.removeItemDecoration(itemDecoration);
+                itemDecoration.setOrientation(VERTICAL);
+                recyclerView.addItemDecoration(itemDecoration);
+            }
+        });
+        InstrumentationRegistry.getInstrumentation().waitForIdleSync();
+
+        view1 = layoutManager.getChildAt(0);
+        view2 = layoutManager.getChildAt(1);
+        // 90 (view width) + 10 (divider width)
+        assertThat(view1.getRight() - view2.getRight(),
+                isEqualAllowingError(TestUtil.dpToPixel(activity, 100), 2));
+        view3 = layoutManager.getChildAt(2);
+        // 90 (view width) + 10 (divider width) + 90(view width) + 10 (divider width)
+        assertThat(view1.getRight() - view3.getRight(),
+                isEqualAllowingError(TestUtil.dpToPixel(activity, 200), 2));
+        view4 = layoutManager.getChildAt(3);
+        // 100 (view height)
+        assertThat(view4.getTop(), isEqualAllowingError(TestUtil.dpToPixel(activity, 100), 2));
+        view7 = layoutManager.getChildAt(6);
+        // 100 (view height) + 100 (view height)
+        assertThat(view7.getTop(), isEqualAllowingError(TestUtil.dpToPixel(activity, 200), 2));
+    }
+
+    @Test
+    @FlakyTest
+    public void testDecoration_direction_column() throws Throwable {
+        final FlexboxTestActivity activity = mActivityRule.getActivity();
+        final FlexboxLayoutManager layoutManager = new FlexboxLayoutManager();
+        final TestAdapter adapter = new TestAdapter();
+        final Drawable drawable = ResourcesCompat.getDrawable(activity.getResources(),
+                R.drawable.divider, null);
+        final FlexboxItemDecoration itemDecoration = new FlexboxItemDecoration(activity);
+        itemDecoration.setDrawable(drawable);
+
+        mActivityRule.runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                activity.setContentView(R.layout.recyclerview);
+                RecyclerView recyclerView = (RecyclerView) activity.findViewById(R.id.recyclerview);
+                layoutManager.setFlexDirection(FlexDirection.COLUMN);
+                recyclerView.setLayoutManager(layoutManager);
+                recyclerView.addItemDecoration(itemDecoration);
+                recyclerView.setAdapter(adapter);
+
+                for (int i = 0; i < 10; i++) {
+                    FlexboxLayoutManager.LayoutParams lp = createLayoutParams(activity, 90, 65);
+                    adapter.addItem(lp);
+                }
+                // RecyclerView width: 320, height: 240.
+            }
+        });
+        InstrumentationRegistry.getInstrumentation().waitForIdleSync();
+
+        assertThat(layoutManager.getFlexDirection(), is(FlexDirection.COLUMN));
+        View view2 = layoutManager.getChildAt(1);
+        // 65 (view height) + 15 (divider height)
+        assertThat(view2.getTop(), isEqualAllowingError(TestUtil.dpToPixel(activity, 80), 2));
+        View view3 = layoutManager.getChildAt(2);
+        // 65 (view height) + 15 (divider height) + 65 (view height) + 15 (divider height)
+        assertThat(view3.getTop(), isEqualAllowingError(TestUtil.dpToPixel(activity, 160), 2));
+        View view4 = layoutManager.getChildAt(3);
+        // 90 (view width) + 10 (divider width)
+        assertThat(view4.getLeft(), isEqualAllowingError(TestUtil.dpToPixel(activity, 100), 2));
+        View view7 = layoutManager.getChildAt(6);
+        // 90 (view width) + 10 (divider width) + 90 (view width) + 10 (divider width)
+        assertThat(view7.getLeft(), isEqualAllowingError(TestUtil.dpToPixel(activity, 200), 2));
+
+        mActivityRule.runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                RecyclerView recyclerView = (RecyclerView) activity.findViewById(R.id.recyclerview);
+                recyclerView.removeItemDecoration(itemDecoration);
+                itemDecoration.setOrientation(HORIZONTAL);
+                recyclerView.addItemDecoration(itemDecoration);
+            }
+        });
+        InstrumentationRegistry.getInstrumentation().waitForIdleSync();
+
+        view2 = layoutManager.getChildAt(1);
+        // 65 (view height) + 15 (divider height)
+        assertThat(view2.getTop(), isEqualAllowingError(TestUtil.dpToPixel(activity, 80), 2));
+        view3 = layoutManager.getChildAt(2);
+        // 65 (view height) + 15 (divider height) + 65 (view height) + 15 (divider height)
+        assertThat(view3.getTop(), isEqualAllowingError(TestUtil.dpToPixel(activity, 160), 2));
+        view4 = layoutManager.getChildAt(3);
+        // 90 (view width)
+        assertThat(view4.getLeft(), isEqualAllowingError(TestUtil.dpToPixel(activity, 90), 2));
+        view7 = layoutManager.getChildAt(6);
+        // 90 (view width) + 90 (view width)
+        assertThat(view7.getLeft(), isEqualAllowingError(TestUtil.dpToPixel(activity, 180), 2));
+
+        mActivityRule.runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                RecyclerView recyclerView = (RecyclerView) activity.findViewById(R.id.recyclerview);
+                recyclerView.removeItemDecoration(itemDecoration);
+                itemDecoration.setOrientation(VERTICAL);
+                recyclerView.addItemDecoration(itemDecoration);
+            }
+        });
+        InstrumentationRegistry.getInstrumentation().waitForIdleSync();
+
+        view2 = layoutManager.getChildAt(1);
+        // 65 (view height)
+        assertThat(view2.getTop(), isEqualAllowingError(TestUtil.dpToPixel(activity, 65), 2));
+        view3 = layoutManager.getChildAt(2);
+        // 65 (view height) + 65 (view height)
+        assertThat(view3.getTop(), isEqualAllowingError(TestUtil.dpToPixel(activity, 130), 2));
+        view4 = layoutManager.getChildAt(3);
+        // 90 (view width) + 10 (divider width)
+        assertThat(view4.getLeft(), isEqualAllowingError(TestUtil.dpToPixel(activity, 100), 2));
+        view7 = layoutManager.getChildAt(6);
+        // 90 (view width) + 10 (divider width) + 90 (view width) + 10 (divider width)
+        assertThat(view7.getLeft(), isEqualAllowingError(TestUtil.dpToPixel(activity, 200), 2));
+    }
+
+    @Test
+    @FlakyTest
+    public void testDecoration_direction_columnReverse() throws Throwable {
+        final FlexboxTestActivity activity = mActivityRule.getActivity();
+        final FlexboxLayoutManager layoutManager = new FlexboxLayoutManager();
+        final TestAdapter adapter = new TestAdapter();
+        final Drawable drawable = ResourcesCompat.getDrawable(activity.getResources(),
+                R.drawable.divider, null);
+        final FlexboxItemDecoration itemDecoration = new FlexboxItemDecoration(activity);
+        itemDecoration.setDrawable(drawable);
+
+        mActivityRule.runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                activity.setContentView(R.layout.recyclerview);
+                RecyclerView recyclerView = (RecyclerView) activity.findViewById(R.id.recyclerview);
+                layoutManager.setFlexDirection(FlexDirection.COLUMN_REVERSE);
+                recyclerView.setLayoutManager(layoutManager);
+                recyclerView.addItemDecoration(itemDecoration);
+                recyclerView.setAdapter(adapter);
+
+                for (int i = 0; i < 10; i++) {
+                    FlexboxLayoutManager.LayoutParams lp = createLayoutParams(activity, 90, 65);
+                    adapter.addItem(lp);
+                }
+                // RecyclerView width: 320, height: 240.
+            }
+        });
+        InstrumentationRegistry.getInstrumentation().waitForIdleSync();
+
+        assertThat(layoutManager.getFlexDirection(), is(FlexDirection.COLUMN_REVERSE));
+        View view1 = layoutManager.getChildAt(0);
+        View view2 = layoutManager.getChildAt(1);
+        // 65 (view height) + 15 (divider height)
+        assertThat(view1.getTop() - view2.getTop(),
+                isEqualAllowingError(TestUtil.dpToPixel(activity, 80), 2));
+        View view3 = layoutManager.getChildAt(2);
+        // 65 (view height) + 15 (divider height) + 65 (view height) + 15 (divider height)
+        assertThat(view1.getTop() - view3.getTop(),
+                isEqualAllowingError(TestUtil.dpToPixel(activity, 160), 2));
+        View view4 = layoutManager.getChildAt(3);
+        // 90 (view width) + 10 (divider width)
+        assertThat(view4.getLeft(), isEqualAllowingError(TestUtil.dpToPixel(activity, 100), 2));
+        View view7 = layoutManager.getChildAt(6);
+        // 90 (view width) + 10 (divider width) + 90 (view width) + 10 (divider width)
+        assertThat(view7.getLeft(), isEqualAllowingError(TestUtil.dpToPixel(activity, 200), 2));
+
+        mActivityRule.runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                RecyclerView recyclerView = (RecyclerView) activity.findViewById(R.id.recyclerview);
+                recyclerView.removeItemDecoration(itemDecoration);
+                itemDecoration.setOrientation(HORIZONTAL);
+                recyclerView.addItemDecoration(itemDecoration);
+            }
+        });
+        InstrumentationRegistry.getInstrumentation().waitForIdleSync();
+
+        view1 = layoutManager.getChildAt(0);
+        view2 = layoutManager.getChildAt(1);
+        // 65 (view height) + 15 (divider height)
+        assertThat(view1.getTop() - view2.getTop(),
+                isEqualAllowingError(TestUtil.dpToPixel(activity, 80), 2));
+        view3 = layoutManager.getChildAt(2);
+        // 65 (view height) + 15 (divider height) + 65 (view height) + 15 (divider height)
+        assertThat(view1.getTop() - view3.getTop(),
+                isEqualAllowingError(TestUtil.dpToPixel(activity, 160), 2));
+        view4 = layoutManager.getChildAt(3);
+        // 90 (view width)
+        assertThat(view4.getLeft(), isEqualAllowingError(TestUtil.dpToPixel(activity, 90), 2));
+        view7 = layoutManager.getChildAt(6);
+        // 90 (view width) + 90 (view width)
+        assertThat(view7.getLeft(), isEqualAllowingError(TestUtil.dpToPixel(activity, 180), 2));
+
+        mActivityRule.runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                RecyclerView recyclerView = (RecyclerView) activity.findViewById(R.id.recyclerview);
+                recyclerView.removeItemDecoration(itemDecoration);
+                itemDecoration.setOrientation(VERTICAL);
+                recyclerView.addItemDecoration(itemDecoration);
+            }
+        });
+        InstrumentationRegistry.getInstrumentation().waitForIdleSync();
+
+        view1 = layoutManager.getChildAt(0);
+        view2 = layoutManager.getChildAt(1);
+        // 65 (view height)
+        assertThat(view1.getTop()- view2.getTop(),
+                isEqualAllowingError(TestUtil.dpToPixel(activity, 65), 2));
+        view3 = layoutManager.getChildAt(2);
+        // 65 (view height) + 65 (view height)
+        assertThat(view1.getTop() - view3.getTop(),
+                isEqualAllowingError(TestUtil.dpToPixel(activity, 130), 2));
+        view4 = layoutManager.getChildAt(3);
+        // 90 (view width) + 10 (divider width)
+        assertThat(view4.getLeft(), isEqualAllowingError(TestUtil.dpToPixel(activity, 100), 2));
+        view7 = layoutManager.getChildAt(6);
+        // 90 (view width) + 10 (divider width) + 90 (view width) + 10 (divider width)
+        assertThat(view7.getLeft(), isEqualAllowingError(TestUtil.dpToPixel(activity, 200), 2));
     }
 
     /**
