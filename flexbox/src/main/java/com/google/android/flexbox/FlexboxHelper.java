@@ -769,7 +769,6 @@ class FlexboxHelper {
             int widthSpec = View.MeasureSpec.makeMeasureSpec(childWidth, View.MeasureSpec.EXACTLY);
             int heightSpec = View.MeasureSpec
                     .makeMeasureSpec(childHeight, View.MeasureSpec.EXACTLY);
-//            mFlexContainer.measureChildFlexItem(view, widthSpec, heightSpec);
             view.measure(widthSpec, heightSpec);
             updateMeasureCache(index, widthSpec, heightSpec, view);
         }
@@ -962,8 +961,6 @@ class FlexboxHelper {
                             heightMeasureSpec, flexItem);
                     int childWidthMeasureSpec = View.MeasureSpec.makeMeasureSpec(newWidth,
                             View.MeasureSpec.EXACTLY);
-//                    mFlexContainer.measureChildFlexItem(child, childWidthMeasureSpec,
-//                            childHeightMeasureSpec);
                     child.measure(childWidthMeasureSpec, childHeightMeasureSpec);
                     childMeasuredWidth = child.getMeasuredWidth();
                     childMeasuredHeight = child.getMeasuredHeight();
@@ -1027,8 +1024,6 @@ class FlexboxHelper {
                             flexItem);
                     int childHeightMeasureSpec = View.MeasureSpec.makeMeasureSpec(newHeight,
                             View.MeasureSpec.EXACTLY);
-//                    mFlexContainer.measureChildFlexItem(child, childWidthMeasureSpec,
-//                            childHeightMeasureSpec);
                     child.measure(childWidthMeasureSpec, childHeightMeasureSpec);
                     childMeasuredWidth = child.getMeasuredWidth();
                     childMeasuredHeight = child.getMeasuredHeight();
@@ -1537,8 +1532,6 @@ class FlexboxHelper {
                 View.MeasureSpec.EXACTLY);
 
         int childHeightSpec = View.MeasureSpec.makeMeasureSpec(newHeight, View.MeasureSpec.EXACTLY);
-//        mFlexContainer.measureChildFlexItem(view, childWidthSpec,
-//                childHeightSpec);
         view.measure(childWidthSpec, childHeightSpec);
 
         updateMeasureCache(index, childWidthSpec, childHeightSpec, view);
