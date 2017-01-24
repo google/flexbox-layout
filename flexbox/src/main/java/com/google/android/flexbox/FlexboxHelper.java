@@ -229,28 +229,6 @@ class FlexboxHelper {
      *                          {@link FlexboxLayoutManager}, the calculation only needs the
      *                          visible area, imposing the entire calculation may cause bad
      *                          performance
-     * @see #calculateHorizontalFlexLines(int, int, int, int, int, List)
-     */
-    FlexLinesResult calculateHorizontalFlexLines(int widthMeasureSpec, int heightMeasureSpec,
-            int needsCalcAmount) {
-        return calculateHorizontalFlexLines(widthMeasureSpec, heightMeasureSpec, needsCalcAmount,
-                0, NO_POSITION, null);
-    }
-
-    /**
-     * Calculate how many flex lines are needed in the flex container.
-     * Stop calculating it if the calculated amount along the cross size reaches the argument
-     * as the needsCalcAmount.
-     *
-     * @param widthMeasureSpec  the width measure spec imposed by the flex container
-     * @param heightMeasureSpec the height measure spec imposed by the flex container
-     * @param needsCalcAmount   the amount of pixels where flex line calculation should be stopped
-     *                          this is needed to avoid the expensive calculation if the
-     *                          calculation is needed only the small part of the entire flex
-     *                          container. (E.g. If the flex container is the
-     *                          {@link FlexboxLayoutManager}, the calculation only needs the
-     *                          visible area, imposing the entire calculation may cause bad
-     *                          performance
      * @param fromIndex         the index of the child from which the calculation starts
      * @param existingLines     If not null, calculated flex lines will be added to this instance
      */
@@ -263,7 +241,8 @@ class FlexboxHelper {
 
     /**
      * Calculate how many flex lines are needed in the flex container.
-     * This method calculates the amount of pixels as the {@code needsCalcAmount} in addition to the
+     * This method calculates the amount of pixels as the {@code needsCalcAmount} in addition to
+     * the
      * flex lines which includes the view who has the index as the {@code toIndex} argument.
      * (First calculate to the toIndex, then calculate the amount of pixels as needsCalcAmount)
      *
@@ -399,11 +378,8 @@ class FlexboxHelper {
 
             childState = ViewCompat
                     .combineMeasuredStates(childState, ViewCompat.getMeasuredState(child));
-            largestHeightInRow = Math.max(largestHeightInRow,
-                    child.getMeasuredHeight() + flexItem.getMarginTop() + flexItem
-                            .getMarginBottom());
 
-            if (isWrapRequired(widthMode, widthSize, flexLine.mMainSize,
+            if (isWrapRequired(child, widthMode, widthSize, flexLine.mMainSize,
                     child.getMeasuredWidth() + flexItem.getMarginLeft() + flexItem.getMarginRight(),
                     flexItem, i, indexInFlexLine)) {
                 if (flexLine.getItemCountNotGone() > 0) {
@@ -427,13 +403,10 @@ class FlexboxHelper {
                     child.measure(childWidthMeasureSpec, childHeightMeasureSpec);
                     checkSizeConstraints(child, i);
                 }
-
                 flexLine = new FlexLine();
                 flexLine.mItemCount = 1;
                 flexLine.mMainSize = paddingLeft + paddingRight;
                 flexLine.mFirstIndex = i;
-                largestHeightInRow = child.getMeasuredHeight() + flexItem.getMarginTop()
-                        + flexItem.getMarginBottom();
                 indexInFlexLine = 0;
             } else {
                 flexLine.mItemCount++;
@@ -446,12 +419,17 @@ class FlexboxHelper {
                     + flexItem.getMarginRight();
             flexLine.mTotalFlexGrow += flexItem.getFlexGrow();
             flexLine.mTotalFlexShrink += flexItem.getFlexShrink();
+
+            mFlexContainer.onNewFlexItemAdded(child, i, indexInFlexLine, flexLine);
+            largestHeightInRow = Math.max(largestHeightInRow,
+                    child.getMeasuredHeight() + flexItem.getMarginTop() + flexItem
+                            .getMarginBottom() +
+                            mFlexContainer.getDecorationLengthCrossAxis(child));
             // Temporarily set the cross axis length as the largest child in the row
             // Expand along the cross axis depending on the mAlignContent property if needed
             // later
             flexLine.mCrossSize = Math.max(flexLine.mCrossSize, largestHeightInRow);
 
-            mFlexContainer.onNewFlexItemAdded(i, indexInFlexLine, flexLine);
             if (mFlexContainer.getFlexWrap() != FlexWrap.WRAP_REVERSE) {
                 flexLine.mMaxBaseline = Math
                         .max(flexLine.mMaxBaseline, child.getBaseline() + flexItem.getMarginTop());
@@ -519,28 +497,6 @@ class FlexboxHelper {
      *                          {@link FlexboxLayoutManager}, the calculation only needs the
      *                          visible area, imposing the entire calculation may cause bad
      *                          performance
-     * @see #calculateVerticalFlexLines(int, int, int, int, int, List)
-     */
-    FlexLinesResult calculateVerticalFlexLines(int widthMeasureSpec, int heightMeasureSpec,
-            int needsCalcAmount) {
-        return calculateVerticalFlexLines(widthMeasureSpec, heightMeasureSpec, needsCalcAmount,
-                0, NO_POSITION, null);
-    }
-
-    /**
-     * Calculate how many flex lines are needed in the flex container.
-     * Stop calculating it if the calculated amount along the cross size reaches the argument
-     * as the needsCalcAmount.
-     *
-     * @param widthMeasureSpec  the width measure spec imposed by the flex container
-     * @param heightMeasureSpec the height measure spec imposed by the flex container
-     * @param needsCalcAmount   the amount of pixels where flex line calculation should be stopped
-     *                          this is needed to avoid the expensive calculation if the
-     *                          calculation is needed only the small part of the entire flex
-     *                          container. (E.g. If the flex container is the
-     *                          {@link FlexboxLayoutManager}, the calculation only needs the
-     *                          visible area, imposing the entire calculation may cause bad
-     *                          performance
      * @param fromIndex         the index of the child from which the calculation starts
      * @param existingLines     If not null, calculated flex lines will be added to this instance
      */
@@ -553,7 +509,8 @@ class FlexboxHelper {
 
     /**
      * Calculate how many flex lines are needed in the flex container.
-     * This method calculates the amount of pixels as the {@code needsCalcAmount} in addition to the
+     * This method calculates the amount of pixels as the {@code needsCalcAmount} in addition to
+     * the
      * flex lines which includes the view who has the index as the {@code toIndex} argument.
      * (First calculate to the toIndex, then calculate the amount of pixels as needsCalcAmount)
      *
@@ -692,7 +649,7 @@ class FlexboxHelper {
                     child.getMeasuredWidth() + flexItem.getMarginLeft()
                             + flexItem.getMarginRight());
 
-            if (isWrapRequired(heightMode, heightSize, flexLine.mMainSize,
+            if (isWrapRequired(child, heightMode, heightSize, flexLine.mMainSize,
                     child.getMeasuredHeight() + flexItem.getMarginTop()
                             + flexItem.getMarginBottom(), flexItem, i, indexInFlexLine)) {
                 if (flexLine.getItemCountNotGone() > 0) {
@@ -722,8 +679,6 @@ class FlexboxHelper {
                 flexLine.mItemCount = 1;
                 flexLine.mMainSize = paddingTop + paddingBottom;
                 flexLine.mFirstIndex = i;
-                largestWidthInColumn = child.getMeasuredWidth() + flexItem.getMarginLeft()
-                        + flexItem.getMarginRight();
                 indexInFlexLine = 0;
             } else {
                 flexLine.mItemCount++;
@@ -737,12 +692,15 @@ class FlexboxHelper {
                     + flexItem.getMarginBottom();
             flexLine.mTotalFlexGrow += flexItem.getFlexGrow();
             flexLine.mTotalFlexShrink += flexItem.getFlexShrink();
+
+            mFlexContainer.onNewFlexItemAdded(child, i, indexInFlexLine, flexLine);
+            largestWidthInColumn = child.getMeasuredWidth() + flexItem.getMarginLeft()
+                    + flexItem.getMarginRight()
+                    + mFlexContainer.getDecorationLengthCrossAxis(child);
             // Temporarily set the cross axis length as the largest child width in the column
             // Expand along the cross axis depending on the mAlignContent property if needed
             // later
             flexLine.mCrossSize = Math.max(flexLine.mCrossSize, largestWidthInColumn);
-
-            mFlexContainer.onNewFlexItemAdded(i, indexInFlexLine, flexLine);
             if (isLastFlexItem(i, childCount, flexLine)) {
                 addFlexLine(flexLines, flexLine, i, sumCrossSize);
                 sumCrossSize += flexLine.mCrossSize;
@@ -774,6 +732,7 @@ class FlexboxHelper {
     /**
      * Determine if a wrap is required (add a new flex line).
      *
+     * @param view          the view being judged if the wrap required
      * @param mode          the width or height mode along the main axis direction
      * @param maxSize       the max size along the main axis direction
      * @param currentLength the accumulated current length
@@ -784,8 +743,8 @@ class FlexboxHelper {
      * @see FlexContainer#getFlexWrap()
      * @see FlexContainer#setFlexWrap(int)
      */
-    private boolean isWrapRequired(int mode, int maxSize, int currentLength, int childLength,
-            FlexItem flexItem, int childAbsoluteIndex, int childRelativeIndexInFlexLine) {
+    private boolean isWrapRequired(View view, int mode, int maxSize, int currentLength,
+            int childLength, FlexItem flexItem, int index, int indexInFlexLine) {
         if (mFlexContainer.getFlexWrap() == FlexWrap.NOWRAP) {
             return false;
         }
@@ -795,8 +754,8 @@ class FlexboxHelper {
         if (mode == View.MeasureSpec.UNSPECIFIED) {
             return false;
         }
-        int decorationLength = mFlexContainer
-                .getDecorationLength(childAbsoluteIndex, childRelativeIndexInFlexLine, flexItem);
+        int decorationLength =
+                mFlexContainer.getDecorationLengthMainAxis(view, index, indexInFlexLine);
         if (decorationLength > 0) {
             childLength += decorationLength;
         }
@@ -1048,7 +1007,8 @@ class FlexboxHelper {
                             child);
                 }
                 largestCrossSize = Math.max(largestCrossSize, childMeasuredHeight
-                        + flexItem.getMarginTop() + flexItem.getMarginBottom());
+                        + flexItem.getMarginTop() + flexItem.getMarginBottom()
+                        + mFlexContainer.getDecorationLengthCrossAxis(child));
                 flexLine.mMainSize += childMeasuredWidth + flexItem.getMarginLeft()
                         + flexItem.getMarginRight();
             } else {
@@ -1110,7 +1070,8 @@ class FlexboxHelper {
                             child);
                 }
                 largestCrossSize = Math.max(largestCrossSize, childMeasuredWidth
-                        + flexItem.getMarginLeft() + flexItem.getMarginRight());
+                        + flexItem.getMarginLeft() + flexItem.getMarginRight()
+                        + mFlexContainer.getDecorationLengthCrossAxis(child));
                 flexLine.mMainSize += childMeasuredHeight + flexItem.getMarginTop()
                         + flexItem.getMarginBottom();
             }
@@ -1232,13 +1193,15 @@ class FlexboxHelper {
                     int childWidthMeasureSpec =
                             View.MeasureSpec.makeMeasureSpec(newWidth, View.MeasureSpec.EXACTLY);
                     child.measure(childWidthMeasureSpec, childHeightMeasureSpec);
+
                     childMeasuredWidth = child.getMeasuredWidth();
                     childMeasuredHeight = child.getMeasuredHeight();
                     updateMeasureCache(childIndex, childWidthMeasureSpec, childHeightMeasureSpec,
                             child);
                 }
                 largestCrossSize = Math.max(largestCrossSize, childMeasuredHeight +
-                        flexItem.getMarginTop() + flexItem.getMarginBottom());
+                        flexItem.getMarginTop() + flexItem.getMarginBottom() +
+                        mFlexContainer.getDecorationLengthCrossAxis(child));
                 flexLine.mMainSize += childMeasuredWidth + flexItem.getMarginLeft()
                         + flexItem.getMarginRight();
             } else {
@@ -1289,13 +1252,15 @@ class FlexboxHelper {
                     int childHeightMeasureSpec =
                             View.MeasureSpec.makeMeasureSpec(newHeight, View.MeasureSpec.EXACTLY);
                     child.measure(childWidthMeasureSpec, childHeightMeasureSpec);
+
                     childMeasuredWidth = child.getMeasuredWidth();
                     childMeasuredHeight = child.getMeasuredHeight();
                     updateMeasureCache(childIndex, childWidthMeasureSpec, childHeightMeasureSpec,
                             child);
                 }
                 largestCrossSize = Math.max(largestCrossSize, childMeasuredWidth +
-                        flexItem.getMarginLeft() + flexItem.getMarginRight());
+                        flexItem.getMarginLeft() + flexItem.getMarginRight() +
+                        mFlexContainer.getDecorationLengthCrossAxis(child));
                 flexLine.mMainSize += childMeasuredHeight + flexItem.getMarginTop()
                         + flexItem.getMarginBottom();
             }
@@ -1588,7 +1553,8 @@ class FlexboxHelper {
      */
     private void stretchViewVertically(View view, int crossSize, int index) {
         FlexItem flexItem = (FlexItem) view.getLayoutParams();
-        int newHeight = crossSize - flexItem.getMarginTop() - flexItem.getMarginBottom();
+        int newHeight = crossSize - flexItem.getMarginTop() - flexItem.getMarginBottom() -
+                mFlexContainer.getDecorationLengthCrossAxis(view);
         newHeight = Math.max(newHeight, flexItem.getMinHeight());
         newHeight = Math.min(newHeight, flexItem.getMaxHeight());
         int childWidthSpec;
@@ -1621,7 +1587,8 @@ class FlexboxHelper {
      */
     private void stretchViewHorizontally(View view, int crossSize, int index) {
         FlexItem flexItem = (FlexItem) view.getLayoutParams();
-        int newWidth = crossSize - flexItem.getMarginLeft() - flexItem.getMarginRight();
+        int newWidth = crossSize - flexItem.getMarginLeft() - flexItem.getMarginRight()
+                - mFlexContainer.getDecorationLengthCrossAxis(view);
         newWidth = Math.max(newWidth, flexItem.getMinWidth());
         newWidth = Math.min(newWidth, flexItem.getMaxWidth());
         int childHeightSpec;
@@ -1640,6 +1607,7 @@ class FlexboxHelper {
                 View.MeasureSpec.EXACTLY);
         int childWidthSpec = View.MeasureSpec.makeMeasureSpec(newWidth, View.MeasureSpec.EXACTLY);
         view.measure(childWidthSpec, childHeightSpec);
+
         updateMeasureCache(index, childWidthSpec, childHeightSpec, view);
     }
 
