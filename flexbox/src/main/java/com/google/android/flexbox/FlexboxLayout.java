@@ -1196,20 +1196,17 @@ public class FlexboxLayout extends ViewGroup implements FlexContainer {
     }
 
     @Override
-    public int getDecorationLength(int childAbsoluteIndex, int childRelativeIndexInFlexLine,
-            FlexItem flexItem) {
+    public int getDecorationLengthMainAxis(View view, int index, int indexInFlexLine) {
         int decorationLength = 0;
         if (isMainAxisDirectionHorizontal()) {
-            if (hasDividerBeforeChildAtAlongMainAxis(childAbsoluteIndex,
-                    childRelativeIndexInFlexLine)) {
+            if (hasDividerBeforeChildAtAlongMainAxis(index, indexInFlexLine)) {
                 decorationLength += mDividerVerticalWidth;
             }
             if ((mShowDividerVertical & SHOW_DIVIDER_END) > 0) {
                 decorationLength += mDividerVerticalWidth;
             }
         } else {
-            if (hasDividerBeforeChildAtAlongMainAxis(childAbsoluteIndex,
-                    childRelativeIndexInFlexLine)) {
+            if (hasDividerBeforeChildAtAlongMainAxis(index, indexInFlexLine)) {
                 decorationLength += mDividerHorizontalHeight;
             }
             if ((mShowDividerHorizontal & SHOW_DIVIDER_END) > 0) {
@@ -1217,6 +1214,13 @@ public class FlexboxLayout extends ViewGroup implements FlexContainer {
             }
         }
         return decorationLength;
+    }
+
+    @Override
+    public int getDecorationLengthCrossAxis(View view) {
+        // Decoration along the cross axis for an individual view is not supported in the
+        // FlexboxLayout.
+        return 0;
     }
 
     @Override
@@ -1247,11 +1251,9 @@ public class FlexboxLayout extends ViewGroup implements FlexContainer {
     }
 
     @Override
-    public void onNewFlexItemAdded(int childAbsoluteIndex, int childRelativeIndexInFlexLine,
-            FlexLine flexLine) {
+    public void onNewFlexItemAdded(View view, int index, int indexInFlexLine, FlexLine flexLine) {
         // Check if the beginning or middle divider is required for the flex item
-        if (hasDividerBeforeChildAtAlongMainAxis(childAbsoluteIndex,
-                childRelativeIndexInFlexLine)) {
+        if (hasDividerBeforeChildAtAlongMainAxis(index, indexInFlexLine)) {
             if (isMainAxisDirectionHorizontal()) {
                 flexLine.mMainSize += mDividerVerticalWidth;
                 flexLine.mDividerLengthInMainSize += mDividerVerticalWidth;
@@ -1262,7 +1264,6 @@ public class FlexboxLayout extends ViewGroup implements FlexContainer {
         }
     }
 
-    // From FlexContainerInternal
     @Override
     public void setFlexLines(List<FlexLine> flexLines) {
         mFlexLines = flexLines;
@@ -1272,7 +1273,6 @@ public class FlexboxLayout extends ViewGroup implements FlexContainer {
     public List<FlexLine> getFlexLinesInternal() {
         return mFlexLines;
     }
-    // End of FlexContainerInternal
 
     /**
      * @return the horizontal divider drawable that will divide each item.
