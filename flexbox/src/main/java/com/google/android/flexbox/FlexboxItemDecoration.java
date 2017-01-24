@@ -57,6 +57,11 @@ public class FlexboxItemDecoration extends RecyclerView.ItemDecoration {
         setOrientation(BOTH);
     }
 
+    /**
+     * Set the drawable used as the item decoration.
+     * If the drawable is not set, the default list divider is used as the
+     * item decoration.
+     */
     public void setDrawable(Drawable drawable) {
         if (drawable == null) {
             throw new IllegalArgumentException("Drawable cannot be null.");
@@ -64,6 +69,15 @@ public class FlexboxItemDecoration extends RecyclerView.ItemDecoration {
         mDrawable = drawable;
     }
 
+    /**
+     * Set the orientation for the decoration.
+     * Orientation for the decoration can be either of:
+     * <ul>
+     *     <li>Horizontal (setOrientation(HORIZONTAL)</li>
+     *     <li>Vertical (setOrientation(VERTICAL)</li>
+     *     <li>Both orientation (setOrientation(BOTH)</li>
+     * </ul>.
+     */
     public void setOrientation(int orientation) {
         mOrientation = orientation;
     }
@@ -81,7 +95,7 @@ public class FlexboxItemDecoration extends RecyclerView.ItemDecoration {
         if (position == 0) {
             return;
         }
-        if ((mOrientation & HORIZONTAL) == 0 && (mOrientation & VERTICAL) == 0) {
+        if (!needsHorizontalDecoration() && !needsVerticalDecoration()) {
             outRect.set(0, 0, 0, 0);
             return;
         }
