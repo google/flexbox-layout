@@ -137,8 +137,12 @@ class FakeFlexContainer implements FlexContainer {
     }
 
     @Override
-    public int getDecorationLength(int childAbsoluteIndex, int childRelativeIndexInFlexLine,
-            FlexItem flexItem) {
+    public int getDecorationLengthMainAxis(View view, int index, int indexInFlexLine) {
+        return 0;
+    }
+
+    @Override
+    public int getDecorationLengthCrossAxis(View view) {
         return 0;
     }
 
@@ -202,8 +206,7 @@ class FakeFlexContainer implements FlexContainer {
     }
 
     @Override
-    public void onNewFlexItemAdded(int childAbsoluteIndex, int childRelativeIndexInFlexLine,
-            FlexLine flexLine) {
+    public void onNewFlexItemAdded(View view, int index, int indexInFlexLine, FlexLine flexLine) {
         // No op
     }
 
