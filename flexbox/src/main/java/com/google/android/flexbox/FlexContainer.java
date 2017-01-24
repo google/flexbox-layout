@@ -161,18 +161,26 @@ interface FlexContainer {
     List<FlexLine> getFlexLines();
 
     /**
-     * Returns the length of decoration (such as dividers) of the flex item
+     * Returns the length of decoration (such as dividers) of the flex item along the main axis.
      *
-     * @param childAbsoluteIndex           the absolute index of the flex item within the flex
-     *                                     container
-     * @param childRelativeIndexInFlexLine the relative index of the flex item within the flex line
-     * @param flexItem                     the flex item from which the lenght of the decoration is
-     *                                     calculated
+     * @param view            the view from which the length of the decoration is retrieved
+     * @param index           the absolute index of the flex item within the flex container
+     * @param indexInFlexLine the relative index of the flex item within the flex line
+     *
      * @return the length of the decoration. Note that the length of the flex item itself is not
      * included in the result.
      */
-    int getDecorationLength(int childAbsoluteIndex,
-            int childRelativeIndexInFlexLine, FlexItem flexItem);
+    int getDecorationLengthMainAxis(View view, int index, int indexInFlexLine);
+
+    /**
+     * Returns the length of decoration (such as dividers) of the flex item along the cross axis.
+     *
+     * @param view            the view from which the length of the decoration is retrieved
+     *
+     * @return the length of the decoration. Note that the length of the flex item itself is not
+     * included in the result.
+     */
+    int getDecorationLengthCrossAxis(View view);
 
     /**
      * @return the top padding of the flex container.
@@ -235,11 +243,12 @@ interface FlexContainer {
     /**
      * Callback when a new flex item is added to the current container
      *
+     * @param view            the view as a flex item which is added
      * @param index           the absolute index of the flex item added
      * @param indexInFlexLine the relative index of the flex item added within the flex line
      * @param flexLine        the flex line where the new flex item is added
      */
-    void onNewFlexItemAdded(int index, int indexInFlexLine, FlexLine flexLine);
+    void onNewFlexItemAdded(View view, int index, int indexInFlexLine, FlexLine flexLine);
 
     /**
      * Callback when a new flex line is added to the current container
