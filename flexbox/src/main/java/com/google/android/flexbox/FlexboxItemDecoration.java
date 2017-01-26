@@ -128,7 +128,7 @@ public class FlexboxItemDecoration extends RecyclerView.ItemDecoration {
             if (!needsVerticalDecoration()) {
                 return;
             }
-            if (layoutManager.isRtl()) {
+            if (layoutManager.isLayoutRtl()) {
                 outRect.right = mDrawable.getIntrinsicWidth();
                 outRect.left = 0;
             } else {
@@ -151,7 +151,7 @@ public class FlexboxItemDecoration extends RecyclerView.ItemDecoration {
                 outRect.right = 0;
                 return;
             }
-            if (layoutManager.isRtl()) {
+            if (layoutManager.isLayoutRtl()) {
                 outRect.right = mDrawable.getIntrinsicWidth();
                 outRect.left = 0;
             } else {
@@ -190,7 +190,7 @@ public class FlexboxItemDecoration extends RecyclerView.ItemDecoration {
             RecyclerView.LayoutParams lp = (RecyclerView.LayoutParams) child.getLayoutParams();
 
             int left, right;
-            if (layoutManager.isRtl()) {
+            if (layoutManager.isLayoutRtl()) {
                 left = child.getRight() + lp.rightMargin;
                 right = left + mDrawable.getIntrinsicWidth();
             } else {
@@ -243,7 +243,7 @@ public class FlexboxItemDecoration extends RecyclerView.ItemDecoration {
 
             int left, right;
             if (layoutManager.isMainAxisDirectionHorizontal()) {
-                if (layoutManager.isRtl()) {
+                if (layoutManager.isLayoutRtl()) {
                     right = child.getRight() + lp.rightMargin + mDrawable.getIntrinsicWidth();
                     right = Math.min(right, parentRight);
                     left = child.getLeft() - lp.leftMargin;

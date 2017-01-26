@@ -2577,6 +2577,172 @@ public class FlexboxLayoutManagerTest {
         assertThat(view7.getLeft(), isEqualAllowingError(TestUtil.dpToPixel(activity, 200), 2));
     }
 
+    @Test
+    @FlakyTest
+    public void testScrollToPosition_direction_row() throws Throwable {
+        final FlexboxTestActivity activity = mActivityRule.getActivity();
+        final FlexboxLayoutManager layoutManager = new FlexboxLayoutManager();
+        final TestAdapter adapter = new TestAdapter();
+
+        mActivityRule.runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                activity.setContentView(R.layout.recyclerview);
+                RecyclerView recyclerView = (RecyclerView) activity.findViewById(R.id.recyclerview);
+                layoutManager.setFlexDirection(FlexDirection.ROW);
+                recyclerView.setLayoutManager(layoutManager);
+                recyclerView.setAdapter(adapter);
+                for (int i = 0; i < 150; i++) {
+                    FlexboxLayoutManager.LayoutParams lp = createLayoutParams(activity, 100, 70);
+                    adapter.addItem(lp);
+                }
+                // RecyclerView width: 320, height: 240.
+                // Flex line 1: 3 items
+                // Flex line 2: 3 items
+                // ....
+            }
+        });
+        InstrumentationRegistry.getInstrumentation().waitForIdleSync();
+        assertThat(layoutManager.getFlexDirection(), is(FlexDirection.ROW));
+
+        final int scrollTo = 42;
+        mActivityRule.runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                layoutManager.scrollToPosition(scrollTo);
+            }
+        });
+        InstrumentationRegistry.getInstrumentation().waitForIdleSync();
+
+        // Each flex line should have 3 items in this test's configuration.
+        // After scrolling to the position of 42 (% 3 == 0), the first visible item should
+        // be the 42'th item
+        assertThat(((TextView) layoutManager.getChildAt(0)).getText().toString(),
+                is(String.valueOf(scrollTo + 1)));
+
+        onView(withId(R.id.recyclerview)).perform(swipe(GeneralLocation.BOTTOM_CENTER,
+                GeneralLocation.TOP_CENTER));
+        onView(withId(R.id.recyclerview)).perform(swipe(GeneralLocation.BOTTOM_CENTER,
+                GeneralLocation.TOP_CENTER));
+        onView(withId(R.id.recyclerview)).perform(swipe(GeneralLocation.BOTTOM_CENTER,
+                GeneralLocation.TOP_CENTER));
+        onView(withId(R.id.recyclerview)).perform(swipe(GeneralLocation.BOTTOM_CENTER,
+                GeneralLocation.TOP_CENTER));
+        onView(withId(R.id.recyclerview)).perform(swipe(GeneralLocation.BOTTOM_CENTER,
+                GeneralLocation.TOP_CENTER));
+        onView(withId(R.id.recyclerview)).perform(swipe(GeneralLocation.BOTTOM_CENTER,
+                GeneralLocation.TOP_CENTER));
+        onView(withId(R.id.recyclerview)).perform(swipe(GeneralLocation.BOTTOM_CENTER,
+                GeneralLocation.TOP_CENTER));
+        onView(withId(R.id.recyclerview)).perform(swipe(GeneralLocation.BOTTOM_CENTER,
+                GeneralLocation.TOP_CENTER));
+        onView(withId(R.id.recyclerview)).perform(swipe(GeneralLocation.BOTTOM_CENTER,
+                GeneralLocation.TOP_CENTER));
+        onView(withId(R.id.recyclerview)).perform(swipe(GeneralLocation.BOTTOM_CENTER,
+                GeneralLocation.TOP_CENTER));
+        onView(withId(R.id.recyclerview)).perform(swipe(GeneralLocation.BOTTOM_CENTER,
+                GeneralLocation.TOP_CENTER));
+        // Scroll enough that 42'th item becomes off screen to the top
+
+        mActivityRule.runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                layoutManager.scrollToPosition(scrollTo);
+            }
+        });
+        InstrumentationRegistry.getInstrumentation().waitForIdleSync();
+
+        // The 42'th item should be at the bottom of the screen.
+        // The last visible item should be 42 + 3 since the last visible item is at the last
+        // of the bottom flex line
+        assertThat(((TextView) layoutManager.getChildAt(
+                layoutManager.getChildCount() - 1)).getText().toString(),
+                is(String.valueOf(scrollTo + 3)));
+    }
+
+    @Test
+    @FlakyTest
+    public void testScrollToPosition_direction_column() throws Throwable {
+        final FlexboxTestActivity activity = mActivityRule.getActivity();
+        final FlexboxLayoutManager layoutManager = new FlexboxLayoutManager();
+        final TestAdapter adapter = new TestAdapter();
+
+        mActivityRule.runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                activity.setContentView(R.layout.recyclerview);
+                RecyclerView recyclerView = (RecyclerView) activity.findViewById(R.id.recyclerview);
+                layoutManager.setFlexDirection(FlexDirection.COLUMN);
+                recyclerView.setLayoutManager(layoutManager);
+                recyclerView.setAdapter(adapter);
+                for (int i = 0; i < 150; i++) {
+                    FlexboxLayoutManager.LayoutParams lp = createLayoutParams(activity, 100, 70);
+                    adapter.addItem(lp);
+                }
+                // RecyclerView width: 320, height: 240.
+                // Flex line 1: 3 items
+                // Flex line 2: 3 items
+                // ....
+            }
+        });
+        InstrumentationRegistry.getInstrumentation().waitForIdleSync();
+        assertThat(layoutManager.getFlexDirection(), is(FlexDirection.COLUMN));
+
+        final int scrollTo = 42;
+        mActivityRule.runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                layoutManager.scrollToPosition(scrollTo);
+            }
+        });
+        InstrumentationRegistry.getInstrumentation().waitForIdleSync();
+
+        // Each flex line should have 3 items in this test's configuration.
+        // After scrolling to the position of 42 (% 3 == 0), the first visible item should
+        // be the 42'th item
+        assertThat(((TextView) layoutManager.getChildAt(0)).getText().toString(),
+                is(String.valueOf(scrollTo + 1)));
+
+        onView(withId(R.id.recyclerview)).perform(swipe(GeneralLocation.CENTER_RIGHT,
+                GeneralLocation.CENTER_LEFT));
+        onView(withId(R.id.recyclerview)).perform(swipe(GeneralLocation.CENTER_RIGHT,
+                GeneralLocation.CENTER_LEFT));
+        onView(withId(R.id.recyclerview)).perform(swipe(GeneralLocation.CENTER_RIGHT,
+                GeneralLocation.CENTER_LEFT));
+        onView(withId(R.id.recyclerview)).perform(swipe(GeneralLocation.CENTER_RIGHT,
+                GeneralLocation.CENTER_LEFT));
+        onView(withId(R.id.recyclerview)).perform(swipe(GeneralLocation.CENTER_RIGHT,
+                GeneralLocation.CENTER_LEFT));
+        onView(withId(R.id.recyclerview)).perform(swipe(GeneralLocation.CENTER_RIGHT,
+                GeneralLocation.CENTER_LEFT));
+        onView(withId(R.id.recyclerview)).perform(swipe(GeneralLocation.CENTER_RIGHT,
+                GeneralLocation.CENTER_LEFT));
+        onView(withId(R.id.recyclerview)).perform(swipe(GeneralLocation.CENTER_RIGHT,
+                GeneralLocation.CENTER_LEFT));
+        onView(withId(R.id.recyclerview)).perform(swipe(GeneralLocation.CENTER_RIGHT,
+                GeneralLocation.CENTER_LEFT));
+        onView(withId(R.id.recyclerview)).perform(swipe(GeneralLocation.CENTER_RIGHT,
+                GeneralLocation.CENTER_LEFT));
+        onView(withId(R.id.recyclerview)).perform(swipe(GeneralLocation.CENTER_RIGHT,
+                GeneralLocation.CENTER_LEFT));
+        // Scroll enough that 42'th item becomes off screen to the left
+
+        mActivityRule.runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                layoutManager.scrollToPosition(scrollTo);
+            }
+        });
+        InstrumentationRegistry.getInstrumentation().waitForIdleSync();
+
+        // The 42'th item should be at the bottom of the screen.
+        // The last item should be the (42 + 3)'th item since it should be also the last item in the
+        // bottom flex line
+        assertThat(((TextView) layoutManager.getChildAt(
+                layoutManager.getChildCount() - 1)).getText().toString(),
+                is(String.valueOf(scrollTo + 3)));
+    }
+
     /**
      * Creates a new flex item.
      *
