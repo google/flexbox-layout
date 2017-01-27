@@ -48,7 +48,8 @@ public class FlexboxLayoutManager extends RecyclerView.LayoutManager implements 
     private static final String TAG = "FlexboxLayoutManager";
 
     /**
-     * Temporary Rect instance to be passed to {@link RecyclerView.LayoutManager#calculateItemDecorationsForChild}
+     * Temporary Rect instance to be passed to
+     * {@link RecyclerView.LayoutManager#calculateItemDecorationsForChild}
      * to avoid creating a Rect instance every time.
      */
     private static final Rect TEMP_RECT = new Rect();
@@ -131,6 +132,18 @@ public class FlexboxLayoutManager extends RecyclerView.LayoutManager implements 
     private OrientationHelper mOrientationHelper;
 
     private SavedState mPendingSavedState;
+
+    /**
+     * The position to which the next layout should start from this adapter position.
+     * This value is set either from the {@link #mPendingSavedState} when a configuration change
+     * happens or programmatically such as when the {@link #scrollToPosition(int)} is called.
+     */
+    private int mPendingScrollPosition = NO_POSITION;
+
+    /**
+     * The offset by which the next layout should be offset.
+     */
+    private int mPendingScrollPositionOffset = INVALID_OFFSET;
 
     /**
      * Creates a default FlexboxLayoutManager.
@@ -531,28 +544,72 @@ public class FlexboxLayoutManager extends RecyclerView.LayoutManager implements 
 
         mLayoutState.mShouldRecycle = false;
 
-        if (!mAnchorInfo.mValid || mPendingSavedState != null) {
+        if (mPendingSavedState != null && mPendingSavedState.hasValidAnchor(childCount)) {
+            mPendingScrollPosition = mPendingSavedState.mAnchorPosition;
+        }
+
+        if (!mAnchorInfo.mValid || mPendingScrollPosition != NO_POSITION ||
+                mPendingSavedState != null) {
             mAnchorInfo.reset();
             updateAnchorInfoForLayout(state, mAnchorInfo);
             mAnchorInfo.mValid = true;
         }
         detachAndScrapAttachedViews(recycler);
-        updateLayoutStateToFillEnd(mAnchorInfo);
+        if (mAnchorInfo.mLayoutFromEnd) {
+            updateLayoutStateToFillStart(mAnchorInfo, false);
+        } else {
+            updateLayoutStateToFillEnd(mAnchorInfo, false);
+        }
         if (DEBUG) {
             Log.d(TAG,
                     String.format("onLayoutChildren. recycler.getScrapList.size(): %s, state: %s",
                             recycler.getScrapList().size(), state));
         }
 
+        updateFlexLines(childCount);
+        if (DEBUG) {
+            for (int i = 0, size = mFlexLines.size(); i < size; i++) {
+                FlexLine flexLine = mFlexLines.get(i);
+                Log.d(TAG, String.format("%d flex line. MainSize: %d, CrossSize: %d, itemCount: %d",
+                        i, flexLine.getMainSize(), flexLine.getCrossSize(),
+                        flexLine.getItemCount()));
+            }
+        }
+
+        if (mAnchorInfo.mLayoutFromEnd) {
+            int filledToEnd = fill(recycler, state, mLayoutState);
+            if (DEBUG) {
+                Log.d(TAG, String.format("filled: %d toward start", filledToEnd));
+            }
+            updateLayoutStateToFillEnd(mAnchorInfo, true);
+            int filledToStart = fill(recycler, state, mLayoutState);
+            if (DEBUG) {
+                Log.d(TAG, String.format("filled: %d toward end", filledToStart));
+            }
+        } else {
+            int filledToEnd = fill(recycler, state, mLayoutState);
+            if (DEBUG) {
+                Log.d(TAG, String.format("filled: %d toward end", filledToEnd));
+            }
+            updateLayoutStateToFillStart(mAnchorInfo, true);
+            int filledToStart = fill(recycler, state, mLayoutState);
+            if (DEBUG) {
+                Log.d(TAG, String.format("filled: %d toward start", filledToStart));
+            }
+        }
+    }
+
+    private void updateFlexLines(int childCount) {
         //noinspection ResourceType
         int widthMeasureSpec = View.MeasureSpec.makeMeasureSpec(getWidth(), getWidthMode());
         //noinspection ResourceType
         int heightMeasureSpec = View.MeasureSpec.makeMeasureSpec(getHeight(), getHeightMode());
         FlexboxHelper.FlexLinesResult flexLinesResult;
-        if (mAnchorInfo.mAssignedFromSavedState) {
-            // Need to recalculate the flex lines from the start to the anchor position (plus
-            // visible are needs to be filled)
-
+        if (mPendingScrollPosition != NO_POSITION) {
+            if (mAnchorInfo.mLayoutFromEnd) {
+                // Prior flex lines should be already calculated, don't have to be updated
+                return;
+            }
 
             // TODO: This path may need another consideration to not calculate the entire flex
             // lines prior to the anchor position since it may cause noticeable amount of
@@ -627,25 +684,6 @@ public class FlexboxLayoutManager extends RecyclerView.LayoutManager implements 
             // or even if not (when flex wrap is "nowrap") the size of the flex lines should be 1.
             mFlexboxHelper.stretchViews(mAnchorInfo.mPosition);
         }
-
-        if (DEBUG) {
-            for (int i = 0, size = mFlexLines.size(); i < size; i++) {
-                FlexLine flexLine = mFlexLines.get(i);
-                Log.d(TAG, String.format("%d flex line. MainSize: %d, CrossSize: %d, itemCount: %d",
-                        i, flexLine.getMainSize(), flexLine.getCrossSize(),
-                        flexLine.getItemCount()));
-            }
-        }
-
-        int filledToEnd = fill(recycler, state, mLayoutState);
-        if (DEBUG) {
-            Log.d(TAG, String.format("filled: %d toward end", filledToEnd));
-        }
-        updateLayoutStateToFillStart(mAnchorInfo);
-        int filledToStart = fill(recycler, state, mLayoutState);
-        if (DEBUG) {
-            Log.d(TAG, String.format("filled: %d toward start", filledToStart));
-        }
     }
 
     @Override
@@ -655,10 +693,12 @@ public class FlexboxLayoutManager extends RecyclerView.LayoutManager implements 
             Log.d(TAG, "onLayoutCompleted. " + state);
         }
         mPendingSavedState = null;
+        mPendingScrollPosition = NO_POSITION;
+        mPendingScrollPositionOffset = INVALID_OFFSET;
         mAnchorInfo.reset();
     }
 
-    boolean isRtl() {
+    boolean isLayoutRtl() {
         return mIsRtl;
     }
 
@@ -694,8 +734,6 @@ public class FlexboxLayoutManager extends RecyclerView.LayoutManager implements 
     }
 
     private void updateAnchorInfoForLayout(RecyclerView.State state, AnchorInfo anchorInfo) {
-        // TODO: Update anchor from the pending state is stored
-
         if (updateAnchorFromPendingState(state, anchorInfo, mPendingSavedState)) {
             if (DEBUG) {
                 Log.d(TAG, "updated anchor from the pending state");
@@ -721,18 +759,68 @@ public class FlexboxLayoutManager extends RecyclerView.LayoutManager implements 
     private boolean updateAnchorFromPendingState(RecyclerView.State state, AnchorInfo anchorInfo,
             SavedState savedState) {
         assert mFlexboxHelper.mIndexToFlexLine != null;
-        if (savedState == null || !savedState.hasValidAnchor(state.getItemCount())) {
+        if (state.isPreLayout() || mPendingScrollPosition == NO_POSITION) {
+            return false;
+        }
+        if (mPendingScrollPosition < 0 || mPendingScrollPosition >= state.getItemCount()) {
+            mPendingScrollPosition = NO_POSITION;
+            mPendingScrollPositionOffset = INVALID_OFFSET;
             if (DEBUG) {
-                Log.d(TAG, "SavedState doesn't have a valid anchor. Ignoring. " + savedState);
+                Log.e(TAG, "ignoring invalid scroll position " + mPendingScrollPosition);
             }
             return false;
         }
 
-        anchorInfo.mPosition = savedState.mAnchorPosition;
-        anchorInfo.mCoordinate = mOrientationHelper.getStartAfterPadding() +
-                savedState.mAnchorOffset;
-        anchorInfo.mAssignedFromSavedState = true;
-        anchorInfo.mFlexLinePosition = NO_POSITION;
+        anchorInfo.mPosition = mPendingScrollPosition;
+        anchorInfo.mFlexLinePosition = mFlexboxHelper.mIndexToFlexLine[anchorInfo.mPosition];
+        if (mPendingSavedState != null && mPendingSavedState.hasValidAnchor(state.getItemCount())) {
+            anchorInfo.mCoordinate = mOrientationHelper.getStartAfterPadding() +
+                    savedState.mAnchorOffset;
+            anchorInfo.mAssignedFromSavedState = true;
+            anchorInfo.mFlexLinePosition = NO_POSITION;
+            return true;
+        }
+
+        if (mPendingScrollPositionOffset == INVALID_OFFSET) {
+            View anchorView = findViewByPosition(mPendingScrollPosition);
+            if (anchorView != null) {
+                if (mOrientationHelper.getDecoratedMeasurement(anchorView) >
+                        mOrientationHelper.getTotalSpace()) {
+                    anchorInfo.assignCoordinateFromPadding();
+                    return true;
+                }
+                int startGap = mOrientationHelper.getDecoratedStart(anchorView)
+                        - mOrientationHelper.getStartAfterPadding();
+                if (startGap < 0) {
+                    anchorInfo.mCoordinate = mOrientationHelper.getStartAfterPadding();
+                    anchorInfo.mLayoutFromEnd = false;
+                    return true;
+                }
+
+                int endGap = mOrientationHelper.getEndAfterPadding() -
+                        mOrientationHelper.getDecoratedEnd(anchorView);
+                if (endGap < 0) {
+                    anchorInfo.mCoordinate = mOrientationHelper.getEndAfterPadding();
+                    anchorInfo.mLayoutFromEnd = true;
+                    return true;
+                }
+                anchorInfo.mCoordinate = anchorInfo.mLayoutFromEnd ?
+                        (mOrientationHelper.getDecoratedEnd(anchorView) +
+                                mOrientationHelper.getTotalSpaceChange())
+                        : mOrientationHelper.getDecoratedStart(anchorView);
+            } else {
+                if (getChildCount() > 0) {
+                    int position = getPosition(getChildAt(0));
+                    anchorInfo.mLayoutFromEnd = mPendingScrollPosition < position;
+                }
+                anchorInfo.assignCoordinateFromPadding();
+            }
+            return true;
+        }
+
+        // TODO: Support reverse layout when flex wrap == FlexWrap.WRAP_REVERSE
+        anchorInfo.mCoordinate = mOrientationHelper.getStartAfterPadding()
+                + mPendingScrollPositionOffset;
         return true;
     }
 
@@ -1200,7 +1288,7 @@ public class FlexboxLayoutManager extends RecyclerView.LayoutManager implements 
             if (mFromBottomToTop) {
                 mFlexboxHelper.layoutSingleChildVertical(view, flexLine, mIsRtl,
                         leftWidthDecoration, Math.round(childBottom) - view.getMeasuredHeight(),
-                        leftWidthDecoration+ view.getMeasuredWidth(), Math.round(childBottom));
+                        leftWidthDecoration + view.getMeasuredWidth(), Math.round(childBottom));
             } else {
                 mFlexboxHelper.layoutSingleChildVertical(view, flexLine, mIsRtl,
                         leftWidthDecoration, Math.round(childTop),
@@ -1223,7 +1311,17 @@ public class FlexboxLayoutManager extends RecyclerView.LayoutManager implements 
         return mFlexDirection == FlexDirection.ROW || mFlexDirection == FlexDirection.ROW_REVERSE;
     }
 
-    private void updateLayoutStateToFillEnd(AnchorInfo anchorInfo) {
+
+    /**
+     * Update the layout state based on the anchor information.
+     * The view holders are going to be filled toward the end position (bottom if the main axis
+     * direction is horizontal, right if the main axis direction if vertical).
+     *
+     * @param anchorInfo   the anchor information where layout should start
+     * @param fromNextLine if set to {@code true}, layout starts from the next flex line set to
+     *                     the anchor information
+     */
+    private void updateLayoutStateToFillEnd(AnchorInfo anchorInfo, boolean fromNextLine) {
         mLayoutState.mAvailable = mOrientationHelper.getEndAfterPadding() - anchorInfo.mCoordinate;
         mLayoutState.mPosition = anchorInfo.mPosition;
         mLayoutState.mItemDirection = ItemDirection.TAIL;
@@ -1231,9 +1329,27 @@ public class FlexboxLayoutManager extends RecyclerView.LayoutManager implements 
         mLayoutState.mOffset = anchorInfo.mCoordinate;
         mLayoutState.mScrollingOffset = LayoutState.SCROLLING_OFFSET_NaN;
         mLayoutState.mFlexLinePosition = anchorInfo.mFlexLinePosition;
+
+        if (fromNextLine
+                && mFlexLines.size() > 1
+                && anchorInfo.mFlexLinePosition >= 0
+                && anchorInfo.mFlexLinePosition < mFlexLines.size() - 1) {
+            FlexLine currentLine = mFlexLines.get(anchorInfo.mFlexLinePosition);
+            mLayoutState.mFlexLinePosition++;
+            mLayoutState.mPosition += currentLine.getItemCount();
+        }
     }
 
-    private void updateLayoutStateToFillStart(AnchorInfo anchorInfo) {
+    /**
+     * Update the layout state based on the anchor information.
+     * The view holders are going to be filled toward the start position (top if the main axis
+     * direction is horizontal, left if the main axis direction if vertical).
+     *
+     * @param anchorInfo       the anchor information where layout should start
+     * @param fromPreviousLine if set to {@code true}, layout starts from the next flex line set to
+     *                         the anchor information
+     */
+    private void updateLayoutStateToFillStart(AnchorInfo anchorInfo, boolean fromPreviousLine) {
         mLayoutState.mAvailable = anchorInfo.mCoordinate - mOrientationHelper
                 .getStartAfterPadding();
         mLayoutState.mPosition = anchorInfo.mPosition;
@@ -1243,7 +1359,8 @@ public class FlexboxLayoutManager extends RecyclerView.LayoutManager implements 
         mLayoutState.mScrollingOffset = LayoutState.SCROLLING_OFFSET_NaN;
         mLayoutState.mFlexLinePosition = anchorInfo.mFlexLinePosition;
 
-        if (anchorInfo.mFlexLinePosition > 0 && mFlexLines.size() > anchorInfo.mFlexLinePosition) {
+        if (fromPreviousLine && anchorInfo.mFlexLinePosition > 0
+                && mFlexLines.size() > anchorInfo.mFlexLinePosition) {
             FlexLine currentLine = mFlexLines.get(anchorInfo.mFlexLinePosition);
             mLayoutState.mFlexLinePosition--;
             mLayoutState.mPosition -= currentLine.getItemCount();
@@ -1285,6 +1402,16 @@ public class FlexboxLayoutManager extends RecyclerView.LayoutManager implements 
         if (mLayoutState == null) {
             mLayoutState = new LayoutState();
         }
+    }
+
+    @Override
+    public void scrollToPosition(int position) {
+        mPendingScrollPosition = position;
+        mPendingScrollPositionOffset = INVALID_OFFSET;
+        if (mPendingSavedState != null) {
+            mPendingSavedState.invalidateAnchor();
+        }
+        requestLayout();
     }
 
     @Override
