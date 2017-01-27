@@ -1709,6 +1709,7 @@ public class FlexboxLayoutManagerTest {
                 activity.setContentView(R.layout.recyclerview);
                 RecyclerView recyclerView = (RecyclerView) activity.findViewById(R.id.recyclerview);
                 layoutManager.setFlexDirection(FlexDirection.ROW);
+                layoutManager.setAlignItems(AlignItems.FLEX_START);
                 recyclerView.setLayoutManager(layoutManager);
                 recyclerView.setAdapter(adapter);
                 for (int i = 0; i < 50; i++) {
@@ -1767,6 +1768,7 @@ public class FlexboxLayoutManagerTest {
                 activity.setContentView(R.layout.recyclerview);
                 RecyclerView recyclerView = (RecyclerView) activity.findViewById(R.id.recyclerview);
                 layoutManager.setFlexDirection(FlexDirection.COLUMN);
+                layoutManager.setAlignItems(AlignItems.FLEX_START);
                 recyclerView.setLayoutManager(layoutManager);
                 recyclerView.setAdapter(adapter);
                 for (int i = 0; i < 50; i++) {
