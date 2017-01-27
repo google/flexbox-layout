@@ -125,9 +125,6 @@ public class FlexboxLayoutManager extends RecyclerView.LayoutManager implements 
      * {@link OrientationHelper} along the scrolling direction.
      * e.g. If the flex direction is set to {@link FlexDirection#ROW} and flex wrap is set to
      * {@link FlexWrap#WRAP}, the RecyclerView scrolls vertically (along the cross axis).
-     *
-     * TODO: We may need another OrientationHelper along the perpendicular direction because
-     * if flex wrap is set to {@link FlexWrap#NOWRAP}, it scrolls perpendicular to the cross axis.
      */
     private OrientationHelper mOrientationHelper;
 
@@ -1371,16 +1368,12 @@ public class FlexboxLayoutManager extends RecyclerView.LayoutManager implements 
         if (mOrientationHelper != null) {
             return;
         }
-        // There are two cases for each of main axis direction. When the main axis direction is
-        // horizontal:
-        // -- Scroll horizontally when mFlexWrap == FlexWrap.NOWRAP. In this case scroll happens
-        //    along the main axis
+        // There are two cases for each of main axis direction. In either case the scroll happens
+        // along the cross axis:
         // -- Scroll vertically when mFlexWrap != FlexWrap.NOWRAP. In this case scroll happens
         //    along the cross axis
         //
         // When scroll direction is vertical:
-        // -- Scroll vertically when mFlexWrap == FlexWrap.NOWRAP. In this case scroll happens
-        //    along the main axis
         // -- Scroll horizontally when mFlexWrap != FlexWrap.NOWRAP. In this case scroll happens
         //    along the cross axis
         if (isMainAxisDirectionHorizontal()) {
@@ -1416,17 +1409,11 @@ public class FlexboxLayoutManager extends RecyclerView.LayoutManager implements 
 
     @Override
     public boolean canScrollHorizontally() {
-        if (mFlexWrap == FlexWrap.NOWRAP) {
-            return isMainAxisDirectionHorizontal();
-        }
         return !isMainAxisDirectionHorizontal();
     }
 
     @Override
     public boolean canScrollVertically() {
-        if (mFlexWrap == FlexWrap.NOWRAP) {
-            return !isMainAxisDirectionHorizontal();
-        }
         return isMainAxisDirectionHorizontal();
     }
 
