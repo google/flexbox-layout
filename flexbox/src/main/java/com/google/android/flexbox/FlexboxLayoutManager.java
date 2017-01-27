@@ -168,6 +168,7 @@ public class FlexboxLayoutManager extends RecyclerView.LayoutManager implements 
             @FlexWrap int flexWrap) {
         setFlexDirection(flexDirection);
         setFlexWrap(flexWrap);
+        setAlignItems(AlignItems.STRETCH);
         setAutoMeasureEnabled(true);
     }
 
@@ -204,8 +205,8 @@ public class FlexboxLayoutManager extends RecyclerView.LayoutManager implements 
                 }
                 break;
         }
-
         setFlexWrap(FlexWrap.WRAP);
+        setAlignItems(AlignItems.STRETCH);
         setAutoMeasureEnabled(true);
     }
 
