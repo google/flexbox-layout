@@ -8,11 +8,23 @@ FlexboxLayout is a library project which brings the similar capabilities of
 ## Installation
 Add the following dependency to your `build.gradle` file:
 
+Stable
 ```
 dependencies {
     compile 'com.google.android:flexbox:0.2.5'
 }
 ```
+
+OR
+
+Alpha including RecyclerView integration
+```
+dependencies {
+    compile 'com.google.android:flexbox:0.3.0-alpha1'
+}
+```
+See the [RecyclerView integration](RecyclerView.md) page for more details about using Flexbox inside
+the `RecyclerView`.
 
 ## Usage
 FlexboxLayout extends the ViewGroup like LinearLayout and RelativeLayout.
