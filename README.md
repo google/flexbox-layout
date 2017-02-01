@@ -20,7 +20,7 @@ OR
 Alpha including RecyclerView integration
 ```
 dependencies {
-    compile 'com.google.android:flexbox:0.3.0-alpha1'
+    compile 'com.google.android:flexbox:0.3.0-alpha2'
 }
 ```
 See the [RecyclerView integration](RecyclerView.md) page for more details about using Flexbox inside
