@@ -140,6 +140,16 @@ public class FlexboxLayoutManager extends RecyclerView.LayoutManager implements 
     private int mPendingScrollPositionOffset = INVALID_OFFSET;
 
     /**
+     * The width value used in the last {@link #onLayoutChildren} method.
+     */
+    private int mLastWidth = Integer.MIN_VALUE;
+
+    /**
+     * The height value used in the last {@link #onLayoutChildren} method.
+     */
+    private int mLastHeight = Integer.MIN_VALUE;
+
+    /**
      * Creates a default FlexboxLayoutManager.
      */
     public FlexboxLayoutManager() {
@@ -299,7 +309,8 @@ public class FlexboxLayoutManager extends RecyclerView.LayoutManager implements 
     @Override
     public List<FlexLine> getFlexLines() {
         List<FlexLine> result = new ArrayList<>(mFlexLines.size());
-        for (FlexLine flexLine : mFlexLines) {
+        for (int i = 0, size = mFlexLines.size(); i < size; i++) {
+            FlexLine flexLine = mFlexLines.get(i);
             if (flexLine.getItemCount() == 0) {
                 continue;
             }
@@ -423,7 +434,8 @@ public class FlexboxLayoutManager extends RecyclerView.LayoutManager implements 
     @Override
     public int getLargestMainSize() {
         int largestSize = Integer.MIN_VALUE;
-        for (FlexLine flexLine : mFlexLines) {
+        for (int i = 0, size = mFlexLines.size(); i < size; i++) {
+            FlexLine flexLine = mFlexLines.get(i);
             largestSize = Math.max(largestSize, flexLine.mMainSize);
         }
         return largestSize;
@@ -517,6 +529,9 @@ public class FlexboxLayoutManager extends RecyclerView.LayoutManager implements 
             Log.d(TAG, "onLayoutChildren started");
             Log.d(TAG, "getChildCount: %d" + getChildCount());
             Log.d(TAG, "State: " + state);
+            Log.d(TAG, "PendingSavedState: " + mPendingSavedState);
+            Log.d(TAG, "PendingScrollPosition: " + mPendingScrollPositionOffset);
+            Log.d(TAG, "PendingScrollOffset: " + mPendingScrollPositionOffset);
         }
 
         // Assign the Recycler and the State as the member variables so that
@@ -600,7 +615,21 @@ public class FlexboxLayoutManager extends RecyclerView.LayoutManager implements 
         //noinspection ResourceType
         int heightMeasureSpec = View.MeasureSpec.makeMeasureSpec(getHeight(), getHeightMode());
         FlexboxHelper.FlexLinesResult flexLinesResult;
-        if (mPendingScrollPosition != NO_POSITION) {
+        int width = getWidth();
+        int height = getHeight();
+        boolean isMainSizeChanged;
+        // Clear the flex lines if the main size has changed from the last measurement.
+        // For example this happens when the developer handles the configuration changes manually
+        // or the user change the width boundary in the multi window mode.
+        if (isMainAxisDirectionHorizontal()) {
+            isMainSizeChanged = mLastWidth != Integer.MIN_VALUE && mLastWidth != width;
+        } else {
+            isMainSizeChanged = mLastHeight != Integer.MIN_VALUE && mLastHeight != height;
+        }
+
+        mLastWidth = width;
+        mLastHeight = height;
+        if (mPendingScrollPosition != NO_POSITION || isMainSizeChanged) {
             if (mAnchorInfo.mLayoutFromEnd) {
                 // Prior flex lines should be already calculated, don't have to be updated
                 return;
