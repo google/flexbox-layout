@@ -54,6 +54,7 @@ import android.widget.TextView;
 import com.google.android.flexbox.AlignItems;
 import com.google.android.flexbox.AlignSelf;
 import com.google.android.flexbox.FlexDirection;
+import com.google.android.flexbox.FlexLine;
 import com.google.android.flexbox.FlexWrap;
 import com.google.android.flexbox.FlexboxItemDecoration;
 import com.google.android.flexbox.FlexboxLayoutManager;
@@ -2565,7 +2566,7 @@ public class FlexboxLayoutManagerTest {
         view1 = layoutManager.getChildAt(0);
         view2 = layoutManager.getChildAt(1);
         // 65 (view height)
-        assertThat(view1.getTop()- view2.getTop(),
+        assertThat(view1.getTop() - view2.getTop(),
                 isEqualAllowingError(TestUtil.dpToPixel(activity, 65), 2));
         view3 = layoutManager.getChildAt(2);
         // 65 (view height) + 65 (view height)
