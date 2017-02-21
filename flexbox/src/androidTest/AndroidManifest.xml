@@ -16,10 +16,12 @@
   -->
 <manifest
     package="com.google.android.flexbox.test"
-    xmlns:android="http://schemas.android.com/apk/res/android" >
+    xmlns:android="http://schemas.android.com/apk/res/android">
 
     <application>
         <activity android:name=".FlexboxTestActivity"/>
+        <activity android:name=".ConfigChangeActivity"
+                  android:configChanges="orientation|screenSize|keyboardHidden"/>
     </application>
 
 </manifest>
