@@ -34,6 +34,28 @@ Here is a quick overview of the attributes/features comparison between the two c
 *1 Partially possible by wrapping it with `ScrollView`. But it isn't likely to work with large set
    of views inside the layout. Because it doesn't consider view recycling.
 
+## Setting Flexbox attributes
+You can set the attributes through Java code instead of settings those from XML for the `FlexboxLayoutManager`.
+For example when you want change the `flexDirection` and `justifyContent`:
+
+```java
+FlexboxLayoutManager layoutManager = new FlexboxLayoutManager();
+layoutManager.setFlexDirection(FlexDirection.COLUMN);
+layoutManager.setJustifyContent(JustifyContent.FLEX_END);
+```
+
+or for the attributes for the children of the `FlexboxLayoutManager` you can do like:
+
+```java
+mImageView.setImageDrawable(drawable);
+ViewGroup.LayoutParams lp = mImageView.getLayoutParams();
+if (lp instanceof FlexboxLayoutManager.LayoutParams) {
+    FlexboxLayoutManager.LayoutParams flexboxLp = (FlexboxLayoutManager.LayoutParams)
+            mImageView.getLayoutParams();
+    flexboxLp.setFlexGrow(1.0f);
+    flexboxLp.setAlignSelf(AlignSelf.FLEX_END);
+}
+```
 
 ## Backward-imcompatible changes from the 0.2.x versions
 `FlexboxLayout` can still be used as the same way, but there are some backward-imcompatible
