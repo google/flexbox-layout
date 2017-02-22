@@ -2,13 +2,13 @@
 
 With the latest alpha version of the release, Flexbox can now be used inside the `RecyclerView`
 as a `LayoutManager` (`FlexboxLayoutManager`).
-That means now you can use Flexbox with large number of items in a scrollable container!
+That means now you can use Flexbox with a large number of items in a scrollable container!
 
 ![FlexboxLayoutManager in action](/assets/flexbox-layoutmanager.gif)
 
 
 ## Supported attributes / features comparison
-Due to some characteristics of the RecyclerView, some Flexbox attributes are not avaiable/not implemented
+Due to some characteristics of the RecyclerView, some Flexbox attributes are not available/not implemented
 to the `FlexboxLayoutManager`.
 Here is a quick overview of the attributes/features comparison between the two containers.
 
@@ -58,7 +58,7 @@ if (lp instanceof FlexboxLayoutManager.LayoutParams) {
 ```
 
 ## Backward-imcompatible changes from the 0.2.x versions
-`FlexboxLayout` can still be used as the same way, but there are some backward-imcompatible
+`FlexboxLayout` can still be used as the same way, but there are some backward-incompatible
 changes introduced.
 
 * Now Flexbox specific constants are now defined in each individual class such as:
