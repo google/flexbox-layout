@@ -14,4 +14,4 @@
  * limitations under the License.
  */
 
-include ':app', ':flexbox'
+include ':demo-playground', ':demo-cat-gallery', ':flexbox'

@@ -19,23 +19,28 @@
     android:layout_width="360dp"
     android:layout_height="300dp"
     app:flexDirection="row"
-    app:flexWrap="wrap">
+    app:flexWrap="wrap"
+    app:alignItems="flex_start"
+    app:alignContent="flex_start">
 
     <TextView
         android:id="@+id/text1"
         android:layout_width="160dp"
         android:layout_height="120dp"
-        android:text="1" />
+        android:text="1"
+        app:layout_flexShrink="0" />
 
     <TextView
         android:id="@+id/text2"
         android:layout_width="160dp"
         android:layout_height="120dp"
-        android:text="2" />
+        android:text="2"
+        app:layout_flexShrink="0" />
 
     <TextView
         android:id="@+id/text3"
         android:layout_width="160dp"
         android:layout_height="120dp"
-        android:text="3" />
+        android:text="3"
+        app:layout_flexShrink="0" />
 </com.google.android.flexbox.FlexboxLayout>
