@@ -4082,7 +4082,7 @@ public class FlexboxAndroidTest {
                 isEqualAllowingError(TestUtil.dpToPixel(activity, 36)));
     }
 
-    private TextView createTextView(Context context, String text, int order) {
+    private static TextView createTextView(Context context, String text, int order) {
         TextView textView = new TextView(context);
         textView.setText(text);
         FlexboxLayout.LayoutParams lp = new FlexboxLayout.LayoutParams(
@@ -4092,7 +4092,7 @@ public class FlexboxAndroidTest {
         return textView;
     }
 
-    private ViewAssertion hasWidth(final int width) {
+    private static ViewAssertion hasWidth(final int width) {
         return matches(new TypeSafeMatcher<View>() {
             @Override
             public void describeTo(Description description) {
@@ -4111,7 +4111,7 @@ public class FlexboxAndroidTest {
         });
     }
 
-    private ViewAssertion hasHeight(final int height) {
+    private static ViewAssertion hasHeight(final int height) {
         return matches(new TypeSafeMatcher<View>() {
             @Override
             public void describeTo(Description description) {
