@@ -40,8 +40,7 @@ class CatViewHolder extends RecyclerView.ViewHolder {
         mImageView.setImageDrawable(drawable);
         ViewGroup.LayoutParams lp = mImageView.getLayoutParams();
         if (lp instanceof FlexboxLayoutManager.LayoutParams) {
-            FlexboxLayoutManager.LayoutParams flexboxLp = (FlexboxLayoutManager.LayoutParams)
-                    mImageView.getLayoutParams();
+            FlexboxLayoutManager.LayoutParams flexboxLp = (FlexboxLayoutManager.LayoutParams) lp;
             flexboxLp.setFlexGrow(1.0f);
         }
     }
