@@ -527,7 +527,7 @@ public class FlexboxLayoutManager extends RecyclerView.LayoutManager implements 
         // 4) Fill toward start from the anchor position
         if (DEBUG) {
             Log.d(TAG, "onLayoutChildren started");
-            Log.d(TAG, "getChildCount: %d" + getChildCount());
+            Log.d(TAG, "getChildCount: " + getChildCount());
             Log.d(TAG, "State: " + state);
             Log.d(TAG, "PendingSavedState: " + mPendingSavedState);
             Log.d(TAG, "PendingScrollPosition: " + mPendingScrollPositionOffset);
