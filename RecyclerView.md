@@ -56,7 +56,7 @@ if (lp instanceof FlexboxLayoutManager.LayoutParams) {
 }
 ```
 
-## Backward-imcompatible changes from the 0.2.x versions
+## Backward-incompatible changes from the 0.2.x versions
 `FlexboxLayout` can still be used as the same way, but there are some backward-incompatible
 changes introduced.
 
