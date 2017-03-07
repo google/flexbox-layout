@@ -537,7 +537,8 @@ public class FlexboxLayout extends ViewGroup implements FlexContainer {
         return sum;
     }
 
-    private boolean isMainAxisDirectionHorizontal() {
+    @Override
+    public boolean isMainAxisDirectionHorizontal() {
         return mFlexDirection == FlexDirection.ROW || mFlexDirection == FlexDirection.ROW_REVERSE;
     }
 

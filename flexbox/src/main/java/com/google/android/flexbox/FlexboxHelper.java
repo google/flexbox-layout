@@ -382,7 +382,7 @@ class FlexboxHelper {
 
         boolean reachedToIndex = toIndex == NO_POSITION;
 
-        boolean isMainHorizontal = isMainAxisDirectionHorizontal();
+        boolean isMainHorizontal = mFlexContainer.isMainAxisDirectionHorizontal();
 
         int mainPaddingStart = getPaddingStartMain(isMainHorizontal);
         int mainPaddingEnd = getPaddingEndMain(isMainHorizontal);
@@ -556,7 +556,7 @@ class FlexboxHelper {
     }
 
     /**
-     * Returns the start padding in the main axis. Either start or top.
+     * Returns the container's start padding in the main axis. Either start or top.
      *
      * @param isMainHorizontal is the main axis horizontal
      * @return the start padding in the main axis
@@ -570,7 +570,7 @@ class FlexboxHelper {
     }
 
     /**
-     * Returns the end padding in the main axis. Either end or bottom.
+     * Returns the container's end padding in the main axis. Either end or bottom.
      *
      * @param isMainHorizontal is the main axis horizontal
      * @return the end padding in the main axis
@@ -584,7 +584,7 @@ class FlexboxHelper {
     }
 
     /**
-     * Returns the start padding in the cross axis. Either start or top.
+     * Returns the container's start padding in the cross axis. Either start or top.
      *
      * @param isMainHorizontal is the main axis horizontal.
      * @return the start padding in the cross axis
@@ -598,7 +598,7 @@ class FlexboxHelper {
     }
 
     /**
-     * Returns the end padding in the cross axis. Either end or bottom.
+     * Returns the container's end padding in the cross axis. Either end or bottom.
      *
      * @param isMainHorizontal is the main axis horizontal
      * @return the end padding in the cross axis
@@ -729,12 +729,6 @@ class FlexboxHelper {
         }
 
         return flexItem.getMarginEnd();
-    }
-
-    // Copied from flexboxLayout.java
-    private boolean isMainAxisDirectionHorizontal() {
-        return mFlexContainer.getFlexDirection() == FlexDirection.ROW
-                || mFlexContainer.getFlexDirection() == FlexDirection.ROW_REVERSE;
     }
 
     /**
