@@ -26,10 +26,9 @@ public class NonNegativeDecimalInputValidator implements InputValidator {
     @Override
     public boolean isValidInput(CharSequence charSequence) {
         try {
-            Float.parseFloat(charSequence.toString());
+            return !TextUtils.isEmpty(charSequence) && Float.valueOf(charSequence.toString()) >= 0;
         } catch (NumberFormatException | NullPointerException ignore) {
             return false;
         }
-        return !TextUtils.isEmpty(charSequence) && Float.valueOf(charSequence.toString()) >= 0;
     }
 }
