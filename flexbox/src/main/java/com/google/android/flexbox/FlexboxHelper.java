@@ -334,11 +334,11 @@ class FlexboxHelper {
     }
 
     /**
-     * Calculate how many flex lines are needed in the flex container layout by measuring each
+     * Calculates how many flex lines are needed in the flex container layout by measuring each
      * child.
-     * Expand or shrink the flex items depending on the flex grow and flex shrink
-     * attributes in a later procedure, so views measured width\height may be changed
-     * in a later process or calculating the flex container.
+     * Expanding or shrinking the flex items depending on the flex grow and flex shrink
+     * attributes are done in a later procedure, so the views' measured width and measured
+     * height may be changed in a later process.
      *
      * @param mainMeasureSpec  the main axis measure spec imposed by the flex container,
      *                         width for horizontal direction, height otherwise
@@ -365,6 +365,8 @@ class FlexboxHelper {
             int needsCalcAmount, int fromIndex, int toIndex,
             @Nullable List<FlexLine> existingLines) {
 
+        boolean isMainHorizontal = mFlexContainer.isMainAxisDirectionHorizontal();
+
         int mainMode = View.MeasureSpec.getMode(mainMeasureSpec);
         int mainSize = View.MeasureSpec.getSize(mainMeasureSpec);
 
@@ -381,8 +383,6 @@ class FlexboxHelper {
         result.mFlexLines = flexLines;
 
         boolean reachedToIndex = toIndex == NO_POSITION;
-
-        boolean isMainHorizontal = mFlexContainer.isMainAxisDirectionHorizontal();
 
         int mainPaddingStart = getPaddingStartMain(isMainHorizontal);
         int mainPaddingEnd = getPaddingEndMain(isMainHorizontal);
