@@ -1331,7 +1331,8 @@ public class FlexboxLayoutManager extends RecyclerView.LayoutManager implements 
         return flexLine.getCrossSize();
     }
 
-    boolean isMainAxisDirectionHorizontal() {
+    @Override
+    public boolean isMainAxisDirectionHorizontal() {
         return mFlexDirection == FlexDirection.ROW || mFlexDirection == FlexDirection.ROW_REVERSE;
     }
 
