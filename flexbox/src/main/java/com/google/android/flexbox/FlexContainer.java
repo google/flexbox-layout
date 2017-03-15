@@ -161,6 +161,13 @@ interface FlexContainer {
     List<FlexLine> getFlexLines();
 
     /**
+     * Returns true if the main axis is horizontal, false otherwise.
+     *
+     * @return true if the main axis is horizontal, false otherwise
+     */
+    boolean isMainAxisDirectionHorizontal();
+
+    /**
      * Returns the length of decoration (such as dividers) of the flex item along the main axis.
      *
      * @param view            the view from which the length of the decoration is retrieved

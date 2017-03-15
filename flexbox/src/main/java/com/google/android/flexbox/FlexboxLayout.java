@@ -135,7 +135,7 @@ public class FlexboxLayout extends ViewGroup implements FlexContainer {
 
     }
 
-    /** Constant to how no dividers */
+    /** Constant to show no dividers */
     public static final int SHOW_DIVIDER_NONE = 0;
 
     /** Constant to show a divider at the beginning of the flex lines (or flex items). */
@@ -537,7 +537,8 @@ public class FlexboxLayout extends ViewGroup implements FlexContainer {
         return sum;
     }
 
-    private boolean isMainAxisDirectionHorizontal() {
+    @Override
+    public boolean isMainAxisDirectionHorizontal() {
         return mFlexDirection == FlexDirection.ROW || mFlexDirection == FlexDirection.ROW_REVERSE;
     }
 
