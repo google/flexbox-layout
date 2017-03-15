@@ -137,6 +137,11 @@ class FakeFlexContainer implements FlexContainer {
     }
 
     @Override
+    public boolean isMainAxisDirectionHorizontal() {
+        return mFlexDirection == FlexDirection.ROW || mFlexDirection == FlexDirection.ROW_REVERSE;
+    }
+
+    @Override
     public int getDecorationLengthMainAxis(View view, int index, int indexInFlexLine) {
         return 0;
     }
