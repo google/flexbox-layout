@@ -39,7 +39,7 @@ android {
 }
 
 dependencies {
-    compile "com.android.support:appcompat-v7:${rootProject.ext.supportLibVersion}"
+    compile "com.android.support:support-compat:${rootProject.ext.supportLibVersion}"
 
     testCompile "junit:junit:${rootProject.ext.junitVersion}"
 
