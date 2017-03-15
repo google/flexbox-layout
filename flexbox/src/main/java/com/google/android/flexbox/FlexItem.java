@@ -108,7 +108,7 @@ interface FlexItem extends Parcelable {
     /**
      * @return the flex shrink attribute of the flex item
      *
-     * The attributes determines how much this child will shrink is negative free space is
+     * The attribute determines how much this child will shrink if negative free space is
      * distributed relative to the rest of other flex items included in the same flex line.
      * If not specified, {@link #FLEX_SHRINK_DEFAULT} is set as a default value.
      */

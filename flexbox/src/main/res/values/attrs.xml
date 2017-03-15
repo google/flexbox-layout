@@ -101,7 +101,7 @@ limitations under the License.
             the 'content' string.
             But specifying initial fixed width values can be done by specifying width values in
             layout_width (or layout_height, varies depending on the flexDirection). Also the same
-            effect can be done by specifying "wrap_contnet" in layout_width (or layout_height) if
+            effect can be done by specifying "wrap_content" in layout_width (or layout_height) if
             developers want to achieve the same effect as 'content'.
             Thus, this attribute only accepts fraction values, which can't be done through
             layout_width (or layout_height) for simplicity.
