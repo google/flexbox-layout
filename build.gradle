@@ -34,7 +34,7 @@ ext {
     targetSdkVersion = 25
     compileSdkVersion = 25
     buildToolsVersion = "25.0.2"
-    supportLibVersion = "25.1.0"
+    supportLibVersion = "25.3.0"
     espressoVersion = "2.2.2"
     testRunnerVersion = "0.5"
     junitVersion = "4.12"
