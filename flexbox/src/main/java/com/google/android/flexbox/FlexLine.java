@@ -31,19 +31,19 @@ public class FlexLine {
     FlexLine() {
     }
 
-    /** @see {@link #getLeft()} */
+    /** @see #getLeft() */
     int mLeft = Integer.MAX_VALUE;
 
-    /** @see {@link #getTop()} */
+    /** @see #getTop() */
     int mTop = Integer.MAX_VALUE;
 
-    /** @see {@link #getRight()} */
+    /** @see #getRight() */
     int mRight = Integer.MIN_VALUE;
 
-    /** @see {@link #getBottom()} */
+    /** @see #getBottom() */
     int mBottom = Integer.MIN_VALUE;
 
-    /** @see {@link #getMainSize()} */
+    /** @see #getMainSize() */
     int mMainSize;
 
     /**
@@ -52,19 +52,19 @@ public class FlexLine {
      */
     int mDividerLengthInMainSize;
 
-    /** @see {@link #getCrossSize()} */
+    /** @see #getCrossSize() */
     int mCrossSize;
 
-    /** @see {@link #getItemCount()} */
+    /** @see #getItemCount() */
     int mItemCount;
 
     /** Holds the count of the views whose visibilities are gone */
     int mGoneItemCount;
 
-    /** @see {@link #getTotalFlexGrow()} */
+    /** @see #getTotalFlexGrow() */
     float mTotalFlexGrow;
 
-    /** @see {@link #getTotalFlexShrink()} */
+    /** @see #getTotalFlexShrink() */
     float mTotalFlexShrink;
 
     /**
@@ -131,6 +131,7 @@ public class FlexLine {
     /**
      * @return the size of the flex line in pixels along the cross axis of the flex container.
      */
+    @SuppressWarnings("WeakerAccess")
     public int getCrossSize() {
         return mCrossSize;
     }
@@ -138,6 +139,7 @@ public class FlexLine {
     /**
      * @return the count of the views contained in this flex line.
      */
+    @SuppressWarnings("WeakerAccess")
     public int getItemCount() {
         return mItemCount;
     }
@@ -145,6 +147,7 @@ public class FlexLine {
     /**
      * @return the count of the views whose visibilities are not gone in this flex line.
      */
+    @SuppressWarnings("WeakerAccess")
     public int getItemCountNotGone() {
         return mItemCount - mGoneItemCount;
     }
@@ -152,6 +155,7 @@ public class FlexLine {
     /**
      * @return the sum of the flexGrow properties of the children included in this flex line
      */
+    @SuppressWarnings("WeakerAccess")
     public float getTotalFlexGrow() {
         return mTotalFlexGrow;
     }
@@ -159,6 +163,7 @@ public class FlexLine {
     /**
      * @return the sum of the flexShrink properties of the children included in this flex line
      */
+    @SuppressWarnings("WeakerAccess")
     public float getTotalFlexShrink() {
         return mTotalFlexShrink;
     }
