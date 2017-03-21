@@ -57,14 +57,14 @@ public class FlexboxLayoutManager extends RecyclerView.LayoutManager implements 
      * The current value of the {@link FlexDirection}, the default value is {@link
      * FlexDirection#ROW}.
      *
-     * @see {@link FlexContainer#getFlexDirection()}
+     * @see FlexContainer#getFlexDirection()
      */
     private int mFlexDirection;
 
     /**
      * The current value of the {@link FlexWrap}, the default value is {@link FlexWrap#WRAP}.
      *
-     * @see {@link FlexContainer#getFlexWrap()}
+     * @see FlexContainer#getFlexWrap()
      */
     private int mFlexWrap;
 
@@ -72,7 +72,7 @@ public class FlexboxLayoutManager extends RecyclerView.LayoutManager implements 
      * The current value of the {@link JustifyContent}, the default value is
      * {@link JustifyContent#FLEX_START}.
      *
-     * @see {@link FlexContainer#getJustifyContent()}
+     * @see FlexContainer#getJustifyContent()
      */
     private int mJustifyContent;
 
@@ -80,7 +80,7 @@ public class FlexboxLayoutManager extends RecyclerView.LayoutManager implements 
      * The current value of the {@link AlignItems}, the default value is
      * {@link AlignItems#STRETCH}.
      *
-     * @see {@link FlexContainer#getAlignItems()}
+     * @see FlexContainer#getAlignItems()
      */
     private int mAlignItems;
 
