@@ -42,6 +42,7 @@ public class FlexboxItemDecoration extends RecyclerView.ItemDecoration {
 
     public static final int HORIZONTAL = 1;
     public static final int VERTICAL = 1 << 1;
+    @SuppressWarnings("WeakerAccess")
     public static final int BOTH = HORIZONTAL | VERTICAL;
 
     private static final int[] LIST_DIVIDER_ATTRS = new int[]{android.R.attr.listDivider};
