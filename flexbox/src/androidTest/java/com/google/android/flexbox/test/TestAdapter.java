@@ -16,13 +16,13 @@
 
 package com.google.android.flexbox.test;
 
-import com.google.android.flexbox.FlexboxLayoutManager;
-
 import android.support.v7.widget.RecyclerView;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+
+import com.google.android.flexbox.FlexboxLayoutManager;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -38,7 +38,7 @@ class TestAdapter extends RecyclerView.Adapter<TestViewHolder> {
         this(new ArrayList<FlexboxLayoutManager.LayoutParams>());
     }
 
-    TestAdapter(List<FlexboxLayoutManager.LayoutParams> flexItems) {
+    private TestAdapter(List<FlexboxLayoutManager.LayoutParams> flexItems) {
         mLayoutParams = flexItems;
     }
 
@@ -57,18 +57,11 @@ class TestAdapter extends RecyclerView.Adapter<TestViewHolder> {
         holder.mTextView.setLayoutParams(mLayoutParams.get(position));
     }
 
-    public void addItem(FlexboxLayoutManager.LayoutParams flexItem) {
+    void addItem(FlexboxLayoutManager.LayoutParams flexItem) {
         mLayoutParams.add(flexItem);
     }
 
-    public void removeItem(int position) {
-        if (position < 0 || position >= mLayoutParams.size()) {
-            return;
-        }
-        mLayoutParams.remove(position);
-    }
-
-    public FlexboxLayoutManager.LayoutParams getItemAt(int index) {
+    FlexboxLayoutManager.LayoutParams getItemAt(int index) {
         return mLayoutParams.get(index);
     }
 
