@@ -586,27 +586,103 @@ public class FlexboxLayoutManager extends RecyclerView.LayoutManager implements 
             }
         }
 
+        int startOffset;
+        int endOffset;
         if (mAnchorInfo.mLayoutFromEnd) {
             int filledToEnd = fill(recycler, state, mLayoutState);
             if (DEBUG) {
                 Log.d(TAG, String.format("filled: %d toward start", filledToEnd));
             }
+            startOffset = mLayoutState.mOffset;
             updateLayoutStateToFillEnd(mAnchorInfo, true);
             int filledToStart = fill(recycler, state, mLayoutState);
             if (DEBUG) {
                 Log.d(TAG, String.format("filled: %d toward end", filledToStart));
             }
+            endOffset = mLayoutState.mOffset;
         } else {
             int filledToEnd = fill(recycler, state, mLayoutState);
             if (DEBUG) {
                 Log.d(TAG, String.format("filled: %d toward end", filledToEnd));
             }
+            endOffset = mLayoutState.mOffset;
             updateLayoutStateToFillStart(mAnchorInfo, true);
             int filledToStart = fill(recycler, state, mLayoutState);
             if (DEBUG) {
                 Log.d(TAG, String.format("filled: %d toward start", filledToStart));
             }
+            startOffset = mLayoutState.mOffset;
+            if (DEBUG) {
+                Log.d(TAG, "startOffset: " + startOffset);
+            }
         }
+
+        if (getChildCount() > 0) {
+            if (mAnchorInfo.mLayoutFromEnd) {
+                int fixOffset = fixLayoutEndGap(endOffset, recycler, state, true);
+                startOffset += fixOffset;
+                fixLayoutStartGap(startOffset, recycler, state, false);
+            } else {
+                int fixOffset = fixLayoutStartGap(startOffset, recycler, state, true);
+                endOffset += fixOffset;
+                fixLayoutEndGap(endOffset, recycler, state, false);
+            }
+        }
+    }
+
+    /**
+     * Fill the gap the toward the start position if the gap to be filled is made.
+     * Large part is copied from LinearLayoutManager#fixLayoutStartGap.
+     */
+    private int fixLayoutStartGap(int startOffset, RecyclerView.Recycler recycler,
+            RecyclerView.State state, boolean canOffsetChildren) {
+
+        int gap = startOffset - mOrientationHelper.getStartAfterPadding();
+        int fixOffset;
+        if (gap > 0) {
+            // check if we should fix this gap.
+            fixOffset = -handleScrolling(gap, recycler, state);
+        } else {
+            return 0; // nothing to fix
+        }
+        startOffset += fixOffset;
+        if (canOffsetChildren) {
+            // re-calculate gap, see if we could fix it
+            gap = startOffset - mOrientationHelper.getStartAfterPadding();
+            if (gap > 0) {
+                mOrientationHelper.offsetChildren(-gap);
+                return fixOffset - gap;
+            }
+        }
+        return fixOffset;
+    }
+
+    /**
+     * Fill the gap the toward the end position if the gap to be filled is made.
+     * This process is necessary in a case like {@link #scrollToPosition(int)} is called
+     * for the last item, otherwise the last item is placed as the first line.
+     * Large part is copied from LinearLayoutManager#fixLayoutEndGap.
+     */
+    private int fixLayoutEndGap(int endOffset, RecyclerView.Recycler recycler,
+            RecyclerView.State state, boolean canOffsetChildren) {
+        int gap = mOrientationHelper.getEndAfterPadding() - endOffset;
+        int fixOffset;
+        if (gap > 0) {
+            fixOffset = -handleScrolling(-gap, recycler, state);
+        } else {
+            return 0; // nothing to fix
+        }
+        // move offset according to scroll amount
+        endOffset += fixOffset;
+        if (canOffsetChildren) {
+            // re-calculate gap, see if we could fix it
+            gap = mOrientationHelper.getEndAfterPadding() - endOffset;
+            if (gap > 0) {
+                mOrientationHelper.offsetChildren(gap);
+                return gap + fixOffset;
+            }
+        }
+        return fixOffset;
     }
 
     private void updateFlexLines(int childCount) {
