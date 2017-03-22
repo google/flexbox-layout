@@ -54,7 +54,6 @@ import android.widget.TextView;
 import com.google.android.flexbox.AlignItems;
 import com.google.android.flexbox.AlignSelf;
 import com.google.android.flexbox.FlexDirection;
-import com.google.android.flexbox.FlexLine;
 import com.google.android.flexbox.FlexWrap;
 import com.google.android.flexbox.FlexboxItemDecoration;
 import com.google.android.flexbox.FlexboxLayoutManager;
@@ -2744,6 +2743,94 @@ public class FlexboxLayoutManagerTest {
         assertThat(((TextView) layoutManager.getChildAt(
                 layoutManager.getChildCount() - 1)).getText().toString(),
                 is(String.valueOf(scrollTo + 3)));
+    }
+
+    @Test
+    @FlakyTest
+    public void testScrollToPosition_scrollToNewItem_direction_row() throws Throwable {
+        final FlexboxTestActivity activity = mActivityRule.getActivity();
+        final FlexboxLayoutManager layoutManager = new FlexboxLayoutManager();
+        final TestAdapter adapter = new TestAdapter();
+
+        mActivityRule.runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                activity.setContentView(R.layout.recyclerview);
+                RecyclerView recyclerView = (RecyclerView) activity.findViewById(R.id.recyclerview);
+                layoutManager.setFlexDirection(FlexDirection.ROW);
+                recyclerView.setLayoutManager(layoutManager);
+                recyclerView.setAdapter(adapter);
+                for (int i = 0; i < 6; i++) {
+                    FlexboxLayoutManager.LayoutParams lp = createLayoutParams(activity, 100, 70);
+                    adapter.addItem(lp);
+                }
+                // There should be 2 lines
+                // RecyclerView width: 320, height: 240.
+                // Flex line 1: 3 items
+                // Flex line 2: 3 items
+            }
+        });
+        InstrumentationRegistry.getInstrumentation().waitForIdleSync();
+        assertThat(layoutManager.getFlexDirection(), is(FlexDirection.ROW));
+
+        mActivityRule.runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                FlexboxLayoutManager.LayoutParams lp = createLayoutParams(activity, 100, 70);
+                adapter.addItem(lp);
+                layoutManager.scrollToPosition(adapter.getItemCount() - 1);
+            }
+        });
+        InstrumentationRegistry.getInstrumentation().waitForIdleSync();
+
+        // ChildCount (visible views) should be 6 + 1,
+        // which before fixing https://github.com/google/flexbox-layout/issues/206, only the new
+        // item was visible
+        assertThat(layoutManager.getChildCount(), is(7));
+    }
+
+    @Test
+    @FlakyTest
+    public void testScrollToPosition_scrollToNewItem_direction_column() throws Throwable {
+        final FlexboxTestActivity activity = mActivityRule.getActivity();
+        final FlexboxLayoutManager layoutManager = new FlexboxLayoutManager();
+        final TestAdapter adapter = new TestAdapter();
+
+        mActivityRule.runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                activity.setContentView(R.layout.recyclerview);
+                RecyclerView recyclerView = (RecyclerView) activity.findViewById(R.id.recyclerview);
+                layoutManager.setFlexDirection(FlexDirection.COLUMN);
+                recyclerView.setLayoutManager(layoutManager);
+                recyclerView.setAdapter(adapter);
+                for (int i = 0; i < 6; i++) {
+                    FlexboxLayoutManager.LayoutParams lp = createLayoutParams(activity, 100, 70);
+                    adapter.addItem(lp);
+                }
+                // There should be 2 lines
+                // RecyclerView width: 320, height: 240.
+                // Flex line 1: 3 items
+                // Flex line 2: 3 items
+            }
+        });
+        InstrumentationRegistry.getInstrumentation().waitForIdleSync();
+        assertThat(layoutManager.getFlexDirection(), is(FlexDirection.COLUMN));
+
+        mActivityRule.runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                FlexboxLayoutManager.LayoutParams lp = createLayoutParams(activity, 100, 70);
+                adapter.addItem(lp);
+                layoutManager.scrollToPosition(adapter.getItemCount() - 1);
+            }
+        });
+        InstrumentationRegistry.getInstrumentation().waitForIdleSync();
+
+        // ChildCount (visible views) should be 6 + 1,
+        // which before fixing https://github.com/google/flexbox-layout/issues/206, only the new
+        // item was visible
+        assertThat(layoutManager.getChildCount(), is(7));
     }
 
     /**
