@@ -421,10 +421,6 @@ class FlexboxHelper {
 
             FlexItem flexItem = (FlexItem) child.getLayoutParams();
 
-            if (flexItem.getAlignSelf() == AlignItems.STRETCH) {
-                flexLine.mIndicesAlignSelfStretch.add(i);
-            }
-
             int childMainSize = getFlexItemSizeMain(flexItem, isMainHorizontal);
 
             if (flexItem.getFlexBasisPercent() != FLEX_BASIS_PERCENT_DEFAULT
@@ -521,6 +517,10 @@ class FlexboxHelper {
                 }
             }
 
+            if (flexItemNeedsStretching(flexItem, isMainHorizontal)) {
+                flexLine.mIndicesAlignSelfStretch.add(i);
+            }
+
             if (isLastFlexItem(i, childCount, flexLine)) {
                 addFlexLine(flexLines, flexLine, i);
                 sumCrossSize += flexLine.mCrossSize;
@@ -553,6 +553,25 @@ class FlexboxHelper {
 
         result.mChildState = childState;
         return result;
+    }
+
+    /**
+     * Determines if the flex item needs to be stretched.
+     *
+     * @param flexItem         the flex item
+     * @param isMainHorizontal is the main axis horizontal
+     * @return true if the flex item needs to be stretched, false otherwise.
+     */
+    private boolean flexItemNeedsStretching(FlexItem flexItem, boolean isMainHorizontal) {
+        if (flexItem.getAlignSelf() == AlignItems.STRETCH) {
+            return true;
+        }
+
+        if (isMainHorizontal) {
+            return flexItem.getHeight() == ViewGroup.LayoutParams.MATCH_PARENT;
+        } else {
+            return flexItem.getWidth() == ViewGroup.LayoutParams.MATCH_PARENT;
+        }
     }
 
     /**
@@ -665,10 +684,44 @@ class FlexboxHelper {
      */
     private int getFlexItemSizeCross(FlexItem flexItem, boolean isMainHorizontal) {
         if (isMainHorizontal) {
-            return flexItem.getHeight();
+            return getFlexItemHeightNoMatchParent(flexItem);
         }
 
-        return flexItem.getWidth();
+        return getFlexItemWidthNoMatchParent(flexItem);
+    }
+
+    /**
+     * Returns the flex item's width.
+     * If the width is match_parent returns wrap_content since match_parent interferes with the
+     * measuring of the flex lines along the cross axis.
+     *
+     * @param flexItem the flex item
+     * @return the flex item's width
+     */
+    private int getFlexItemWidthNoMatchParent(FlexItem flexItem) {
+        int width = flexItem.getWidth();
+        if (width == ViewGroup.LayoutParams.MATCH_PARENT) {
+            return ViewGroup.LayoutParams.WRAP_CONTENT;
+        } else {
+            return width;
+        }
+    }
+
+    /**
+     * Returns the flex item's height.
+     * If the height is match_parent returns wrap_content since match_parent interferes with the
+     * measuring of the flex lines along the cross axis.
+     *
+     * @param flexItem the flex item
+     * @return the flex item's height
+     */
+    private int getFlexItemHeightNoMatchParent(FlexItem flexItem) {
+        int height = flexItem.getHeight();
+        if (height == ViewGroup.LayoutParams.MATCH_PARENT) {
+            return ViewGroup.LayoutParams.WRAP_CONTENT;
+        } else {
+            return height;
+        }
     }
 
     /**
@@ -1281,7 +1334,7 @@ class FlexboxHelper {
         int childWidthMeasureSpec = mFlexContainer.getChildWidthMeasureSpec(widthMeasureSpec,
                 mFlexContainer.getPaddingLeft() + mFlexContainer.getPaddingRight() +
                         flexItem.getMarginLeft() + flexItem.getMarginRight(),
-                flexItem.getWidth());
+                getFlexItemWidthNoMatchParent(flexItem));
         int childWidth = View.MeasureSpec.getSize(childWidthMeasureSpec);
         if (childWidth > flexItem.getMaxWidth()) {
             childWidthMeasureSpec = View.MeasureSpec.makeMeasureSpec(flexItem.getMaxWidth(),
@@ -1297,7 +1350,7 @@ class FlexboxHelper {
         int childHeightMeasureSpec = mFlexContainer.getChildHeightMeasureSpec(heightMeasureSpec,
                 mFlexContainer.getPaddingTop() + mFlexContainer.getPaddingBottom()
                         + flexItem.getMarginTop() + flexItem.getMarginBottom(),
-                flexItem.getHeight());
+                getFlexItemHeightNoMatchParent(flexItem));
         int childHeight = View.MeasureSpec.getSize(childHeightMeasureSpec);
         if (childHeight > flexItem.getMaxHeight()) {
             childHeightMeasureSpec = View.MeasureSpec.makeMeasureSpec(flexItem.getMaxHeight(),

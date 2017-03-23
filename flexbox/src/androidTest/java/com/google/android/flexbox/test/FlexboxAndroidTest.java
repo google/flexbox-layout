@@ -1743,6 +1743,108 @@ public class FlexboxAndroidTest {
 
     @Test
     @FlakyTest
+    public void testWidthMatchParent_flexDirection_row() throws Throwable {
+        final FlexboxTestActivity activity = mActivityRule.getActivity();
+        FlexboxLayout flexboxLayout = createFlexboxLayout(
+                R.layout.activity_width_match_parent_direction_row_test);
+
+        onView(withId(R.id.text1)).check(isTopAlignedWith(withId(R.id.flexbox_layout)));
+        onView(withId(R.id.text1)).check(isLeftAlignedWith(withId(R.id.flexbox_layout)));
+        onView(withId(R.id.text2)).check(isBelow(withId(R.id.text1)));
+        onView(withId(R.id.text2)).check(isLeftAlignedWith(withId(R.id.flexbox_layout)));
+        onView(withId(R.id.text3)).check(isBelow(withId(R.id.text2)));
+        onView(withId(R.id.text3)).check(isLeftAlignedWith(withId(R.id.flexbox_layout)));
+
+        // There should be 3 flex lines in the layout with the given layout.
+        // Only the second TextView's width is set to match_parent.
+        int flexLineWidth = flexboxLayout.getWidth();
+        TextView textView1 = (TextView) activity.findViewById(R.id.text1);
+        TextView textView2 = (TextView) activity.findViewById(R.id.text2);
+        TextView textView3 = (TextView) activity.findViewById(R.id.text3);
+        assertThat(textView1.getWidth(), not(flexLineWidth));
+        assertThat(textView2.getWidth(), isEqualAllowingError(flexLineWidth));
+        assertThat(textView3.getWidth(), not(flexLineWidth));
+    }
+
+    @Test
+    @FlakyTest
+    public void testWidthMatchParent_flexDirection_column() throws Throwable {
+        final FlexboxTestActivity activity = mActivityRule.getActivity();
+        FlexboxLayout flexboxLayout = createFlexboxLayout(
+                R.layout.activity_width_match_parent_direction_column_test);
+
+        onView(withId(R.id.text1)).check(isTopAlignedWith(withId(R.id.flexbox_layout)));
+        onView(withId(R.id.text1)).check(isLeftAlignedWith(withId(R.id.flexbox_layout)));
+        onView(withId(R.id.text2)).check(isBelow(withId(R.id.text1)));
+        onView(withId(R.id.text2)).check(isLeftAlignedWith(withId(R.id.flexbox_layout)));
+        onView(withId(R.id.text3)).check(isTopAlignedWith(withId(R.id.flexbox_layout)));
+        onView(withId(R.id.text3)).check(isRightOf(withId(R.id.text1)));
+        onView(withId(R.id.text3)).check(isRightOf(withId(R.id.text2)));
+
+        // There should be 2 flex lines in the layout with the given layout.
+        // Only the second TextView's width is set to match_parent.
+        int flexLineSize = flexboxLayout.getWidth() / 2;
+        TextView textView1 = (TextView) activity.findViewById(R.id.text1);
+        TextView textView2 = (TextView) activity.findViewById(R.id.text2);
+        TextView textView3 = (TextView) activity.findViewById(R.id.text3);
+        assertThat(textView1.getWidth(), not(flexLineSize));
+        assertThat(textView2.getWidth(), isEqualAllowingError(flexLineSize));
+        assertThat(textView3.getWidth(), not(flexLineSize));
+    }
+
+    @Test
+    @FlakyTest
+    public void testHeightMatchParent_flexDirection_row() throws Throwable {
+        final FlexboxTestActivity activity = mActivityRule.getActivity();
+        FlexboxLayout flexboxLayout = createFlexboxLayout(
+                R.layout.activity_height_match_parent_direction_row_test);
+
+        onView(withId(R.id.text1)).check(isTopAlignedWith(withId(R.id.flexbox_layout)));
+        onView(withId(R.id.text1)).check(isLeftAlignedWith(withId(R.id.flexbox_layout)));
+        onView(withId(R.id.text2)).check(isTopAlignedWith(withId(R.id.flexbox_layout)));
+        onView(withId(R.id.text2)).check(isRightOf(withId(R.id.text1)));
+        onView(withId(R.id.text3)).check(isLeftAlignedWith(withId(R.id.flexbox_layout)));
+        onView(withId(R.id.text3)).check(isBelow(withId(R.id.text1)));
+        onView(withId(R.id.text3)).check(isBelow(withId(R.id.text2)));
+
+        // There should be 2 flex lines in the layout with the given layout.
+        // Only the second TextView's height is set to match_parent.
+        int flexLineSize = flexboxLayout.getHeight() / 2;
+        TextView textView1 = (TextView) activity.findViewById(R.id.text1);
+        TextView textView2 = (TextView) activity.findViewById(R.id.text2);
+        TextView textView3 = (TextView) activity.findViewById(R.id.text3);
+        assertThat(textView1.getHeight(), not(flexLineSize));
+        assertThat(textView2.getHeight(), isEqualAllowingError(flexLineSize));
+        assertThat(textView3.getHeight(), not(flexLineSize));
+    }
+
+    @Test
+    @FlakyTest
+    public void testHeightMatchParent_flexDirection_column() throws Throwable {
+        final FlexboxTestActivity activity = mActivityRule.getActivity();
+        FlexboxLayout flexboxLayout = createFlexboxLayout(
+                R.layout.activity_height_match_parent_direction_column_test);
+
+        onView(withId(R.id.text1)).check(isTopAlignedWith(withId(R.id.flexbox_layout)));
+        onView(withId(R.id.text1)).check(isLeftAlignedWith(withId(R.id.flexbox_layout)));
+        onView(withId(R.id.text2)).check(isTopAlignedWith(withId(R.id.flexbox_layout)));
+        onView(withId(R.id.text2)).check(isRightOf(withId(R.id.text1)));
+        onView(withId(R.id.text3)).check(isTopAlignedWith(withId(R.id.flexbox_layout)));
+        onView(withId(R.id.text3)).check(isRightOf(withId(R.id.text2)));
+
+        // There should be 3 flex lines in the layout with the given layout.
+        // Only the second TextView's height is set to match_parent.
+        int flexLineHeight = flexboxLayout.getHeight();
+        TextView textView1 = (TextView) activity.findViewById(R.id.text1);
+        TextView textView2 = (TextView) activity.findViewById(R.id.text2);
+        TextView textView3 = (TextView) activity.findViewById(R.id.text3);
+        assertThat(textView1.getHeight(), not(flexLineHeight));
+        assertThat(textView2.getHeight(), isEqualAllowingError(flexLineHeight));
+        assertThat(textView3.getHeight(), not(flexLineHeight));
+    }
+
+    @Test
+    @FlakyTest
     public void testAlignItems_flexStart() throws Throwable {
         final FlexboxTestActivity activity = mActivityRule.getActivity();
         FlexboxLayout flexboxLayout = createFlexboxLayout(R.layout.activity_align_items_test);
