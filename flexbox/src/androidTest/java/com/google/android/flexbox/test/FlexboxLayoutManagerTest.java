@@ -49,6 +49,7 @@ import android.support.test.runner.AndroidJUnit4;
 import android.support.v4.content.res.ResourcesCompat;
 import android.support.v7.widget.RecyclerView;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.TextView;
 
 import com.google.android.flexbox.AlignItems;
@@ -2831,6 +2832,67 @@ public class FlexboxLayoutManagerTest {
         // which before fixing https://github.com/google/flexbox-layout/issues/206, only the new
         // item was visible
         assertThat(layoutManager.getChildCount(), is(7));
+    }
+
+    @Test
+    @FlakyTest
+    public void testScrollToStart_secondLineHasMoreItemThanFirst() throws Throwable {
+        // This test verifies the case that the first line disappears as the user first scrolls to
+        // the bottom enough that the first line becomes invisible then the user scrolls toward
+        // start on the condition that the second line has more items than the first line
+        // https://github.com/google/flexbox-layout/issues/228
+
+        final FlexboxTestActivity activity = mActivityRule.getActivity();
+        final FlexboxLayoutManager layoutManager = new FlexboxLayoutManager();
+        final TestAdapter adapter = new TestAdapter();
+
+        mActivityRule.runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                activity.setContentView(R.layout.recyclerview);
+                RecyclerView recyclerView = (RecyclerView) activity.findViewById(R.id.recyclerview);
+                layoutManager.setFlexDirection(FlexDirection.ROW);
+                recyclerView.setLayoutManager(layoutManager);
+                recyclerView.setAdapter(adapter);
+                FlexboxLayoutManager.LayoutParams first = new FlexboxLayoutManager.LayoutParams(
+                        ViewGroup.LayoutParams.MATCH_PARENT, TestUtil.dpToPixel(activity, 70));
+                adapter.addItem(first);
+                for (int i = 0; i < 50; i++) {
+                    FlexboxLayoutManager.LayoutParams lp = createLayoutParams(activity, 100, 70);
+                    adapter.addItem(lp);
+                }
+                // The first line has 1 item, the following lines have more than 1 items
+                // RecyclerView width: 320, height: 240.
+                // Flex line 1: 1 items
+                // Flex line 2: 3 items
+                // Flex line 3: 3 items
+                // ...
+            }
+        });
+        InstrumentationRegistry.getInstrumentation().waitForIdleSync();
+        assertThat(layoutManager.getFlexDirection(), is(FlexDirection.ROW));
+
+        onView(withId(R.id.recyclerview)).perform(swipe(GeneralLocation.BOTTOM_CENTER,
+                GeneralLocation.TOP_CENTER));
+        onView(withId(R.id.recyclerview)).perform(swipe(GeneralLocation.BOTTOM_CENTER,
+                GeneralLocation.TOP_CENTER));
+        onView(withId(R.id.recyclerview)).perform(swipe(GeneralLocation.BOTTOM_CENTER,
+                GeneralLocation.TOP_CENTER));
+        // At this moment, the first item should become invisible
+        View firstView = layoutManager.getChildAt(0);
+        assertThat(((TextView) firstView).getText().toString(), is(not("1")));
+
+        onView(withId(R.id.recyclerview)).perform(swipe(GeneralLocation.TOP_CENTER,
+                GeneralLocation.BOTTOM_CENTER));
+        onView(withId(R.id.recyclerview)).perform(swipe(GeneralLocation.TOP_CENTER,
+                GeneralLocation.BOTTOM_CENTER));
+        onView(withId(R.id.recyclerview)).perform(swipe(GeneralLocation.TOP_CENTER,
+                GeneralLocation.BOTTOM_CENTER));
+
+        // The first visible item should be "1", which before fixing the issue
+        // https://github.com/google/flexbox-layout/issues/228, the first line disappeared.
+        firstView = layoutManager.getChildAt(0);
+        assertThat(((TextView) firstView).getText().toString(), is("1"));
     }
 
     /**
