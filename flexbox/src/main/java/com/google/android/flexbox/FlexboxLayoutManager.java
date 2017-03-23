@@ -1635,10 +1635,14 @@ public class FlexboxLayoutManager extends RecyclerView.LayoutManager implements 
             if (flexLinePosition == NO_POSITION) {
                 flexLinePosition = 0;
             }
-            FlexLine currentLine = mFlexLines.get(flexLinePosition);
-            // The position of the next item toward start should be on the next flex line,
-            // shifting the position by the number of the items in the current line.
-            mLayoutState.mPosition = firstVisiblePosition - currentLine.getItemCount();
+            if (flexLinePosition > 0) {
+                FlexLine previousLine = mFlexLines.get(flexLinePosition - 1);
+                // The position of the next item toward start should be on the next flex line,
+                // shifting the position by the number of the items in the previous line.
+                mLayoutState.mPosition = firstVisiblePosition - previousLine.getItemCount();
+            } else {
+                mLayoutState.mPosition = NO_POSITION;
+            }
             mLayoutState.mFlexLinePosition = flexLinePosition > 0 ? flexLinePosition - 1 : 0;
             mLayoutState.mScrollingOffset = -mOrientationHelper.getDecoratedStart(referenceView)
                     + mOrientationHelper.getStartAfterPadding();
