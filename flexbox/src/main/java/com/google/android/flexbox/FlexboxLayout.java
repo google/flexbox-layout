@@ -74,21 +74,18 @@ import java.util.List;
  */
 public class FlexboxLayout extends ViewGroup implements FlexContainer {
 
-    //TODO: Extracting the interfaces to independent classes is a breaking change. Update the
-    //      document to notify that.
-
     /**
      * The current value of the {@link FlexDirection}, the default value is {@link
      * FlexDirection#ROW}.
      *
-     * @see {@link FlexDirection}
+     * @see FlexDirection
      */
     private int mFlexDirection;
 
     /**
      * The current value of the {@link FlexWrap}, the default value is {@link FlexWrap#NOWRAP}.
      *
-     * @see {@link FlexWrap}
+     * @see FlexWrap
      */
     private int mFlexWrap;
 
@@ -96,7 +93,7 @@ public class FlexboxLayout extends ViewGroup implements FlexContainer {
      * The current value of the {@link JustifyContent}, the default value is
      * {@link JustifyContent#FLEX_START}.
      *
-     * @see {@link JustifyContent}
+     * @see JustifyContent
      */
     private int mJustifyContent;
 
@@ -104,7 +101,7 @@ public class FlexboxLayout extends ViewGroup implements FlexContainer {
      * The current value of the {@link AlignItems}, the default value is
      * {@link AlignItems#STRETCH}.
      *
-     * @see {@link AlignItems}
+     * @see AlignItems
      */
     private int mAlignItems;
 
@@ -112,7 +109,7 @@ public class FlexboxLayout extends ViewGroup implements FlexContainer {
      * The current value of the {@link AlignContent}, the default value is
      * {@link AlignContent#STRETCH}.
      *
-     * @see {@link AlignContent}
+     * @see AlignContent
      */
     private int mAlignContent;
 
@@ -131,6 +128,7 @@ public class FlexboxLayout extends ViewGroup implements FlexContainer {
                     SHOW_DIVIDER_END
             })
     @Retention(RetentionPolicy.SOURCE)
+    @SuppressWarnings("WeakerAccess")
     public @interface DividerMode {
 
     }
@@ -899,16 +897,14 @@ public class FlexboxLayout extends ViewGroup implements FlexContainer {
                 if (mFlexWrap == FlexWrap.WRAP_REVERSE) {
                     isRtl = !isRtl;
                 }
-                fromBottomToTop = false;
-                drawDividersVertical(canvas, isRtl, fromBottomToTop);
+                drawDividersVertical(canvas, isRtl, false);
                 break;
             case FlexDirection.COLUMN_REVERSE:
                 isRtl = layoutDirection == ViewCompat.LAYOUT_DIRECTION_RTL;
                 if (mFlexWrap == FlexWrap.WRAP_REVERSE) {
                     isRtl = !isRtl;
                 }
-                fromBottomToTop = true;
-                drawDividersVertical(canvas, isRtl, fromBottomToTop);
+                drawDividersVertical(canvas, isRtl, true);
                 break;
         }
     }
