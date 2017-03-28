@@ -565,10 +565,11 @@ public class FlexboxLayoutManager extends RecyclerView.LayoutManager implements 
             mAnchorInfo.mValid = true;
         }
         detachAndScrapAttachedViews(recycler);
+
         if (mAnchorInfo.mLayoutFromEnd) {
-            updateLayoutStateToFillStart(mAnchorInfo, false);
+            updateLayoutStateToFillStart(mAnchorInfo, false, true);
         } else {
-            updateLayoutStateToFillEnd(mAnchorInfo, false);
+            updateLayoutStateToFillEnd(mAnchorInfo, false, true);
         }
         if (DEBUG) {
             Log.d(TAG,
@@ -594,7 +595,7 @@ public class FlexboxLayoutManager extends RecyclerView.LayoutManager implements 
                 Log.d(TAG, String.format("filled: %d toward start", filledToEnd));
             }
             startOffset = mLayoutState.mOffset;
-            updateLayoutStateToFillEnd(mAnchorInfo, true);
+            updateLayoutStateToFillEnd(mAnchorInfo, true, false);
             int filledToStart = fill(recycler, state, mLayoutState);
             if (DEBUG) {
                 Log.d(TAG, String.format("filled: %d toward end", filledToStart));
@@ -606,15 +607,12 @@ public class FlexboxLayoutManager extends RecyclerView.LayoutManager implements 
                 Log.d(TAG, String.format("filled: %d toward end", filledToEnd));
             }
             endOffset = mLayoutState.mOffset;
-            updateLayoutStateToFillStart(mAnchorInfo, true);
+            updateLayoutStateToFillStart(mAnchorInfo, true, false);
             int filledToStart = fill(recycler, state, mLayoutState);
             if (DEBUG) {
                 Log.d(TAG, String.format("filled: %d toward start", filledToStart));
             }
             startOffset = mLayoutState.mOffset;
-            if (DEBUG) {
-                Log.d(TAG, "startOffset: " + startOffset);
-            }
         }
 
         if (getChildCount() > 0) {
@@ -1073,7 +1071,8 @@ public class FlexboxLayoutManager extends RecyclerView.LayoutManager implements 
         int start = layoutState.mAvailable;
         int remainingSpace = layoutState.mAvailable;
         int consumed = 0;
-        while (remainingSpace > 0 && layoutState.hasMore(state, mFlexLines)) {
+        while ((remainingSpace > 0 || mLayoutState.mInfinite) &&
+                layoutState.hasMore(state, mFlexLines)) {
             FlexLine flexLine = mFlexLines.get(layoutState.mFlexLinePosition);
             layoutState.mPosition = flexLine.mFirstIndex;
             consumed += layoutFlexLine(flexLine, layoutState);
@@ -1421,8 +1420,16 @@ public class FlexboxLayoutManager extends RecyclerView.LayoutManager implements 
      * @param anchorInfo   the anchor information where layout should start
      * @param fromNextLine if set to {@code true}, layout starts from the next flex line set to
      *                     the anchor information
+     * @param considerInfinite if set to {@code true}, the judgement if the infinite available space
+     *                         needs to be considered.
      */
-    private void updateLayoutStateToFillEnd(AnchorInfo anchorInfo, boolean fromNextLine) {
+    private void updateLayoutStateToFillEnd(AnchorInfo anchorInfo, boolean fromNextLine,
+            boolean considerInfinite) {
+        if (considerInfinite) {
+            resolveInfiniteAmount();
+        } else {
+            mLayoutState.mInfinite = false;
+        }
         mLayoutState.mAvailable = mOrientationHelper.getEndAfterPadding() - anchorInfo.mCoordinate;
         mLayoutState.mPosition = anchorInfo.mPosition;
         mLayoutState.mItemDirection = LayoutState.ITEM_DIRECTION_TAIL;
@@ -1449,8 +1456,16 @@ public class FlexboxLayoutManager extends RecyclerView.LayoutManager implements 
      * @param anchorInfo       the anchor information where layout should start
      * @param fromPreviousLine if set to {@code true}, layout starts from the next flex line set to
      *                         the anchor information
+     * @param considerInfinite if set to {@code true}, the judgement if the infinite available space
+     *                         needs to be considered.
      */
-    private void updateLayoutStateToFillStart(AnchorInfo anchorInfo, boolean fromPreviousLine) {
+    private void updateLayoutStateToFillStart(AnchorInfo anchorInfo, boolean fromPreviousLine,
+            boolean considerInfinite) {
+        if (considerInfinite) {
+            resolveInfiniteAmount();
+        } else {
+            mLayoutState.mInfinite = false;
+        }
         mLayoutState.mAvailable = anchorInfo.mCoordinate - mOrientationHelper
                 .getStartAfterPadding();
         mLayoutState.mPosition = anchorInfo.mPosition;
@@ -1466,6 +1481,24 @@ public class FlexboxLayoutManager extends RecyclerView.LayoutManager implements 
             mLayoutState.mFlexLinePosition--;
             mLayoutState.mPosition -= currentLine.getItemCount();
         }
+    }
+
+    private void resolveInfiniteAmount() {
+        int crossMode;
+        if (isMainAxisDirectionHorizontal()) {
+            crossMode = getHeightMode();
+        } else {
+            crossMode = getWidth();
+        }
+        // Setting the infinite flag so that the LayoutManager tries to fill the available space
+        // as much as possible. E.g. this is needed in the case RecyclerView is wrapped with another
+        // scrollable container (another RecyclerView or ScrollView) on the condition
+        // layout_height="wrap_content" and flexDirection="row". In such a case, the height of the
+        // inner RecyclerView (attached RecyclerView for this LayoutManager) is set to 0 at this
+        // moment, so the value of the mAvailable doesn't have enough value enough to put the
+        // already calculated flex lines.
+        mLayoutState.mInfinite =
+                crossMode == View.MeasureSpec.UNSPECIFIED || crossMode == View.MeasureSpec.AT_MOST;
     }
 
     private void ensureOrientationHelper() {
@@ -2137,11 +2170,13 @@ public class FlexboxLayoutManager extends RecyclerView.LayoutManager implements 
         private static final int LAYOUT_START = -1;
         private static final int LAYOUT_END = 1;
 
-        private static final int ITEM_DIRECTION_HEAD = -1;
         private static final int ITEM_DIRECTION_TAIL = 1;
 
         /** Number of pixels that we should fill, in the layout direction. */
         private int mAvailable;
+
+        /** If set to true, the value of {@link #mAvailable} is considered as infinite. */
+        private boolean mInfinite;
 
         // TODO: Add mExtra to support better smooth scrolling
 
@@ -2152,21 +2187,21 @@ public class FlexboxLayoutManager extends RecyclerView.LayoutManager implements 
         private int mPosition;
 
         /** Pixel offset where layout should start */
-        int mOffset;
+        private int mOffset;
 
         /**
          * Used when LayoutState is constructed in a scrolling state.
          * It should be set the amount of scrolling we can make without creating a new view.
          * Settings this is required for efficient view recycling.
          */
-        int mScrollingOffset;
+        private int mScrollingOffset;
 
         /**
          * The most recent
          * {@link #scrollVerticallyBy(int, RecyclerView.Recycler, RecyclerView.State)} or
          * {@link #scrollHorizontallyBy(int, RecyclerView.Recycler, RecyclerView.State)} amount.
          */
-        int mLastScrollDelta;
+        private int mLastScrollDelta;
 
         private int mItemDirection = LayoutState.ITEM_DIRECTION_TAIL;
 
