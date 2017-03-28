@@ -47,6 +47,7 @@ import android.support.test.filters.MediumTest;
 import android.support.test.rule.ActivityTestRule;
 import android.support.test.runner.AndroidJUnit4;
 import android.support.v4.content.res.ResourcesCompat;
+import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.View;
 import android.view.ViewGroup;
@@ -2893,6 +2894,60 @@ public class FlexboxLayoutManagerTest {
         // https://github.com/google/flexbox-layout/issues/228, the first line disappeared.
         firstView = layoutManager.getChildAt(0);
         assertThat(((TextView) firstView).getText().toString(), is("1"));
+    }
+
+    @Test
+    @FlakyTest
+    public void testNestedRecyclerViews_direction_row() throws Throwable {
+        // This test verifies the nested RecyclerViews.
+        // The outer RecyclerView scrolls vertical using LinearLayoutManager.
+        // The inner RecyclerViews use FlexboxLayoutManager with flexDirection == ROW and
+        // height of the RecyclerView is set to "wrap_content", which before fixing
+        // https://github.com/google/flexbox-layout/issues/208, the height of the inner
+        // RecyclerViews were set to 0.
+        final FlexboxTestActivity activity = mActivityRule.getActivity();
+        final LinearLayoutManager outerLayoutManager = new LinearLayoutManager(activity);
+        final NestedOuterAdapter adapter = new NestedOuterAdapter(FlexDirection.ROW);
+        mActivityRule.runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                activity.setContentView(R.layout.recyclerview);
+                RecyclerView recyclerView = (RecyclerView) activity.findViewById(R.id.recyclerview);
+                outerLayoutManager.setOrientation(LinearLayoutManager.VERTICAL);
+                recyclerView.setLayoutManager(outerLayoutManager);
+                recyclerView.setAdapter(adapter);
+            }
+        });
+        InstrumentationRegistry.getInstrumentation().waitForIdleSync();
+        NestedOuterAdapter.OuterViewHolder viewHolder = adapter.getViewHolder(0);
+        assertThat(viewHolder.mInnerRecyclerView.getHeight(), is(not(0)));
+    }
+
+    @Test
+    @FlakyTest
+    public void testNestedRecyclerViews_direction_column() throws Throwable {
+        // This test verifies the nested RecyclerViews.
+        // The outer RecyclerView scrolls horizontally using LinearLayoutManager.
+        // The inner RecyclerViews use FlexboxLayoutManager with flexDirection == COLUMN and
+        // width of the RecyclerView is set to "wrap_content", which before fixing
+        // https://github.com/google/flexbox-layout/issues/208, the width of the inner
+        // RecyclerViews were set to 0.
+        final FlexboxTestActivity activity = mActivityRule.getActivity();
+        final LinearLayoutManager outerLayoutManager = new LinearLayoutManager(activity);
+        final NestedOuterAdapter adapter = new NestedOuterAdapter(FlexDirection.COLUMN);
+        mActivityRule.runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                activity.setContentView(R.layout.recyclerview);
+                RecyclerView recyclerView = (RecyclerView) activity.findViewById(R.id.recyclerview);
+                outerLayoutManager.setOrientation(LinearLayoutManager.HORIZONTAL);
+                recyclerView.setLayoutManager(outerLayoutManager);
+                recyclerView.setAdapter(adapter);
+            }
+        });
+        InstrumentationRegistry.getInstrumentation().waitForIdleSync();
+        NestedOuterAdapter.OuterViewHolder viewHolder = adapter.getViewHolder(0);
+        assertThat(viewHolder.mInnerRecyclerView.getWidth(), is(not(0)));
     }
 
     /**
