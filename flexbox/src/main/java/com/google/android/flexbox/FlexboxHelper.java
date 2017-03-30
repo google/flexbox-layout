@@ -465,6 +465,7 @@ class FlexboxHelper {
                 child.measure(childCrossMeasureSpec, childMainMeasureSpec);
                 updateMeasureCache(i, childCrossMeasureSpec, childMainMeasureSpec, child);
             }
+            mFlexContainer.updateViewCache(i, child);
 
             // Check the size constraint after the first measurement for the child
             // To prevent the child's width/height violate the size constraints imposed by the
@@ -861,6 +862,7 @@ class FlexboxHelper {
                     .makeMeasureSpec(childHeight, View.MeasureSpec.EXACTLY);
             view.measure(widthSpec, heightSpec);
             updateMeasureCache(index, widthSpec, heightSpec, view);
+            mFlexContainer.updateViewCache(index, view);
         }
     }
 
@@ -1056,6 +1058,7 @@ class FlexboxHelper {
                     childMeasuredHeight = child.getMeasuredHeight();
                     updateMeasureCache(childIndex, childWidthMeasureSpec, childHeightMeasureSpec,
                             child);
+                    mFlexContainer.updateViewCache(childIndex, child);
                 }
                 largestCrossSize = Math.max(largestCrossSize, childMeasuredHeight
                         + flexItem.getMarginTop() + flexItem.getMarginBottom()
@@ -1119,6 +1122,7 @@ class FlexboxHelper {
                     childMeasuredHeight = child.getMeasuredHeight();
                     updateMeasureCache(childIndex, childWidthMeasureSpec, childHeightMeasureSpec,
                             child);
+                    mFlexContainer.updateViewCache(childIndex, child);
                 }
                 largestCrossSize = Math.max(largestCrossSize, childMeasuredWidth
                         + flexItem.getMarginLeft() + flexItem.getMarginRight()
@@ -1249,6 +1253,7 @@ class FlexboxHelper {
                     childMeasuredHeight = child.getMeasuredHeight();
                     updateMeasureCache(childIndex, childWidthMeasureSpec, childHeightMeasureSpec,
                             child);
+                    mFlexContainer.updateViewCache(childIndex, child);
                 }
                 largestCrossSize = Math.max(largestCrossSize, childMeasuredHeight +
                         flexItem.getMarginTop() + flexItem.getMarginBottom() +
@@ -1308,6 +1313,7 @@ class FlexboxHelper {
                     childMeasuredHeight = child.getMeasuredHeight();
                     updateMeasureCache(childIndex, childWidthMeasureSpec, childHeightMeasureSpec,
                             child);
+                    mFlexContainer.updateViewCache(childIndex, child);
                 }
                 largestCrossSize = Math.max(largestCrossSize, childMeasuredWidth +
                         flexItem.getMarginLeft() + flexItem.getMarginRight() +
@@ -1627,6 +1633,7 @@ class FlexboxHelper {
         view.measure(childWidthSpec, childHeightSpec);
 
         updateMeasureCache(index, childWidthSpec, childHeightSpec, view);
+        mFlexContainer.updateViewCache(index, view);
     }
 
     /**
@@ -1660,6 +1667,7 @@ class FlexboxHelper {
         view.measure(childWidthSpec, childHeightSpec);
 
         updateMeasureCache(index, childWidthSpec, childHeightSpec, view);
+        mFlexContainer.updateViewCache(index, view);
     }
 
     /**

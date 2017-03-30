@@ -1271,6 +1271,11 @@ public class FlexboxLayout extends ViewGroup implements FlexContainer {
         return mFlexLines;
     }
 
+    @Override
+    public void updateViewCache(int position, View view) {
+        // No op
+    }
+
     /**
      * @return the horizontal divider drawable that will divide each item.
      * @see #setDividerDrawable(Drawable)
