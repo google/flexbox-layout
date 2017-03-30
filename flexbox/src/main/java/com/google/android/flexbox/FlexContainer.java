@@ -173,7 +173,6 @@ interface FlexContainer {
      * @param view            the view from which the length of the decoration is retrieved
      * @param index           the absolute index of the flex item within the flex container
      * @param indexInFlexLine the relative index of the flex item within the flex line
-     *
      * @return the length of the decoration. Note that the length of the flex item itself is not
      * included in the result.
      */
@@ -182,8 +181,7 @@ interface FlexContainer {
     /**
      * Returns the length of decoration (such as dividers) of the flex item along the cross axis.
      *
-     * @param view            the view from which the length of the decoration is retrieved
-     *
+     * @param view the view from which the length of the decoration is retrieved
      * @return the length of the decoration. Note that the length of the flex item itself is not
      * included in the result.
      */
@@ -278,4 +276,12 @@ interface FlexContainer {
      * in the {@link FlexContainer#getFlexLines()}.
      */
     List<FlexLine> getFlexLinesInternal();
+
+    /**
+     * Update the view cache in the flex container.
+     *
+     * @param position the position of the view to be updated
+     * @param view     the view instance
+     */
+    void updateViewCache(int position, View view);
 }
