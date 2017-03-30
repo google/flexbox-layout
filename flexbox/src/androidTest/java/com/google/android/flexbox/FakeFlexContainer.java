@@ -229,4 +229,9 @@ class FakeFlexContainer implements FlexContainer {
     public List<FlexLine> getFlexLinesInternal() {
         return mFlexLines;
     }
+
+    @Override
+    public void updateViewCache(int position, View view) {
+        // No op
+    }
 }
