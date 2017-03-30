@@ -29,6 +29,7 @@ import android.support.v7.widget.OrientationHelper;
 import android.support.v7.widget.RecyclerView;
 import android.util.AttributeSet;
 import android.util.Log;
+import android.util.SparseArray;
 import android.view.View;
 import android.view.ViewGroup;
 
@@ -148,6 +149,20 @@ public class FlexboxLayoutManager extends RecyclerView.LayoutManager implements 
      * The height value used in the last {@link #onLayoutChildren} method.
      */
     private int mLastHeight = Integer.MIN_VALUE;
+
+    /**
+     * If set to {@code true}, this LayoutManager tries to recycle the children when detached from
+     * the RecyclerView so that recycled views can be reused using RecycledViewPool.
+     */
+    private boolean mRecycleChildrenOnDetach;
+
+    /**
+     * View cache within this LayoutManager. This is used to avoid the same ViewHolder is created
+     * multiple times in the same layout pass (onLayoutChildren or scrollHorizontally or
+     * scrollVertically).
+     * The keys and values in this cache needs to be cleared at the end of each layout pass.
+     */
+    private SparseArray<View> mViewCache = new SparseArray<>();
 
     /**
      * Creates a default FlexboxLayoutManager.
@@ -384,8 +399,14 @@ public class FlexboxLayoutManager extends RecyclerView.LayoutManager implements 
      */
     @Override
     public View getFlexItemAt(int index) {
-        // Look up from the scrap first to avoid the same view holder is created from the adapter
-        // again
+        // Look up the cache within the LayoutManager first, since it's the most light operation.
+        View cachedView = mViewCache.get(index);
+        if (cachedView != null) {
+            return cachedView;
+        }
+
+        // Look up from the scrap next if there is a matching recycled view
+        // to avoid the same view holder is created from the adapter again
         List<RecyclerView.ViewHolder> scrapList = mRecycler.getScrapList();
         for (int i = 0, scrapCount = scrapList.size(); i < scrapCount; i++) {
             RecyclerView.ViewHolder viewHolder = scrapList.get(i);
@@ -462,6 +483,11 @@ public class FlexboxLayoutManager extends RecyclerView.LayoutManager implements 
         return mFlexLines;
     }
     // The end of methods from FlexContainer
+
+    @Override
+    public void updateViewCache(int position, View view) {
+        mViewCache.put(position, view);
+    }
 
     @Override
     public RecyclerView.LayoutParams generateDefaultLayoutParams() {
@@ -794,6 +820,7 @@ public class FlexboxLayoutManager extends RecyclerView.LayoutManager implements 
         mPendingScrollPosition = NO_POSITION;
         mPendingScrollPositionOffset = INVALID_OFFSET;
         mAnchorInfo.reset();
+        mViewCache.clear();
     }
 
     boolean isLayoutRtl() {
@@ -1488,7 +1515,7 @@ public class FlexboxLayoutManager extends RecyclerView.LayoutManager implements 
         if (isMainAxisDirectionHorizontal()) {
             crossMode = getHeightMode();
         } else {
-            crossMode = getWidth();
+            crossMode = getWidthMode();
         }
         // Setting the infinite flag so that the LayoutManager tries to fill the available space
         // as much as possible. E.g. this is needed in the case RecyclerView is wrapped with another
@@ -1544,6 +1571,45 @@ public class FlexboxLayoutManager extends RecyclerView.LayoutManager implements 
         requestLayout();
     }
 
+    /**
+     * @return true if LayoutManager will recycle its children when it is detached from
+     * RecyclerView.
+     */
+    @SuppressWarnings("UnusedDeclaration")
+    public boolean getRecycleChildrenOnDetach() {
+        return mRecycleChildrenOnDetach;
+    }
+
+    /**
+     * Set whether this LayoutManager will recycle its children when it is detached from
+     * RecyclerView.
+     * <p>
+     * If you are using a {@link RecyclerView.RecycledViewPool}, it might be a good idea to set
+     * this flag to <code>true</code> so that views will be available to other RecyclerViews
+     * immediately.
+     * <p>
+     * Note that, setting this flag will result in a performance drop if RecyclerView
+     * is restored.
+     *
+     * @param recycleChildrenOnDetach Whether children should be recycled in detach or not.
+     */
+    @SuppressWarnings("UnusedDeclaration")
+    public void setRecycleChildrenOnDetach(boolean recycleChildrenOnDetach) {
+        mRecycleChildrenOnDetach = recycleChildrenOnDetach;
+    }
+
+    @Override
+    public void onDetachedFromWindow(RecyclerView view, RecyclerView.Recycler recycler) {
+        super.onDetachedFromWindow(view, recycler);
+        if (mRecycleChildrenOnDetach) {
+            if (DEBUG) {
+                Log.d(TAG, "onDetachedFromWindow. Recycling children in the recycler");
+            }
+            removeAndRecycleAllViews(recycler);
+            recycler.clear();
+        }
+    }
+
     @Override
     public boolean canScrollHorizontally() {
         return !isMainAxisDirectionHorizontal();
@@ -1557,13 +1623,17 @@ public class FlexboxLayoutManager extends RecyclerView.LayoutManager implements 
     @Override
     public int scrollHorizontallyBy(int dx, RecyclerView.Recycler recycler,
             RecyclerView.State state) {
-        return handleScrolling(dx, recycler, state);
+        int scrolled = handleScrolling(dx, recycler, state);
+        mViewCache.clear();
+        return scrolled;
     }
 
     @Override
     public int scrollVerticallyBy(int dy, RecyclerView.Recycler recycler,
             RecyclerView.State state) {
-        return handleScrolling(dy, recycler, state);
+        int scrolled = handleScrolling(dy, recycler, state);
+        mViewCache.clear();
+        return scrolled;
     }
 
     /**
