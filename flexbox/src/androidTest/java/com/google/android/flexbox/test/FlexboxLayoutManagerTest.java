@@ -2950,6 +2950,93 @@ public class FlexboxLayoutManagerTest {
         assertThat(viewHolder.mInnerRecyclerView.getWidth(), is(not(0)));
     }
 
+    @Test
+    @FlakyTest
+    public void testFindVisibleChild_direction_row() throws Throwable {
+        final FlexboxTestActivity activity = mActivityRule.getActivity();
+        final FlexboxLayoutManager layoutManager = new FlexboxLayoutManager();
+        final TestAdapter adapter = new TestAdapter();
+        mActivityRule.runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                activity.setContentView(R.layout.recyclerview);
+                RecyclerView recyclerView = (RecyclerView) activity.findViewById(R.id.recyclerview);
+                recyclerView.setLayoutManager(layoutManager);
+                recyclerView.setAdapter(adapter);
+
+                for (int i = 0; i < 50; i++) {
+                    FlexboxLayoutManager.LayoutParams lp = createLayoutParams(activity, 100, 75);
+                    adapter.addItem(lp);
+                }
+                // RecyclerView width: 320, height: 240.
+                // At first three completely visible lines.
+                // Flex line 1, item count 3 (0, 1, 2)
+                // Flex line 2, item count 3 (3, 4, 5)
+                // Flex line 3, item count 3 (6, 7, 8)
+            }
+        });
+        InstrumentationRegistry.getInstrumentation().waitForIdleSync();
+
+        assertThat(layoutManager.findFirstCompletelyVisibleItemPosition(), is(0));
+        assertThat(layoutManager.findFirstVisibleItemPosition(), is(0));
+        assertThat(layoutManager.findLastCompletelyVisibleItemPosition(), is(8));
+        assertThat(layoutManager.findLastVisibleItemPosition(), is(11));
+
+        onView(withId(R.id.recyclerview)).perform(swipe(GeneralLocation.CENTER,
+                GeneralLocation.TOP_CENTER));
+        // Scroll by about half of the height of the RecyclerView
+        InstrumentationRegistry.getInstrumentation().waitForIdleSync();
+
+        assertThat(layoutManager.findFirstCompletelyVisibleItemPosition(), is(6));
+        assertThat(layoutManager.findFirstVisibleItemPosition(), is(3));
+        assertThat(layoutManager.findLastCompletelyVisibleItemPosition(), is(11));
+        assertThat(layoutManager.findLastVisibleItemPosition(), is(14));
+    }
+
+    @Test
+    @FlakyTest
+    public void testFindVisibleChild_direction_column() throws Throwable {
+        final FlexboxTestActivity activity = mActivityRule.getActivity();
+        final FlexboxLayoutManager layoutManager = new FlexboxLayoutManager();
+        final TestAdapter adapter = new TestAdapter();
+        mActivityRule.runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                activity.setContentView(R.layout.recyclerview);
+                RecyclerView recyclerView = (RecyclerView) activity.findViewById(R.id.recyclerview);
+                layoutManager.setFlexDirection(FlexDirection.COLUMN);
+                recyclerView.setLayoutManager(layoutManager);
+                recyclerView.setAdapter(adapter);
+
+                for (int i = 0; i < 50; i++) {
+                    FlexboxLayoutManager.LayoutParams lp = createLayoutParams(activity, 100, 75);
+                    adapter.addItem(lp);
+                }
+                // RecyclerView width: 320, height: 240.
+                // At first three completely visible lines.
+                // Flex line 1, item count 3 (0, 1, 2)
+                // Flex line 2, item count 3 (3, 4, 5)
+                // Flex line 3, item count 3 (6, 7, 8)
+            }
+        });
+        InstrumentationRegistry.getInstrumentation().waitForIdleSync();
+
+        assertThat(layoutManager.findFirstCompletelyVisibleItemPosition(), is(0));
+        assertThat(layoutManager.findFirstVisibleItemPosition(), is(0));
+        assertThat(layoutManager.findLastCompletelyVisibleItemPosition(), is(8));
+        assertThat(layoutManager.findLastVisibleItemPosition(), is(11));
+
+        onView(withId(R.id.recyclerview)).perform(swipe(GeneralLocation.CENTER,
+                GeneralLocation.CENTER_LEFT));
+        // Scroll by about half of the width of the RecyclerView
+        InstrumentationRegistry.getInstrumentation().waitForIdleSync();
+
+        assertThat(layoutManager.findFirstCompletelyVisibleItemPosition(), is(6));
+        assertThat(layoutManager.findFirstVisibleItemPosition(), is(3));
+        assertThat(layoutManager.findLastCompletelyVisibleItemPosition(), is(11));
+        assertThat(layoutManager.findLastVisibleItemPosition(), is(14));
+    }
+
     /**
      * Creates a new flex item.
      *
