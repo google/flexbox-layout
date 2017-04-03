@@ -1859,6 +1859,164 @@ public class FlexboxLayoutManager extends RecyclerView.LayoutManager implements 
         mAnchorInfo.reset();
     }
 
+    private int getChildLeft(View view) {
+        RecyclerView.LayoutParams params = (RecyclerView.LayoutParams)
+                view.getLayoutParams();
+        return getDecoratedLeft(view) - params.leftMargin;
+    }
+
+    private int getChildRight(View view) {
+        RecyclerView.LayoutParams params = (RecyclerView.LayoutParams)
+                view.getLayoutParams();
+        return getDecoratedRight(view) + params.rightMargin;
+    }
+
+    private int getChildTop(View view) {
+        RecyclerView.LayoutParams params = (RecyclerView.LayoutParams)
+                view.getLayoutParams();
+        return getDecoratedTop(view) - params.topMargin;
+    }
+
+    private int getChildBottom(View view) {
+        RecyclerView.LayoutParams params = (RecyclerView.LayoutParams)
+                view.getLayoutParams();
+        return getDecoratedBottom(view) + params.bottomMargin;
+    }
+
+    /**
+     * @param view the view to be examined if it's visible
+     * @param completelyVisible when passed as {@code true}, this method checks if the view bounds
+     *                          don't overlap the bounds of the RecyclerView. When passed as
+     *                          {@code false}, this method checks if the view bounds are partially
+     *                          visible within the RecyclerView.
+     * @return if the view passed as an argument is visible (view bounds are within the parent
+     *         RecyclerView)
+     */
+    private boolean isViewVisible(View view, boolean completelyVisible) {
+        int left = getPaddingLeft();
+        int top = getPaddingTop();
+        int right = getWidth() - getPaddingRight();
+        int bottom = getHeight() - getPaddingBottom();
+        int childLeft = getChildLeft(view);
+        int childTop = getChildTop(view);
+        int childRight = getChildRight(view);
+        int childBottom = getChildBottom(view);
+
+        boolean horizontalCompletelyVisible = false;
+        boolean horizontalPartiallyVisible = false;
+        boolean verticalCompletelyVisible = false;
+        boolean verticalPartiallyVisible = false;
+        if (left <= childLeft && right >= childRight) {
+            horizontalCompletelyVisible = true;
+        }
+        if (childLeft >= right || childRight >= left) {
+            horizontalPartiallyVisible = true;
+        }
+
+        if (top <= childTop && bottom >= childBottom) {
+            verticalCompletelyVisible = true;
+        }
+        if (childTop >= bottom || childBottom >= top) {
+            verticalPartiallyVisible = true;
+        }
+        if (completelyVisible) {
+            return horizontalCompletelyVisible && verticalCompletelyVisible;
+        } else {
+            return horizontalPartiallyVisible && verticalPartiallyVisible;
+        }
+    }
+
+    /**
+     * Returns the adapter position of the first visible view. This position does not include
+     * adapter changes that were dispatched after the last layout pass.
+     *
+     * If RecyclerView has item decorators, they will be considered in calculations as well.
+     * LayoutManager may pre-cache some views that are not necessarily visible. Those views
+     * are ignored in this method.
+     *
+     * @return The adapter position of the first visible item or {@link RecyclerView#NO_POSITION} if
+     * there aren't any visible items.
+     * @see #findFirstCompletelyVisibleItemPosition()
+     * @see #findLastVisibleItemPosition()
+     */
+    @SuppressWarnings("WeakerAccess")
+    public int findFirstVisibleItemPosition() {
+        final View child = findOneVisibleChild(0, getChildCount(), false);
+        return child == null ? NO_POSITION : getPosition(child);
+    }
+
+    /**
+     * Returns the adapter position of the first fully visible view. This position does not include
+     * adapter changes that were dispatched after the last layout pass.
+
+     * @return The adapter position of the first fully visible item or
+     * {@link RecyclerView#NO_POSITION} if there aren't any visible items.
+     * @see #findFirstVisibleItemPosition()
+     * @see #findLastCompletelyVisibleItemPosition()
+     */
+    @SuppressWarnings("WeakerAccess")
+    public int findFirstCompletelyVisibleItemPosition() {
+        final View child = findOneVisibleChild(0, getChildCount(), true);
+        return child == null ? NO_POSITION : getPosition(child);
+    }
+
+    /**
+     * Returns the adapter position of the last visible view. This position does not include
+     * adapter changes that were dispatched after the last layout pass.
+
+     * If RecyclerView has item decorators, they will be considered in calculations as well.
+     * LayoutManager may pre-cache some views that are not necessarily visible. Those views
+     * are ignored in this method.
+     *
+     * @return The adapter position of the last visible view or {@link RecyclerView#NO_POSITION} if
+     * there aren't any visible items.
+     * @see #findLastCompletelyVisibleItemPosition()
+     * @see #findFirstVisibleItemPosition()
+     */
+    @SuppressWarnings("WeakerAccess")
+    public int findLastVisibleItemPosition() {
+        final View child = findOneVisibleChild(getChildCount() - 1, -1, false);
+        return child == null ? NO_POSITION : getPosition(child);
+    }
+
+    /**
+     * Returns the adapter position of the last fully visible view. This position does not include
+     * adapter changes that were dispatched after the last layout pass.
+
+     * @return The adapter position of the last fully visible view or
+     * {@link RecyclerView#NO_POSITION} if there aren't any visible items.
+     * @see #findLastVisibleItemPosition()
+     * @see #findFirstCompletelyVisibleItemPosition()
+     */
+    @SuppressWarnings("WeakerAccess")
+    public int findLastCompletelyVisibleItemPosition() {
+        final View child = findOneVisibleChild(getChildCount() - 1, -1, true);
+        return child == null ? NO_POSITION : getPosition(child);
+    }
+
+    /**
+     * Returns the first child that is visible in the provided index range, i.e. either partially or
+     * fully visible depending on the arguments provided.
+     *
+     * @param fromIndex the start index for searching the visible child
+     * @param toIndex the last index for searching the visible child
+     * @param completelyVisible when passed as {@code true}, this method checks if the view bounds
+     *                          don't overlap the bounds of the RecyclerView. When passed as
+     *                          {@code false}, this method checks if the view bounds are partially
+     *                          visible within the RecyclerView.
+     * @return the first child that is visible.
+     */
+    private View findOneVisibleChild(int fromIndex, int toIndex, boolean completelyVisible) {
+        int next = toIndex > fromIndex ? 1 : -1;
+        for (int i = fromIndex; i != toIndex; i += next) {
+            View view = getChildAt(i);
+            if (isViewVisible(view, completelyVisible)) {
+                return view;
+            }
+        }
+        return null;
+    }
+
     /**
      * LayoutParams used by the {@link FlexboxLayoutManager}, which stores per-child information
      * required for the Flexbox.
