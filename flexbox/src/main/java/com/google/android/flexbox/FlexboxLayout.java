@@ -543,6 +543,7 @@ public class FlexboxLayout extends ViewGroup {
             int paddingStart = ViewCompat.getPaddingStart(this);
             int paddingEnd = ViewCompat.getPaddingEnd(this);
             int largestHeightInRow = Integer.MIN_VALUE;
+            int totalCrossSize = 0;
             FlexLine flexLine = new FlexLine();
 
             // The index of the view in a same flex line.
@@ -551,12 +552,12 @@ public class FlexboxLayout extends ViewGroup {
             for (int i = 0; i < childCount; i++) {
                 View child = getReorderedChildAt(i);
                 if (child == null) {
-                    addFlexLineIfLastFlexItem(i, childCount, flexLine);
+                    addFlexLineIfLastFlexItem(i, childCount, flexLine, totalCrossSize);
                     continue;
                 } else if (child.getVisibility() == View.GONE) {
                     flexLine.mItemCount++;
                     flexLine.mGoneItemCount++;
-                    addFlexLineIfLastFlexItem(i, childCount, flexLine);
+                    addFlexLineIfLastFlexItem(i, childCount, flexLine, totalCrossSize);
                     continue;
                 }
 
@@ -581,7 +582,7 @@ public class FlexboxLayout extends ViewGroup {
                                 + lp.rightMargin, childWidth);
                 int childHeightMeasureSpec = getChildMeasureSpec(heightMeasureSpec,
                         getPaddingTop() + getPaddingBottom() + lp.topMargin
-                                + lp.bottomMargin, lp.height);
+                                + lp.bottomMargin + totalCrossSize, lp.height);
                 child.measure(childWidthMeasureSpec, childHeightMeasureSpec);
 
                 // Check the size constraint after the first measurement for the child
@@ -601,7 +602,23 @@ public class FlexboxLayout extends ViewGroup {
                         child.getMeasuredWidth() + lp.leftMargin + lp.rightMargin, lp,
                         i, indexInFlexLine)) {
                     if (flexLine.getItemCountNotGone() > 0) {
-                        addFlexLine(flexLine);
+                        addFlexLine(flexLine, totalCrossSize);
+                        totalCrossSize += flexLine.mCrossSize;
+                    }
+
+                    if (lp.height == LayoutParams.MATCH_PARENT) {
+                        // This case takes care of the corner case where the cross size of the
+                        // child is affected by the just added flex line.
+                        // E.g. when the child's layout_height is set to match_parent, the height
+                        // of that child needs to be determined taking the total cross size used
+                        // so far into account. In that case, the height of the child needs to be
+                        // measured again note that we don't need to judge if the wrapping occurs
+                        // because it doesn't change the size along the main axis.
+                        childHeightMeasureSpec = getChildMeasureSpec(heightMeasureSpec,
+                                getPaddingTop() + getPaddingBottom() + lp.topMargin
+                                        + lp.bottomMargin + totalCrossSize, lp.height);
+                        child.measure(childWidthMeasureSpec, childHeightMeasureSpec);
+                        checkSizeConstraints(child);
                     }
 
                     flexLine = new FlexLine();
@@ -639,7 +656,7 @@ public class FlexboxLayout extends ViewGroup {
                                     child.getMeasuredHeight() - child.getBaseline()
                                             + lp.bottomMargin);
                 }
-                addFlexLineIfLastFlexItem(i, childCount, flexLine);
+                addFlexLineIfLastFlexItem(i, childCount, flexLine, totalCrossSize);
             }
         }
 
@@ -707,6 +724,7 @@ public class FlexboxLayout extends ViewGroup {
         int paddingTop = getPaddingTop();
         int paddingBottom = getPaddingBottom();
         int largestWidthInColumn = Integer.MIN_VALUE;
+        int totalCrossSize = 0;
         FlexLine flexLine = new FlexLine();
         flexLine.mMainSize = paddingTop + paddingBottom;
         // The index of the view in a same flex line.
@@ -714,12 +732,12 @@ public class FlexboxLayout extends ViewGroup {
         for (int i = 0; i < childCount; i++) {
             View child = getReorderedChildAt(i);
             if (child == null) {
-                addFlexLineIfLastFlexItem(i, childCount, flexLine);
+                addFlexLineIfLastFlexItem(i, childCount, flexLine, totalCrossSize);
                 continue;
             } else if (child.getVisibility() == View.GONE) {
                 flexLine.mItemCount++;
                 flexLine.mGoneItemCount++;
-                addFlexLineIfLastFlexItem(i, childCount, flexLine);
+                addFlexLineIfLastFlexItem(i, childCount, flexLine, totalCrossSize);
                 continue;
             }
 
@@ -741,7 +759,7 @@ public class FlexboxLayout extends ViewGroup {
 
             int childWidthMeasureSpec = getChildMeasureSpec(widthMeasureSpec,
                     getPaddingLeft() + getPaddingRight() + lp.leftMargin
-                            + lp.rightMargin, lp.width);
+                            + lp.rightMargin + totalCrossSize, lp.width);
             int childHeightMeasureSpec = getChildMeasureSpec(heightMeasureSpec,
                     getPaddingTop() + getPaddingBottom() + lp.topMargin
                             + lp.bottomMargin, childHeight);
@@ -764,7 +782,23 @@ public class FlexboxLayout extends ViewGroup {
                     child.getMeasuredHeight() + lp.topMargin + lp.bottomMargin, lp,
                     i, indexInFlexLine)) {
                 if (flexLine.getItemCountNotGone() > 0) {
-                    addFlexLine(flexLine);
+                    addFlexLine(flexLine, totalCrossSize);
+                    totalCrossSize += flexLine.mCrossSize;
+                }
+
+                if (lp.width == LayoutParams.MATCH_PARENT) {
+                    // This case takes care of the corner case where the cross size of the
+                    // child is affected by the just added flex line.
+                    // E.g. when the child's layout_width is set to match_parent, the width
+                    // of that child needs to be determined taking the total cross size used
+                    // so far into account. In that case, the width of the child needs to be
+                    // measured again note that we don't need to judge if the wrapping occurs
+                    // because it doesn't change the size along the main axis.
+                    childWidthMeasureSpec = getChildMeasureSpec(widthMeasureSpec,
+                            getPaddingLeft() + getPaddingRight() + lp.leftMargin
+                                    + lp.rightMargin + totalCrossSize, lp.width);
+                    child.measure(childWidthMeasureSpec, childHeightMeasureSpec);
+                    checkSizeConstraints(child);
                 }
 
                 flexLine = new FlexLine();
@@ -787,7 +821,7 @@ public class FlexboxLayout extends ViewGroup {
             if (hasDividerBeforeChildAtAlongMainAxis(i, indexInFlexLine)) {
                 flexLine.mMainSize += mDividerHorizontalHeight;
             }
-            addFlexLineIfLastFlexItem(i, childCount, flexLine);
+            addFlexLineIfLastFlexItem(i, childCount, flexLine, totalCrossSize);
         }
 
         determineMainSize(mFlexDirection, widthMeasureSpec, heightMeasureSpec);
@@ -834,14 +868,16 @@ public class FlexboxLayout extends ViewGroup {
         }
     }
 
-    private void addFlexLineIfLastFlexItem(int childIndex, int childCount, FlexLine flexLine) {
+    private void addFlexLineIfLastFlexItem(int childIndex, int childCount, FlexLine flexLine,
+            int usedCrossSizeSoFar) {
         if (childIndex == childCount - 1 && flexLine.getItemCountNotGone() != 0) {
             // Add the flex line if this item is the last item
-            addFlexLine(flexLine);
+            addFlexLine(flexLine, usedCrossSizeSoFar);
         }
     }
 
-    private void addFlexLine(FlexLine flexLine) {
+    private void addFlexLine(FlexLine flexLine, int usedCrossSizeSoFar) {
+        flexLine.mSumCrossSizeBefore = usedCrossSizeSoFar;
         // The size of the end divider isn't added until the flexLine is added to the flex container
         // take the divider width (or height) into account when adding the flex line.
         if (isMainAxisDirectionHorizontal(mFlexDirection)) {
@@ -996,7 +1032,8 @@ public class FlexboxLayout extends ViewGroup {
                             accumulatedRoundError += 1.0;
                         }
                     }
-                    int childHeightMeasureSpec = getChildHeightMeasureSpec(heightMeasureSpec, lp);
+                    int childHeightMeasureSpec = getChildHeightMeasureSpec(heightMeasureSpec, lp,
+                            flexLine.mSumCrossSizeBefore);
                     child.measure(MeasureSpec.makeMeasureSpec(newWidth, MeasureSpec.EXACTLY),
                             childHeightMeasureSpec);
                     largestCrossSize = Math.max(largestCrossSize, child.getMeasuredHeight()
@@ -1033,7 +1070,8 @@ public class FlexboxLayout extends ViewGroup {
                             accumulatedRoundError += 1.0;
                         }
                     }
-                    int childWidthMeasureSpec = getChildWidthMeasureSpec(widthMeasureSpec, lp);
+                    int childWidthMeasureSpec = getChildWidthMeasureSpec(widthMeasureSpec, lp,
+                            flexLine.mSumCrossSizeBefore);
                     child.measure(childWidthMeasureSpec,
                             MeasureSpec.makeMeasureSpec(newHeight, MeasureSpec.EXACTLY));
                     largestCrossSize = Math.max(largestCrossSize, child.getMeasuredWidth()
@@ -1139,7 +1177,8 @@ public class FlexboxLayout extends ViewGroup {
                             accumulatedRoundError += 1;
                         }
                     }
-                    int childHeightMeasureSpec = getChildHeightMeasureSpec(heightMeasureSpec, lp);
+                    int childHeightMeasureSpec = getChildHeightMeasureSpec(heightMeasureSpec, lp,
+                            flexLine.mSumCrossSizeBefore);
                     child.measure(MeasureSpec.makeMeasureSpec(newWidth, MeasureSpec.EXACTLY),
                             childHeightMeasureSpec);
                     largestCrossSize = Math.max(largestCrossSize, child.getMeasuredHeight()
@@ -1172,7 +1211,8 @@ public class FlexboxLayout extends ViewGroup {
                             accumulatedRoundError += 1;
                         }
                     }
-                    int childWidthMeasureSpec = getChildWidthMeasureSpec(widthMeasureSpec, lp);
+                    int childWidthMeasureSpec = getChildWidthMeasureSpec(widthMeasureSpec, lp,
+                            flexLine.mSumCrossSizeBefore);
                     child.measure(childWidthMeasureSpec,
                             MeasureSpec.makeMeasureSpec(newHeight, MeasureSpec.EXACTLY));
                     largestCrossSize = Math.max(largestCrossSize, child.getMeasuredWidth()
@@ -1193,10 +1233,10 @@ public class FlexboxLayout extends ViewGroup {
         return childIndex;
     }
 
-    private int getChildWidthMeasureSpec(int widthMeasureSpec, LayoutParams lp) {
+    private int getChildWidthMeasureSpec(int widthMeasureSpec, LayoutParams lp, int padding) {
         int childWidthMeasureSpec = getChildMeasureSpec(widthMeasureSpec,
                 getPaddingLeft() + getPaddingRight() + lp.leftMargin
-                        + lp.rightMargin, lp.width);
+                        + lp.rightMargin + padding, lp.width);
         int childWidth = MeasureSpec.getSize(childWidthMeasureSpec);
         if (childWidth > lp.maxWidth) {
             childWidthMeasureSpec = MeasureSpec.makeMeasureSpec(lp.maxWidth,
@@ -1208,10 +1248,10 @@ public class FlexboxLayout extends ViewGroup {
         return childWidthMeasureSpec;
     }
 
-    private int getChildHeightMeasureSpec(int heightMeasureSpec, LayoutParams lp) {
+    private int getChildHeightMeasureSpec(int heightMeasureSpec, LayoutParams lp, int padding) {
         int childHeightMeasureSpec = getChildMeasureSpec(heightMeasureSpec,
                 getPaddingTop() + getPaddingBottom() + lp.topMargin
-                        + lp.bottomMargin, lp.height);
+                        + lp.bottomMargin + padding, lp.height);
         int childHeight = MeasureSpec.getSize(childHeightMeasureSpec);
         if (childHeight > lp.maxHeight) {
             childHeightMeasureSpec = MeasureSpec.makeMeasureSpec(lp.maxHeight,
