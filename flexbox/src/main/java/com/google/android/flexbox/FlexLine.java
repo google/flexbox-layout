@@ -77,6 +77,11 @@ public class FlexLine {
     int mMaxBaseline;
 
     /**
+     * The sum of the cross size used before this flex line.
+     */
+    int mSumCrossSizeBefore;
+
+    /**
      * Store the indices of the children views whose alignSelf property is stretch.
      * The stored indices are the absolute indices including all children in the Flexbox,
      * not the relative indices in this flex line.

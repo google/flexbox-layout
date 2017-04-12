@@ -17,13 +17,27 @@
 package com.google.android.flexbox.test;
 
 
-import com.google.android.flexbox.FlexboxLayout;
+import static android.support.test.espresso.Espresso.onView;
+import static android.support.test.espresso.assertion.PositionAssertions.isAbove;
+import static android.support.test.espresso.assertion.PositionAssertions.isBelow;
+import static android.support.test.espresso.assertion.PositionAssertions.isBottomAlignedWith;
+import static android.support.test.espresso.assertion.PositionAssertions.isLeftAlignedWith;
+import static android.support.test.espresso.assertion.PositionAssertions.isLeftOf;
+import static android.support.test.espresso.assertion.PositionAssertions.isRightAlignedWith;
+import static android.support.test.espresso.assertion.PositionAssertions.isRightOf;
+import static android.support.test.espresso.assertion.PositionAssertions.isTopAlignedWith;
+import static android.support.test.espresso.assertion.ViewAssertions.matches;
+import static android.support.test.espresso.matcher.ViewMatchers.withId;
 
-import org.hamcrest.Description;
-import org.hamcrest.TypeSafeMatcher;
-import org.junit.Rule;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import static com.google.android.flexbox.test.IsEqualAllowingError.isEqualAllowingError;
+
+import static junit.framework.Assert.assertEquals;
+import static junit.framework.Assert.assertTrue;
+
+import static org.hamcrest.core.Is.is;
+import static org.hamcrest.core.IsNot.not;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertThat;
 
 import android.content.Context;
 import android.graphics.drawable.Drawable;
@@ -39,24 +53,13 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
-import static android.support.test.espresso.Espresso.onView;
-import static android.support.test.espresso.assertion.PositionAssertions.isAbove;
-import static android.support.test.espresso.assertion.PositionAssertions.isBelow;
-import static android.support.test.espresso.assertion.PositionAssertions.isBottomAlignedWith;
-import static android.support.test.espresso.assertion.PositionAssertions.isLeftAlignedWith;
-import static android.support.test.espresso.assertion.PositionAssertions.isLeftOf;
-import static android.support.test.espresso.assertion.PositionAssertions.isRightAlignedWith;
-import static android.support.test.espresso.assertion.PositionAssertions.isRightOf;
-import static android.support.test.espresso.assertion.PositionAssertions.isTopAlignedWith;
-import static android.support.test.espresso.assertion.ViewAssertions.matches;
-import static android.support.test.espresso.matcher.ViewMatchers.withId;
-import static com.google.android.flexbox.test.IsEqualAllowingError.isEqualAllowingError;
-import static junit.framework.Assert.assertEquals;
-import static junit.framework.Assert.assertTrue;
-import static org.hamcrest.core.Is.is;
-import static org.hamcrest.core.IsNot.not;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertThat;
+import com.google.android.flexbox.FlexboxLayout;
+
+import org.hamcrest.Description;
+import org.hamcrest.TypeSafeMatcher;
+import org.junit.Rule;
+import org.junit.Test;
+import org.junit.runner.RunWith;
 
 /**
  * Integration tests for {@link FlexboxLayout}.
@@ -3662,6 +3665,30 @@ public class FlexboxAndroidTest {
         // layout_width for text1: 24dp, layout_marginEnd: 12dp
         assertThat(flexboxLayout.getWidth(),
                 isEqualAllowingError(TestUtil.dpToPixel(mActivityRule.getActivity(), 36)));
+    }
+
+    @Test
+    @FlakyTest
+    public void testChildNeedsRemeasure_row() throws Throwable {
+        createFlexboxLayout(R.layout.activity_child_needs_remeasure_row);
+        onView(withId(R.id.text1)).check(isTopAlignedWith(withId(R.id.flexbox_layout)));
+        onView(withId(R.id.text1)).check(isLeftAlignedWith(withId(R.id.flexbox_layout)));
+        onView(withId(R.id.text2)).check(isLeftAlignedWith(withId(R.id.flexbox_layout)));
+        onView(withId(R.id.text2)).check(isBottomAlignedWith(withId(R.id.flexbox_layout)));
+        onView(withId(R.id.text3)).check(isRightAlignedWith(withId(R.id.flexbox_layout)));
+        onView(withId(R.id.text3)).check(isBottomAlignedWith(withId(R.id.flexbox_layout)));
+    }
+
+    @Test
+    @FlakyTest
+    public void testChildNeedsRemeasure_column() throws Throwable {
+        createFlexboxLayout(R.layout.activity_child_needs_remeasure_column);
+        onView(withId(R.id.text1)).check(isTopAlignedWith(withId(R.id.flexbox_layout)));
+        onView(withId(R.id.text1)).check(isLeftAlignedWith(withId(R.id.flexbox_layout)));
+        onView(withId(R.id.text2)).check(isTopAlignedWith(withId(R.id.flexbox_layout)));
+        onView(withId(R.id.text2)).check(isRightAlignedWith(withId(R.id.flexbox_layout)));
+        onView(withId(R.id.text3)).check(isRightAlignedWith(withId(R.id.flexbox_layout)));
+        onView(withId(R.id.text3)).check(isBottomAlignedWith(withId(R.id.flexbox_layout)));
     }
 
     private FlexboxLayout createFlexboxLayout(@LayoutRes final int activityLayoutResId)
