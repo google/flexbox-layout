@@ -451,17 +451,16 @@ class FlexboxHelper {
                 child.measure(childMainMeasureSpec, childCrossMeasureSpec);
                 updateMeasureCache(i, childMainMeasureSpec, childCrossMeasureSpec, child);
             } else {
-                childMainMeasureSpec = mFlexContainer.getChildWidthMeasureSpec(mainMeasureSpec,
-                        mainPaddingStart + mainPaddingEnd +
-                                getFlexItemMarginStartMain(flexItem, false) +
-                                getFlexItemMarginEndMain(flexItem, false) + sumCrossSize,
-                        childMainSize);
-                childCrossMeasureSpec = mFlexContainer.getChildHeightMeasureSpec(crossMeasureSpec,
+                childCrossMeasureSpec = mFlexContainer.getChildWidthMeasureSpec(crossMeasureSpec,
                         crossPaddingStart + crossPaddingEnd +
                                 getFlexItemMarginStartCross(flexItem, false) +
-                                getFlexItemMarginEndCross(flexItem, false)
-                                + sumCrossSize,
+                                getFlexItemMarginEndCross(flexItem, false) + sumCrossSize,
                         getFlexItemSizeCross(flexItem, false));
+                childMainMeasureSpec = mFlexContainer.getChildHeightMeasureSpec(mainMeasureSpec,
+                        mainPaddingStart + mainPaddingEnd +
+                                getFlexItemMarginStartMain(flexItem, false) +
+                                getFlexItemMarginEndMain(flexItem, false),
+                        childMainSize);
                 child.measure(childCrossMeasureSpec, childMainMeasureSpec);
                 updateMeasureCache(i, childCrossMeasureSpec, childMainMeasureSpec, child);
             }
@@ -1408,9 +1407,12 @@ class FlexboxHelper {
             if (flexLines.size() == 1) {
                 flexLines.get(0).mCrossSize = size - paddingAlongCrossAxis;
                 // alignContent property is valid only if the Flexbox has at least two lines
-            } else if (flexLines.size() >= 2 && totalCrossSize < size) {
+            } else if (flexLines.size() >= 2) {
                 switch (mFlexContainer.getAlignContent()) {
                     case AlignContent.STRETCH: {
+                        if (totalCrossSize >= size) {
+                            break;
+                        }
                         float freeSpaceUnit = (size - totalCrossSize) / (float) flexLines.size();
                         float accumulatedError = 0;
                         for (int i = 0, flexLinesSize = flexLines.size(); i < flexLinesSize; i++) {
@@ -1434,6 +1436,14 @@ class FlexboxHelper {
                         break;
                     }
                     case AlignContent.SPACE_AROUND: {
+                        if (totalCrossSize >= size) {
+                            // If the size of the content is larger than the flex container, the
+                            // Flex lines should be aligned center like ALIGN_CONTENT_CENTER
+                            mFlexContainer.setFlexLines(
+                                    constructFlexLinesForAlignContentCenter(flexLines, size,
+                                    totalCrossSize));
+                            break;
+                        }
                         // The value of free space along the cross axis which needs to be put on top
                         // and below the bottom of each flex line.
                         int spaceTopAndBottom = size - totalCrossSize;
@@ -1452,6 +1462,9 @@ class FlexboxHelper {
                         break;
                     }
                     case AlignContent.SPACE_BETWEEN: {
+                        if (totalCrossSize >= size) {
+                            break;
+                        }
                         // The value of free space along the cross axis between each flex line.
                         float spaceBetweenFlexLine = size - totalCrossSize;
                         int numberOfSpaces = flexLines.size() - 1;
@@ -1490,22 +1503,9 @@ class FlexboxHelper {
                         break;
                     }
                     case AlignContent.CENTER: {
-                        int spaceAboveAndBottom = size - totalCrossSize;
-                        spaceAboveAndBottom = spaceAboveAndBottom / 2;
-                        List<FlexLine> newFlexLines = new ArrayList<>();
-                        FlexLine dummySpaceFlexLine = new FlexLine();
-                        dummySpaceFlexLine.mCrossSize = spaceAboveAndBottom;
-                        for (int i = 0, flexLineSize = flexLines.size(); i < flexLineSize; i++) {
-                            if (i == 0) {
-                                newFlexLines.add(dummySpaceFlexLine);
-                            }
-                            FlexLine flexLine = flexLines.get(i);
-                            newFlexLines.add(flexLine);
-                            if (i == flexLines.size() - 1) {
-                                newFlexLines.add(dummySpaceFlexLine);
-                            }
-                        }
-                        mFlexContainer.setFlexLines(newFlexLines);
+                        mFlexContainer.setFlexLines(
+                                constructFlexLinesForAlignContentCenter(flexLines, size,
+                                        totalCrossSize));
                         break;
                     }
                     case AlignContent.FLEX_END: {
@@ -1521,6 +1521,26 @@ class FlexboxHelper {
                 }
             }
         }
+    }
+
+    private List<FlexLine> constructFlexLinesForAlignContentCenter(List<FlexLine> flexLines,
+            int size, int totalCrossSize) {
+        int spaceAboveAndBottom = size - totalCrossSize;
+        spaceAboveAndBottom = spaceAboveAndBottom / 2;
+        List<FlexLine> newFlexLines = new ArrayList<>();
+        FlexLine dummySpaceFlexLine = new FlexLine();
+        dummySpaceFlexLine.mCrossSize = spaceAboveAndBottom;
+        for (int i = 0, flexLineSize = flexLines.size(); i < flexLineSize; i++) {
+            if (i == 0) {
+                newFlexLines.add(dummySpaceFlexLine);
+            }
+            FlexLine flexLine = flexLines.get(i);
+            newFlexLines.add(flexLine);
+            if (i == flexLines.size() - 1) {
+                newFlexLines.add(dummySpaceFlexLine);
+            }
+        }
+        return newFlexLines;
     }
 
     void stretchViews() {
