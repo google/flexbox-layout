@@ -1624,6 +1624,110 @@ public class FlexboxAndroidTest {
 
     @Test
     @FlakyTest
+    public void testAlignContent_flexEnd_wrapReverse_contentOverflowed() throws Throwable {
+        FlexboxLayout flexboxLayout =
+                createFlexboxLayout(R.layout.activity_align_content_test_overflowed,
+                        new Configuration() {
+                            @Override
+                            public void apply(FlexboxLayout flexboxLayout) {
+                                flexboxLayout.setAlignContent(FlexboxLayout.ALIGN_CONTENT_FLEX_END);
+                                flexboxLayout.setFlexWrap(FlexboxLayout.FLEX_WRAP_WRAP_REVERSE);
+                            }
+                        });
+        assertThat(flexboxLayout.getAlignContent(), is(FlexboxLayout.ALIGN_CONTENT_FLEX_END));
+        onView(withId(R.id.text6)).check(isTopAlignedWith(withId(R.id.flexbox_layout)));
+        onView(withId(R.id.text5)).check(isLeftOf(withId(R.id.text6)));
+        onView(withId(R.id.text4)).check(isBelow(withId(R.id.text6)));
+    }
+
+    @Test
+    @FlakyTest
+    public void testAlignContent_flexStart_wrapReverse_contentOverflowed() throws Throwable {
+        FlexboxLayout flexboxLayout =
+                createFlexboxLayout(R.layout.activity_align_content_test_overflowed,
+                        new Configuration() {
+                            @Override
+                            public void apply(FlexboxLayout flexboxLayout) {
+                                flexboxLayout.setAlignContent(
+                                        FlexboxLayout.ALIGN_CONTENT_FLEX_START);
+                                flexboxLayout.setFlexWrap(FlexboxLayout.FLEX_WRAP_WRAP_REVERSE);
+                            }
+                        });
+        assertThat(flexboxLayout.getAlignContent(), is(FlexboxLayout.ALIGN_CONTENT_FLEX_START));
+        onView(withId(R.id.text1)).check(isBottomAlignedWith(withId(R.id.flexbox_layout)));
+        onView(withId(R.id.text2)).check(isRightOf(withId(R.id.text1)));
+        onView(withId(R.id.text3)).check(isAbove(withId(R.id.text1)));
+    }
+
+    @Test
+    @FlakyTest
+    public void testAlignContent_spaceBetween_wrapReverse_contentOverflowed() throws Throwable {
+        FlexboxLayout flexboxLayout =
+                createFlexboxLayout(R.layout.activity_align_content_test_overflowed,
+                        new Configuration() {
+                            @Override
+                            public void apply(FlexboxLayout flexboxLayout) {
+                                flexboxLayout.setAlignContent(
+                                        FlexboxLayout.ALIGN_CONTENT_SPACE_BETWEEN);
+                                flexboxLayout.setFlexWrap(FlexboxLayout.FLEX_WRAP_WRAP_REVERSE);
+                            }
+                        });
+        assertThat(flexboxLayout.getAlignContent(), is(FlexboxLayout.ALIGN_CONTENT_SPACE_BETWEEN));
+        onView(withId(R.id.text1)).check(isBottomAlignedWith(withId(R.id.flexbox_layout)));
+        onView(withId(R.id.text2)).check(isRightOf(withId(R.id.text1)));
+        onView(withId(R.id.text3)).check(isAbove(withId(R.id.text1)));
+    }
+
+    @Test
+    @FlakyTest
+    public void testAlignContent_center_wrapReverse_contentOverflowed() throws Throwable {
+        final FlexboxTestActivity activity = mActivityRule.getActivity();
+        FlexboxLayout flexboxLayout =
+                createFlexboxLayout(R.layout.activity_align_content_test_overflowed,
+                        new Configuration() {
+                            @Override
+                            public void apply(FlexboxLayout flexboxLayout) {
+                                flexboxLayout.setAlignContent(
+                                        FlexboxLayout.ALIGN_CONTENT_CENTER);
+                                flexboxLayout.setFlexWrap(FlexboxLayout.FLEX_WRAP_WRAP_REVERSE);
+                            }
+                        });
+        assertThat(flexboxLayout.getAlignContent(), is(FlexboxLayout.ALIGN_CONTENT_CENTER));
+        TextView textView6 = (TextView) activity.findViewById(R.id.text6);
+        TextView textView4 = (TextView) activity.findViewById(R.id.text4);
+        TextView textView2 = (TextView) activity.findViewById(R.id.text2);
+
+        assertThat(textView6.getTop() - flexboxLayout.getTop(), isEqualAllowingError(
+                (flexboxLayout.getHeight() - textView6.getHeight() - textView4.getHeight()
+                        - textView2.getHeight()) / 2));
+    }
+
+    @Test
+    @FlakyTest
+    public void testAlignContent_spaceAround_wrapReverse_contentOverflowed() throws Throwable {
+        final FlexboxTestActivity activity = mActivityRule.getActivity();
+        FlexboxLayout flexboxLayout =
+                createFlexboxLayout(R.layout.activity_align_content_test_overflowed,
+                        new Configuration() {
+                            @Override
+                            public void apply(FlexboxLayout flexboxLayout) {
+                                flexboxLayout.setAlignContent(
+                                        FlexboxLayout.ALIGN_CONTENT_SPACE_AROUND);
+                                flexboxLayout.setFlexWrap(FlexboxLayout.FLEX_WRAP_WRAP_REVERSE);
+                            }
+                        });
+        assertThat(flexboxLayout.getAlignContent(), is(FlexboxLayout.ALIGN_CONTENT_SPACE_AROUND));
+        TextView textView6 = (TextView) activity.findViewById(R.id.text6);
+        TextView textView4 = (TextView) activity.findViewById(R.id.text4);
+        TextView textView2 = (TextView) activity.findViewById(R.id.text2);
+
+        assertThat(textView6.getTop() - flexboxLayout.getTop(), isEqualAllowingError(
+                (flexboxLayout.getHeight() - textView6.getHeight() - textView4.getHeight()
+                        - textView2.getHeight()) / 2));
+    }
+
+    @Test
+    @FlakyTest
     public void testAlignItems_stretch() throws Throwable {
         final FlexboxTestActivity activity = mActivityRule.getActivity();
         FlexboxLayout flexboxLayout = createFlexboxLayout(R.layout.activity_stretch_test);
@@ -2509,7 +2613,8 @@ public class FlexboxAndroidTest {
     @FlakyTest
     public void testView_visibility_gone_first_item_in_flex_line_vertical() throws Throwable {
         // This test verifies if the FlexboxLayout is visible when the visibility of the first
-        // flex item in the second flex line (or arbitrary flex lines other than the first flex line)
+        // flex item in the second flex line (or arbitrary flex lines other than the first flex
+        // line)
         // is set to "gone"
         // There was an issue reported for that
         // https://github.com/google/flexbox-layout/issues/47

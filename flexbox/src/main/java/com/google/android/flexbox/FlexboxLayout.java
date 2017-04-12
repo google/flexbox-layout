@@ -1262,9 +1262,12 @@ public class FlexboxLayout extends ViewGroup {
             if (mFlexLines.size() == 1) {
                 mFlexLines.get(0).mCrossSize = size - paddingAlongCrossAxis;
                 // alignContent property is valid only if the Flexbox has at least two lines
-            } else if (mFlexLines.size() >= 2 && totalCrossSize < size) {
+            } else if (mFlexLines.size() >= 2) {
                 switch (mAlignContent) {
                     case ALIGN_CONTENT_STRETCH: {
+                        if (totalCrossSize >= size) {
+                            break;
+                        }
                         float freeSpaceUnit = (size - totalCrossSize) / (float) mFlexLines.size();
                         float accumulatedError = 0;
                         for (int i = 0, flexLinesSize = mFlexLines.size(); i < flexLinesSize; i++) {
@@ -1288,6 +1291,13 @@ public class FlexboxLayout extends ViewGroup {
                         break;
                     }
                     case ALIGN_CONTENT_SPACE_AROUND: {
+                        if (totalCrossSize >= size) {
+                            // If the size of the content is larger than the flex container, the
+                            // Flex lines should be aligned center like ALIGN_CONTENT_CENTER
+                            mFlexLines = constructFlexLinesForAlignContentCenter(size,
+                                    totalCrossSize);
+                            break;
+                        }
                         // The value of free space along the cross axis which needs to be put on top
                         // and below the bottom of each flex line.
                         int spaceTopAndBottom = size - totalCrossSize;
@@ -1306,6 +1316,9 @@ public class FlexboxLayout extends ViewGroup {
                         break;
                     }
                     case ALIGN_CONTENT_SPACE_BETWEEN: {
+                        if (totalCrossSize >= size) {
+                            break;
+                        }
                         // The value of free space along the cross axis between each flex line.
                         float spaceBetweenFlexLine = size - totalCrossSize;
                         int numberOfSpaces = mFlexLines.size() - 1;
@@ -1344,22 +1357,7 @@ public class FlexboxLayout extends ViewGroup {
                         break;
                     }
                     case ALIGN_CONTENT_CENTER: {
-                        int spaceAboveAndBottom = size - totalCrossSize;
-                        spaceAboveAndBottom = spaceAboveAndBottom / 2;
-                        List<FlexLine> newFlexLines = new ArrayList<>();
-                        FlexLine dummySpaceFlexLine = new FlexLine();
-                        dummySpaceFlexLine.mCrossSize = spaceAboveAndBottom;
-                        for (int i = 0, flexLineSize = mFlexLines.size(); i < flexLineSize; i++) {
-                            if (i == 0) {
-                                newFlexLines.add(dummySpaceFlexLine);
-                            }
-                            FlexLine flexLine = mFlexLines.get(i);
-                            newFlexLines.add(flexLine);
-                            if (i == mFlexLines.size() - 1) {
-                                newFlexLines.add(dummySpaceFlexLine);
-                            }
-                        }
-                        mFlexLines = newFlexLines;
+                        mFlexLines = constructFlexLinesForAlignContentCenter(size, totalCrossSize);
                         break;
                     }
                     case ALIGN_CONTENT_FLEX_END: {
@@ -1372,6 +1370,25 @@ public class FlexboxLayout extends ViewGroup {
                 }
             }
         }
+    }
+
+    private List<FlexLine> constructFlexLinesForAlignContentCenter(int size, int totalCrossSize) {
+        int spaceAboveAndBottom = size - totalCrossSize;
+        spaceAboveAndBottom = spaceAboveAndBottom / 2;
+        List<FlexLine> newFlexLines = new ArrayList<>();
+        FlexLine dummySpaceFlexLine = new FlexLine();
+        dummySpaceFlexLine.mCrossSize = spaceAboveAndBottom;
+        for (int i = 0, flexLineSize = mFlexLines.size(); i < flexLineSize; i++) {
+            if (i == 0) {
+                newFlexLines.add(dummySpaceFlexLine);
+            }
+            FlexLine flexLine = mFlexLines.get(i);
+            newFlexLines.add(flexLine);
+            if (i == mFlexLines.size() - 1) {
+                newFlexLines.add(dummySpaceFlexLine);
+            }
+        }
+        return newFlexLines;
     }
 
     /**
