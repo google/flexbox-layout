@@ -17,36 +17,6 @@
 package com.google.android.flexbox.test;
 
 
-import com.google.android.flexbox.AlignContent;
-import com.google.android.flexbox.AlignItems;
-import com.google.android.flexbox.FlexDirection;
-import com.google.android.flexbox.FlexLine;
-import com.google.android.flexbox.FlexWrap;
-import com.google.android.flexbox.FlexboxLayout;
-import com.google.android.flexbox.JustifyContent;
-
-import org.hamcrest.Description;
-import org.hamcrest.TypeSafeMatcher;
-import org.junit.Rule;
-import org.junit.Test;
-import org.junit.runner.RunWith;
-
-import android.content.Context;
-import android.graphics.drawable.Drawable;
-import android.support.annotation.LayoutRes;
-import android.support.test.InstrumentationRegistry;
-import android.support.test.espresso.ViewAssertion;
-import android.support.test.filters.FlakyTest;
-import android.support.test.filters.MediumTest;
-import android.support.test.rule.ActivityTestRule;
-import android.support.test.runner.AndroidJUnit4;
-import android.support.v4.content.res.ResourcesCompat;
-import android.view.View;
-import android.view.ViewGroup;
-import android.widget.TextView;
-
-import java.util.List;
-
 import static android.support.test.espresso.Espresso.onView;
 import static android.support.test.espresso.assertion.PositionAssertions.isAbove;
 import static android.support.test.espresso.assertion.PositionAssertions.isBelow;
@@ -68,6 +38,36 @@ import static org.hamcrest.core.Is.is;
 import static org.hamcrest.core.IsNot.not;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertThat;
+
+import android.content.Context;
+import android.graphics.drawable.Drawable;
+import android.support.annotation.LayoutRes;
+import android.support.test.InstrumentationRegistry;
+import android.support.test.espresso.ViewAssertion;
+import android.support.test.filters.FlakyTest;
+import android.support.test.filters.MediumTest;
+import android.support.test.rule.ActivityTestRule;
+import android.support.test.runner.AndroidJUnit4;
+import android.support.v4.content.res.ResourcesCompat;
+import android.view.View;
+import android.view.ViewGroup;
+import android.widget.TextView;
+
+import com.google.android.flexbox.AlignContent;
+import com.google.android.flexbox.AlignItems;
+import com.google.android.flexbox.FlexDirection;
+import com.google.android.flexbox.FlexLine;
+import com.google.android.flexbox.FlexWrap;
+import com.google.android.flexbox.FlexboxLayout;
+import com.google.android.flexbox.JustifyContent;
+
+import org.hamcrest.Description;
+import org.hamcrest.TypeSafeMatcher;
+import org.junit.Rule;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+
+import java.util.List;
 
 
 /**
@@ -361,7 +361,7 @@ public class FlexboxAndroidTest {
         onView(withId(R.id.text2)).check(isRightOf(withId(R.id.text1)));
         // The width of the FlexboxLayout is not enough for placing the three text views.
         // There should be two flex lines same as WRAP, but the layout starts from bottom
-        // to top in WRAP_REVERSE
+        // to top in FlexWrap.WRAP_REVERSE
         onView(withId(R.id.text3)).check(isAbove(withId(R.id.text1)));
         onView(withId(R.id.text3)).check(isAbove(withId(R.id.text2)));
         onView(withId(R.id.text3)).check(isLeftAlignedWith(withId(R.id.flexbox_layout)));
@@ -440,7 +440,7 @@ public class FlexboxAndroidTest {
         onView(withId(R.id.text2)).check(isBelow(withId(R.id.text1)));
         // The width of the FlexboxLayout is not enough for placing the three text views.
         // There should be two flex lines same as WRAP, but the layout starts from right
-        // to left in WRAP_REVERSE
+        // to left in FlexWrap.WRAP_REVERSE
         onView(withId(R.id.text3)).check(isLeftOf(withId(R.id.text1)));
         onView(withId(R.id.text3)).check(isLeftOf(withId(R.id.text2)));
         onView(withId(R.id.text3)).check(isTopAlignedWith(withId(R.id.flexbox_layout)));
@@ -1728,12 +1728,11 @@ public class FlexboxAndroidTest {
                         new Configuration() {
                             @Override
                             public void apply(FlexboxLayout flexboxLayout) {
-                                flexboxLayout.setAlignContent(
-                                        FlexboxLayout.ALIGN_CONTENT_CENTER);
-                                flexboxLayout.setFlexWrap(FlexboxLayout.FLEX_WRAP_WRAP_REVERSE);
+                                flexboxLayout.setAlignContent(AlignContent.CENTER);
+                                flexboxLayout.setFlexWrap(FlexWrap.WRAP_REVERSE);
                             }
                         });
-        assertThat(flexboxLayout.getAlignContent(), is(FlexboxLayout.ALIGN_CONTENT_CENTER));
+        assertThat(flexboxLayout.getAlignContent(), is(AlignContent.CENTER));
         TextView textView6 = (TextView) activity.findViewById(R.id.text6);
         TextView textView4 = (TextView) activity.findViewById(R.id.text4);
         TextView textView2 = (TextView) activity.findViewById(R.id.text2);
