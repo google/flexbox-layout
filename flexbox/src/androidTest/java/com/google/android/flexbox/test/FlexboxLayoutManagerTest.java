@@ -2889,6 +2889,8 @@ public class FlexboxLayoutManagerTest {
                 GeneralLocation.BOTTOM_CENTER));
         onView(withId(R.id.recyclerview)).perform(swipe(GeneralLocation.TOP_CENTER,
                 GeneralLocation.BOTTOM_CENTER));
+        onView(withId(R.id.recyclerview)).perform(swipe(GeneralLocation.TOP_CENTER,
+                GeneralLocation.BOTTOM_CENTER));
 
         // The first visible item should be "1", which before fixing the issue
         // https://github.com/google/flexbox-layout/issues/228, the first line disappeared.
