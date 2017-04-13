@@ -16,23 +16,25 @@
 
 package com.google.android.flexbox;
 
-import com.google.android.flexbox.test.FlexboxTestActivity;
+import static com.google.android.flexbox.test.IsEqualAllowingError.isEqualAllowingError;
 
-import org.junit.Before;
-import org.junit.Rule;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import static junit.framework.Assert.assertEquals;
+import static junit.framework.Assert.assertNotNull;
+
+import static org.hamcrest.Matchers.is;
+import static org.junit.Assert.assertThat;
 
 import android.app.Activity;
 import android.support.test.rule.ActivityTestRule;
 import android.support.test.runner.AndroidJUnit4;
 import android.view.View;
 
-import static com.google.android.flexbox.test.IsEqualAllowingError.isEqualAllowingError;
-import static junit.framework.Assert.assertEquals;
-import static junit.framework.Assert.assertNotNull;
-import static org.hamcrest.Matchers.is;
-import static org.junit.Assert.assertThat;
+import com.google.android.flexbox.test.FlexboxTestActivity;
+
+import org.junit.Before;
+import org.junit.Rule;
+import org.junit.Test;
+import org.junit.runner.RunWith;
 
 /**
  * Unit tests for {@link FlexboxHelper}.

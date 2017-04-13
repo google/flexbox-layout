@@ -2275,7 +2275,7 @@ public class FlexboxAndroidTest {
             @Override
             public void apply(FlexboxLayout flexboxLayout) {
                 flexboxLayout.setFlexWrap(FlexWrap.WRAP_REVERSE);
-           }
+            }
         });
         TextView textView1 = (TextView) activity.findViewById(R.id.text1);
         TextView textView2 = (TextView) activity.findViewById(R.id.text2);
