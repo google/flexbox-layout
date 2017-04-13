@@ -1444,10 +1444,11 @@ public class FlexboxLayoutManager extends RecyclerView.LayoutManager implements 
      * The view holders are going to be filled toward the end position (bottom if the main axis
      * direction is horizontal, right if the main axis direction if vertical).
      *
-     * @param anchorInfo   the anchor information where layout should start
-     * @param fromNextLine if set to {@code true}, layout starts from the next flex line set to
-     *                     the anchor information
-     * @param considerInfinite if set to {@code true}, the judgement if the infinite available space
+     * @param anchorInfo       the anchor information where layout should start
+     * @param fromNextLine     if set to {@code true}, layout starts from the next flex line set to
+     *                         the anchor information
+     * @param considerInfinite if set to {@code true}, the judgement if the infinite available
+     *                         space
      *                         needs to be considered.
      */
     private void updateLayoutStateToFillEnd(AnchorInfo anchorInfo, boolean fromNextLine,
@@ -1483,7 +1484,8 @@ public class FlexboxLayoutManager extends RecyclerView.LayoutManager implements 
      * @param anchorInfo       the anchor information where layout should start
      * @param fromPreviousLine if set to {@code true}, layout starts from the next flex line set to
      *                         the anchor information
-     * @param considerInfinite if set to {@code true}, the judgement if the infinite available space
+     * @param considerInfinite if set to {@code true}, the judgement if the infinite available
+     *                         space
      *                         needs to be considered.
      */
     private void updateLayoutStateToFillStart(AnchorInfo anchorInfo, boolean fromPreviousLine,
@@ -1884,13 +1886,13 @@ public class FlexboxLayoutManager extends RecyclerView.LayoutManager implements 
     }
 
     /**
-     * @param view the view to be examined if it's visible
+     * @param view              the view to be examined if it's visible
      * @param completelyVisible when passed as {@code true}, this method checks if the view bounds
      *                          don't overlap the bounds of the RecyclerView. When passed as
      *                          {@code false}, this method checks if the view bounds are partially
      *                          visible within the RecyclerView.
      * @return if the view passed as an argument is visible (view bounds are within the parent
-     *         RecyclerView)
+     * RecyclerView)
      */
     private boolean isViewVisible(View view, boolean completelyVisible) {
         int left = getPaddingLeft();
@@ -1948,7 +1950,7 @@ public class FlexboxLayoutManager extends RecyclerView.LayoutManager implements 
     /**
      * Returns the adapter position of the first fully visible view. This position does not include
      * adapter changes that were dispatched after the last layout pass.
-
+     *
      * @return The adapter position of the first fully visible item or
      * {@link RecyclerView#NO_POSITION} if there aren't any visible items.
      * @see #findFirstVisibleItemPosition()
@@ -1963,7 +1965,7 @@ public class FlexboxLayoutManager extends RecyclerView.LayoutManager implements 
     /**
      * Returns the adapter position of the last visible view. This position does not include
      * adapter changes that were dispatched after the last layout pass.
-
+     *
      * If RecyclerView has item decorators, they will be considered in calculations as well.
      * LayoutManager may pre-cache some views that are not necessarily visible. Those views
      * are ignored in this method.
@@ -1982,7 +1984,7 @@ public class FlexboxLayoutManager extends RecyclerView.LayoutManager implements 
     /**
      * Returns the adapter position of the last fully visible view. This position does not include
      * adapter changes that were dispatched after the last layout pass.
-
+     *
      * @return The adapter position of the last fully visible view or
      * {@link RecyclerView#NO_POSITION} if there aren't any visible items.
      * @see #findLastVisibleItemPosition()
@@ -1998,8 +2000,8 @@ public class FlexboxLayoutManager extends RecyclerView.LayoutManager implements 
      * Returns the first child that is visible in the provided index range, i.e. either partially or
      * fully visible depending on the arguments provided.
      *
-     * @param fromIndex the start index for searching the visible child
-     * @param toIndex the last index for searching the visible child
+     * @param fromIndex         the start index for searching the visible child
+     * @param toIndex           the last index for searching the visible child
      * @param completelyVisible when passed as {@code true}, this method checks if the view bounds
      *                          don't overlap the bounds of the RecyclerView. When passed as
      *                          {@code false}, this method checks if the view bounds are partially

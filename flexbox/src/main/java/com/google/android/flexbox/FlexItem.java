@@ -53,7 +53,7 @@ interface FlexItem extends Parcelable {
      * Sets the width attribute of the flex item.
      *
      * @param width the width attribute. Can be one of the
-     * constants MATCH_PARENT(-1) or WRAP_CONTENT(-2), or an exact size.
+     *              constants MATCH_PARENT(-1) or WRAP_CONTENT(-2), or an exact size.
      */
     void setWidth(int width);
 
@@ -69,7 +69,7 @@ interface FlexItem extends Parcelable {
      * Sets the height attribute of the flex item.
      *
      * @param height the height attribute. Can be one of the
-     * constants MATCH_PARENT(-1) or WRAP_CONTENT(-2), or an exact size.
+     *               constants MATCH_PARENT(-1) or WRAP_CONTENT(-2), or an exact size.
      */
     void setHeight(int height);
 
