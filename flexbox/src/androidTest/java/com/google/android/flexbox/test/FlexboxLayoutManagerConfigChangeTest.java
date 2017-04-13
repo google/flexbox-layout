@@ -63,7 +63,8 @@ public class FlexboxLayoutManagerConfigChangeTest {
     @Test
     @FlakyTest
     public void testFlexLinesDiscardedOnOrientationChange_direction_row() throws Throwable {
-        // Verifies the case that the calculated Flex lines are correctly discarded when a orientation
+        // Verifies the case that the calculated Flex lines are correctly discarded when a
+        // orientation
         // happens with an Activity that handles configuration changes manually
         final ConfigChangeActivity activity = mActivityRule.getActivity();
         final FlexboxLayoutManager layoutManager = new FlexboxLayoutManager();
@@ -122,7 +123,8 @@ public class FlexboxLayoutManagerConfigChangeTest {
     @Test
     @FlakyTest
     public void testFlexLinesDiscardedOnOrientationChange_direction_column() throws Throwable {
-        // Verifies the case that the calculated Flex lines are correctly discarded when a orientation
+        // Verifies the case that the calculated Flex lines are correctly discarded when a
+        // orientation
         // happens with an Activity that handles configuration changes manually
         final ConfigChangeActivity activity = mActivityRule.getActivity();
         final FlexboxLayoutManager layoutManager = new FlexboxLayoutManager();

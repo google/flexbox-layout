@@ -17,6 +17,7 @@
 package com.google.android.flexbox;
 
 import static android.support.v7.widget.RecyclerView.NO_POSITION;
+
 import static com.google.android.flexbox.FlexItem.FLEX_BASIS_PERCENT_DEFAULT;
 
 import android.support.annotation.NonNull;
@@ -819,7 +820,7 @@ class FlexboxHelper {
     }
 
     private void addFlexLine(List<FlexLine> flexLines, FlexLine flexLine, int viewIndex,
-        int usedCrossSizeSoFar) {
+            int usedCrossSizeSoFar) {
         flexLine.mSumCrossSizeBefore = usedCrossSizeSoFar;
         mFlexContainer.onNewFlexLineAdded(flexLine);
         flexLine.mLastIndex = viewIndex;
@@ -1441,7 +1442,7 @@ class FlexboxHelper {
                             // Flex lines should be aligned center like ALIGN_CONTENT_CENTER
                             mFlexContainer.setFlexLines(
                                     constructFlexLinesForAlignContentCenter(flexLines, size,
-                                    totalCrossSize));
+                                            totalCrossSize));
                             break;
                         }
                         // The value of free space along the cross axis which needs to be put on top
