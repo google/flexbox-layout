@@ -23,6 +23,7 @@ import android.graphics.drawable.Drawable;
 import android.os.Parcel;
 import android.os.Parcelable;
 import android.support.annotation.IntDef;
+import android.support.annotation.Nullable;
 import android.support.v4.view.ViewCompat;
 import android.util.AttributeSet;
 import android.util.SparseIntArray;
@@ -146,9 +147,11 @@ public class FlexboxLayout extends ViewGroup implements FlexContainer {
     public static final int SHOW_DIVIDER_END = 1 << 2;
 
     /** The drawable to be drawn for the horizontal dividers. */
+    @Nullable
     private Drawable mDividerDrawableHorizontal;
 
     /** The drawable to be drawn for the vertical dividers. */
+    @Nullable
     private Drawable mDividerDrawableVertical;
 
     /**
@@ -398,324 +401,6 @@ public class FlexboxLayout extends ViewGroup implements FlexContainer {
         mFlexboxHelper.stretchViews();
         setMeasuredDimensionForFlex(mFlexDirection, widthMeasureSpec, heightMeasureSpec,
             flexLinesResult.mChildState);
-    }
-
-    /**
-     * Checks if the view's width/height don't violate the minimum/maximum size constraints imposed
-     * by the {@link LayoutParams#mMinWidth}, {@link LayoutParams#mMinHeight},
-     * {@link LayoutParams#mMaxWidth} and {@link LayoutParams#mMaxHeight} attributes.
-     *
-     * @param view the view to be checked
-     */
-    private void checkSizeConstraints(View view) {
-        boolean needsMeasure = false;
-        LayoutParams lp = (LayoutParams) view.getLayoutParams();
-        int childWidth = view.getMeasuredWidth();
-        int childHeight = view.getMeasuredHeight();
-
-        if (view.getMeasuredWidth() < lp.mMinWidth) {
-            needsMeasure = true;
-            childWidth = lp.mMinWidth;
-        } else if (view.getMeasuredWidth() > lp.mMaxWidth) {
-            needsMeasure = true;
-            childWidth = lp.mMaxWidth;
-        }
-
-        if (childHeight < lp.mMinHeight) {
-            needsMeasure = true;
-            childHeight = lp.mMinHeight;
-        } else if (childHeight > lp.mMaxHeight) {
-            needsMeasure = true;
-            childHeight = lp.mMaxHeight;
-        }
-        if (needsMeasure) {
-            view.measure(MeasureSpec.makeMeasureSpec(childWidth, MeasureSpec.EXACTLY),
-                    MeasureSpec.makeMeasureSpec(childHeight, MeasureSpec.EXACTLY));
-        }
-    }
-
-    private void addFlexLineIfLastFlexItem(int childIndex, int childCount, FlexLine flexLine,
-            int usedCrossSizeSoFar) {
-        if (childIndex == childCount - 1 && flexLine.getItemCountNotGone() != 0) {
-            // Add the flex line if this item is the last item
-            addFlexLine(flexLine, usedCrossSizeSoFar);
-        }
-    }
-
-    private void addFlexLine(FlexLine flexLine, int usedCrossSizeSoFar) {
-        flexLine.mSumCrossSizeBefore = usedCrossSizeSoFar;
-        // The size of the end divider isn't added until the flexLine is added to the flex container
-        // take the divider width (or height) into account when adding the flex line.
-        if (isMainAxisDirectionHorizontal()) {
-            if ((mShowDividerVertical & SHOW_DIVIDER_END) > 0) {
-                flexLine.mMainSize += mDividerVerticalWidth;
-                flexLine.mDividerLengthInMainSize += mDividerVerticalWidth;
-            }
-        } else {
-            if ((mShowDividerHorizontal & SHOW_DIVIDER_END) > 0) {
-                flexLine.mMainSize += mDividerHorizontalHeight;
-                flexLine.mDividerLengthInMainSize += mDividerHorizontalHeight;
-            }
-        }
-        mFlexLines.add(flexLine);
-    }
-
-    /**
-     * Determines the cross size (Calculate the length along the cross axis).
-     * Expand the cross size only if the height mode is MeasureSpec.EXACTLY, otherwise
-     * use the sum of cross sizes of all flex lines.
-     *
-     * @param flexDirection         the flex direction attribute
-     * @param widthMeasureSpec      horizontal space requirements as imposed by the parent
-     * @param heightMeasureSpec     vertical space requirements as imposed by the parent
-     * @param paddingAlongCrossAxis the padding value for the FlexboxLayout along the cross axis
-     * @see #getFlexDirection()
-     * @see #setFlexDirection(int)
-     * @see #getAlignContent()
-     * @see #setAlignContent(int)
-     */
-    private void determineCrossSize(int flexDirection, int widthMeasureSpec,
-            int heightMeasureSpec, int paddingAlongCrossAxis) {
-        // The MeasureSpec mode along the cross axis
-        int mode;
-        // The MeasureSpec size along the cross axis
-        int size;
-        switch (flexDirection) {
-            case FlexDirection.ROW: // Intentional fall through
-            case FlexDirection.ROW_REVERSE:
-                mode = MeasureSpec.getMode(heightMeasureSpec);
-                size = MeasureSpec.getSize(heightMeasureSpec);
-                break;
-            case FlexDirection.COLUMN: // Intentional fall through
-            case FlexDirection.COLUMN_REVERSE:
-                mode = MeasureSpec.getMode(widthMeasureSpec);
-                size = MeasureSpec.getSize(widthMeasureSpec);
-                break;
-            default:
-                throw new IllegalArgumentException("Invalid flex direction: " + flexDirection);
-        }
-        if (mode == MeasureSpec.EXACTLY) {
-            int totalCrossSize = getSumOfCrossSize() + paddingAlongCrossAxis;
-            if (mFlexLines.size() == 1) {
-                mFlexLines.get(0).mCrossSize = size - paddingAlongCrossAxis;
-                // alignContent property is valid only if the Flexbox has at least two lines
-            } else if (mFlexLines.size() >= 2) {
-                switch (mAlignContent) {
-                    case AlignContent.STRETCH: {
-                        if (totalCrossSize >= size) {
-                            break;
-                        }
-                        float freeSpaceUnit = (size - totalCrossSize) / (float) mFlexLines.size();
-                        float accumulatedError = 0;
-                        for (int i = 0, flexLinesSize = mFlexLines.size(); i < flexLinesSize; i++) {
-                            FlexLine flexLine = mFlexLines.get(i);
-                            float newCrossSizeAsFloat = flexLine.mCrossSize + freeSpaceUnit;
-                            if (i == mFlexLines.size() - 1) {
-                                newCrossSizeAsFloat += accumulatedError;
-                                accumulatedError = 0;
-                            }
-                            int newCrossSize = Math.round(newCrossSizeAsFloat);
-                            accumulatedError += (newCrossSizeAsFloat - newCrossSize);
-                            if (accumulatedError > 1) {
-                                newCrossSize += 1;
-                                accumulatedError -= 1;
-                            } else if (accumulatedError < -1) {
-                                newCrossSize -= 1;
-                                accumulatedError += 1;
-                            }
-                            flexLine.mCrossSize = newCrossSize;
-                        }
-                        break;
-                    }
-                    case AlignContent.SPACE_AROUND: {
-                        if (totalCrossSize >= size) {
-                            // If the size of the content is larger than the flex container, the
-                            // Flex lines should be aligned center like ALIGN_CONTENT_CENTER
-                            mFlexLines = constructFlexLinesForAlignContentCenter(size,
-                                    totalCrossSize);
-                            break;
-                        }
-                        // The value of free space along the cross axis which needs to be put on top
-                        // and below the bottom of each flex line.
-                        int spaceTopAndBottom = size - totalCrossSize;
-                        // The number of spaces along the cross axis
-                        int numberOfSpaces = mFlexLines.size() * 2;
-                        spaceTopAndBottom = spaceTopAndBottom / numberOfSpaces;
-                        List<FlexLine> newFlexLines = new ArrayList<>();
-                        FlexLine dummySpaceFlexLine = new FlexLine();
-                        dummySpaceFlexLine.mCrossSize = spaceTopAndBottom;
-                        for (FlexLine flexLine : mFlexLines) {
-                            newFlexLines.add(dummySpaceFlexLine);
-                            newFlexLines.add(flexLine);
-                            newFlexLines.add(dummySpaceFlexLine);
-                        }
-                        mFlexLines = newFlexLines;
-                        break;
-                    }
-                    case AlignContent.SPACE_BETWEEN: {
-                        if (totalCrossSize >= size) {
-                            break;
-                        }
-                        // The value of free space along the cross axis between each flex line.
-                        float spaceBetweenFlexLine = size - totalCrossSize;
-                        int numberOfSpaces = mFlexLines.size() - 1;
-                        spaceBetweenFlexLine = spaceBetweenFlexLine / (float) numberOfSpaces;
-                        float accumulatedError = 0;
-                        List<FlexLine> newFlexLines = new ArrayList<>();
-                        for (int i = 0, flexLineSize = mFlexLines.size(); i < flexLineSize; i++) {
-                            FlexLine flexLine = mFlexLines.get(i);
-                            newFlexLines.add(flexLine);
-
-                            if (i != mFlexLines.size() - 1) {
-                                FlexLine dummySpaceFlexLine = new FlexLine();
-                                if (i == mFlexLines.size() - 2) {
-                                    // The last dummy space block in the flex container.
-                                    // Adjust the cross size by the accumulated error.
-                                    dummySpaceFlexLine.mCrossSize = Math
-                                            .round(spaceBetweenFlexLine + accumulatedError);
-                                    accumulatedError = 0;
-                                } else {
-                                    dummySpaceFlexLine.mCrossSize = Math
-                                            .round(spaceBetweenFlexLine);
-                                }
-                                accumulatedError += (spaceBetweenFlexLine
-                                        - dummySpaceFlexLine.mCrossSize);
-                                if (accumulatedError > 1) {
-                                    dummySpaceFlexLine.mCrossSize += 1;
-                                    accumulatedError -= 1;
-                                } else if (accumulatedError < -1) {
-                                    dummySpaceFlexLine.mCrossSize -= 1;
-                                    accumulatedError += 1;
-                                }
-                                newFlexLines.add(dummySpaceFlexLine);
-                            }
-                        }
-                        mFlexLines = newFlexLines;
-                        break;
-                    }
-                    case AlignContent.CENTER: {
-                        mFlexLines = constructFlexLinesForAlignContentCenter(size, totalCrossSize);
-                        break;
-                    }
-                    case AlignContent.FLEX_END: {
-                        int spaceTop = size - totalCrossSize;
-                        FlexLine dummySpaceFlexLine = new FlexLine();
-                        dummySpaceFlexLine.mCrossSize = spaceTop;
-                        mFlexLines.add(0, dummySpaceFlexLine);
-                        break;
-                    }
-                }
-            }
-        }
-    }
-
-    private List<FlexLine> constructFlexLinesForAlignContentCenter(int size, int totalCrossSize) {
-        int spaceAboveAndBottom = size - totalCrossSize;
-        spaceAboveAndBottom = spaceAboveAndBottom / 2;
-        List<FlexLine> newFlexLines = new ArrayList<>();
-        FlexLine dummySpaceFlexLine = new FlexLine();
-        dummySpaceFlexLine.mCrossSize = spaceAboveAndBottom;
-        for (int i = 0, flexLineSize = mFlexLines.size(); i < flexLineSize; i++) {
-            if (i == 0) {
-                newFlexLines.add(dummySpaceFlexLine);
-            }
-            FlexLine flexLine = mFlexLines.get(i);
-            newFlexLines.add(flexLine);
-            if (i == mFlexLines.size() - 1) {
-                newFlexLines.add(dummySpaceFlexLine);
-            }
-        }
-        return newFlexLines;
-    }
-
-    /**
-     * Expand the view if the {@link #mAlignItems} attribute is set to {@link AlignItems#STRETCH}
-     * or {@link LayoutParams#mAlignSelf} is set as {@link AlignItems#STRETCH}.
-     *
-     * @param flexDirection the flex direction attribute
-     * @param alignItems    the align items attribute
-     * @see #getFlexDirection()
-     * @see #setFlexDirection(int)
-     * @see #getAlignItems()
-     * @see #setAlignItems(int)
-     * @see LayoutParams#mAlignSelf
-     */
-    private void stretchViews(int flexDirection, int alignItems) {
-        if (alignItems == AlignItems.STRETCH) {
-            int viewIndex = 0;
-            for (FlexLine flexLine : mFlexLines) {
-                for (int i = 0; i < flexLine.mItemCount; i++, viewIndex++) {
-                    View view = getReorderedChildAt(viewIndex);
-                    LayoutParams lp = (LayoutParams) view.getLayoutParams();
-                    if (lp.mAlignSelf != AlignSelf.AUTO &&
-                            lp.mAlignSelf != AlignItems.STRETCH) {
-                        continue;
-                    }
-                    switch (flexDirection) {
-                        case FlexDirection.ROW: // Intentional fall through
-                        case FlexDirection.ROW_REVERSE:
-                            stretchViewVertically(view, flexLine.mCrossSize);
-                            break;
-                        case FlexDirection.COLUMN:
-                        case FlexDirection.COLUMN_REVERSE:
-                            stretchViewHorizontally(view, flexLine.mCrossSize);
-                            break;
-                        default:
-                            throw new IllegalArgumentException(
-                                    "Invalid flex direction: " + flexDirection);
-                    }
-                }
-            }
-        } else {
-            for (FlexLine flexLine : mFlexLines) {
-                for (Integer index : flexLine.mIndicesAlignSelfStretch) {
-                    View view = getReorderedChildAt(index);
-                    switch (flexDirection) {
-                        case FlexDirection.ROW: // Intentional fall through
-                        case FlexDirection.ROW_REVERSE:
-                            stretchViewVertically(view, flexLine.mCrossSize);
-                            break;
-                        case FlexDirection.COLUMN:
-                        case FlexDirection.COLUMN_REVERSE:
-                            stretchViewHorizontally(view, flexLine.mCrossSize);
-                            break;
-                        default:
-                            throw new IllegalArgumentException(
-                                    "Invalid flex direction: " + flexDirection);
-                    }
-                }
-            }
-        }
-    }
-
-    /**
-     * Expand the view vertically to the size of the crossSize (considering the view margins)
-     *
-     * @param view      the View to be stretched
-     * @param crossSize the cross size
-     */
-    private void stretchViewVertically(View view, int crossSize) {
-        LayoutParams lp = (LayoutParams) view.getLayoutParams();
-        int newHeight = crossSize - lp.topMargin - lp.bottomMargin;
-        newHeight = Math.max(newHeight, 0);
-        view.measure(MeasureSpec
-                        .makeMeasureSpec(view.getMeasuredWidth(), MeasureSpec.EXACTLY),
-                MeasureSpec.makeMeasureSpec(newHeight, MeasureSpec.EXACTLY));
-    }
-
-    /**
-     * Expand the view horizontally to the size of the crossSize (considering the view margins)
-     *
-     * @param view      the View to be stretched
-     * @param crossSize the cross size
-     */
-    private void stretchViewHorizontally(View view, int crossSize) {
-        LayoutParams lp = (LayoutParams) view.getLayoutParams();
-        int newWidth = crossSize - lp.leftMargin - lp.rightMargin;
-        newWidth = Math.max(newWidth, 0);
-        view.measure(MeasureSpec
-                        .makeMeasureSpec(newWidth, MeasureSpec.EXACTLY),
-                MeasureSpec.makeMeasureSpec(view.getMeasuredHeight(), MeasureSpec.EXACTLY));
     }
 
     /**
@@ -1599,6 +1284,8 @@ public class FlexboxLayout extends ViewGroup implements FlexContainer {
      * @see #setDividerDrawable(Drawable)
      * @see #setDividerDrawableHorizontal(Drawable)
      */
+    @Nullable
+    @SuppressWarnings("UnusedDeclaration")
     public Drawable getDividerDrawableHorizontal() {
         return mDividerDrawableHorizontal;
     }
@@ -1608,6 +1295,8 @@ public class FlexboxLayout extends ViewGroup implements FlexContainer {
      * @see #setDividerDrawable(Drawable)
      * @see #setDividerDrawableVertical(Drawable)
      */
+    @Nullable
+    @SuppressWarnings("UnusedDeclaration")
     public Drawable getDividerDrawableVertical() {
         return mDividerDrawableVertical;
     }
@@ -1632,7 +1321,7 @@ public class FlexboxLayout extends ViewGroup implements FlexContainer {
      * @see #setShowDivider(int)
      * @see #setShowDividerHorizontal(int)
      */
-    public void setDividerDrawableHorizontal(Drawable divider) {
+    public void setDividerDrawableHorizontal(@Nullable Drawable divider) {
         if (divider == mDividerDrawableHorizontal) {
             return;
         }
@@ -1654,7 +1343,7 @@ public class FlexboxLayout extends ViewGroup implements FlexContainer {
      * @see #setShowDivider(int)
      * @see #setShowDividerVertical(int)
      */
-    public void setDividerDrawableVertical(Drawable divider) {
+    public void setDividerDrawableVertical(@Nullable Drawable divider) {
         if (divider == mDividerDrawableVertical) {
             return;
         }
@@ -2103,7 +1792,9 @@ public class FlexboxLayout extends ViewGroup implements FlexContainer {
         }
 
         protected LayoutParams(Parcel in) {
-            super(WRAP_CONTENT, WRAP_CONTENT);
+            // Passing a resolved value to resolve a lint warning
+            // height and width are set in this method anyway.
+            super(0, 0);
             this.mOrder = in.readInt();
             this.mFlexGrow = in.readFloat();
             this.mFlexShrink = in.readFloat();
