@@ -397,7 +397,7 @@ public class FlexboxLayout extends ViewGroup implements FlexContainer {
         // Expand the views if alignItems (or mAlignSelf in each child view) is set to stretch
         mFlexboxHelper.stretchViews();
         setMeasuredDimensionForFlex(mFlexDirection, widthMeasureSpec, heightMeasureSpec,
-            flexLinesResult.mChildState);
+                flexLinesResult.mChildState);
     }
 
     /**

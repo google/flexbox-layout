@@ -32,9 +32,9 @@ import java.util.List;
  *
  * Orientation for the decoration can be either of:
  * <ul>
- *     <li>Horizontal (setOrientation(HORIZONTAL)</li>
- *     <li>Vertical (setOrientation(VERTICAL)</li>
- *     <li>Both orientation (setOrientation(BOTH)</li>
+ * <li>Horizontal (setOrientation(HORIZONTAL)</li>
+ * <li>Vertical (setOrientation(VERTICAL)</li>
+ * <li>Both orientation (setOrientation(BOTH)</li>
  * </ul>.
  * The default value is set to both.
  */
@@ -74,9 +74,9 @@ public class FlexboxItemDecoration extends RecyclerView.ItemDecoration {
      * Set the orientation for the decoration.
      * Orientation for the decoration can be either of:
      * <ul>
-     *     <li>Horizontal (setOrientation(HORIZONTAL)</li>
-     *     <li>Vertical (setOrientation(VERTICAL)</li>
-     *     <li>Both orientation (setOrientation(BOTH)</li>
+     * <li>Horizontal (setOrientation(HORIZONTAL)</li>
+     * <li>Vertical (setOrientation(VERTICAL)</li>
+     * <li>Both orientation (setOrientation(BOTH)</li>
      * </ul>.
      */
     public void setOrientation(int orientation) {

@@ -16,14 +16,6 @@
 
 package com.google.android.flexbox;
 
-import com.google.android.apps.flexbox.R;
-import com.google.android.flexbox.validators.DimensionInputValidator;
-import com.google.android.flexbox.validators.FixedDimensionInputValidator;
-import com.google.android.flexbox.validators.FlexBasisPercentInputValidator;
-import com.google.android.flexbox.validators.InputValidator;
-import com.google.android.flexbox.validators.IntegerInputValidator;
-import com.google.android.flexbox.validators.NonNegativeDecimalInputValidator;
-
 import android.app.Activity;
 import android.content.Context;
 import android.os.Build;
@@ -49,6 +41,14 @@ import android.widget.EditText;
 import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
+
+import com.google.android.apps.flexbox.R;
+import com.google.android.flexbox.validators.DimensionInputValidator;
+import com.google.android.flexbox.validators.FixedDimensionInputValidator;
+import com.google.android.flexbox.validators.FlexBasisPercentInputValidator;
+import com.google.android.flexbox.validators.InputValidator;
+import com.google.android.flexbox.validators.IntegerInputValidator;
+import com.google.android.flexbox.validators.NonNegativeDecimalInputValidator;
 
 /**
  * DialogFragment that changes the properties for a flex item.
@@ -316,7 +316,8 @@ public class FlexItemEditFragment extends DialogFragment {
     private void setNextFocusesOnEnterDown(final TextView... textViews) {
         // This can be done by setting android:nextFocus* as in 
         // https://developer.android.com/training/keyboard-input/navigation.html
-        // But it requires API level 11 as a minimum sdk version. To support the lower level devices,
+        // But it requires API level 11 as a minimum sdk version. To support the lower level
+        // devices,
         // doing it programmatically.
         for (int i = 0; i < textViews.length; i++) {
             final int index = i;
