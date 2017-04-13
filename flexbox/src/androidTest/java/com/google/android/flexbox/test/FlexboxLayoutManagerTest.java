@@ -2984,15 +2984,22 @@ public class FlexboxLayoutManagerTest {
         assertThat(layoutManager.findLastCompletelyVisibleItemPosition(), is(8));
         assertThat(layoutManager.findLastVisibleItemPosition(), is(11));
 
-        onView(withId(R.id.recyclerview)).perform(swipe(GeneralLocation.CENTER,
+        onView(withId(R.id.recyclerview)).perform(swipe(GeneralLocation.BOTTOM_CENTER,
                 GeneralLocation.TOP_CENTER));
-        // Scroll by about half of the height of the RecyclerView
+        onView(withId(R.id.recyclerview)).perform(swipe(GeneralLocation.BOTTOM_CENTER,
+                GeneralLocation.TOP_CENTER));
+        onView(withId(R.id.recyclerview)).perform(swipe(GeneralLocation.BOTTOM_CENTER,
+                GeneralLocation.TOP_CENTER));
+        onView(withId(R.id.recyclerview)).perform(swipe(GeneralLocation.BOTTOM_CENTER,
+                GeneralLocation.TOP_CENTER));
+        onView(withId(R.id.recyclerview)).perform(swipe(GeneralLocation.BOTTOM_CENTER,
+                GeneralLocation.TOP_CENTER));
         InstrumentationRegistry.getInstrumentation().waitForIdleSync();
 
-        assertThat(layoutManager.findFirstCompletelyVisibleItemPosition(), is(6));
-        assertThat(layoutManager.findFirstVisibleItemPosition(), is(3));
-        assertThat(layoutManager.findLastCompletelyVisibleItemPosition(), is(11));
-        assertThat(layoutManager.findLastVisibleItemPosition(), is(14));
+        assertThat(layoutManager.findFirstCompletelyVisibleItemPosition(), is(42));
+        assertThat(layoutManager.findFirstVisibleItemPosition(), is(39));
+        assertThat(layoutManager.findLastCompletelyVisibleItemPosition(), is(49));
+        assertThat(layoutManager.findLastVisibleItemPosition(), is(49));
     }
 
     @Test
@@ -3028,15 +3035,24 @@ public class FlexboxLayoutManagerTest {
         assertThat(layoutManager.findLastCompletelyVisibleItemPosition(), is(8));
         assertThat(layoutManager.findLastVisibleItemPosition(), is(11));
 
-        onView(withId(R.id.recyclerview)).perform(swipe(GeneralLocation.CENTER,
+        onView(withId(R.id.recyclerview)).perform(swipe(GeneralLocation.CENTER_RIGHT,
                 GeneralLocation.CENTER_LEFT));
-        // Scroll by about half of the width of the RecyclerView
+        onView(withId(R.id.recyclerview)).perform(swipe(GeneralLocation.CENTER_RIGHT,
+                GeneralLocation.CENTER_LEFT));
+        onView(withId(R.id.recyclerview)).perform(swipe(GeneralLocation.CENTER_RIGHT,
+                GeneralLocation.CENTER_LEFT));
+        onView(withId(R.id.recyclerview)).perform(swipe(GeneralLocation.CENTER_RIGHT,
+                GeneralLocation.CENTER_LEFT));
+        onView(withId(R.id.recyclerview)).perform(swipe(GeneralLocation.CENTER_RIGHT,
+                GeneralLocation.CENTER_LEFT));
+        onView(withId(R.id.recyclerview)).perform(swipe(GeneralLocation.CENTER_RIGHT,
+                GeneralLocation.CENTER_LEFT));
         InstrumentationRegistry.getInstrumentation().waitForIdleSync();
 
-        assertThat(layoutManager.findFirstCompletelyVisibleItemPosition(), is(6));
-        assertThat(layoutManager.findFirstVisibleItemPosition(), is(3));
-        assertThat(layoutManager.findLastCompletelyVisibleItemPosition(), is(11));
-        assertThat(layoutManager.findLastVisibleItemPosition(), is(14));
+        assertThat(layoutManager.findFirstCompletelyVisibleItemPosition(), is(42));
+        assertThat(layoutManager.findFirstVisibleItemPosition(), is(39));
+        assertThat(layoutManager.findLastCompletelyVisibleItemPosition(), is(49));
+        assertThat(layoutManager.findLastVisibleItemPosition(), is(49));
     }
 
     /**
