@@ -23,6 +23,7 @@ import android.graphics.drawable.Drawable;
 import android.os.Parcel;
 import android.os.Parcelable;
 import android.support.annotation.IntDef;
+import android.support.annotation.Nullable;
 import android.support.v4.view.ViewCompat;
 import android.util.AttributeSet;
 import android.util.SparseIntArray;
@@ -146,9 +147,11 @@ public class FlexboxLayout extends ViewGroup implements FlexContainer {
     public static final int SHOW_DIVIDER_END = 1 << 2;
 
     /** The drawable to be drawn for the horizontal dividers. */
+    @Nullable
     private Drawable mDividerDrawableHorizontal;
 
     /** The drawable to be drawn for the vertical dividers. */
+    @Nullable
     private Drawable mDividerDrawableVertical;
 
     /**
@@ -1281,6 +1284,8 @@ public class FlexboxLayout extends ViewGroup implements FlexContainer {
      * @see #setDividerDrawable(Drawable)
      * @see #setDividerDrawableHorizontal(Drawable)
      */
+    @Nullable
+    @SuppressWarnings("UnusedDeclaration")
     public Drawable getDividerDrawableHorizontal() {
         return mDividerDrawableHorizontal;
     }
@@ -1290,6 +1295,8 @@ public class FlexboxLayout extends ViewGroup implements FlexContainer {
      * @see #setDividerDrawable(Drawable)
      * @see #setDividerDrawableVertical(Drawable)
      */
+    @Nullable
+    @SuppressWarnings("UnusedDeclaration")
     public Drawable getDividerDrawableVertical() {
         return mDividerDrawableVertical;
     }
@@ -1314,7 +1321,7 @@ public class FlexboxLayout extends ViewGroup implements FlexContainer {
      * @see #setShowDivider(int)
      * @see #setShowDividerHorizontal(int)
      */
-    public void setDividerDrawableHorizontal(Drawable divider) {
+    public void setDividerDrawableHorizontal(@Nullable Drawable divider) {
         if (divider == mDividerDrawableHorizontal) {
             return;
         }
@@ -1336,7 +1343,7 @@ public class FlexboxLayout extends ViewGroup implements FlexContainer {
      * @see #setShowDivider(int)
      * @see #setShowDividerVertical(int)
      */
-    public void setDividerDrawableVertical(Drawable divider) {
+    public void setDividerDrawableVertical(@Nullable Drawable divider) {
         if (divider == mDividerDrawableVertical) {
             return;
         }
@@ -1785,7 +1792,9 @@ public class FlexboxLayout extends ViewGroup implements FlexContainer {
         }
 
         protected LayoutParams(Parcel in) {
-            super(WRAP_CONTENT, WRAP_CONTENT);
+            // Passing a resolved value to resolve a lint warning
+            // height and width are set in this method anyway.
+            super(0, 0);
             this.mOrder = in.readInt();
             this.mFlexGrow = in.readFloat();
             this.mFlexShrink = in.readFloat();
