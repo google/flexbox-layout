@@ -176,10 +176,10 @@ public class FlexLine {
     /**
      * Updates the position of the flex line from the contained view.
      *
-     * @param view the view contained in this flex line
-     * @param leftDecoration the length of the decoration on the left of the view
-     * @param topDecoration the length of the decoration on the top of the view
-     * @param rightDecoration the length of the decoration on the right of the view
+     * @param view             the view contained in this flex line
+     * @param leftDecoration   the length of the decoration on the left of the view
+     * @param topDecoration    the length of the decoration on the top of the view
+     * @param rightDecoration  the length of the decoration on the right of the view
      * @param bottomDecoration the length of the decoration on the bottom of the view
      */
     void updatePositionFromView(View view, int leftDecoration, int topDecoration,
