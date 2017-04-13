@@ -16,14 +16,6 @@
 
 package com.google.android.apps.flexbox;
 
-import com.google.android.apps.flexbox.validators.DimensionInputValidator;
-import com.google.android.apps.flexbox.validators.FixedDimensionInputValidator;
-import com.google.android.apps.flexbox.validators.FlexBasisPercentInputValidator;
-import com.google.android.apps.flexbox.validators.InputValidator;
-import com.google.android.apps.flexbox.validators.IntegerInputValidator;
-import com.google.android.apps.flexbox.validators.NonNegativeDecimalInputValidator;
-import com.google.android.flexbox.FlexboxLayout;
-
 import android.app.Activity;
 import android.content.Context;
 import android.os.Build;
@@ -49,6 +41,14 @@ import android.widget.EditText;
 import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
+
+import com.google.android.apps.flexbox.validators.DimensionInputValidator;
+import com.google.android.apps.flexbox.validators.FixedDimensionInputValidator;
+import com.google.android.apps.flexbox.validators.FlexBasisPercentInputValidator;
+import com.google.android.apps.flexbox.validators.InputValidator;
+import com.google.android.apps.flexbox.validators.IntegerInputValidator;
+import com.google.android.apps.flexbox.validators.NonNegativeDecimalInputValidator;
+import com.google.android.flexbox.FlexboxLayout;
 
 /**
  * DialogFragment that changes the properties for a flex item.
@@ -279,7 +279,8 @@ public class FlexItemEditFragment extends DialogFragment {
     private void setNextFocusesOnEnterDown(final TextView... textViews) {
         // This can be done by setting android:nextFocus* as in 
         // https://developer.android.com/training/keyboard-input/navigation.html
-        // But it requires API level 11 as a minimum sdk version. To support the lower level devices,
+        // But it requires API level 11 as a minimum sdk version. To support the lower level
+        // devices,
         // doing it programatically.
         for (int i = 0; i < textViews.length; i++) {
             final int index = i;

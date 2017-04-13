@@ -1013,7 +1013,8 @@ public class FlexboxLayout extends ViewGroup {
                     }
                     int newWidth = Math.round(rawCalculatedWidth);
                     if (newWidth > lp.maxWidth) {
-                        // This means the child can't expand beyond the value of the maxWidth attribute.
+                        // This means the child can't expand beyond the value of the maxWidth
+                        // attribute.
                         // To adjust the flex line length to the size of maxMainSize, remaining
                         // positive free space needs to be re-distributed to other flex items
                         // (children views). In that case, invoke this method again with the same
@@ -1159,7 +1160,8 @@ public class FlexboxLayout extends ViewGroup {
                     int newWidth = Math.round(rawCalculatedWidth);
                     if (newWidth < lp.minWidth) {
                         // This means the child doesn't have enough space to distribute the negative
-                        // free space. To adjust the flex line length down to the maxMainSize, remaining
+                        // free space. To adjust the flex line length down to the maxMainSize,
+                        // remaining
                         // negative free space needs to be re-distributed to other flex items
                         // (children views). In that case, invoke this method again with the same
                         // startIndex.
