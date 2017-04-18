@@ -469,7 +469,7 @@ public class FlexboxLayout extends ViewGroup {
         int i = 0;
         for (Order order : orders) {
             reorderedIndices[i] = order.index;
-            mOrderCache.append(i, order.order);
+            mOrderCache.append(order.index, order.order);
             i++;
         }
         return reorderedIndices;
