@@ -543,6 +543,47 @@ public class FlexboxLayoutManager extends RecyclerView.LayoutManager implements 
     }
 
     @Override
+    public void onItemsAdded(RecyclerView recyclerView, int positionStart, int itemCount) {
+        super.onItemsAdded(recyclerView, positionStart, itemCount);
+        updateDirtyFlag(positionStart, itemCount);
+    }
+
+
+    @Override
+    public void onItemsUpdated(RecyclerView recyclerView, int positionStart, int itemCount,
+            Object payload) {
+        super.onItemsUpdated(recyclerView, positionStart, itemCount, payload);
+        updateDirtyFlag(positionStart, itemCount);
+    }
+
+    @Override
+    public void onItemsUpdated(RecyclerView recyclerView, int positionStart, int itemCount) {
+        super.onItemsUpdated(recyclerView, positionStart, itemCount);
+        updateDirtyFlag(positionStart, itemCount);
+    }
+
+    private void updateDirtyFlag(int positionStart, int itemCount) {
+        int childCount = getChildCount();
+        mFlexboxHelper.ensureMeasureSpecCache(childCount);
+        mFlexboxHelper.ensureMeasuredSizeCache(childCount);
+        mFlexboxHelper.ensureIndexToFlexLine(childCount);
+        assert mFlexboxHelper.mIndexToFlexLine != null;
+
+        for (int i = positionStart, to = positionStart + itemCount; i < to; i++) {
+            if (i < 0 || i >= mFlexboxHelper.mIndexToFlexLine.length) {
+                continue;
+            }
+            int flexLinePosition = mFlexboxHelper.mIndexToFlexLine[i];
+            if (flexLinePosition != NO_POSITION && flexLinePosition < mFlexLines.size()) {
+                mFlexLines.get(flexLinePosition).mDirty = true;
+                if (DEBUG) {
+                    Log.d(TAG, "Dirty flag added to the flex line: " + flexLinePosition);
+                }
+            }
+        }
+    }
+
+    @Override
     public void onLayoutChildren(RecyclerView.Recycler recycler, RecyclerView.State state) {
         // Layout algorithm:
         // 1) Find an anchor coordinate and anchor flex line position. If not found, the coordinate
@@ -556,7 +597,7 @@ public class FlexboxLayoutManager extends RecyclerView.LayoutManager implements 
             Log.d(TAG, "getChildCount: " + getChildCount());
             Log.d(TAG, "State: " + state);
             Log.d(TAG, "PendingSavedState: " + mPendingSavedState);
-            Log.d(TAG, "PendingScrollPosition: " + mPendingScrollPositionOffset);
+            Log.d(TAG, "PendingScrollPosition: " + mPendingScrollPosition);
             Log.d(TAG, "PendingScrollOffset: " + mPendingScrollPositionOffset);
         }
 
@@ -769,7 +810,8 @@ public class FlexboxLayoutManager extends RecyclerView.LayoutManager implements 
             if (isMainAxisDirectionHorizontal()) {
                 if (mFlexLines.size() > 0) {
                     // Remove the already calculated flex lines from the anchor position and
-                    // calculate beyond the available amount (visible area that needs to be filled)
+                    // calculate beyond the available amount (visible area that needs to be
+                    // filled)
                     mFlexboxHelper.clearFlexLines(mFlexLines, mAnchorInfo.mPosition);
                     flexLinesResult = mFlexboxHelper
                             .calculateHorizontalFlexLines(widthMeasureSpec, heightMeasureSpec,
@@ -1136,9 +1178,15 @@ public class FlexboxLayoutManager extends RecyclerView.LayoutManager implements 
         }
         assert mFlexboxHelper.mIndexToFlexLine != null;
         int childCount = getChildCount();
+        if (childCount == 0) {
+            return;
+        }
         View firstView = getChildAt(0);
 
         int currentLineIndex = mFlexboxHelper.mIndexToFlexLine[getPosition(firstView)];
+        if (currentLineIndex == NO_POSITION) {
+            return;
+        }
         FlexLine flexLine = mFlexLines.get(currentLineIndex);
         int recycleTo = -1;
         for (int i = 0; i < childCount; i++) {
@@ -1171,9 +1219,15 @@ public class FlexboxLayoutManager extends RecyclerView.LayoutManager implements 
         assert mFlexboxHelper.mIndexToFlexLine != null;
         int limit = mOrientationHelper.getEnd() - layoutState.mScrollingOffset;
         int childCount = getChildCount();
+        if (childCount == 0) {
+            return;
+        }
 
         View lastView = getChildAt(childCount - 1);
         int currentLineIndex = mFlexboxHelper.mIndexToFlexLine[getPosition(lastView)];
+        if (currentLineIndex == NO_POSITION) {
+            return;
+        }
         int recycleTo = childCount - 1;
         int recycleFrom = childCount;
         FlexLine flexLine = mFlexLines.get(currentLineIndex);
@@ -1655,7 +1709,7 @@ public class FlexboxLayoutManager extends RecyclerView.LayoutManager implements 
         int layoutDirection = delta > 0 ? LayoutState.LAYOUT_END : LayoutState.LAYOUT_START;
         int absDelta = Math.abs(delta);
 
-        updateLayoutState(layoutDirection, absDelta);
+        updateLayoutState(recycler, layoutDirection, absDelta);
 
         int freeScroll = mLayoutState.mScrollingOffset;
         int consumed = freeScroll + fill(recycler, state, mLayoutState);
@@ -1668,11 +1722,26 @@ public class FlexboxLayoutManager extends RecyclerView.LayoutManager implements 
         return scrolled;
     }
 
-    private void updateLayoutState(int layoutDirection, int absDelta) {
+    /**
+     * Update the layout state as part of the scrolling. This method also update the flex lines
+     * enough to display the view port including the delta of the scroll.
+     *
+     * @param recycler        the Recycler instance
+     * @param layoutDirection the layout direction value. Either of {@link LayoutState#LAYOUT_END}
+     *                        or {@link LayoutState#LAYOUT_START}
+     * @param absDelta        the absolute value of the delta that is about to be scrolled.
+     */
+    private void updateLayoutState(RecyclerView.Recycler recycler, int layoutDirection,
+            int absDelta) {
         assert mFlexboxHelper.mIndexToFlexLine != null;
         // TODO: Consider updating LayoutState#mExtra to support better smooth scrolling
         mLayoutState.mLayoutDirection = layoutDirection;
         boolean mainAxisHorizontal = isMainAxisDirectionHorizontal();
+
+        //noinspection ResourceType
+        int widthMeasureSpec = View.MeasureSpec.makeMeasureSpec(getWidth(), getWidthMode());
+        //noinspection ResourceType
+        int heightMeasureSpec = View.MeasureSpec.makeMeasureSpec(getHeight(), getHeightMode());
         if (layoutDirection == LayoutState.LAYOUT_END) {
             View lastVisible = getChildAt(getChildCount() - 1);
             mLayoutState.mOffset = mOrientationHelper.getDecoratedEnd(lastVisible);
@@ -1696,16 +1765,12 @@ public class FlexboxLayoutManager extends RecyclerView.LayoutManager implements 
             mLayoutState.mScrollingOffset = mOrientationHelper.getDecoratedEnd(referenceView)
                     - mOrientationHelper.getEndAfterPadding();
 
-            // If the RecyclerView tries to scroll beyond the already calculated
-            // flex container, need to calculate beyond the amount that needs to be filled
             if ((mLayoutState.mFlexLinePosition == NO_POSITION
                     || mLayoutState.mFlexLinePosition > mFlexLines.size() - 1) &&
                     mLayoutState.mPosition <= getFlexItemCount()) {
-                //noinspection ResourceType
-                int widthMeasureSpec = View.MeasureSpec.makeMeasureSpec(getWidth(), getWidthMode());
-                //noinspection ResourceType
-                int heightMeasureSpec = View.MeasureSpec
-                        .makeMeasureSpec(getHeight(), getHeightMode());
+                // If the RecyclerView tries to scroll beyond the already calculated
+                // flex container, need to calculate beyond the amount that needs to be filled
+
                 int needsToFill = absDelta - mLayoutState.mScrollingOffset;
                 if (needsToFill > 0) {
                     if (mainAxisHorizontal) {
@@ -1751,6 +1816,41 @@ public class FlexboxLayoutManager extends RecyclerView.LayoutManager implements 
             mLayoutState.mFlexLinePosition = flexLinePosition > 0 ? flexLinePosition - 1 : 0;
             mLayoutState.mScrollingOffset = -mOrientationHelper.getDecoratedStart(referenceView)
                     + mOrientationHelper.getStartAfterPadding();
+
+            if (mLayoutState.mFlexLinePosition < mFlexLines.size() &&
+                    mFlexLines.get(mLayoutState.mFlexLinePosition).mDirty) {
+                // This path happens when a flex line which has a dirty flag true is about to be
+                // drawn. (e.g. A new item was added at the first position, but at that time the
+                // line wasn't visible. Then the user scrolls to the top to that flex line position)
+                // In this case the flex lines below the flex line having the dirty flag needs to
+                // be recomputed because the position of each view after the dirty flag may change
+                // depending on the size of the new item
+
+                int needsToFill = mOrientationHelper.getEndAfterPadding() +
+                        mLayoutState.mScrollingOffset;
+                if (needsToFill > 0) {
+                    detachAndScrapAttachedViews(recycler);
+                    mFlexboxHelper.clearFlexLines(mFlexLines, mLayoutState.mPosition);
+                    if (mainAxisHorizontal) {
+                        mFlexboxHelper.calculateHorizontalFlexLines(
+                                widthMeasureSpec, heightMeasureSpec, needsToFill,
+                                mLayoutState.mPosition, mFlexLines);
+                    } else {
+                        mFlexboxHelper.calculateVerticalFlexLines(widthMeasureSpec,
+                                heightMeasureSpec, needsToFill,
+                                mLayoutState.mPosition, mFlexLines);
+                    }
+                    mFlexboxHelper.determineMainSize(widthMeasureSpec, heightMeasureSpec,
+                            mLayoutState.mPosition);
+                    mFlexboxHelper.stretchViews(mLayoutState.mPosition);
+
+                    // This means we need to fill the space toward the end because the scroll
+                    // position reached to a flex line which has a dirty flag, then we need to
+                    // re-compute and fill the flex lines after the dirty flex line.
+                    mLayoutState.mScrollingOffset = -needsToFill;
+                    mLayoutState.mLayoutDirection = LayoutState.LAYOUT_END;
+                }
+            }
         }
         mLayoutState.mAvailable = absDelta - mLayoutState.mScrollingOffset;
     }
