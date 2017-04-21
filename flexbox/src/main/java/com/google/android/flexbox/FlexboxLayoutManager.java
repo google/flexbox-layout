@@ -20,11 +20,13 @@ import static android.support.v7.widget.LinearLayoutManager.INVALID_OFFSET;
 import static android.support.v7.widget.RecyclerView.NO_POSITION;
 
 import android.content.Context;
+import android.graphics.PointF;
 import android.graphics.Rect;
 import android.os.Parcel;
 import android.os.Parcelable;
 import android.support.v4.view.ViewCompat;
 import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.LinearSmoothScroller;
 import android.support.v7.widget.OrientationHelper;
 import android.support.v7.widget.RecyclerView;
 import android.util.AttributeSet;
@@ -41,7 +43,8 @@ import java.util.List;
  * {@link RecyclerView} and offers the same capabilities of measure/layout its children
  * as the {@link FlexboxLayout}.
  */
-public class FlexboxLayoutManager extends RecyclerView.LayoutManager implements FlexContainer {
+public class FlexboxLayoutManager extends RecyclerView.LayoutManager implements FlexContainer,
+        RecyclerView.SmoothScroller.ScrollVectorProvider {
 
     private static final String TAG = "FlexboxLayoutManager";
 
@@ -482,11 +485,26 @@ public class FlexboxLayoutManager extends RecyclerView.LayoutManager implements 
     public List<FlexLine> getFlexLinesInternal() {
         return mFlexLines;
     }
-    // The end of methods from FlexContainer
 
     @Override
     public void updateViewCache(int position, View view) {
         mViewCache.put(position, view);
+    }
+    // The end of methods from FlexContainer
+
+    // ScrollVectorProvider method
+    @Override
+    public PointF computeScrollVectorForPosition(int targetPosition) {
+        if (getChildCount() == 0) {
+            return null;
+        }
+        int firstChildPos = getPosition(getChildAt(0));
+        int direction = targetPosition < firstChildPos ? -1 : 1;
+        if (isMainAxisDirectionHorizontal()) {
+            return new PointF(0, direction);
+        } else {
+            return new PointF(direction, 0);
+        }
     }
 
     @Override
@@ -1625,6 +1643,15 @@ public class FlexboxLayoutManager extends RecyclerView.LayoutManager implements 
             mPendingSavedState.invalidateAnchor();
         }
         requestLayout();
+    }
+
+    @Override
+    public void smoothScrollToPosition(RecyclerView recyclerView, RecyclerView.State state,
+            int position) {
+        LinearSmoothScroller smoothScroller =
+                new LinearSmoothScroller(recyclerView.getContext());
+        smoothScroller.setTargetPosition(position);
+        startSmoothScroll(smoothScroller);
     }
 
     /**
