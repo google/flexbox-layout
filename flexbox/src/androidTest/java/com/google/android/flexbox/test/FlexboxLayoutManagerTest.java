@@ -3055,6 +3055,118 @@ public class FlexboxLayoutManagerTest {
         assertThat(layoutManager.findLastVisibleItemPosition(), is(49));
     }
 
+    @Test
+    @FlakyTest
+    public void testDrawDirtyFlexLine_direction_row() throws Throwable {
+        final FlexboxTestActivity activity = mActivityRule.getActivity();
+        final FlexboxLayoutManager layoutManager = new FlexboxLayoutManager();
+        final TestAdapter adapter = new TestAdapter();
+        mActivityRule.runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                activity.setContentView(R.layout.recyclerview);
+                RecyclerView recyclerView = (RecyclerView) activity.findViewById(R.id.recyclerview);
+                layoutManager.setFlexDirection(FlexDirection.ROW);
+                recyclerView.setLayoutManager(layoutManager);
+                recyclerView.setAdapter(adapter);
+
+                for (int i = 0; i < 30; i++) {
+                    FlexboxLayoutManager.LayoutParams lp = createLayoutParams(activity, 100, 75);
+                    adapter.addItem(lp);
+                }
+            }
+        });
+        onView(withId(R.id.recyclerview)).perform(swipe(GeneralLocation.BOTTOM_CENTER,
+                GeneralLocation.TOP_CENTER));
+        onView(withId(R.id.recyclerview)).perform(swipe(GeneralLocation.BOTTOM_CENTER,
+                GeneralLocation.TOP_CENTER));
+        onView(withId(R.id.recyclerview)).perform(swipe(GeneralLocation.BOTTOM_CENTER,
+                GeneralLocation.TOP_CENTER));
+        onView(withId(R.id.recyclerview)).perform(swipe(GeneralLocation.BOTTOM_CENTER,
+                GeneralLocation.TOP_CENTER));
+        InstrumentationRegistry.getInstrumentation().waitForIdleSync();
+
+        // First scroll to the bottom, then add a new item that isn't visible at this moment.
+        mActivityRule.runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                FlexboxLayoutManager.LayoutParams lp = createLayoutParams(activity, 40, 75);
+                adapter.addItem(0, lp);
+            }
+        });
+        onView(withId(R.id.recyclerview)).perform(swipe(GeneralLocation.TOP_CENTER,
+                GeneralLocation.BOTTOM_CENTER));
+        onView(withId(R.id.recyclerview)).perform(swipe(GeneralLocation.TOP_CENTER,
+                GeneralLocation.BOTTOM_CENTER));
+        onView(withId(R.id.recyclerview)).perform(swipe(GeneralLocation.TOP_CENTER,
+                GeneralLocation.BOTTOM_CENTER));
+        onView(withId(R.id.recyclerview)).perform(swipe(GeneralLocation.TOP_CENTER,
+                GeneralLocation.BOTTOM_CENTER));
+        InstrumentationRegistry.getInstrumentation().waitForIdleSync();
+
+        View firstVisible = layoutManager.getChildAt(0);
+        assertThat(firstVisible.getWidth(),
+                isEqualAllowingError(TestUtil.dpToPixel(activity, 40)));
+        assertThat(firstVisible.getHeight(),
+                isEqualAllowingError(TestUtil.dpToPixel(activity, 75)));
+    }
+
+    @Test
+    @FlakyTest
+    public void testDrawDirtyFlexLine_direction_column() throws Throwable {
+        final FlexboxTestActivity activity = mActivityRule.getActivity();
+        final FlexboxLayoutManager layoutManager = new FlexboxLayoutManager();
+        final TestAdapter adapter = new TestAdapter();
+        mActivityRule.runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                activity.setContentView(R.layout.recyclerview);
+                RecyclerView recyclerView = (RecyclerView) activity.findViewById(R.id.recyclerview);
+                layoutManager.setFlexDirection(FlexDirection.COLUMN);
+                recyclerView.setLayoutManager(layoutManager);
+                recyclerView.setAdapter(adapter);
+
+                for (int i = 0; i < 30; i++) {
+                    FlexboxLayoutManager.LayoutParams lp = createLayoutParams(activity, 100, 75);
+                    adapter.addItem(lp);
+                }
+            }
+        });
+        onView(withId(R.id.recyclerview)).perform(swipe(GeneralLocation.CENTER_RIGHT,
+                GeneralLocation.CENTER_LEFT));
+        onView(withId(R.id.recyclerview)).perform(swipe(GeneralLocation.CENTER_RIGHT,
+                GeneralLocation.CENTER_LEFT));
+        onView(withId(R.id.recyclerview)).perform(swipe(GeneralLocation.CENTER_RIGHT,
+                GeneralLocation.CENTER_LEFT));
+        onView(withId(R.id.recyclerview)).perform(swipe(GeneralLocation.CENTER_RIGHT,
+                GeneralLocation.CENTER_LEFT));
+        InstrumentationRegistry.getInstrumentation().waitForIdleSync();
+
+        // First scroll to the bottom, then add a new item that isn't visible at this moment.
+        mActivityRule.runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                FlexboxLayoutManager.LayoutParams lp = createLayoutParams(activity, 100, 120);
+                adapter.addItem(0, lp);
+            }
+        });
+        onView(withId(R.id.recyclerview)).perform(swipe(GeneralLocation.CENTER_LEFT,
+                GeneralLocation.CENTER_RIGHT));
+        onView(withId(R.id.recyclerview)).perform(swipe(GeneralLocation.CENTER_LEFT,
+                GeneralLocation.CENTER_RIGHT));
+        onView(withId(R.id.recyclerview)).perform(swipe(GeneralLocation.CENTER_LEFT,
+                GeneralLocation.CENTER_RIGHT));
+        onView(withId(R.id.recyclerview)).perform(swipe(GeneralLocation.CENTER_LEFT,
+                GeneralLocation.CENTER_RIGHT));
+        InstrumentationRegistry.getInstrumentation().waitForIdleSync();
+
+        View firstVisible = layoutManager.getChildAt(0);
+        assertThat(firstVisible.getWidth(),
+                isEqualAllowingError(TestUtil.dpToPixel(activity, 100)));
+        assertThat(firstVisible.getHeight(),
+                isEqualAllowingError(TestUtil.dpToPixel(activity, 120)));
+    }
+
     /**
      * Creates a new flex item.
      *
