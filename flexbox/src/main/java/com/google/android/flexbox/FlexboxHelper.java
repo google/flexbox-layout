@@ -333,6 +333,7 @@ class FlexboxHelper {
                 0, toIndex, existingLines);
     }
 
+
     /**
      * Calculates how many flex lines are needed in the flex container layout by measuring each
      * child.
@@ -824,6 +825,7 @@ class FlexboxHelper {
         flexLine.mSumCrossSizeBefore = usedCrossSizeSoFar;
         mFlexContainer.onNewFlexLineAdded(flexLine);
         flexLine.mLastIndex = viewIndex;
+        flexLine.mDirty = false;
         flexLines.add(flexLine);
     }
 
