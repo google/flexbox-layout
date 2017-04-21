@@ -95,6 +95,21 @@ public class FlexLine {
     int mLastIndex;
 
     /**
+     * Indicates whether this flex line instance is in a dirty state (needs to be computed before
+     * rendering). This flag is set to true for example an item is added at the position not
+     * visible and the position is prior to the position than the first visible position.
+     * In that case, the newly added item and flex line needs to be re-computed when the
+     * RecyclerView is scrolled toward start and it's about to be drawn.
+     *
+     * Note that a re-computation is not needed for the case where the dirty flag is set to a
+     * flex line after the last visible position. Because the flex lines after the visible potion
+     * are going to be cleared in the normal layout pass in the onLayoutChildren -> updateFlexLine
+     * method. Thus at the time scrolling to the added position, new flex lines will be computed
+     * anyway.
+     */
+    boolean mDirty;
+
+    /**
      * @return the distance in pixels from the top edge of this view's parent
      * to the top edge of this FlexLine.
      */

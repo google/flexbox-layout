@@ -57,8 +57,14 @@ class TestAdapter extends RecyclerView.Adapter<TestViewHolder> {
         holder.mTextView.setLayoutParams(mLayoutParams.get(position));
     }
 
+    void addItem(int position, FlexboxLayoutManager.LayoutParams flexItem) {
+        mLayoutParams.add(position, flexItem);
+        notifyItemInserted(position);
+    }
+
     void addItem(FlexboxLayoutManager.LayoutParams flexItem) {
         mLayoutParams.add(flexItem);
+        notifyItemInserted(mLayoutParams.size() - 1);
     }
 
     FlexboxLayoutManager.LayoutParams getItemAt(int index) {
