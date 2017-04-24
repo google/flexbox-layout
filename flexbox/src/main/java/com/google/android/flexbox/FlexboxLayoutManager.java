@@ -1128,11 +1128,6 @@ public class FlexboxLayoutManager extends RecyclerView.LayoutManager implements 
         return getChildAt(0);
     }
 
-    private View getChildClosestToEnd() {
-        // TODO: Find from end when mFlexWrap == FlexWrap.WRAP_REVERSE
-        return getChildAt(getChildCount() - 1);
-    }
-
     /**
      * Fills the remaining space defined by the layoutState on
      * how many pixels should be filled (defined by {@link LayoutState#mAvailable}.
@@ -1946,6 +1941,127 @@ public class FlexboxLayoutManager extends RecyclerView.LayoutManager implements 
             }
         }
         return referenceView;
+    }
+
+    @Override
+    public int computeHorizontalScrollExtent(RecyclerView.State state) {
+        int scrollExtent = computeScrollExtent(state);
+        if (DEBUG) {
+            Log.d(TAG, "computeHorizontalScrollExtent: " + scrollExtent);
+        }
+        return scrollExtent;
+    }
+
+    @Override
+    public int computeVerticalScrollExtent(RecyclerView.State state) {
+        int scrollExtent = computeScrollExtent(state);
+        if (DEBUG) {
+            Log.d(TAG, "computeVerticalScrollExtent: " + scrollExtent);
+        }
+        return scrollExtent;
+    }
+
+    private int computeScrollExtent(RecyclerView.State state) {
+        if (getChildCount() == 0) {
+            return 0;
+        }
+        int allChildrenCount = state.getItemCount();
+        ensureOrientationHelper();
+        View firstReferenceView = findFirstReferenceChild(allChildrenCount);
+        View lastReferenceView = findLastReferenceChild(allChildrenCount);
+        if (state.getItemCount() == 0 || firstReferenceView == null || lastReferenceView == null) {
+            return 0;
+        }
+        // TODO: Need to consider the reverse pattern when flexWrap == wrap_reverse is implemented
+        int extend = mOrientationHelper.getDecoratedEnd(lastReferenceView) -
+                mOrientationHelper.getDecoratedStart(firstReferenceView);
+        return Math.min(mOrientationHelper.getTotalSpace(), extend);
+    }
+
+    @Override
+    public int computeHorizontalScrollOffset(RecyclerView.State state) {
+        int scrollOffset = computeScrollOffset(state);
+        if (DEBUG) {
+            Log.d(TAG, "computeHorizontalScrollOffset: " + scrollOffset);
+        }
+        return computeScrollOffset(state);
+    }
+
+    @Override
+    public int computeVerticalScrollOffset(RecyclerView.State state) {
+        int scrollOffset = computeScrollOffset(state);
+        if (DEBUG) {
+            Log.d(TAG, "computeVerticalScrollOffset: " + scrollOffset);
+        }
+        return scrollOffset;
+    }
+
+    private int computeScrollOffset(RecyclerView.State state) {
+        if (getChildCount() == 0) {
+            return 0;
+        }
+        int allChildrenCount = state.getItemCount();
+        View firstReferenceView = findFirstReferenceChild(allChildrenCount);
+        View lastReferenceView = findLastReferenceChild(allChildrenCount);
+        if (state.getItemCount() == 0 || firstReferenceView == null || lastReferenceView == null) {
+            return 0;
+        }
+        assert mFlexboxHelper.mIndexToFlexLine != null;
+        int minPosition = getPosition(firstReferenceView);
+        int maxPosition = getPosition(lastReferenceView);
+        int laidOutArea = Math.abs(mOrientationHelper.getDecoratedEnd(lastReferenceView) -
+                mOrientationHelper.getDecoratedStart(firstReferenceView));
+        int firstLinePosition = mFlexboxHelper.mIndexToFlexLine[minPosition];
+        if (firstLinePosition == 0 || firstLinePosition == NO_POSITION) {
+            return 0;
+        }
+        int lastLinePosition = mFlexboxHelper.mIndexToFlexLine[maxPosition];
+        int lineRange = lastLinePosition - firstLinePosition + 1;
+        float averageSizePerLine = (float) laidOutArea / lineRange;
+        // The number of lines before the first line is equal to the value of firstLinePosition
+        return Math.round(
+                firstLinePosition * averageSizePerLine + (mOrientationHelper.getStartAfterPadding()
+                        - mOrientationHelper.getDecoratedStart(firstReferenceView)));
+    }
+
+    @Override
+    public int computeHorizontalScrollRange(RecyclerView.State state) {
+        int scrollRange = computeScrollRange(state);
+        Log.d(TAG, "computeHorizontalScrollRange: " + scrollRange);
+        return scrollRange;
+    }
+
+    @Override
+    public int computeVerticalScrollRange(RecyclerView.State state) {
+        int scrollRange = computeScrollRange(state);
+        Log.d(TAG, "computeVerticalScrollRange: " + scrollRange);
+        return scrollRange;
+    }
+
+    /**
+     * @return the estimate total length of the flex container.
+     * Note that this method estimates the length by using the number of the visible items and the
+     * rest of the non-visible items. So the value returned by this method isn't the exact length
+     * of the container. So the scroll bar position may be slightly different from the actual
+     * expected position
+     */
+    private int computeScrollRange(RecyclerView.State state) {
+        if (getChildCount() == 0) {
+            return 0;
+        }
+        int allItemCount = state.getItemCount();
+        View firstReferenceView = findFirstReferenceChild(allItemCount);
+        View lastReferenceView = findLastReferenceChild(allItemCount);
+        if (state.getItemCount() == 0 || firstReferenceView == null || lastReferenceView == null) {
+            return 0;
+        }
+        assert mFlexboxHelper.mIndexToFlexLine != null;
+        int firstVisiblePosition = findFirstVisibleItemPosition();
+        int lastVisiblePosition = findLastVisibleItemPosition();
+        int laidOutArea = Math.abs(mOrientationHelper.getDecoratedEnd(lastReferenceView) -
+                mOrientationHelper.getDecoratedStart(firstReferenceView));
+        int laidOutRange = lastVisiblePosition - firstVisiblePosition + 1;
+        return (int) ((float) laidOutArea / laidOutRange * state.getItemCount());
     }
 
     /**
