@@ -3167,6 +3167,48 @@ public class FlexboxLayoutManagerTest {
                 isEqualAllowingError(TestUtil.dpToPixel(activity, 120)));
     }
 
+    @Test
+    @FlakyTest
+    public void testChildrenSizeWithMargin() throws Throwable {
+        final FlexboxTestActivity activity = mActivityRule.getActivity();
+        final FlexboxLayoutManager layoutManager = new FlexboxLayoutManager();
+        final TestAdapter adapter = new TestAdapter();
+        mActivityRule.runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                activity.setContentView(R.layout.recyclerview);
+                RecyclerView recyclerView = (RecyclerView) activity.findViewById(R.id.recyclerview);
+                layoutManager.setFlexDirection(FlexDirection.ROW);
+                recyclerView.setLayoutManager(layoutManager);
+                recyclerView.setAdapter(adapter);
+                FlexboxLayoutManager.LayoutParams lp = createLayoutParams(activity, 100, 30);
+                lp.setMargins(10, 30, 20, 40);
+                adapter.addItem(lp);
+            }
+        });
+        InstrumentationRegistry.getInstrumentation().waitForIdleSync();
+        TextView text = (TextView) layoutManager.getChildAt(0);
+        FlexboxLayoutManager.LayoutParams lp =
+                (FlexboxLayoutManager.LayoutParams) text.getLayoutParams();
+        assertThat(text.getHeight(), isEqualAllowingError(TestUtil.dpToPixel(activity, 30)));
+        assertThat(text.getWidth(), isEqualAllowingError(TestUtil.dpToPixel(activity, 100)));
+        assertThat(lp.getMarginLeft(), isEqualAllowingError(TestUtil.dpToPixel(activity, 10)));
+        assertThat(lp.getMarginRight(), isEqualAllowingError(TestUtil.dpToPixel(activity, 20)));
+        assertThat(lp.getMarginTop(), isEqualAllowingError(TestUtil.dpToPixel(activity, 30)));
+        assertThat(lp.getMarginBottom(), isEqualAllowingError(TestUtil.dpToPixel(activity, 40)));
+        mActivityRule.runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                layoutManager.setFlexDirection(FlexDirection.COLUMN);
+            }
+        });
+        InstrumentationRegistry.getInstrumentation().waitForIdleSync();
+        TextView text2 = (TextView) layoutManager.getChildAt(0);
+        assertThat(text2.getHeight(), isEqualAllowingError(TestUtil.dpToPixel(activity, 30)));
+        assertThat(text2.getWidth(), isEqualAllowingError(TestUtil.dpToPixel(activity, 100)));
+
+    }
+
     /**
      * Creates a new flex item.
      *
