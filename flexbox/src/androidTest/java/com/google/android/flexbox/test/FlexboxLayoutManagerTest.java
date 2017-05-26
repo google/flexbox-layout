@@ -3192,10 +3192,10 @@ public class FlexboxLayoutManagerTest {
                 (FlexboxLayoutManager.LayoutParams) text.getLayoutParams();
         assertThat(text.getHeight(), isEqualAllowingError(TestUtil.dpToPixel(activity, 30)));
         assertThat(text.getWidth(), isEqualAllowingError(TestUtil.dpToPixel(activity, 100)));
-        assertThat(lp.getMarginLeft(), isEqualAllowingError(TestUtil.dpToPixel(activity, 10)));
-        assertThat(lp.getMarginRight(), isEqualAllowingError(TestUtil.dpToPixel(activity, 20)));
-        assertThat(lp.getMarginTop(), isEqualAllowingError(TestUtil.dpToPixel(activity, 30)));
-        assertThat(lp.getMarginBottom(), isEqualAllowingError(TestUtil.dpToPixel(activity, 40)));
+        assertThat(lp.getMarginLeft(), isEqualAllowingError(10));
+        assertThat(lp.getMarginRight(), isEqualAllowingError(20));
+        assertThat(lp.getMarginTop(), isEqualAllowingError(30));
+        assertThat(lp.getMarginBottom(), isEqualAllowingError(40));
         mActivityRule.runOnUiThread(new Runnable() {
             @Override
             public void run() {
