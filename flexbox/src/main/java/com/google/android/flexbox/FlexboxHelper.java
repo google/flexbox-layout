@@ -199,7 +199,7 @@ class FlexboxHelper {
         int i = 0;
         for (Order order : orders) {
             reorderedIndices[i] = order.index;
-            orderCache.append(i, order.order);
+            orderCache.append(order.index, order.order);
             i++;
         }
         return reorderedIndices;
@@ -550,8 +550,8 @@ class FlexboxHelper {
 
             largestSizeInCross = Math.max(largestSizeInCross,
                     getViewMeasuredSizeCross(child, isMainHorizontal) +
-                            getFlexItemMarginStartMain(flexItem, isMainHorizontal) +
-                            getFlexItemMarginEndMain(flexItem, isMainHorizontal) +
+                            getFlexItemMarginStartCross(flexItem, isMainHorizontal) +
+                            getFlexItemMarginEndCross(flexItem, isMainHorizontal) +
                             mFlexContainer.getDecorationLengthCrossAxis(child));
             // Temporarily set the cross axis length as the largest child in the flexLine
             // Expand along the cross axis depending on the mAlignContent property if needed
