@@ -1,0 +1,136 @@
+<?xml version="1.0" encoding="utf-8"?><!--
+Copyright 2016 Google Inc. All rights reserved.
+
+Licensed under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
+
+     http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
+-->
+<resources>
+    <string name="app_name">Flexbox Playground</string>
+    <string name="ok">OK</string>
+    <string name="cancel">Cancel</string>
+    <string name="one" translatable="false">1</string>
+    <string name="two" translatable="false">2</string>
+    <string name="three" translatable="false">3</string>
+
+    <string name="navigation_drawer_open">Open navigation drawer</string>
+    <string name="navigation_drawer_close">Close navigation drawer</string>
+
+    <string name="flex_direction" translatable="false">Flex Direction</string>
+    <string name="flex_wrap" translatable="false">Flex Wrap</string>
+    <string name="justify_content" translatable="false">Justify Content</string>
+    <string name="align_items" translatable="false">Align Items</string>
+    <string name="align_content" translatable="false">Align Content</string>
+
+    <string name="row" translatable="false">Row</string>
+    <string name="row_reverse" translatable="false">Row Reverse</string>
+    <string name="column" translatable="false">Column</string>
+    <string name="column_reverse" translatable="false">Column Reverse</string>
+    <string name="nowrap" translatable="false">Nowrap</string>
+    <string name="wrap" translatable="false">Wrap</string>
+    <string name="wrap_reverse" translatable="false">Wrap Reverse</string>
+    <string name="flex_start" translatable="false">Flex Start</string>
+    <string name="flex_end" translatable="false">Flex End</string>
+    <string name="center" translatable="false">Center</string>
+    <string name="space_between" translatable="false">Space Between</string>
+    <string name="space_around" translatable="false">Space Around</string>
+    <string name="baseline" translatable="false">Baseline</string>
+    <string name="stretch" translatable="false">Stretch</string>
+    <string name="auto" translatable="false">Auto</string>
+
+    <string-array translatable="false" name="array_flex_direction">
+        <item>@string/row</item>
+        <item>@string/row_reverse</item>
+        <item>@string/column</item>
+        <item>@string/column_reverse</item>
+    </string-array>
+
+    <string-array translatable="false" name="array_flex_wrap">
+        <item>@string/nowrap</item>
+        <item>@string/wrap</item>
+        <item>@string/wrap_reverse</item>
+    </string-array>
+
+    <string-array translatable="false" name="array_justify_content">
+        <item>@string/flex_start</item>
+        <item>@string/flex_end</item>
+        <item>@string/center</item>
+        <item>@string/space_between</item>
+        <item>@string/space_around</item>
+    </string-array>
+
+    <string-array translatable="false" name="array_align_items">
+        <item>@string/flex_start</item>
+        <item>@string/flex_end</item>
+        <item>@string/center</item>
+        <item>@string/baseline</item>
+        <item>@string/stretch</item>
+    </string-array>
+
+    <string-array translatable="false" name="array_align_content">
+        <item>@string/flex_start</item>
+        <item>@string/flex_end</item>
+        <item>@string/center</item>
+        <item>@string/space_between</item>
+        <item>@string/space_around</item>
+        <item>@string/stretch</item>
+    </string-array>
+
+    <string-array translatable="false" name="array_align_self">
+        <item>@string/auto</item>
+        <item>@string/flex_start</item>
+        <item>@string/flex_end</item>
+        <item>@string/center</item>
+        <item>@string/baseline</item>
+        <item>@string/stretch</item>
+    </string-array>
+
+    <string name="hint_order">Order</string>
+    <string name="hint_flex_grow">Flex Grow</string>
+    <string name="hint_flex_shrink">Flex Shrink</string>
+    <string name="hint_flex_basis_percent">Flex Basis Percent (-1: not set)</string>
+    <string name="hint_align_self">Align Self</string>
+    <string name="hint_width">Width (-1: match_parent, -2: wrap_content)</string>
+    <string name="hint_height">Height (-1: match_parent, -2: wrap_content)</string>
+    <string name="hint_min_width">Min Width</string>
+    <string name="hint_min_height">Min Height</string>
+    <string name="hint_max_width">Max Width</string>
+    <string name="hint_max_height">Max Height</string>
+    <string name="hint_wrap_before">Wrap Before</string>
+
+    <string name="must_be_non_negative_float">Must be a non-negative float value</string>
+    <string name="must_be_non_negative_integer">Must be a non-negative integer value</string>
+    <string name="must_be_minus_one_or_minus_two_or_non_negative_integer">Must be -1 or -2 or a non-negative integer value</string>
+    <string name="must_be_integer">Must be an integer value</string>
+    <string name="must_be_minus_one_or_non_negative_integer">Must be -1 or a non-negative integer value</string>
+    <string name="invalid_values_exist">Invalid values exist</string>
+
+    <string name="action_settings">Settings</string>
+    <string name="new_flex_items_default">Default values for new flex items</string>
+    <string name="new_flex_items_default_key" translatable="false">new_flex_items_default_key</string>
+    <string name="new_flex_item_order_key" translatable="false">new_flex_item_order_key</string>
+    <string name="new_flex_grow_key" translatable="false">new_flex_grow_key</string>
+    <string name="new_flex_shrink_key" translatable="false">new_flex_shrink_key</string>
+    <string name="new_flex_basis_percent_key" translatable="false">new_flex_basis_percent_key</string>
+    <string name="flex_basis_percent" translatable="false">Flex Basis Percent</string>
+    <string name="flex_basis_percent_summary">(-1: not set)</string>
+    <string name="width">Width</string>
+    <string name="height">Height</string>
+    <string name="size_unit_summary">(-1: match_parent, -2: wrap_content)</string>
+    <string name="new_width_key" translatable="false">new_width_key</string>
+    <string name="new_height_key" translatable="false">new_height_key</string>
+
+    <string name="viewgroup">ViewGroup</string>
+    <string name="recyclerview">RecyclerView</string>
+    <string name="underlying_implementation">Underlying implementation</string>
+    <string name="align_content_not_supported">Setting the alignContent in FlexboxLayoutManager is not supported. Ignoring.</string>
+    <string name="wrap_reverse_not_supported">wrap_reverse is not supporeted in the FlexboxLayoutManager.</string>
+</resources>
