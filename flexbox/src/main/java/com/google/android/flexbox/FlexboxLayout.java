@@ -1722,25 +1722,25 @@ public class FlexboxLayout extends ViewGroup {
         switch (mFlexDirection) {
             case FLEX_DIRECTION_ROW:
                 isRtl = layoutDirection == ViewCompat.LAYOUT_DIRECTION_RTL;
-                layoutHorizontal(isRtl, left, top, right, bottom);
+                layoutHorizontal(isRtl);
                 break;
             case FLEX_DIRECTION_ROW_REVERSE:
                 isRtl = layoutDirection != ViewCompat.LAYOUT_DIRECTION_RTL;
-                layoutHorizontal(isRtl, left, top, right, bottom);
+                layoutHorizontal(isRtl);
                 break;
             case FLEX_DIRECTION_COLUMN:
                 isRtl = layoutDirection == ViewCompat.LAYOUT_DIRECTION_RTL;
                 if (mFlexWrap == FLEX_WRAP_WRAP_REVERSE) {
                     isRtl = !isRtl;
                 }
-                layoutVertical(isRtl, false, left, top, right, bottom);
+                layoutVertical(isRtl, false);
                 break;
             case FLEX_DIRECTION_COLUMN_REVERSE:
                 isRtl = layoutDirection == ViewCompat.LAYOUT_DIRECTION_RTL;
                 if (mFlexWrap == FLEX_WRAP_WRAP_REVERSE) {
                     isRtl = !isRtl;
                 }
-                layoutVertical(isRtl, true, left, top, right, bottom);
+                layoutVertical(isRtl, true);
                 break;
             default:
                 throw new IllegalStateException("Invalid flex direction is set: " + mFlexDirection);
@@ -1754,10 +1754,6 @@ public class FlexboxLayout extends ViewGroup {
      *
      * @param isRtl  {@code true} if the horizontal layout direction is right to left, {@code
      *               false} otherwise.
-     * @param left   the left position of this View
-     * @param top    the top position of this View
-     * @param right  the right position of this View
-     * @param bottom the bottom position of this View
      * @see #getFlexWrap()
      * @see #setFlexWrap(int)
      * @see #getJustifyContent()
@@ -1766,7 +1762,12 @@ public class FlexboxLayout extends ViewGroup {
      * @see #setAlignItems(int)
      * @see LayoutParams#alignSelf
      */
-    private void layoutHorizontal(boolean isRtl, int left, int top, int right, int bottom) {
+    private void layoutHorizontal(boolean isRtl) {
+        int left = 0;
+        int right = getWidth();
+        int top = 0;
+        int bottom = getHeight();
+
         int paddingLeft = getPaddingLeft();
         int paddingRight = getPaddingRight();
         // Use float to reduce the round error that may happen in when justifyContent ==
@@ -1969,10 +1970,6 @@ public class FlexboxLayout extends ViewGroup {
      *                        otherwise
      * @param fromBottomToTop {@code true} if the layout direction is bottom to top, {@code false}
      *                        otherwise
-     * @param left            the left position of this View
-     * @param top             the top position of this View
-     * @param right           the right position of this View
-     * @param bottom          the bottom position of this View
      * @see #getFlexWrap()
      * @see #setFlexWrap(int)
      * @see #getJustifyContent()
@@ -1981,8 +1978,12 @@ public class FlexboxLayout extends ViewGroup {
      * @see #setAlignItems(int)
      * @see LayoutParams#alignSelf
      */
-    private void layoutVertical(boolean isRtl, boolean fromBottomToTop, int left, int top,
-            int right, int bottom) {
+    private void layoutVertical(boolean isRtl, boolean fromBottomToTop) {
+        int left = 0;
+        int right = getWidth();
+        int top = 0;
+        int bottom = getHeight();
+
         int paddingTop = getPaddingTop();
         int paddingBottom = getPaddingBottom();
 
