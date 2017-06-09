@@ -16,6 +16,8 @@
 
 package com.google.android.flexbox;
 
+import static android.support.v7.widget.RecyclerView.NO_POSITION;
+
 import android.content.Context;
 import android.content.res.TypedArray;
 import android.graphics.Canvas;
@@ -112,8 +114,8 @@ public class FlexboxItemDecoration extends RecyclerView.ItemDecoration {
         if (flexLines.size() == 0) {
             return;
         }
-        FlexLine lastLine = flexLines.get(flexLines.size() - 1);
-        if (lastLine.mLastIndex > position) {
+        int flexLineIndex = layoutManager.getPositionToFlexLineIndex(position);
+        if (flexLineIndex == 0) {
             return;
         }
 
@@ -142,7 +144,7 @@ public class FlexboxItemDecoration extends RecyclerView.ItemDecoration {
 
     private void setOffsetAlongMainAxis(Rect outRect, int position,
             FlexboxLayoutManager layoutManager, List<FlexLine> flexLines, int flexDirection) {
-        if (isFirstItemInLine(position, flexLines)) {
+        if (isFirstItemInLine(position, flexLines, layoutManager)) {
             return;
         }
 
@@ -273,13 +275,23 @@ public class FlexboxItemDecoration extends RecyclerView.ItemDecoration {
     /**
      * @return {@code true} if the given position is the first item in a flex line.
      */
-    private boolean isFirstItemInLine(int position, List<FlexLine> flexLines) {
+    private boolean isFirstItemInLine(int position, List<FlexLine> flexLines,
+            FlexboxLayoutManager layoutManager) {
+        int flexLineIndex = layoutManager.getPositionToFlexLineIndex(position);
+        if (flexLineIndex != NO_POSITION &&
+                flexLineIndex < layoutManager.getFlexLinesInternal().size() &&
+                layoutManager.getFlexLinesInternal().get(flexLineIndex).mFirstIndex == position) {
+            return true;
+        }
         if (position == 0) {
             return true;
         }
         if (flexLines.size() == 0) {
             return false;
         }
+        // Check if the position is the "lastIndex + 1" of the last line in case the FlexLine which
+        // has the View, whose index is position is not included in the flexLines. (E.g. flexLines
+        // is being calculated
         FlexLine lastLine = flexLines.get(flexLines.size() - 1);
         return lastLine.mLastIndex == position - 1;
     }

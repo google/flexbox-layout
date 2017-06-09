@@ -189,6 +189,13 @@ public class FlexLine {
     }
 
     /**
+     * @return the first view's index included in this flex line.
+     */
+    public int getFirstIndex() {
+        return mFirstIndex;
+    }
+
+    /**
      * Updates the position of the flex line from the contained view.
      *
      * @param view             the view contained in this flex line
