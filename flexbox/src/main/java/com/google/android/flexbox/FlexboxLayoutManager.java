@@ -1349,8 +1349,10 @@ public class FlexboxLayoutManager extends RecyclerView.LayoutManager implements 
             }
 
             if (layoutState.mLayoutDirection == LayoutState.LAYOUT_END) {
+                calculateItemDecorationsForChild(view, TEMP_RECT);
                 addView(view);
             } else {
+                calculateItemDecorationsForChild(view, TEMP_RECT);
                 addView(view, indexInFlexLine);
                 indexInFlexLine++;
             }
@@ -1471,8 +1473,10 @@ public class FlexboxLayoutManager extends RecyclerView.LayoutManager implements 
             childBottom -= (lp.rightMargin + getBottomDecorationHeight(view));
 
             if (layoutState.mLayoutDirection == LayoutState.LAYOUT_END) {
+                calculateItemDecorationsForChild(view, TEMP_RECT);
                 addView(view);
             } else {
+                calculateItemDecorationsForChild(view, TEMP_RECT);
                 addView(view, indexInFlexLine);
                 indexInFlexLine++;
             }
@@ -2260,6 +2264,16 @@ public class FlexboxLayoutManager extends RecyclerView.LayoutManager implements 
             }
         }
         return null;
+    }
+
+    /**
+     * @param position the index of the view
+     * @return the index of the {@link FlexLine}, which includes the view whose index is passed as
+     *         the position argument.
+     */
+    int getPositionToFlexLineIndex(int position) {
+        assert mFlexboxHelper.mIndexToFlexLine != null;
+        return mFlexboxHelper.mIndexToFlexLine[position];
     }
 
     /**
