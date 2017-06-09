@@ -35,6 +35,8 @@ import android.content.Context;
 import android.content.pm.ActivityInfo;
 import android.content.res.Configuration;
 import android.graphics.drawable.Drawable;
+import android.os.Build;
+import android.support.annotation.DrawableRes;
 import android.support.test.InstrumentationRegistry;
 import android.support.test.espresso.ViewAction;
 import android.support.test.espresso.action.CoordinatesProvider;
@@ -56,6 +58,7 @@ import android.widget.TextView;
 import com.google.android.flexbox.AlignItems;
 import com.google.android.flexbox.AlignSelf;
 import com.google.android.flexbox.FlexDirection;
+import com.google.android.flexbox.FlexLine;
 import com.google.android.flexbox.FlexWrap;
 import com.google.android.flexbox.FlexboxItemDecoration;
 import com.google.android.flexbox.FlexboxLayoutManager;
@@ -3209,6 +3212,154 @@ public class FlexboxLayoutManagerTest {
 
     }
 
+    @Test
+    @FlakyTest
+    public void testItemDecoration_withScrolling_direction_row() throws Throwable {
+        // This test verifies the case that the item decoration set through FlexboxItemDecoration
+        // is misplaced after the user scrolls the RecyclerView
+        // https://github.com/google/flexbox-layout/issues/285
+
+        final FlexboxTestActivity activity = mActivityRule.getActivity();
+        final FlexboxLayoutManager layoutManager = new FlexboxLayoutManager();
+        final TestAdapter adapter = new TestAdapter();
+        final Drawable decorationDrawable = getDrawable(activity, R.drawable.divider);
+        mActivityRule.runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                activity.setContentView(R.layout.recyclerview);
+                RecyclerView recyclerView = (RecyclerView) activity.findViewById(R.id.recyclerview);
+                layoutManager.setFlexDirection(FlexDirection.ROW);
+                recyclerView.setLayoutManager(layoutManager);
+                recyclerView.setAdapter(adapter);
+                FlexboxItemDecoration decoration = new FlexboxItemDecoration(activity);
+                decoration.setDrawable(decorationDrawable);
+                recyclerView.addItemDecoration(decoration);
+                for (int i = 0; i < 50; i++) {
+                    FlexboxLayoutManager.LayoutParams lp = createLayoutParams(activity, 100, 70);
+                    adapter.addItem(lp);
+                }
+                // The first line has 1 item, the following lines have more than 1 items
+                // RecyclerView width: 320, height: 240.
+                // Flex line 1: 1 items
+                // Flex line 2: 3 items
+                // Flex line 3: 3 items
+                // ...
+            }
+        });
+        InstrumentationRegistry.getInstrumentation().waitForIdleSync();
+        assertThat(layoutManager.getFlexDirection(), is(FlexDirection.ROW));
+        assertThat(layoutManager.getTopDecorationHeight(layoutManager.getChildAt(0)), is(0));
+        assertThat(layoutManager.getTopDecorationHeight(layoutManager.getChildAt(1)), is(0));
+        assertThat(layoutManager.getTopDecorationHeight(layoutManager.getChildAt(2)), is(0));
+        for (FlexLine flexLine : layoutManager.getFlexLines()) {
+            View firstViewInLine = layoutManager.getChildAt(flexLine.getFirstIndex());
+            if (firstViewInLine != null) {
+                assertThat(layoutManager.getLeftDecorationWidth(firstViewInLine), is(0));
+            }
+        }
+
+        onView(withId(R.id.recyclerview)).perform(swipe(GeneralLocation.BOTTOM_CENTER,
+                GeneralLocation.TOP_CENTER));
+        onView(withId(R.id.recyclerview)).perform(swipe(GeneralLocation.BOTTOM_CENTER,
+                GeneralLocation.TOP_CENTER));
+        onView(withId(R.id.recyclerview)).perform(swipe(GeneralLocation.BOTTOM_CENTER,
+                GeneralLocation.TOP_CENTER));
+
+        onView(withId(R.id.recyclerview)).perform(swipe(GeneralLocation.TOP_CENTER,
+                GeneralLocation.BOTTOM_CENTER));
+        onView(withId(R.id.recyclerview)).perform(swipe(GeneralLocation.TOP_CENTER,
+                GeneralLocation.BOTTOM_CENTER));
+        onView(withId(R.id.recyclerview)).perform(swipe(GeneralLocation.TOP_CENTER,
+                GeneralLocation.BOTTOM_CENTER));
+        onView(withId(R.id.recyclerview)).perform(swipe(GeneralLocation.TOP_CENTER,
+                GeneralLocation.BOTTOM_CENTER));
+
+        // Verify even after the scrolling, decoration values are set correctly
+        assertThat(layoutManager.getTopDecorationHeight(layoutManager.getChildAt(0)), is(0));
+        assertThat(layoutManager.getTopDecorationHeight(layoutManager.getChildAt(1)), is(0));
+        assertThat(layoutManager.getTopDecorationHeight(layoutManager.getChildAt(2)), is(0));
+        for (FlexLine flexLine : layoutManager.getFlexLines()) {
+            View firstViewInLine = layoutManager.getChildAt(flexLine.getFirstIndex());
+            if (firstViewInLine != null) {
+                assertThat(layoutManager.getLeftDecorationWidth(firstViewInLine), is(0));
+            }
+        }
+    }
+
+    @Test
+    @FlakyTest
+    public void testItemDecoration_withScrolling_direction_column() throws Throwable {
+        // This test verifies the case that the item decoration set through FlexboxItemDecoration
+        // is misplaced after the user scrolls the RecyclerView
+        // https://github.com/google/flexbox-layout/issues/285
+
+        final FlexboxTestActivity activity = mActivityRule.getActivity();
+        final FlexboxLayoutManager layoutManager = new FlexboxLayoutManager();
+        final TestAdapter adapter = new TestAdapter();
+        final Drawable decorationDrawable = getDrawable(activity, R.drawable.divider);
+        mActivityRule.runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                activity.setContentView(R.layout.recyclerview);
+                RecyclerView recyclerView = (RecyclerView) activity.findViewById(R.id.recyclerview);
+                layoutManager.setFlexDirection(FlexDirection.COLUMN);
+                recyclerView.setLayoutManager(layoutManager);
+                recyclerView.setAdapter(adapter);
+                FlexboxItemDecoration decoration = new FlexboxItemDecoration(activity);
+                decoration.setDrawable(decorationDrawable);
+                recyclerView.addItemDecoration(decoration);
+                for (int i = 0; i < 50; i++) {
+                    FlexboxLayoutManager.LayoutParams lp = createLayoutParams(activity, 100, 70);
+                    adapter.addItem(lp);
+                }
+                // The first line has 1 item, the following lines have more than 1 items
+                // RecyclerView width: 320, height: 240.
+                // Flex line 1: 1 items
+                // Flex line 2: 3 items
+                // Flex line 3: 3 items
+                // ...
+            }
+        });
+        InstrumentationRegistry.getInstrumentation().waitForIdleSync();
+        assertThat(layoutManager.getFlexDirection(), is(FlexDirection.COLUMN));
+        assertThat(layoutManager.getLeftDecorationWidth(layoutManager.getChildAt(0)), is(0));
+        assertThat(layoutManager.getLeftDecorationWidth(layoutManager.getChildAt(1)), is(0));
+        assertThat(layoutManager.getLeftDecorationWidth(layoutManager.getChildAt(2)), is(0));
+        for (FlexLine flexLine : layoutManager.getFlexLines()) {
+            View firstViewInLine = layoutManager.getChildAt(flexLine.getFirstIndex());
+            if (firstViewInLine != null) {
+                assertThat(layoutManager.getTopDecorationHeight(firstViewInLine), is(0));
+            }
+        }
+
+        onView(withId(R.id.recyclerview)).perform(swipe(GeneralLocation.CENTER_RIGHT,
+                GeneralLocation.CENTER_LEFT));
+        onView(withId(R.id.recyclerview)).perform(swipe(GeneralLocation.CENTER_RIGHT,
+                GeneralLocation.CENTER_LEFT));
+        onView(withId(R.id.recyclerview)).perform(swipe(GeneralLocation.CENTER_RIGHT,
+                GeneralLocation.CENTER_LEFT));
+
+        onView(withId(R.id.recyclerview)).perform(swipe(GeneralLocation.CENTER_LEFT,
+                GeneralLocation.CENTER_RIGHT));
+        onView(withId(R.id.recyclerview)).perform(swipe(GeneralLocation.CENTER_LEFT,
+                GeneralLocation.CENTER_RIGHT));
+        onView(withId(R.id.recyclerview)).perform(swipe(GeneralLocation.CENTER_LEFT,
+                GeneralLocation.CENTER_RIGHT));
+        onView(withId(R.id.recyclerview)).perform(swipe(GeneralLocation.CENTER_LEFT,
+                GeneralLocation.CENTER_RIGHT));
+
+        // Verify even after the scrolling, decoration values are set correctly
+        assertThat(layoutManager.getLeftDecorationWidth(layoutManager.getChildAt(0)), is(0));
+        assertThat(layoutManager.getLeftDecorationWidth(layoutManager.getChildAt(1)), is(0));
+        assertThat(layoutManager.getLeftDecorationWidth(layoutManager.getChildAt(2)), is(0));
+        for (FlexLine flexLine : layoutManager.getFlexLines()) {
+            View firstViewInLine = layoutManager.getChildAt(flexLine.getFirstIndex());
+            if (firstViewInLine != null) {
+                assertThat(layoutManager.getTopDecorationHeight(firstViewInLine), is(0));
+            }
+        }
+    }
+
     /**
      * Creates a new flex item.
      *
@@ -3228,5 +3379,12 @@ public class FlexboxLayoutManagerTest {
         return new GeneralSwipeAction(Swipe.FAST, from, to, Press.FINGER);
     }
 
+    private static Drawable getDrawable(Context context, @DrawableRes int resId) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            return context.getResources().getDrawable(resId, null);
+        } else {
+            return context.getResources().getDrawable(resId);
+        }
+    }
 }
 
