@@ -314,6 +314,10 @@ equivalent attribute
   but as explained above, Android developers will benefit by having this attribute for having
   more control over when a wrapping happens.
 
+## Xamarin Binding
+Xamarin binding is now available on [NuGet](https://www.nuget.org/packages/FlexboxLayoutXamarinBindingAndroid/) thanks to [@btripp](https://github.com/btripp)
+
+
 ## Flexbox Playground demo app
 The `app` module works as a playground demo app for trying various values for the supported attributes.
 You can install it by
