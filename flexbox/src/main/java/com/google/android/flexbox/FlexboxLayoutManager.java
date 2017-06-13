@@ -407,16 +407,6 @@ public class FlexboxLayoutManager extends RecyclerView.LayoutManager implements 
         if (cachedView != null) {
             return cachedView;
         }
-
-        // Look up from the scrap next if there is a matching recycled view
-        // to avoid the same view holder is created from the adapter again
-        List<RecyclerView.ViewHolder> scrapList = mRecycler.getScrapList();
-        for (int i = 0, scrapCount = scrapList.size(); i < scrapCount; i++) {
-            RecyclerView.ViewHolder viewHolder = scrapList.get(i);
-            if (viewHolder.getAdapterPosition() == index) {
-                return viewHolder.itemView;
-            }
-        }
         return mRecycler.getViewForPosition(index);
     }
 
