@@ -42,4 +42,10 @@ class FlexItemViewHolder extends RecyclerView.ViewHolder {
         mTextView.setGravity(Gravity.CENTER);
         mTextView.setLayoutParams(layoutParams);
     }
+
+    void increment() {
+        final String text = (String) mTextView.getText();
+        int value = Integer.parseInt(text);
+        mTextView.setText(String.valueOf(value + 1));
+    }
 }
