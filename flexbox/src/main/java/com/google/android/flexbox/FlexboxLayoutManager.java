@@ -778,6 +778,7 @@ public class FlexboxLayoutManager extends RecyclerView.LayoutManager implements 
 
         mLastWidth = width;
         mLastHeight = height;
+        int needsToFill = mLayoutState.mInfinite ? Integer.MAX_VALUE : mLayoutState.mAvailable;
         if (mPendingScrollPosition != NO_POSITION || isMainSizeChanged) {
             if (mAnchorInfo.mLayoutFromEnd) {
                 // Prior flex lines should be already calculated, don't have to be updated
@@ -798,11 +799,11 @@ public class FlexboxLayoutManager extends RecyclerView.LayoutManager implements 
             if (isMainAxisDirectionHorizontal()) {
                 flexLinesResult = mFlexboxHelper
                         .calculateHorizontalFlexLinesToIndex(widthMeasureSpec, heightMeasureSpec,
-                                mLayoutState.mAvailable, mAnchorInfo.mPosition, mFlexLines);
+                                needsToFill, mAnchorInfo.mPosition, mFlexLines);
             } else {
                 flexLinesResult = mFlexboxHelper
                         .calculateVerticalFlexLinesToIndex(widthMeasureSpec, heightMeasureSpec,
-                                mLayoutState.mAvailable, mAnchorInfo.mPosition, mFlexLines);
+                                needsToFill, mAnchorInfo.mPosition, mFlexLines);
             }
             mFlexLines = flexLinesResult.mFlexLines;
             mFlexboxHelper.determineMainSize(widthMeasureSpec, heightMeasureSpec);
@@ -823,12 +824,12 @@ public class FlexboxLayoutManager extends RecyclerView.LayoutManager implements 
                     mFlexboxHelper.clearFlexLines(mFlexLines, mAnchorInfo.mPosition);
                     flexLinesResult = mFlexboxHelper
                             .calculateHorizontalFlexLines(widthMeasureSpec, heightMeasureSpec,
-                                    mLayoutState.mAvailable, mAnchorInfo.mPosition, mFlexLines);
+                                    needsToFill, mAnchorInfo.mPosition, mFlexLines);
                 } else {
                     mFlexboxHelper.ensureIndexToFlexLine(childCount);
                     flexLinesResult = mFlexboxHelper
                             .calculateHorizontalFlexLines(widthMeasureSpec, heightMeasureSpec,
-                                    mLayoutState.mAvailable, 0, mFlexLines);
+                                    needsToFill, 0, mFlexLines);
                 }
             } else {
                 if (mFlexLines.size() > 0) {
@@ -837,12 +838,12 @@ public class FlexboxLayoutManager extends RecyclerView.LayoutManager implements 
                     mFlexboxHelper.clearFlexLines(mFlexLines, mAnchorInfo.mPosition);
                     flexLinesResult = mFlexboxHelper
                             .calculateVerticalFlexLines(widthMeasureSpec, heightMeasureSpec,
-                                    mLayoutState.mAvailable, mAnchorInfo.mPosition, mFlexLines);
+                                    needsToFill, mAnchorInfo.mPosition, mFlexLines);
                 } else {
                     mFlexboxHelper.ensureIndexToFlexLine(childCount);
                     flexLinesResult = mFlexboxHelper
                             .calculateVerticalFlexLines(widthMeasureSpec, heightMeasureSpec,
-                                    mLayoutState.mAvailable, 0, mFlexLines);
+                                    needsToFill, 0, mFlexLines);
                 }
             }
             mFlexLines = flexLinesResult.mFlexLines;

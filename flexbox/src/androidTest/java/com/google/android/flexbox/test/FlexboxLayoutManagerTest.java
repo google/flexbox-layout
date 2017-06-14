@@ -2912,7 +2912,12 @@ public class FlexboxLayoutManagerTest {
         // RecyclerViews were set to 0.
         final FlexboxTestActivity activity = mActivityRule.getActivity();
         final LinearLayoutManager outerLayoutManager = new LinearLayoutManager(activity);
-        final NestedOuterAdapter adapter = new NestedOuterAdapter(FlexDirection.ROW);
+
+        // Give the inner adapter item count enough so that inner RecyclerView with
+        // FlexboxLayoutManager wraps its items
+        int innerAdapterItemCount = 20;
+        final NestedOuterAdapter adapter = new NestedOuterAdapter(FlexDirection.ROW,
+                innerAdapterItemCount, R.layout.viewholder_inner_recyclerview);
         mActivityRule.runOnUiThread(new Runnable() {
             @Override
             public void run() {
@@ -2925,7 +2930,14 @@ public class FlexboxLayoutManagerTest {
         });
         InstrumentationRegistry.getInstrumentation().waitForIdleSync();
         NestedOuterAdapter.OuterViewHolder viewHolder = adapter.getViewHolder(0);
-        assertThat(viewHolder.mInnerRecyclerView.getHeight(), is(not(0)));
+        RecyclerView innerRecyclerView = viewHolder.mInnerRecyclerView;
+        assertThat(innerRecyclerView.getHeight(), is(not(0)));
+
+        // This assertion verifies that inner RecylerView displays the entire items including
+        // wrapped lines to verify the issue that nested RecyclerView with FlexboxLayoutManager
+        // only displayed one line https://github.com/google/flexbox-layout/issues/290
+        assertThat(((FlexboxLayoutManager)innerRecyclerView
+                .getLayoutManager()).findLastVisibleItemPosition(), is(innerAdapterItemCount - 1));
     }
 
     @Test
@@ -2939,7 +2951,12 @@ public class FlexboxLayoutManagerTest {
         // RecyclerViews were set to 0.
         final FlexboxTestActivity activity = mActivityRule.getActivity();
         final LinearLayoutManager outerLayoutManager = new LinearLayoutManager(activity);
-        final NestedOuterAdapter adapter = new NestedOuterAdapter(FlexDirection.COLUMN);
+
+        // Give the inner adapter item count enough so that inner RecyclerView with
+        // FlexboxLayoutManager wraps its items
+        int innerAdapterItemCount = 20;
+        final NestedOuterAdapter adapter = new NestedOuterAdapter(FlexDirection.COLUMN,
+                innerAdapterItemCount, R.layout.viewholder_inner_recyclerview_wrap_horizontally);
         mActivityRule.runOnUiThread(new Runnable() {
             @Override
             public void run() {
@@ -2952,7 +2969,14 @@ public class FlexboxLayoutManagerTest {
         });
         InstrumentationRegistry.getInstrumentation().waitForIdleSync();
         NestedOuterAdapter.OuterViewHolder viewHolder = adapter.getViewHolder(0);
-        assertThat(viewHolder.mInnerRecyclerView.getWidth(), is(not(0)));
+        RecyclerView innerRecyclerView = viewHolder.mInnerRecyclerView;
+        assertThat(innerRecyclerView.getWidth(), is(not(0)));
+
+        // This assertion verifies that inner RecylerView displays the entire items including
+        // wrapped lines to verify the issue that nested RecyclerView with FlexboxLayoutManager
+        // only displayed one line https://github.com/google/flexbox-layout/issues/290
+        assertThat(((FlexboxLayoutManager)innerRecyclerView
+                .getLayoutManager()).findLastVisibleItemPosition(), is(innerAdapterItemCount - 1));
     }
 
     @Test
