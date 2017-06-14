@@ -25,7 +25,6 @@ import android.view.ViewGroup;
 import com.google.android.flexbox.FlexboxLayoutManager;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 
 /**
@@ -81,7 +80,7 @@ class TestAdapter extends RecyclerView.Adapter<TestViewHolder> {
     }
 
     List<Object> getPayloads() {
-        return Collections.unmodifiableList(mReceivedPayloads);
+        return new ArrayList<>(mReceivedPayloads);
     }
 
     FlexboxLayoutManager.LayoutParams getItemAt(int index) {
