@@ -34,6 +34,8 @@ class TestAdapter extends RecyclerView.Adapter<TestViewHolder> {
 
     private List<FlexboxLayoutManager.LayoutParams> mLayoutParams;
 
+    private List<Object> mReceivedPayloads = new ArrayList<>();
+
     TestAdapter() {
         this(new ArrayList<FlexboxLayoutManager.LayoutParams>());
     }
@@ -57,6 +59,12 @@ class TestAdapter extends RecyclerView.Adapter<TestViewHolder> {
         holder.mTextView.setLayoutParams(mLayoutParams.get(position));
     }
 
+    @Override
+    public void onBindViewHolder(TestViewHolder holder, int position, List<Object> payloads) {
+        mReceivedPayloads.addAll(payloads);
+        onBindViewHolder(holder, position);
+    }
+
     void addItem(int position, FlexboxLayoutManager.LayoutParams flexItem) {
         mLayoutParams.add(position, flexItem);
         notifyItemInserted(position);
@@ -65,6 +73,14 @@ class TestAdapter extends RecyclerView.Adapter<TestViewHolder> {
     void addItem(FlexboxLayoutManager.LayoutParams flexItem) {
         mLayoutParams.add(flexItem);
         notifyItemInserted(mLayoutParams.size() - 1);
+    }
+
+    void changeItemWithPayload(int position, Object payload) {
+        notifyItemChanged(position, payload);
+    }
+
+    List<Object> getPayloads() {
+        return new ArrayList<>(mReceivedPayloads);
     }
 
     FlexboxLayoutManager.LayoutParams getItemAt(int index) {
