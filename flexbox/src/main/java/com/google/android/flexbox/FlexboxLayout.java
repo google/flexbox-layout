@@ -600,7 +600,6 @@ public class FlexboxLayout extends ViewGroup implements FlexContainer {
         // Use float to reduce the round error that may happen in when justifyContent ==
         // SPACE_BETWEEN or SPACE_AROUND
         float childLeft;
-        int currentViewIndex = 0;
 
         int height = bottom - top;
         int width = right - left;
@@ -656,11 +655,9 @@ public class FlexboxLayout extends ViewGroup implements FlexContainer {
             spaceBetweenItem = Math.max(spaceBetweenItem, 0);
 
             for (int j = 0; j < flexLine.mItemCount; j++) {
-                View child = getReorderedChildAt(currentViewIndex);
-                if (child == null) {
-                    continue;
-                } else if (child.getVisibility() == View.GONE) {
-                    currentViewIndex++;
+                int index = flexLine.mFirstIndex + j;
+                View child = getReorderedChildAt(index);
+                if (child == null || child.getVisibility() == View.GONE) {
                     continue;
                 }
                 LayoutParams lp = ((LayoutParams) child.getLayoutParams());
@@ -668,7 +665,7 @@ public class FlexboxLayout extends ViewGroup implements FlexContainer {
                 childRight -= lp.rightMargin;
                 int beforeDividerLength = 0;
                 int endDividerLength = 0;
-                if (hasDividerBeforeChildAtAlongMainAxis(currentViewIndex, j)) {
+                if (hasDividerBeforeChildAtAlongMainAxis(index, j)) {
                     beforeDividerLength = mDividerVerticalWidth;
                     childLeft += beforeDividerLength;
                     childRight -= beforeDividerLength;
@@ -703,7 +700,6 @@ public class FlexboxLayout extends ViewGroup implements FlexContainer {
                 }
                 childLeft += child.getMeasuredWidth() + spaceBetweenItem + lp.rightMargin;
                 childRight -= child.getMeasuredWidth() + spaceBetweenItem + lp.leftMargin;
-                currentViewIndex++;
 
                 if (isRtl) {
                     flexLine.updatePositionFromView(child, /*leftDecoration*/endDividerLength, 0,
@@ -747,7 +743,6 @@ public class FlexboxLayout extends ViewGroup implements FlexContainer {
 
         int paddingRight = getPaddingRight();
         int childLeft = getPaddingLeft();
-        int currentViewIndex = 0;
 
         int width = right - left;
         int height = bottom - top;
@@ -805,11 +800,9 @@ public class FlexboxLayout extends ViewGroup implements FlexContainer {
             spaceBetweenItem = Math.max(spaceBetweenItem, 0);
 
             for (int j = 0; j < flexLine.mItemCount; j++) {
-                View child = getReorderedChildAt(currentViewIndex);
-                if (child == null) {
-                    continue;
-                } else if (child.getVisibility() == View.GONE) {
-                    currentViewIndex++;
+                int index = flexLine.mFirstIndex + j;
+                View child = getReorderedChildAt(index);
+                if (child == null || child.getVisibility() == View.GONE) {
                     continue;
                 }
                 LayoutParams lp = ((LayoutParams) child.getLayoutParams());
@@ -817,7 +810,7 @@ public class FlexboxLayout extends ViewGroup implements FlexContainer {
                 childBottom -= lp.bottomMargin;
                 int beforeDividerLength = 0;
                 int endDividerLength = 0;
-                if (hasDividerBeforeChildAtAlongMainAxis(currentViewIndex, j)) {
+                if (hasDividerBeforeChildAtAlongMainAxis(index, j)) {
                     beforeDividerLength = mDividerHorizontalHeight;
                     childTop += beforeDividerLength;
                     childBottom -= beforeDividerLength;
@@ -851,7 +844,6 @@ public class FlexboxLayout extends ViewGroup implements FlexContainer {
                 }
                 childTop += child.getMeasuredHeight() + spaceBetweenItem + lp.bottomMargin;
                 childBottom -= child.getMeasuredHeight() + spaceBetweenItem + lp.topMargin;
-                currentViewIndex++;
 
                 if (fromBottomToTop) {
                     flexLine.updatePositionFromView(child, 0, /*topDecoration*/endDividerLength, 0,

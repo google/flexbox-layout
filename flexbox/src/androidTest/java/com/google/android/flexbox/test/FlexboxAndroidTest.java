@@ -3895,6 +3895,36 @@ public class FlexboxAndroidTest {
         onView(withId(R.id.text3)).check(isBottomAlignedWith(withId(R.id.flexbox_layout)));
     }
 
+    @Test
+    @FlakyTest
+    public void testFirstViewGone_firstLineSingleItem_row() throws Throwable {
+        // This test verifies the case where the first view's visibility is gone and the second
+        // view is in the next flex line. In that case, the second view's position is misplaced.
+        // https://github.com/google/flexbox-layout/issues/283
+        createFlexboxLayout(R.layout.activity_first_view_gone_first_line_single_item);
+        onView(withId(R.id.text2)).check(isTopAlignedWith(withId(R.id.flexbox_layout)));
+        onView(withId(R.id.text2)).check(isLeftAlignedWith(withId(R.id.flexbox_layout)));
+        onView(withId(R.id.text3)).check(isLeftAlignedWith(withId(R.id.flexbox_layout)));
+    }
+
+    @Test
+    @FlakyTest
+    public void testFirstViewGone_firstLineSingleItem_column() throws Throwable {
+        // This test verifies the case where the first view's visibility is gone and the second
+        // view is in the next flex line. In that case, the second view's position is misplaced.
+        // https://github.com/google/flexbox-layout/issues/283
+        createFlexboxLayout(R.layout.activity_first_view_gone_first_line_single_item,
+                new Configuration() {
+                    @Override
+                    public void apply(FlexboxLayout flexboxLayout) {
+                        flexboxLayout.setFlexDirection(FlexDirection.COLUMN);
+                    }
+                });
+        onView(withId(R.id.text2)).check(isTopAlignedWith(withId(R.id.flexbox_layout)));
+        onView(withId(R.id.text2)).check(isLeftAlignedWith(withId(R.id.flexbox_layout)));
+        onView(withId(R.id.text3)).check(isTopAlignedWith(withId(R.id.flexbox_layout)));
+    }
+
     private FlexboxLayout createFlexboxLayout(@LayoutRes final int activityLayoutResId)
             throws Throwable {
         return createFlexboxLayout(activityLayoutResId, Configuration.EMPTY);
