@@ -20,6 +20,7 @@ import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.Fragment;
+import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -59,7 +60,8 @@ public class RecyclerViewFragment extends Fragment {
                 R.id.recyclerview);
         final FlexboxLayoutManager flexboxLayoutManager = new FlexboxLayoutManager();
         final MainActivity activity = (MainActivity) getActivity();
-        recyclerView.setLayoutManager(flexboxLayoutManager);
+        //BUG is here if you use a flexboxlayout manager, the last item never increments.
+        recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
         if (mAdapter == null) {
             mAdapter = new FlexItemAdapter(activity, flexboxLayoutManager);
         }

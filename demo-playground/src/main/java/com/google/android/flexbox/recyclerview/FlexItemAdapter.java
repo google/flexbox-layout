@@ -65,9 +65,23 @@ public class FlexItemAdapter extends RecyclerView.Adapter<FlexItemViewHolder> {
         holder.bindTo(mLayoutParams.get(position));
     }
 
+    @Override
+    public void onBindViewHolder(FlexItemViewHolder holder, int position,List<Object> payload) {
+        //this method is never called with a flexbox layout manager.
+        if (!payload.isEmpty()) {
+            holder.increment();
+        } else {
+            onBindViewHolder(holder, position);
+        }
+    }
+
     public void addItem(FlexboxLayoutManager.LayoutParams lp) {
-        mLayoutParams.add(lp);
-        notifyItemInserted(mLayoutParams.size() - 1);
+        if(mLayoutParams.size() < 3) {
+            mLayoutParams.add(lp);
+            notifyItemInserted(mLayoutParams.size() - 1);
+        } else {
+            notifyItemChanged(mLayoutParams.size() - 1, "");
+        }
     }
 
     public void removeItem(int position) {
@@ -76,7 +90,7 @@ public class FlexItemAdapter extends RecyclerView.Adapter<FlexItemViewHolder> {
         }
         mLayoutParams.remove(position);
         notifyItemRemoved(mLayoutParams.size());
-        notifyItemRangeChanged(position, mLayoutParams.size());
+        notifyItemRangeChanged(position, mLayoutParams.size(), "");
     }
 
     public List<FlexboxLayoutManager.LayoutParams> getItems() {
