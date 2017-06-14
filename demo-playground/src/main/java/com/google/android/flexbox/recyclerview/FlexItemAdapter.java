@@ -16,19 +16,18 @@
 
 package com.google.android.flexbox.recyclerview;
 
-import com.google.android.apps.flexbox.R;
-import com.google.android.flexbox.FlexItemChangedListenerImplRecyclerView;
-import com.google.android.flexbox.FlexItemClickListener;
-import com.google.android.flexbox.FlexboxLayoutManager;
-
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import com.google.android.apps.flexbox.R;
+import com.google.android.flexbox.FlexItemChangedListenerImplRecyclerView;
+import com.google.android.flexbox.FlexItemClickListener;
+import com.google.android.flexbox.FlexboxLayoutManager;
+
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 
 /**
@@ -52,6 +51,7 @@ public class FlexItemAdapter extends RecyclerView.Adapter<FlexItemViewHolder> {
     public FlexItemViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         View view = LayoutInflater.from(parent.getContext())
                 .inflate(R.layout.viewholder_flex_item, parent, false);
+
         return new FlexItemViewHolder(view);
     }
 
@@ -80,7 +80,7 @@ public class FlexItemAdapter extends RecyclerView.Adapter<FlexItemViewHolder> {
     }
 
     public List<FlexboxLayoutManager.LayoutParams> getItems() {
-        return Collections.unmodifiableList(mLayoutParams);
+        return new ArrayList<>(mLayoutParams);
     }
 
     @Override

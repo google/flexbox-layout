@@ -3360,6 +3360,45 @@ public class FlexboxLayoutManagerTest {
         }
     }
 
+
+    @Test
+    @FlakyTest
+    public void testNotifyItemChange_withPayload() throws Throwable {
+        // This test verifies the payload is correctly passed to the Adapter in the case
+        // that notifying an item with payload
+        // https://github.com/google/flexbox-layout/issues/297
+
+        final FlexboxTestActivity activity = mActivityRule.getActivity();
+        final FlexboxLayoutManager layoutManager = new FlexboxLayoutManager();
+        final TestAdapter adapter = new TestAdapter();
+        mActivityRule.runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                activity.setContentView(R.layout.recyclerview);
+                RecyclerView recyclerView = (RecyclerView) activity.findViewById(R.id.recyclerview);
+                layoutManager.setFlexDirection(FlexDirection.COLUMN);
+                recyclerView.setLayoutManager(layoutManager);
+                recyclerView.setAdapter(adapter);
+                FlexboxLayoutManager.LayoutParams lp = createLayoutParams(activity, 100, 70);
+                adapter.addItem(lp);
+            }
+        });
+        InstrumentationRegistry.getInstrumentation().waitForIdleSync();
+        assertThat(adapter.getPayloads().size(), is(0));
+
+        final String payload = "payload";
+        mActivityRule.runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                adapter.changeItemWithPayload(0, payload);
+            }
+        });
+        InstrumentationRegistry.getInstrumentation().waitForIdleSync();
+
+        assertThat(adapter.getPayloads().size(), is(1));
+        assertThat((String) adapter.getPayloads().get(0), is(payload));
+    }
+
     /**
      * Creates a new flex item.
      *
