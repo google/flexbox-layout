@@ -57,8 +57,8 @@ public class RecyclerViewFragment extends Fragment {
 
         RecyclerView recyclerView = (RecyclerView) view.findViewById(
                 R.id.recyclerview);
-        final FlexboxLayoutManager flexboxLayoutManager = new FlexboxLayoutManager();
         final MainActivity activity = (MainActivity) getActivity();
+        final FlexboxLayoutManager flexboxLayoutManager = new FlexboxLayoutManager(activity);
         recyclerView.setLayoutManager(flexboxLayoutManager);
         if (mAdapter == null) {
             mAdapter = new FlexItemAdapter(activity, flexboxLayoutManager);
