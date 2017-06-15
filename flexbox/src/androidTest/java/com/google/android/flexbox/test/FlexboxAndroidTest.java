@@ -3925,6 +3925,66 @@ public class FlexboxAndroidTest {
         onView(withId(R.id.text3)).check(isTopAlignedWith(withId(R.id.flexbox_layout)));
     }
 
+    @Test
+    @FlakyTest
+    public void testFirstViewGone_flexGrowSetForRestOfItems_row() throws Throwable {
+        // This test verifies the case where the first view's visibility is gone and the second
+        // view and third view have the layout_flexGrow attribute set. In that case, the second
+        // view's position is misplaced and the third view becomes invisible .
+        // https://github.com/google/flexbox-layout/issues/303
+        createFlexboxLayout(R.layout.activity_first_view_gone_layout_grow_set_for_rest);
+        onView(withId(R.id.text2)).check(isTopAlignedWith(withId(R.id.flexbox_layout)));
+        onView(withId(R.id.text2)).check(isLeftAlignedWith(withId(R.id.flexbox_layout)));
+        onView(withId(R.id.text2)).check(isRightAlignedWith(withId(R.id.flexbox_layout)));
+        onView(withId(R.id.text3)).check(isLeftAlignedWith(withId(R.id.flexbox_layout)));
+        onView(withId(R.id.text3)).check(isRightAlignedWith(withId(R.id.flexbox_layout)));
+    }
+
+    @Test
+    @FlakyTest
+    public void testFirstViewGone_flexGrowSetForRestOfItems_column() throws Throwable {
+        // This test verifies the case where the first view's visibility is gone and the second
+        // view and third view have the layout_flexGrow attribute set. In that case, the second
+        // view's position is misplaced and the third view becomes invisible .
+        // https://github.com/google/flexbox-layout/issues/303
+        createFlexboxLayout(R.layout.activity_first_view_gone_layout_grow_set_for_rest,
+                new Configuration() {
+                    @Override
+                    public void apply(FlexboxLayout flexboxLayout) {
+                        flexboxLayout.setFlexDirection(FlexDirection.COLUMN);
+                    }
+                });
+        onView(withId(R.id.text2)).check(isTopAlignedWith(withId(R.id.flexbox_layout)));
+        onView(withId(R.id.text2)).check(isLeftAlignedWith(withId(R.id.flexbox_layout)));
+        onView(withId(R.id.text2)).check(isBottomAlignedWith(withId(R.id.flexbox_layout)));
+        onView(withId(R.id.text3)).check(isTopAlignedWith(withId(R.id.flexbox_layout)));
+        onView(withId(R.id.text3)).check(isBottomAlignedWith(withId(R.id.flexbox_layout)));
+    }
+
+    @Test
+    @FlakyTest
+    public void testFirstViewGone_flexShrinkSetForRestOfItems_row() throws Throwable {
+        createFlexboxLayout(R.layout.activity_first_view_gone_layout_shrink_set_for_rest);
+        onView(withId(R.id.text2)).check(isTopAlignedWith(withId(R.id.flexbox_layout)));
+        onView(withId(R.id.text2)).check(isLeftAlignedWith(withId(R.id.flexbox_layout)));
+        onView(withId(R.id.text3)).check(isLeftAlignedWith(withId(R.id.flexbox_layout)));
+    }
+
+    @Test
+    @FlakyTest
+    public void testFirstViewGone_flexShrinkSetForRestOfItems_column() throws Throwable {
+        createFlexboxLayout(R.layout.activity_first_view_gone_layout_shrink_set_for_rest,
+                new Configuration() {
+                    @Override
+                    public void apply(FlexboxLayout flexboxLayout) {
+                        flexboxLayout.setFlexDirection(FlexDirection.COLUMN);
+                    }
+                });
+        onView(withId(R.id.text2)).check(isTopAlignedWith(withId(R.id.flexbox_layout)));
+        onView(withId(R.id.text2)).check(isLeftAlignedWith(withId(R.id.flexbox_layout)));
+        onView(withId(R.id.text3)).check(isTopAlignedWith(withId(R.id.flexbox_layout)));
+    }
+
     private FlexboxLayout createFlexboxLayout(@LayoutRes final int activityLayoutResId)
             throws Throwable {
         return createFlexboxLayout(activityLayoutResId, Configuration.EMPTY);

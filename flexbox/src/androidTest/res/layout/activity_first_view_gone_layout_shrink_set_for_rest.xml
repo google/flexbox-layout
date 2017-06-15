@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="utf-8"?><!--
+  Copyright 2017 Google Inc. All rights reserved.
+
+  Licensed under the Apache License, Version 2.0 (the "License");
+  you may not use this file except in compliance with the License.
+  You may obtain a copy of the License at
+
+       http://www.apache.org/licenses/LICENSE-2.0
+
+  Unless required by applicable law or agreed to in writing, software
+  distributed under the License is distributed on an "AS IS" BASIS,
+  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  See the License for the specific language governing permissions and
+  limitations under the License.
+  -->
+
+<!--
+This layout verifies the case where the first view's visibility is gone and the second view is
+in the next flex line by setting the layout_wrapBefore="true"
+-->
+<com.google.android.flexbox.FlexboxLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/flexbox_layout"
+    android:layout_width="320dp"
+    android:layout_height="320dp"
+    app:flexDirection="row"
+    app:flexWrap="wrap"
+    app:alignItems="stretch"
+    app:alignContent="stretch">
+
+    <TextView
+        android:id="@+id/text1"
+        android:layout_width="60dp"
+        android:layout_height="60dp"
+        android:text="1"
+        android:visibility="gone" />
+
+    <TextView
+        android:id="@+id/text2"
+        android:layout_width="120dp"
+        android:layout_height="60dp"
+        android:text="2"
+        app:layout_wrapBefore="true"
+        app:layout_flexShrink="1" />
+
+    <TextView
+        android:id="@+id/text3"
+        android:layout_width="100dp"
+        android:layout_height="60dp"
+        android:text="3"
+        app:layout_flexShrink="1"
+        app:layout_wrapBefore="true" />
+</com.google.android.flexbox.FlexboxLayout>
