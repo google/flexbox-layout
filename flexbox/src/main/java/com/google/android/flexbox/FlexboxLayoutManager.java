@@ -167,11 +167,13 @@ public class FlexboxLayoutManager extends RecyclerView.LayoutManager implements 
      */
     private SparseArray<View> mViewCache = new SparseArray<>();
 
+    private final Context mContext;
+
     /**
      * Creates a default FlexboxLayoutManager.
      */
-    public FlexboxLayoutManager() {
-        this(FlexDirection.ROW, FlexWrap.WRAP);
+    public FlexboxLayoutManager(Context context) {
+        this(context, FlexDirection.ROW, FlexWrap.WRAP);
     }
 
     /**
@@ -179,8 +181,8 @@ public class FlexboxLayoutManager extends RecyclerView.LayoutManager implements 
      *
      * @param flexDirection the flex direction attribute
      */
-    public FlexboxLayoutManager(@FlexDirection int flexDirection) {
-        this(flexDirection, FlexWrap.WRAP);
+    public FlexboxLayoutManager(Context context, @FlexDirection int flexDirection) {
+        this(context, flexDirection, FlexWrap.WRAP);
     }
 
     /**
@@ -189,12 +191,13 @@ public class FlexboxLayoutManager extends RecyclerView.LayoutManager implements 
      * @param flexDirection the flex direction attribute
      * @param flexWrap      the flex wrap attribute
      */
-    public FlexboxLayoutManager(@FlexDirection int flexDirection,
+    public FlexboxLayoutManager(Context context, @FlexDirection int flexDirection,
             @FlexWrap int flexWrap) {
         setFlexDirection(flexDirection);
         setFlexWrap(flexWrap);
         setAlignItems(AlignItems.STRETCH);
         setAutoMeasureEnabled(true);
+        mContext = context;
     }
 
     /**
@@ -233,6 +236,7 @@ public class FlexboxLayoutManager extends RecyclerView.LayoutManager implements 
         setFlexWrap(FlexWrap.WRAP);
         setAlignItems(AlignItems.STRETCH);
         setAutoMeasureEnabled(true);
+        mContext = context;
     }
 
     // From here, methods from FlexContainer
@@ -767,17 +771,37 @@ public class FlexboxLayoutManager extends RecyclerView.LayoutManager implements 
         int width = getWidth();
         int height = getHeight();
         boolean isMainSizeChanged;
+        int needsToFill;
         // Clear the flex lines if the main size has changed from the last measurement.
         // For example this happens when the developer handles the configuration changes manually
         // or the user change the width boundary in the multi window mode.
         if (isMainAxisDirectionHorizontal()) {
             isMainSizeChanged = mLastWidth != Integer.MIN_VALUE && mLastWidth != width;
+
+            // If the mInfinite flag is set to true (that usually happens when RecyclerViews are
+            // nested and inner RecyclerView's layout_height is set to wrap_content, thus height is
+            // passed as 0 from the RecyclerView)
+            // Set the upper limit as the height of the device in order to prevent computing all
+            // items in the adapter
+            needsToFill = mLayoutState.mInfinite ?
+                    mContext.getResources().getDisplayMetrics().heightPixels
+                    : mLayoutState.mAvailable;
         } else {
             isMainSizeChanged = mLastHeight != Integer.MIN_VALUE && mLastHeight != height;
+
+            // If the mInfinite flag is set to true (that usually happens when RecyclerViews are
+            // nested and inner RecyclerView's layout_width is set to wrap_content, thus width is
+            // passed as 0 from the RecyclerView)
+            // Set the upper limit as the width of the device in order to prevent computing all
+            // items in the adapter
+            needsToFill = mLayoutState.mInfinite ?
+                    mContext.getResources().getDisplayMetrics().widthPixels
+                    : mLayoutState.mAvailable;
         }
 
         mLastWidth = width;
         mLastHeight = height;
+
         if (mPendingScrollPosition != NO_POSITION || isMainSizeChanged) {
             if (mAnchorInfo.mLayoutFromEnd) {
                 // Prior flex lines should be already calculated, don't have to be updated
@@ -798,11 +822,11 @@ public class FlexboxLayoutManager extends RecyclerView.LayoutManager implements 
             if (isMainAxisDirectionHorizontal()) {
                 flexLinesResult = mFlexboxHelper
                         .calculateHorizontalFlexLinesToIndex(widthMeasureSpec, heightMeasureSpec,
-                                mLayoutState.mAvailable, mAnchorInfo.mPosition, mFlexLines);
+                                needsToFill, mAnchorInfo.mPosition, mFlexLines);
             } else {
                 flexLinesResult = mFlexboxHelper
                         .calculateVerticalFlexLinesToIndex(widthMeasureSpec, heightMeasureSpec,
-                                mLayoutState.mAvailable, mAnchorInfo.mPosition, mFlexLines);
+                                needsToFill, mAnchorInfo.mPosition, mFlexLines);
             }
             mFlexLines = flexLinesResult.mFlexLines;
             mFlexboxHelper.determineMainSize(widthMeasureSpec, heightMeasureSpec);
@@ -823,12 +847,12 @@ public class FlexboxLayoutManager extends RecyclerView.LayoutManager implements 
                     mFlexboxHelper.clearFlexLines(mFlexLines, mAnchorInfo.mPosition);
                     flexLinesResult = mFlexboxHelper
                             .calculateHorizontalFlexLines(widthMeasureSpec, heightMeasureSpec,
-                                    mLayoutState.mAvailable, mAnchorInfo.mPosition, mFlexLines);
+                                    needsToFill, mAnchorInfo.mPosition, mFlexLines);
                 } else {
                     mFlexboxHelper.ensureIndexToFlexLine(childCount);
                     flexLinesResult = mFlexboxHelper
                             .calculateHorizontalFlexLines(widthMeasureSpec, heightMeasureSpec,
-                                    mLayoutState.mAvailable, 0, mFlexLines);
+                                    needsToFill, 0, mFlexLines);
                 }
             } else {
                 if (mFlexLines.size() > 0) {
@@ -837,12 +861,12 @@ public class FlexboxLayoutManager extends RecyclerView.LayoutManager implements 
                     mFlexboxHelper.clearFlexLines(mFlexLines, mAnchorInfo.mPosition);
                     flexLinesResult = mFlexboxHelper
                             .calculateVerticalFlexLines(widthMeasureSpec, heightMeasureSpec,
-                                    mLayoutState.mAvailable, mAnchorInfo.mPosition, mFlexLines);
+                                    needsToFill, mAnchorInfo.mPosition, mFlexLines);
                 } else {
                     mFlexboxHelper.ensureIndexToFlexLine(childCount);
                     flexLinesResult = mFlexboxHelper
                             .calculateVerticalFlexLines(widthMeasureSpec, heightMeasureSpec,
-                                    mLayoutState.mAvailable, 0, mFlexLines);
+                                    needsToFill, 0, mFlexLines);
                 }
             }
             mFlexLines = flexLinesResult.mFlexLines;

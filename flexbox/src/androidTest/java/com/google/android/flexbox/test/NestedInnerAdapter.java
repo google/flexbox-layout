@@ -30,8 +30,11 @@ class NestedInnerAdapter extends RecyclerView.Adapter<NestedInnerAdapter.InnerVi
 
     private int mInnerPosition;
 
-    NestedInnerAdapter(int innerPosition) {
+    private int mItemCount;
+
+    NestedInnerAdapter(int innerPosition, int itemCount) {
         mInnerPosition = innerPosition;
+        mItemCount = itemCount;
     }
 
     @Override
@@ -48,7 +51,7 @@ class NestedInnerAdapter extends RecyclerView.Adapter<NestedInnerAdapter.InnerVi
 
     @Override
     public int getItemCount() {
-        return 5;
+        return mItemCount;
     }
 
     static class InnerViewHolder extends RecyclerView.ViewHolder {
