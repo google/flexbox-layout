@@ -34,7 +34,7 @@ public class IsEqualAllowingError<T extends Number> extends BaseMatcher<T> {
     private Integer errorAllowed;
 
     private IsEqualAllowingError(Number expected) {
-        this(expected, 1);
+        this(expected, 3);
     }
 
     private IsEqualAllowingError(Number expected, int errorAllowed) {
