@@ -2915,7 +2915,7 @@ public class FlexboxLayoutManagerTest {
 
         // Give the inner adapter item count enough so that inner RecyclerView with
         // FlexboxLayoutManager wraps its items
-        int innerAdapterItemCount = 500;
+        int innerAdapterItemCount = 20;
         final NestedOuterAdapter adapter = new NestedOuterAdapter(activity,FlexDirection.ROW,
                 innerAdapterItemCount, R.layout.viewholder_inner_recyclerview);
         mActivityRule.runOnUiThread(new Runnable() {

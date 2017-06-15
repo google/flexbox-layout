@@ -30,7 +30,6 @@ import android.support.v7.widget.LinearSmoothScroller;
 import android.support.v7.widget.OrientationHelper;
 import android.support.v7.widget.RecyclerView;
 import android.util.AttributeSet;
-import android.util.DisplayMetrics;
 import android.util.Log;
 import android.util.SparseArray;
 import android.view.View;
@@ -168,21 +167,7 @@ public class FlexboxLayoutManager extends RecyclerView.LayoutManager implements 
      */
     private SparseArray<View> mViewCache = new SparseArray<>();
 
-    /**
-     * The width of the display in pixels. This value is used as an upper limit to calculate the
-     * flex lines when the width is not provided by the RecyclerView. For example, in the nested
-     * RecyclerViews, if the inner RecyclerView's width is set as wrap_content, the width is
-     * passed as 0 for the inner RecyclerView.
-     */
-    private int mDisplayWidth;
-
-    /**
-     * The height of the display in pixels. This value is used as an upper limit to calculate the
-     * flex lines when the height is not provided by the RecyclerView. For example, in the nested
-     * RecyclerViews, if the inner RecyclerView's height is set as wrap_content, the height is
-     * passed as 0 for the inner RecyclerView.
-     */
-    private int mDisplayHeight;
+    private final Context mContext;
 
     /**
      * Creates a default FlexboxLayoutManager.
@@ -208,11 +193,11 @@ public class FlexboxLayoutManager extends RecyclerView.LayoutManager implements 
      */
     public FlexboxLayoutManager(Context context, @FlexDirection int flexDirection,
             @FlexWrap int flexWrap) {
-        setDisplayMetrics(context);
         setFlexDirection(flexDirection);
         setFlexWrap(flexWrap);
         setAlignItems(AlignItems.STRETCH);
         setAutoMeasureEnabled(true);
+        mContext = context;
     }
 
     /**
@@ -248,16 +233,10 @@ public class FlexboxLayoutManager extends RecyclerView.LayoutManager implements 
                 }
                 break;
         }
-        setDisplayMetrics(context);
         setFlexWrap(FlexWrap.WRAP);
         setAlignItems(AlignItems.STRETCH);
         setAutoMeasureEnabled(true);
-    }
-
-    private void setDisplayMetrics(Context context) {
-        DisplayMetrics displayMetrics = context.getResources().getDisplayMetrics();
-        mDisplayWidth = displayMetrics.widthPixels;
-        mDisplayHeight = displayMetrics.heightPixels;
+        mContext = context;
     }
 
     // From here, methods from FlexContainer
@@ -798,10 +777,26 @@ public class FlexboxLayoutManager extends RecyclerView.LayoutManager implements 
         // or the user change the width boundary in the multi window mode.
         if (isMainAxisDirectionHorizontal()) {
             isMainSizeChanged = mLastWidth != Integer.MIN_VALUE && mLastWidth != width;
-            needsToFill = mLayoutState.mInfinite ? mDisplayHeight : mLayoutState.mAvailable;
+
+            // If the mInfinite flag is set to true (that usually happens when RecyclerViews are
+            // nested and inner RecyclerView's layout_height is set to wrap_content, thus height is
+            // passed as 0 from the RecyclerView)
+            // Set the upper limit as the height of the device in order to prevent computing all
+            // items in the adapter
+            needsToFill = mLayoutState.mInfinite ?
+                    mContext.getResources().getDisplayMetrics().heightPixels
+                    : mLayoutState.mAvailable;
         } else {
             isMainSizeChanged = mLastHeight != Integer.MIN_VALUE && mLastHeight != height;
-            needsToFill = mLayoutState.mInfinite ? mDisplayWidth : mLayoutState.mAvailable;
+
+            // If the mInfinite flag is set to true (that usually happens when RecyclerViews are
+            // nested and inner RecyclerView's layout_width is set to wrap_content, thus width is
+            // passed as 0 from the RecyclerView)
+            // Set the upper limit as the width of the device in order to prevent computing all
+            // items in the adapter
+            needsToFill = mLayoutState.mInfinite ?
+                    mContext.getResources().getDisplayMetrics().widthPixels
+                    : mLayoutState.mAvailable;
         }
 
         mLastWidth = width;
