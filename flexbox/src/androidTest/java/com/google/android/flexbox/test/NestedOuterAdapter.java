@@ -16,6 +16,7 @@
 
 package com.google.android.flexbox.test;
 
+import android.content.Context;
 import android.support.annotation.LayoutRes;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
@@ -36,6 +37,8 @@ class NestedOuterAdapter extends RecyclerView.Adapter<NestedOuterAdapter.OuterVi
 
     private static final int ITEM_COUNT = 4;
 
+    private final Context mContext;
+
     private final List<OuterViewHolder> mViewHolderList = new ArrayList<>();
 
     private final int mFlexDirection;
@@ -44,8 +47,9 @@ class NestedOuterAdapter extends RecyclerView.Adapter<NestedOuterAdapter.OuterVi
 
     private final int mViewHolderResId;
 
-    NestedOuterAdapter(@FlexDirection int flexDirection, int innerAdapterItemCount,
+    NestedOuterAdapter(Context context, @FlexDirection int flexDirection, int innerAdapterItemCount,
             @LayoutRes int viewHolderResId) {
+        mContext = context;
         mFlexDirection = flexDirection;
         mInnerAdapterItemCount = innerAdapterItemCount;
         mViewHolderResId = viewHolderResId;
@@ -62,7 +66,7 @@ class NestedOuterAdapter extends RecyclerView.Adapter<NestedOuterAdapter.OuterVi
 
     @Override
     public void onBindViewHolder(OuterViewHolder holder, int position) {
-        FlexboxLayoutManager layoutManager = new FlexboxLayoutManager();
+        FlexboxLayoutManager layoutManager = new FlexboxLayoutManager(mContext);
         layoutManager.setFlexDirection(mFlexDirection);
         holder.mInnerRecyclerView.setLayoutManager(layoutManager);
         holder.mInnerRecyclerView.setAdapter(new NestedInnerAdapter(position,

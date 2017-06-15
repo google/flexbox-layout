@@ -130,7 +130,7 @@ public class FlexboxLayoutManagerTest {
     @FlakyTest
     public void testAddViewHolders_direction_row_not_wrapped() throws Throwable {
         final FlexboxTestActivity activity = mActivityRule.getActivity();
-        final FlexboxLayoutManager layoutManager = new FlexboxLayoutManager();
+        final FlexboxLayoutManager layoutManager = new FlexboxLayoutManager(activity);
         final TestAdapter adapter = new TestAdapter();
         mActivityRule.runOnUiThread(new Runnable() {
             @Override
@@ -158,7 +158,7 @@ public class FlexboxLayoutManagerTest {
     @FlakyTest
     public void testAddViewHolders_direction_row_wrapped() throws Throwable {
         final FlexboxTestActivity activity = mActivityRule.getActivity();
-        final FlexboxLayoutManager layoutManager = new FlexboxLayoutManager();
+        final FlexboxLayoutManager layoutManager = new FlexboxLayoutManager(activity);
         final TestAdapter adapter = new TestAdapter();
         mActivityRule.runOnUiThread(new Runnable() {
             @Override
@@ -186,7 +186,7 @@ public class FlexboxLayoutManagerTest {
     @FlakyTest
     public void testAddViewHolders_direction_row_partOfItems_detached() throws Throwable {
         final FlexboxTestActivity activity = mActivityRule.getActivity();
-        final FlexboxLayoutManager layoutManager = new FlexboxLayoutManager();
+        final FlexboxLayoutManager layoutManager = new FlexboxLayoutManager(activity);
         final TestAdapter adapter = new TestAdapter();
         mActivityRule.runOnUiThread(new Runnable() {
             @Override
@@ -223,7 +223,7 @@ public class FlexboxLayoutManagerTest {
     @FlakyTest
     public void testAddViewHolders_direction_row_scrollVertically() throws Throwable {
         final FlexboxTestActivity activity = mActivityRule.getActivity();
-        final FlexboxLayoutManager layoutManager = new FlexboxLayoutManager();
+        final FlexboxLayoutManager layoutManager = new FlexboxLayoutManager(activity);
         final TestAdapter adapter = new TestAdapter();
         mActivityRule.runOnUiThread(new Runnable() {
             @Override
@@ -269,7 +269,7 @@ public class FlexboxLayoutManagerTest {
     @FlakyTest
     public void testFlexGrow() throws Throwable {
         final FlexboxTestActivity activity = mActivityRule.getActivity();
-        final FlexboxLayoutManager layoutManager = new FlexboxLayoutManager();
+        final FlexboxLayoutManager layoutManager = new FlexboxLayoutManager(activity);
         final TestAdapter adapter = new TestAdapter();
         mActivityRule.runOnUiThread(new Runnable() {
             @Override
@@ -308,7 +308,7 @@ public class FlexboxLayoutManagerTest {
     @FlakyTest
     public void testAddViewHolders_direction_column_partOfItems_detached() throws Throwable {
         final FlexboxTestActivity activity = mActivityRule.getActivity();
-        final FlexboxLayoutManager layoutManager = new FlexboxLayoutManager();
+        final FlexboxLayoutManager layoutManager = new FlexboxLayoutManager(activity);
         final TestAdapter adapter = new TestAdapter();
         mActivityRule.runOnUiThread(new Runnable() {
             @Override
@@ -347,7 +347,7 @@ public class FlexboxLayoutManagerTest {
     @FlakyTest
     public void testAddViewHolders_direction_column_scrollHorizontally() throws Throwable {
         final FlexboxTestActivity activity = mActivityRule.getActivity();
-        final FlexboxLayoutManager layoutManager = new FlexboxLayoutManager();
+        final FlexboxLayoutManager layoutManager = new FlexboxLayoutManager(activity);
         final TestAdapter adapter = new TestAdapter();
         mActivityRule.runOnUiThread(new Runnable() {
             @Override
@@ -395,7 +395,7 @@ public class FlexboxLayoutManagerTest {
     @FlakyTest
     public void testJustifyContent_flexStart_direction_row() throws Throwable {
         final FlexboxTestActivity activity = mActivityRule.getActivity();
-        final FlexboxLayoutManager layoutManager = new FlexboxLayoutManager();
+        final FlexboxLayoutManager layoutManager = new FlexboxLayoutManager(activity);
         final TestAdapter adapter = new TestAdapter();
         mActivityRule.runOnUiThread(new Runnable() {
             @Override
@@ -437,7 +437,7 @@ public class FlexboxLayoutManagerTest {
     @FlakyTest
     public void testJustifyContent_flexEnd_direction_row() throws Throwable {
         final FlexboxTestActivity activity = mActivityRule.getActivity();
-        final FlexboxLayoutManager layoutManager = new FlexboxLayoutManager();
+        final FlexboxLayoutManager layoutManager = new FlexboxLayoutManager(activity);
         final TestAdapter adapter = new TestAdapter();
         mActivityRule.runOnUiThread(new Runnable() {
             @Override
@@ -479,7 +479,7 @@ public class FlexboxLayoutManagerTest {
     @FlakyTest
     public void testJustifyContent_center_direction_row() throws Throwable {
         final FlexboxTestActivity activity = mActivityRule.getActivity();
-        final FlexboxLayoutManager layoutManager = new FlexboxLayoutManager();
+        final FlexboxLayoutManager layoutManager = new FlexboxLayoutManager(activity);
         final TestAdapter adapter = new TestAdapter();
         mActivityRule.runOnUiThread(new Runnable() {
             @Override
@@ -521,7 +521,7 @@ public class FlexboxLayoutManagerTest {
     @FlakyTest
     public void testJustifyContent_spaceAround_direction_row() throws Throwable {
         final FlexboxTestActivity activity = mActivityRule.getActivity();
-        final FlexboxLayoutManager layoutManager = new FlexboxLayoutManager();
+        final FlexboxLayoutManager layoutManager = new FlexboxLayoutManager(activity);
         final TestAdapter adapter = new TestAdapter();
         mActivityRule.runOnUiThread(new Runnable() {
             @Override
@@ -563,7 +563,7 @@ public class FlexboxLayoutManagerTest {
     @FlakyTest
     public void testJustifyContent_spaceBetween_direction_row() throws Throwable {
         final FlexboxTestActivity activity = mActivityRule.getActivity();
-        final FlexboxLayoutManager layoutManager = new FlexboxLayoutManager();
+        final FlexboxLayoutManager layoutManager = new FlexboxLayoutManager(activity);
         final TestAdapter adapter = new TestAdapter();
         mActivityRule.runOnUiThread(new Runnable() {
             @Override
@@ -605,7 +605,7 @@ public class FlexboxLayoutManagerTest {
     @FlakyTest
     public void testJustifyContent_flexStart_direction_rowReverse() throws Throwable {
         final FlexboxTestActivity activity = mActivityRule.getActivity();
-        final FlexboxLayoutManager layoutManager = new FlexboxLayoutManager();
+        final FlexboxLayoutManager layoutManager = new FlexboxLayoutManager(activity);
         final TestAdapter adapter = new TestAdapter();
         mActivityRule.runOnUiThread(new Runnable() {
             @Override
@@ -649,7 +649,7 @@ public class FlexboxLayoutManagerTest {
     @FlakyTest
     public void testJustifyContent_flexEnd_direction_rowReverse() throws Throwable {
         final FlexboxTestActivity activity = mActivityRule.getActivity();
-        final FlexboxLayoutManager layoutManager = new FlexboxLayoutManager();
+        final FlexboxLayoutManager layoutManager = new FlexboxLayoutManager(activity);
         final TestAdapter adapter = new TestAdapter();
         mActivityRule.runOnUiThread(new Runnable() {
             @Override
@@ -693,7 +693,7 @@ public class FlexboxLayoutManagerTest {
     @FlakyTest
     public void testJustifyContent_center_direction_rowReverse() throws Throwable {
         final FlexboxTestActivity activity = mActivityRule.getActivity();
-        final FlexboxLayoutManager layoutManager = new FlexboxLayoutManager();
+        final FlexboxLayoutManager layoutManager = new FlexboxLayoutManager(activity);
         final TestAdapter adapter = new TestAdapter();
         mActivityRule.runOnUiThread(new Runnable() {
             @Override
@@ -737,7 +737,7 @@ public class FlexboxLayoutManagerTest {
     @FlakyTest
     public void testJustifyContent_spaceAround_direction_rowReverse() throws Throwable {
         final FlexboxTestActivity activity = mActivityRule.getActivity();
-        final FlexboxLayoutManager layoutManager = new FlexboxLayoutManager();
+        final FlexboxLayoutManager layoutManager = new FlexboxLayoutManager(activity);
         final TestAdapter adapter = new TestAdapter();
         mActivityRule.runOnUiThread(new Runnable() {
             @Override
@@ -781,7 +781,7 @@ public class FlexboxLayoutManagerTest {
     @FlakyTest
     public void testJustifyContent_spaceBetween_direction_rowReverse() throws Throwable {
         final FlexboxTestActivity activity = mActivityRule.getActivity();
-        final FlexboxLayoutManager layoutManager = new FlexboxLayoutManager();
+        final FlexboxLayoutManager layoutManager = new FlexboxLayoutManager(activity);
         final TestAdapter adapter = new TestAdapter();
         mActivityRule.runOnUiThread(new Runnable() {
             @Override
@@ -825,7 +825,7 @@ public class FlexboxLayoutManagerTest {
     @FlakyTest
     public void testJustifyContent_flexStart_direction_column() throws Throwable {
         final FlexboxTestActivity activity = mActivityRule.getActivity();
-        final FlexboxLayoutManager layoutManager = new FlexboxLayoutManager();
+        final FlexboxLayoutManager layoutManager = new FlexboxLayoutManager(activity);
         final TestAdapter adapter = new TestAdapter();
         mActivityRule.runOnUiThread(new Runnable() {
             @Override
@@ -869,7 +869,7 @@ public class FlexboxLayoutManagerTest {
     @FlakyTest
     public void testJustifyContent_flexEnd_direction_column() throws Throwable {
         final FlexboxTestActivity activity = mActivityRule.getActivity();
-        final FlexboxLayoutManager layoutManager = new FlexboxLayoutManager();
+        final FlexboxLayoutManager layoutManager = new FlexboxLayoutManager(activity);
         final TestAdapter adapter = new TestAdapter();
         mActivityRule.runOnUiThread(new Runnable() {
             @Override
@@ -913,7 +913,7 @@ public class FlexboxLayoutManagerTest {
     @FlakyTest
     public void testJustifyContent_center_direction_column() throws Throwable {
         final FlexboxTestActivity activity = mActivityRule.getActivity();
-        final FlexboxLayoutManager layoutManager = new FlexboxLayoutManager();
+        final FlexboxLayoutManager layoutManager = new FlexboxLayoutManager(activity);
         final TestAdapter adapter = new TestAdapter();
         mActivityRule.runOnUiThread(new Runnable() {
             @Override
@@ -957,7 +957,7 @@ public class FlexboxLayoutManagerTest {
     @FlakyTest
     public void testJustifyContent_spaceAround_direction_column() throws Throwable {
         final FlexboxTestActivity activity = mActivityRule.getActivity();
-        final FlexboxLayoutManager layoutManager = new FlexboxLayoutManager();
+        final FlexboxLayoutManager layoutManager = new FlexboxLayoutManager(activity);
         final TestAdapter adapter = new TestAdapter();
         mActivityRule.runOnUiThread(new Runnable() {
             @Override
@@ -1001,7 +1001,7 @@ public class FlexboxLayoutManagerTest {
     @FlakyTest
     public void testJustifyContent_spaceBetween_direction_column() throws Throwable {
         final FlexboxTestActivity activity = mActivityRule.getActivity();
-        final FlexboxLayoutManager layoutManager = new FlexboxLayoutManager();
+        final FlexboxLayoutManager layoutManager = new FlexboxLayoutManager(activity);
         final TestAdapter adapter = new TestAdapter();
         mActivityRule.runOnUiThread(new Runnable() {
             @Override
@@ -1045,7 +1045,7 @@ public class FlexboxLayoutManagerTest {
     @FlakyTest
     public void testJustifyContent_flexStart_direction_columnReverse() throws Throwable {
         final FlexboxTestActivity activity = mActivityRule.getActivity();
-        final FlexboxLayoutManager layoutManager = new FlexboxLayoutManager();
+        final FlexboxLayoutManager layoutManager = new FlexboxLayoutManager(activity);
         final TestAdapter adapter = new TestAdapter();
         mActivityRule.runOnUiThread(new Runnable() {
             @Override
@@ -1089,7 +1089,7 @@ public class FlexboxLayoutManagerTest {
     @FlakyTest
     public void testJustifyContent_flexEnd_direction_columnReverse() throws Throwable {
         final FlexboxTestActivity activity = mActivityRule.getActivity();
-        final FlexboxLayoutManager layoutManager = new FlexboxLayoutManager();
+        final FlexboxLayoutManager layoutManager = new FlexboxLayoutManager(activity);
         final TestAdapter adapter = new TestAdapter();
         mActivityRule.runOnUiThread(new Runnable() {
             @Override
@@ -1133,7 +1133,7 @@ public class FlexboxLayoutManagerTest {
     @FlakyTest
     public void testJustifyContent_center_direction_columnReverse() throws Throwable {
         final FlexboxTestActivity activity = mActivityRule.getActivity();
-        final FlexboxLayoutManager layoutManager = new FlexboxLayoutManager();
+        final FlexboxLayoutManager layoutManager = new FlexboxLayoutManager(activity);
         final TestAdapter adapter = new TestAdapter();
         mActivityRule.runOnUiThread(new Runnable() {
             @Override
@@ -1177,7 +1177,7 @@ public class FlexboxLayoutManagerTest {
     @FlakyTest
     public void testJustifyContent_spaceAround_direction_columnReverse() throws Throwable {
         final FlexboxTestActivity activity = mActivityRule.getActivity();
-        final FlexboxLayoutManager layoutManager = new FlexboxLayoutManager();
+        final FlexboxLayoutManager layoutManager = new FlexboxLayoutManager(activity);
         final TestAdapter adapter = new TestAdapter();
         mActivityRule.runOnUiThread(new Runnable() {
             @Override
@@ -1221,7 +1221,7 @@ public class FlexboxLayoutManagerTest {
     @FlakyTest
     public void testJustifyContent_spaceBetween_direction_columnReverse() throws Throwable {
         final FlexboxTestActivity activity = mActivityRule.getActivity();
-        final FlexboxLayoutManager layoutManager = new FlexboxLayoutManager();
+        final FlexboxLayoutManager layoutManager = new FlexboxLayoutManager(activity);
         final TestAdapter adapter = new TestAdapter();
         mActivityRule.runOnUiThread(new Runnable() {
             @Override
@@ -1265,7 +1265,7 @@ public class FlexboxLayoutManagerTest {
     @FlakyTest
     public void testLargeItem_scrollFast_direction_row() throws Throwable {
         final FlexboxTestActivity activity = mActivityRule.getActivity();
-        final FlexboxLayoutManager layoutManager = new FlexboxLayoutManager();
+        final FlexboxLayoutManager layoutManager = new FlexboxLayoutManager(activity);
         final TestAdapter adapter = new TestAdapter();
         mActivityRule.runOnUiThread(new Runnable() {
             @Override
@@ -1350,7 +1350,7 @@ public class FlexboxLayoutManagerTest {
     @FlakyTest
     public void testLargeItem_scrollFast_direction_column() throws Throwable {
         final FlexboxTestActivity activity = mActivityRule.getActivity();
-        final FlexboxLayoutManager layoutManager = new FlexboxLayoutManager();
+        final FlexboxLayoutManager layoutManager = new FlexboxLayoutManager(activity);
         final TestAdapter adapter = new TestAdapter();
         mActivityRule.runOnUiThread(new Runnable() {
             @Override
@@ -1441,7 +1441,7 @@ public class FlexboxLayoutManagerTest {
     @FlakyTest
     public void testAlignItems_stretch_direction_row() throws Throwable {
         final FlexboxTestActivity activity = mActivityRule.getActivity();
-        final FlexboxLayoutManager layoutManager = new FlexboxLayoutManager();
+        final FlexboxLayoutManager layoutManager = new FlexboxLayoutManager(activity);
         final TestAdapter adapter = new TestAdapter();
         mActivityRule.runOnUiThread(new Runnable() {
             @Override
@@ -1480,7 +1480,7 @@ public class FlexboxLayoutManagerTest {
     @FlakyTest
     public void testAlignItems_stretch_direction_column() throws Throwable {
         final FlexboxTestActivity activity = mActivityRule.getActivity();
-        final FlexboxLayoutManager layoutManager = new FlexboxLayoutManager();
+        final FlexboxLayoutManager layoutManager = new FlexboxLayoutManager(activity);
         final TestAdapter adapter = new TestAdapter();
         mActivityRule.runOnUiThread(new Runnable() {
             @Override
@@ -1519,7 +1519,7 @@ public class FlexboxLayoutManagerTest {
     @FlakyTest
     public void testAlignSelf_stretch_direction_row() throws Throwable {
         final FlexboxTestActivity activity = mActivityRule.getActivity();
-        final FlexboxLayoutManager layoutManager = new FlexboxLayoutManager();
+        final FlexboxLayoutManager layoutManager = new FlexboxLayoutManager(activity);
         final TestAdapter adapter = new TestAdapter();
         mActivityRule.runOnUiThread(new Runnable() {
             @Override
@@ -1559,7 +1559,7 @@ public class FlexboxLayoutManagerTest {
     @FlakyTest
     public void testAlignSelf_stretch_direction_column() throws Throwable {
         final FlexboxTestActivity activity = mActivityRule.getActivity();
-        final FlexboxLayoutManager layoutManager = new FlexboxLayoutManager();
+        final FlexboxLayoutManager layoutManager = new FlexboxLayoutManager(activity);
         final TestAdapter adapter = new TestAdapter();
         mActivityRule.runOnUiThread(new Runnable() {
             @Override
@@ -1599,7 +1599,7 @@ public class FlexboxLayoutManagerTest {
     @FlakyTest
     public void testStretchViews_from_middle_direction_row() throws Throwable {
         final FlexboxTestActivity activity = mActivityRule.getActivity();
-        final FlexboxLayoutManager layoutManager = new FlexboxLayoutManager();
+        final FlexboxLayoutManager layoutManager = new FlexboxLayoutManager(activity);
         final TestAdapter adapter = new TestAdapter();
         mActivityRule.runOnUiThread(new Runnable() {
             @Override
@@ -1650,7 +1650,7 @@ public class FlexboxLayoutManagerTest {
     @FlakyTest
     public void testStretchViews_from_middle_direction_column() throws Throwable {
         final FlexboxTestActivity activity = mActivityRule.getActivity();
-        final FlexboxLayoutManager layoutManager = new FlexboxLayoutManager();
+        final FlexboxLayoutManager layoutManager = new FlexboxLayoutManager(activity);
         final TestAdapter adapter = new TestAdapter();
         mActivityRule.runOnUiThread(new Runnable() {
             @Override
@@ -1705,7 +1705,7 @@ public class FlexboxLayoutManagerTest {
         // flex line position (view which has the minimum top position in the same flex line)
         // This test verifies the issue is fixed.
         final FlexboxTestActivity activity = mActivityRule.getActivity();
-        final FlexboxLayoutManager layoutManager = new FlexboxLayoutManager();
+        final FlexboxLayoutManager layoutManager = new FlexboxLayoutManager(activity);
         final TestAdapter adapter = new TestAdapter();
         final int positionInSecondLine = 6;
         mActivityRule.runOnUiThread(new Runnable() {
@@ -1764,7 +1764,7 @@ public class FlexboxLayoutManagerTest {
     @FlakyTest
     public void testScrollToLeft_middleItem_as_anchorPosition() throws Throwable {
         final FlexboxTestActivity activity = mActivityRule.getActivity();
-        final FlexboxLayoutManager layoutManager = new FlexboxLayoutManager();
+        final FlexboxLayoutManager layoutManager = new FlexboxLayoutManager(activity);
         final TestAdapter adapter = new TestAdapter();
         final int positionInSecondLine = 6;
         mActivityRule.runOnUiThread(new Runnable() {
@@ -1828,7 +1828,7 @@ public class FlexboxLayoutManagerTest {
         // flex line position (view which has the maximum bottom position in the same flex line)
         // This test verifies the issue is fixed.
         final FlexboxTestActivity activity = mActivityRule.getActivity();
-        final FlexboxLayoutManager layoutManager = new FlexboxLayoutManager();
+        final FlexboxLayoutManager layoutManager = new FlexboxLayoutManager(activity);
         final TestAdapter adapter = new TestAdapter();
         final int positionInSecondBottomLine = 45;
         mActivityRule.runOnUiThread(new Runnable() {
@@ -1875,7 +1875,7 @@ public class FlexboxLayoutManagerTest {
     @FlakyTest
     public void testScrollToTop_direction_rowReverse() throws Throwable {
         final FlexboxTestActivity activity = mActivityRule.getActivity();
-        final FlexboxLayoutManager layoutManager = new FlexboxLayoutManager();
+        final FlexboxLayoutManager layoutManager = new FlexboxLayoutManager(activity);
         final TestAdapter adapter = new TestAdapter();
         mActivityRule.runOnUiThread(new Runnable() {
             @Override
@@ -1923,7 +1923,7 @@ public class FlexboxLayoutManagerTest {
     @FlakyTest
     public void testFlexGrow_only_oneItem_has_positive_direction_row() throws Throwable {
         final FlexboxTestActivity activity = mActivityRule.getActivity();
-        final FlexboxLayoutManager layoutManager = new FlexboxLayoutManager();
+        final FlexboxLayoutManager layoutManager = new FlexboxLayoutManager(activity);
         final TestAdapter adapter = new TestAdapter();
         mActivityRule.runOnUiThread(new Runnable() {
             @Override
@@ -1956,7 +1956,7 @@ public class FlexboxLayoutManagerTest {
     @FlakyTest
     public void testFlexGrow_only_oneItem_has_positive_direction_column() throws Throwable {
         final FlexboxTestActivity activity = mActivityRule.getActivity();
-        final FlexboxLayoutManager layoutManager = new FlexboxLayoutManager();
+        final FlexboxLayoutManager layoutManager = new FlexboxLayoutManager(activity);
         final TestAdapter adapter = new TestAdapter();
         mActivityRule.runOnUiThread(new Runnable() {
             @Override
@@ -1989,7 +1989,7 @@ public class FlexboxLayoutManagerTest {
     @FlakyTest
     public void testFirstReferenceView_middleOf_line_used_as_anchor() throws Throwable {
         final FlexboxTestActivity activity = mActivityRule.getActivity();
-        final FlexboxLayoutManager layoutManager = new FlexboxLayoutManager();
+        final FlexboxLayoutManager layoutManager = new FlexboxLayoutManager(activity);
         final TestAdapter adapter = new TestAdapter();
         mActivityRule.runOnUiThread(new Runnable() {
             @Override
@@ -2047,7 +2047,7 @@ public class FlexboxLayoutManagerTest {
     @FlakyTest
     public void testLastReferenceView_middleOf_line_used_as_anchor() throws Throwable {
         final FlexboxTestActivity activity = mActivityRule.getActivity();
-        final FlexboxLayoutManager layoutManager = new FlexboxLayoutManager();
+        final FlexboxLayoutManager layoutManager = new FlexboxLayoutManager(activity);
         final TestAdapter adapter = new TestAdapter();
         mActivityRule.runOnUiThread(new Runnable() {
             @Override
@@ -2098,7 +2098,7 @@ public class FlexboxLayoutManagerTest {
     @FlakyTest
     public void testRotateScreen_direction_row() throws Throwable {
         final FlexboxTestActivity activity = mActivityRule.getActivity();
-        final FlexboxLayoutManager layoutManager = new FlexboxLayoutManager();
+        final FlexboxLayoutManager layoutManager = new FlexboxLayoutManager(activity);
         final TestAdapter adapter = new TestAdapter();
         mActivityRule.runOnUiThread(new Runnable() {
             @Override
@@ -2148,7 +2148,7 @@ public class FlexboxLayoutManagerTest {
     @FlakyTest
     public void testRotateScreen_direction_column() throws Throwable {
         final FlexboxTestActivity activity = mActivityRule.getActivity();
-        final FlexboxLayoutManager layoutManager = new FlexboxLayoutManager();
+        final FlexboxLayoutManager layoutManager = new FlexboxLayoutManager(activity);
         final TestAdapter adapter = new TestAdapter();
         mActivityRule.runOnUiThread(new Runnable() {
             @Override
@@ -2198,7 +2198,7 @@ public class FlexboxLayoutManagerTest {
     @FlakyTest
     public void testDecoration_direction_row() throws Throwable {
         final FlexboxTestActivity activity = mActivityRule.getActivity();
-        final FlexboxLayoutManager layoutManager = new FlexboxLayoutManager();
+        final FlexboxLayoutManager layoutManager = new FlexboxLayoutManager(activity);
         final TestAdapter adapter = new TestAdapter();
         final Drawable drawable = ResourcesCompat.getDrawable(activity.getResources(),
                 R.drawable.divider, null);
@@ -2291,7 +2291,7 @@ public class FlexboxLayoutManagerTest {
     @FlakyTest
     public void testDecoration_direction_rowReverse() throws Throwable {
         final FlexboxTestActivity activity = mActivityRule.getActivity();
-        final FlexboxLayoutManager layoutManager = new FlexboxLayoutManager();
+        final FlexboxLayoutManager layoutManager = new FlexboxLayoutManager(activity);
         final TestAdapter adapter = new TestAdapter();
         final Drawable drawable = ResourcesCompat.getDrawable(activity.getResources(),
                 R.drawable.divider, null);
@@ -2393,7 +2393,7 @@ public class FlexboxLayoutManagerTest {
     @FlakyTest
     public void testDecoration_direction_column() throws Throwable {
         final FlexboxTestActivity activity = mActivityRule.getActivity();
-        final FlexboxLayoutManager layoutManager = new FlexboxLayoutManager();
+        final FlexboxLayoutManager layoutManager = new FlexboxLayoutManager(activity);
         final TestAdapter adapter = new TestAdapter();
         final Drawable drawable = ResourcesCompat.getDrawable(activity.getResources(),
                 R.drawable.divider, null);
@@ -2486,7 +2486,7 @@ public class FlexboxLayoutManagerTest {
     @FlakyTest
     public void testDecoration_direction_columnReverse() throws Throwable {
         final FlexboxTestActivity activity = mActivityRule.getActivity();
-        final FlexboxLayoutManager layoutManager = new FlexboxLayoutManager();
+        final FlexboxLayoutManager layoutManager = new FlexboxLayoutManager(activity);
         final TestAdapter adapter = new TestAdapter();
         final Drawable drawable = ResourcesCompat.getDrawable(activity.getResources(),
                 R.drawable.divider, null);
@@ -2588,7 +2588,7 @@ public class FlexboxLayoutManagerTest {
     @FlakyTest
     public void testScrollToPosition_direction_row() throws Throwable {
         final FlexboxTestActivity activity = mActivityRule.getActivity();
-        final FlexboxLayoutManager layoutManager = new FlexboxLayoutManager();
+        final FlexboxLayoutManager layoutManager = new FlexboxLayoutManager(activity);
         final TestAdapter adapter = new TestAdapter();
 
         mActivityRule.runOnUiThread(new Runnable() {
@@ -2671,7 +2671,7 @@ public class FlexboxLayoutManagerTest {
     @FlakyTest
     public void testScrollToPosition_direction_column() throws Throwable {
         final FlexboxTestActivity activity = mActivityRule.getActivity();
-        final FlexboxLayoutManager layoutManager = new FlexboxLayoutManager();
+        final FlexboxLayoutManager layoutManager = new FlexboxLayoutManager(activity);
         final TestAdapter adapter = new TestAdapter();
 
         mActivityRule.runOnUiThread(new Runnable() {
@@ -2754,7 +2754,7 @@ public class FlexboxLayoutManagerTest {
     @FlakyTest
     public void testScrollToPosition_scrollToNewItem_direction_row() throws Throwable {
         final FlexboxTestActivity activity = mActivityRule.getActivity();
-        final FlexboxLayoutManager layoutManager = new FlexboxLayoutManager();
+        final FlexboxLayoutManager layoutManager = new FlexboxLayoutManager(activity);
         final TestAdapter adapter = new TestAdapter();
 
         mActivityRule.runOnUiThread(new Runnable() {
@@ -2798,7 +2798,7 @@ public class FlexboxLayoutManagerTest {
     @FlakyTest
     public void testScrollToPosition_scrollToNewItem_direction_column() throws Throwable {
         final FlexboxTestActivity activity = mActivityRule.getActivity();
-        final FlexboxLayoutManager layoutManager = new FlexboxLayoutManager();
+        final FlexboxLayoutManager layoutManager = new FlexboxLayoutManager(activity);
         final TestAdapter adapter = new TestAdapter();
 
         mActivityRule.runOnUiThread(new Runnable() {
@@ -2847,7 +2847,7 @@ public class FlexboxLayoutManagerTest {
         // https://github.com/google/flexbox-layout/issues/228
 
         final FlexboxTestActivity activity = mActivityRule.getActivity();
-        final FlexboxLayoutManager layoutManager = new FlexboxLayoutManager();
+        final FlexboxLayoutManager layoutManager = new FlexboxLayoutManager(activity);
         final TestAdapter adapter = new TestAdapter();
 
         mActivityRule.runOnUiThread(new Runnable() {
@@ -2915,8 +2915,8 @@ public class FlexboxLayoutManagerTest {
 
         // Give the inner adapter item count enough so that inner RecyclerView with
         // FlexboxLayoutManager wraps its items
-        int innerAdapterItemCount = 20;
-        final NestedOuterAdapter adapter = new NestedOuterAdapter(FlexDirection.ROW,
+        int innerAdapterItemCount = 500;
+        final NestedOuterAdapter adapter = new NestedOuterAdapter(activity,FlexDirection.ROW,
                 innerAdapterItemCount, R.layout.viewholder_inner_recyclerview);
         mActivityRule.runOnUiThread(new Runnable() {
             @Override
@@ -2955,7 +2955,7 @@ public class FlexboxLayoutManagerTest {
         // Give the inner adapter item count enough so that inner RecyclerView with
         // FlexboxLayoutManager wraps its items
         int innerAdapterItemCount = 20;
-        final NestedOuterAdapter adapter = new NestedOuterAdapter(FlexDirection.COLUMN,
+        final NestedOuterAdapter adapter = new NestedOuterAdapter(activity, FlexDirection.COLUMN,
                 innerAdapterItemCount, R.layout.viewholder_inner_recyclerview_wrap_horizontally);
         mActivityRule.runOnUiThread(new Runnable() {
             @Override
@@ -2983,7 +2983,7 @@ public class FlexboxLayoutManagerTest {
     @FlakyTest
     public void testFindVisibleChild_direction_row() throws Throwable {
         final FlexboxTestActivity activity = mActivityRule.getActivity();
-        final FlexboxLayoutManager layoutManager = new FlexboxLayoutManager();
+        final FlexboxLayoutManager layoutManager = new FlexboxLayoutManager(activity);
         final TestAdapter adapter = new TestAdapter();
         mActivityRule.runOnUiThread(new Runnable() {
             @Override
@@ -3033,7 +3033,7 @@ public class FlexboxLayoutManagerTest {
     @FlakyTest
     public void testFindVisibleChild_direction_column() throws Throwable {
         final FlexboxTestActivity activity = mActivityRule.getActivity();
-        final FlexboxLayoutManager layoutManager = new FlexboxLayoutManager();
+        final FlexboxLayoutManager layoutManager = new FlexboxLayoutManager(activity);
         final TestAdapter adapter = new TestAdapter();
         mActivityRule.runOnUiThread(new Runnable() {
             @Override
@@ -3086,7 +3086,7 @@ public class FlexboxLayoutManagerTest {
     @FlakyTest
     public void testDrawDirtyFlexLine_direction_row() throws Throwable {
         final FlexboxTestActivity activity = mActivityRule.getActivity();
-        final FlexboxLayoutManager layoutManager = new FlexboxLayoutManager();
+        final FlexboxLayoutManager layoutManager = new FlexboxLayoutManager(activity);
         final TestAdapter adapter = new TestAdapter();
         mActivityRule.runOnUiThread(new Runnable() {
             @Override
@@ -3142,7 +3142,7 @@ public class FlexboxLayoutManagerTest {
     @FlakyTest
     public void testDrawDirtyFlexLine_direction_column() throws Throwable {
         final FlexboxTestActivity activity = mActivityRule.getActivity();
-        final FlexboxLayoutManager layoutManager = new FlexboxLayoutManager();
+        final FlexboxLayoutManager layoutManager = new FlexboxLayoutManager(activity);
         final TestAdapter adapter = new TestAdapter();
         mActivityRule.runOnUiThread(new Runnable() {
             @Override
@@ -3198,7 +3198,7 @@ public class FlexboxLayoutManagerTest {
     @FlakyTest
     public void testChildrenSizeWithMargin() throws Throwable {
         final FlexboxTestActivity activity = mActivityRule.getActivity();
-        final FlexboxLayoutManager layoutManager = new FlexboxLayoutManager();
+        final FlexboxLayoutManager layoutManager = new FlexboxLayoutManager(activity);
         final TestAdapter adapter = new TestAdapter();
         mActivityRule.runOnUiThread(new Runnable() {
             @Override
@@ -3244,7 +3244,7 @@ public class FlexboxLayoutManagerTest {
         // https://github.com/google/flexbox-layout/issues/285
 
         final FlexboxTestActivity activity = mActivityRule.getActivity();
-        final FlexboxLayoutManager layoutManager = new FlexboxLayoutManager();
+        final FlexboxLayoutManager layoutManager = new FlexboxLayoutManager(activity);
         final TestAdapter adapter = new TestAdapter();
         final Drawable decorationDrawable = getDrawable(activity, R.drawable.divider);
         mActivityRule.runOnUiThread(new Runnable() {
@@ -3318,7 +3318,7 @@ public class FlexboxLayoutManagerTest {
         // https://github.com/google/flexbox-layout/issues/285
 
         final FlexboxTestActivity activity = mActivityRule.getActivity();
-        final FlexboxLayoutManager layoutManager = new FlexboxLayoutManager();
+        final FlexboxLayoutManager layoutManager = new FlexboxLayoutManager(activity);
         final TestAdapter adapter = new TestAdapter();
         final Drawable decorationDrawable = getDrawable(activity, R.drawable.divider);
         mActivityRule.runOnUiThread(new Runnable() {
@@ -3393,7 +3393,7 @@ public class FlexboxLayoutManagerTest {
         // https://github.com/google/flexbox-layout/issues/297
 
         final FlexboxTestActivity activity = mActivityRule.getActivity();
-        final FlexboxLayoutManager layoutManager = new FlexboxLayoutManager();
+        final FlexboxLayoutManager layoutManager = new FlexboxLayoutManager(activity);
         final TestAdapter adapter = new TestAdapter();
         mActivityRule.runOnUiThread(new Runnable() {
             @Override

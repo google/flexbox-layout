@@ -67,7 +67,7 @@ public class FlexboxLayoutManagerConfigChangeTest {
         // orientation
         // happens with an Activity that handles configuration changes manually
         final ConfigChangeActivity activity = mActivityRule.getActivity();
-        final FlexboxLayoutManager layoutManager = new FlexboxLayoutManager();
+        final FlexboxLayoutManager layoutManager = new FlexboxLayoutManager(activity);
         final TestAdapter adapter = new TestAdapter();
 
         mActivityRule.runOnUiThread(new Runnable() {
@@ -127,7 +127,7 @@ public class FlexboxLayoutManagerConfigChangeTest {
         // orientation
         // happens with an Activity that handles configuration changes manually
         final ConfigChangeActivity activity = mActivityRule.getActivity();
-        final FlexboxLayoutManager layoutManager = new FlexboxLayoutManager();
+        final FlexboxLayoutManager layoutManager = new FlexboxLayoutManager(activity);
         final TestAdapter adapter = new TestAdapter();
 
         mActivityRule.runOnUiThread(new Runnable() {
