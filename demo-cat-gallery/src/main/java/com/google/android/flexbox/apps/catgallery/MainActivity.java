@@ -44,7 +44,7 @@ public class MainActivity extends AppCompatActivity {
         setSupportActionBar(toolbar);
 
         RecyclerView recyclerView = (RecyclerView) findViewById(R.id.recyclerview);
-        FlexboxLayoutManager layoutManager = new FlexboxLayoutManager();
+        FlexboxLayoutManager layoutManager = new FlexboxLayoutManager(this);
         layoutManager.setFlexWrap(FlexWrap.WRAP);
         layoutManager.setFlexDirection(FlexDirection.ROW);
         layoutManager.setAlignItems(AlignItems.STRETCH);
