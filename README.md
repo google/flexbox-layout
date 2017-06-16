@@ -11,7 +11,7 @@ Add the following dependency to your `build.gradle` file:
 Stable
 ```
 dependencies {
-    compile 'com.google.android:flexbox:0.2.6'
+    compile 'com.google.android:flexbox:0.2.7'
 }
 ```
 
