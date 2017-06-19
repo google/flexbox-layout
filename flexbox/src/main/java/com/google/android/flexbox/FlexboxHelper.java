@@ -362,7 +362,7 @@ class FlexboxHelper {
      * @return an instance of {@link FlexLinesResult} that contains a list of flex lines and the
      * child state used by {@link View#setMeasuredDimension(int, int)}.
      */
-    private FlexLinesResult calculateFlexLines(int mainMeasureSpec, int crossMeasureSpec,
+    FlexLinesResult calculateFlexLines(int mainMeasureSpec, int crossMeasureSpec,
             int needsCalcAmount, int fromIndex, int toIndex,
             @Nullable List<FlexLine> existingLines) {
 
@@ -825,7 +825,6 @@ class FlexboxHelper {
         flexLine.mSumCrossSizeBefore = usedCrossSizeSoFar;
         mFlexContainer.onNewFlexLineAdded(flexLine);
         flexLine.mLastIndex = viewIndex;
-        flexLine.mDirty = false;
         flexLines.add(flexLine);
     }
 
@@ -1556,6 +1555,9 @@ class FlexboxHelper {
                 FlexLine flexLine = flexLines.get(i);
                 for (int j = 0, itemCount = flexLine.mItemCount; j < itemCount;
                         j++, viewIndex++) {
+                    if (j >= mFlexContainer.getFlexItemCount()) {
+                        continue;
+                    }
                     View view = mFlexContainer.getReorderedFlexItemAt(viewIndex);
                     if (view == null || view.getVisibility() == View.GONE) {
                         continue;

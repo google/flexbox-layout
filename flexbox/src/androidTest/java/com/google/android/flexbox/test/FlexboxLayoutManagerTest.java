@@ -27,6 +27,7 @@ import static junit.framework.Assert.assertTrue;
 
 import static org.hamcrest.Matchers.instanceOf;
 import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.lessThan;
 import static org.hamcrest.Matchers.notNullValue;
 import static org.hamcrest.core.IsNot.not;
 import static org.junit.Assert.assertThat;
@@ -3192,6 +3193,79 @@ public class FlexboxLayoutManagerTest {
                 isEqualAllowingError(TestUtil.dpToPixel(activity, 100)));
         assertThat(firstVisible.getHeight(),
                 isEqualAllowingError(TestUtil.dpToPixel(activity, 120)));
+    }
+
+    @Test
+    @FlakyTest
+    public void testDrawDirtyFlexLine_multi_viewTypes_direction_row() throws Throwable {
+        // This test verifies https://github.com/google/flexbox-layout/issues/280
+        // the position of the view type is shifted if a new item is inserted before the
+        // view which has the special viewType and that view isn't visible at the time the item
+        // was inserted.
+        final FlexboxTestActivity activity = mActivityRule.getActivity();
+        final FlexboxLayoutManager layoutManager = new FlexboxLayoutManager(activity);
+        final TestAdapterMultiViewTypes adapter = new TestAdapterMultiViewTypes();
+        mActivityRule.runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                activity.setContentView(R.layout.recyclerview);
+                RecyclerView recyclerView = (RecyclerView) activity.findViewById(R.id.recyclerview);
+                layoutManager.setFlexDirection(FlexDirection.ROW);
+                recyclerView.setLayoutManager(layoutManager);
+                recyclerView.setAdapter(adapter);
+            }
+        });
+        InstrumentationRegistry.getInstrumentation().waitForIdleSync();
+        RecyclerView parent = (RecyclerView) activity.findViewById(R.id.recyclerview);
+        TextView matchParentText = (TextView) layoutManager
+                .getChildAt(TestAdapterMultiViewTypes.POSITION_MATCH_PARENT);
+        assertThat(matchParentText.getWidth(), is(parent.getWidth()));
+        assertThat(matchParentText.getText().toString(),
+                is(String.valueOf(TestAdapterMultiViewTypes.POSITION_MATCH_PARENT + 1)));
+
+        onView(withId(R.id.recyclerview)).perform(swipe(GeneralLocation.BOTTOM_CENTER,
+                GeneralLocation.TOP_CENTER));
+        onView(withId(R.id.recyclerview)).perform(swipe(GeneralLocation.BOTTOM_CENTER,
+                GeneralLocation.TOP_CENTER));
+        onView(withId(R.id.recyclerview)).perform(swipe(GeneralLocation.BOTTOM_CENTER,
+                GeneralLocation.TOP_CENTER));
+        onView(withId(R.id.recyclerview)).perform(swipe(GeneralLocation.BOTTOM_CENTER,
+                GeneralLocation.TOP_CENTER));
+
+        final int insertedValue = 10;
+        mActivityRule.runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                TestAdapterMultiViewTypes.Item item = new TestAdapterMultiViewTypes.Item();
+                item.value = insertedValue;
+                // Insert an item before the position that has a special viewType
+                adapter.addItemAt(TestAdapterMultiViewTypes.POSITION_MATCH_PARENT - 1, item);
+            }
+        });
+        onView(withId(R.id.recyclerview)).perform(swipe(GeneralLocation.TOP_CENTER,
+                GeneralLocation.BOTTOM_CENTER));
+        onView(withId(R.id.recyclerview)).perform(swipe(GeneralLocation.TOP_CENTER,
+                GeneralLocation.BOTTOM_CENTER));
+        onView(withId(R.id.recyclerview)).perform(swipe(GeneralLocation.TOP_CENTER,
+                GeneralLocation.BOTTOM_CENTER));
+        onView(withId(R.id.recyclerview)).perform(swipe(GeneralLocation.TOP_CENTER,
+                GeneralLocation.BOTTOM_CENTER));
+        InstrumentationRegistry.getInstrumentation().waitForIdleSync();
+
+        // Since a new item is inserted before the position, the index at the view who has the
+        // special viewType should be shifted.
+        matchParentText = (TextView) layoutManager
+                .getChildAt(TestAdapterMultiViewTypes.POSITION_MATCH_PARENT + 1);
+        assertThat(matchParentText.getWidth(), is(parent.getWidth()));
+        assertThat(matchParentText.getText().toString(),
+                is(String.valueOf(TestAdapterMultiViewTypes.POSITION_MATCH_PARENT + 1)));
+
+        // The position of this view is the old position who had the special viewType, but
+        // now the viewType should be a normal one
+        TextView textView = (TextView) layoutManager
+                .getChildAt(TestAdapterMultiViewTypes.POSITION_MATCH_PARENT - 1);
+        assertThat(textView.getWidth(), lessThan(parent.getWidth()));
+        assertThat(textView.getText().toString(), is(String.valueOf(insertedValue)));
     }
 
     @Test
