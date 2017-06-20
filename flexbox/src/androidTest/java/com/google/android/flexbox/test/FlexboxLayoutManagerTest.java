@@ -3497,6 +3497,94 @@ public class FlexboxLayoutManagerTest {
         assertThat((String) adapter.getPayloads().get(0), is(payload));
     }
 
+    @Test
+    @FlakyTest
+    public void testScrollAlongManAxis_direction_row() throws Throwable {
+        // This test verifies the scroll along the main axis if the width of the RecyclerView is
+        // larger than its parent when the main axis direction is horizontal (row)
+        final FlexboxTestActivity activity = mActivityRule.getActivity();
+        final FlexboxLayoutManager layoutManager = new FlexboxLayoutManager(activity);
+        final TestAdapter adapter = new TestAdapter();
+        mActivityRule.runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                activity.setContentView(R.layout.wrapped_recyclerview);
+                RecyclerView recyclerView = (RecyclerView) activity.findViewById(R.id.recyclerview);
+                layoutManager.setFlexDirection(FlexDirection.ROW);
+                recyclerView.setLayoutManager(layoutManager);
+                recyclerView.setAdapter(adapter);
+                for (int i = 0; i < 50; i++) {
+                    FlexboxLayoutManager.LayoutParams lp = createLayoutParams(activity, 100, 70);
+                    adapter.addItem(lp);
+                }
+            }
+        });
+        InstrumentationRegistry.getInstrumentation().waitForIdleSync();
+        assertThat(layoutManager.getChildAt(0).getLeft(), is(0));
+        onView(withId(R.id.container)).perform(swipe(GeneralLocation.CENTER_RIGHT,
+                GeneralLocation.CENTER_LEFT));
+        onView(withId(R.id.container)).perform(swipe(GeneralLocation.CENTER_RIGHT,
+                GeneralLocation.CENTER_LEFT));
+        onView(withId(R.id.container)).perform(swipe(GeneralLocation.CENTER_RIGHT,
+                GeneralLocation.CENTER_LEFT));
+        assertThat(layoutManager.getChildAt(0).getLeft(), is(not(0)));
+
+        InstrumentationRegistry.getInstrumentation().waitForIdleSync();
+        onView(withId(R.id.container)).perform(swipe(GeneralLocation.CENTER_LEFT,
+                GeneralLocation.CENTER_RIGHT));
+        onView(withId(R.id.container)).perform(swipe(GeneralLocation.CENTER_LEFT,
+                GeneralLocation.CENTER_RIGHT));
+        onView(withId(R.id.container)).perform(swipe(GeneralLocation.CENTER_LEFT,
+                GeneralLocation.CENTER_RIGHT));
+        onView(withId(R.id.container)).perform(swipe(GeneralLocation.CENTER_LEFT,
+                GeneralLocation.CENTER_RIGHT));
+        assertThat(layoutManager.getChildAt(0).getLeft(), is(0));
+    }
+
+    @Test
+    @FlakyTest
+    public void testScrollAlongManAxis_direction_column() throws Throwable {
+        // This test verifies the scroll along the main axis if the height of the RecyclerView is
+        // larger than its parent when the main axis direction is vertical (column).
+        final FlexboxTestActivity activity = mActivityRule.getActivity();
+        final FlexboxLayoutManager layoutManager = new FlexboxLayoutManager(activity);
+        final TestAdapter adapter = new TestAdapter();
+        mActivityRule.runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                activity.setContentView(R.layout.wrapped_recyclerview_scroll_vertical);
+                RecyclerView recyclerView = (RecyclerView) activity.findViewById(R.id.recyclerview);
+                layoutManager.setFlexDirection(FlexDirection.COLUMN);
+                recyclerView.setLayoutManager(layoutManager);
+                recyclerView.setAdapter(adapter);
+                for (int i = 0; i < 50; i++) {
+                    FlexboxLayoutManager.LayoutParams lp = createLayoutParams(activity, 70, 100);
+                    adapter.addItem(lp);
+                }
+            }
+        });
+        InstrumentationRegistry.getInstrumentation().waitForIdleSync();
+        assertThat(layoutManager.getChildAt(0).getTop(), is(0));
+        onView(withId(R.id.container)).perform(swipe(GeneralLocation.BOTTOM_CENTER,
+                GeneralLocation.TOP_CENTER));
+        onView(withId(R.id.container)).perform(swipe(GeneralLocation.BOTTOM_CENTER,
+                GeneralLocation.TOP_CENTER));
+        onView(withId(R.id.container)).perform(swipe(GeneralLocation.BOTTOM_CENTER,
+                GeneralLocation.TOP_CENTER));
+        assertThat(layoutManager.getChildAt(0).getTop(), is(not(0)));
+
+        InstrumentationRegistry.getInstrumentation().waitForIdleSync();
+        onView(withId(R.id.container)).perform(swipe(GeneralLocation.TOP_CENTER,
+                GeneralLocation.BOTTOM_CENTER));
+        onView(withId(R.id.container)).perform(swipe(GeneralLocation.TOP_CENTER,
+                GeneralLocation.BOTTOM_CENTER));
+        onView(withId(R.id.container)).perform(swipe(GeneralLocation.TOP_CENTER,
+                GeneralLocation.BOTTOM_CENTER));
+        onView(withId(R.id.container)).perform(swipe(GeneralLocation.TOP_CENTER,
+                GeneralLocation.BOTTOM_CENTER));
+        assertThat(layoutManager.getChildAt(0).getTop(), is(0));
+    }
+
     /**
      * Creates a new flex item.
      *
