@@ -192,6 +192,12 @@ public class FlexboxLayout extends ViewGroup implements FlexContainer {
 
     private List<FlexLine> mFlexLines = new ArrayList<>();
 
+    /**
+     * Used for receiving the calculation of the flex results to avoid creating a new instance
+     * every time flex lines are calculated.
+     */
+    private FlexboxHelper.FlexLinesResult mFlexLinesResult = new FlexboxHelper.FlexLinesResult();
+
     public FlexboxLayout(Context context) {
         this(context, null);
     }
@@ -333,9 +339,11 @@ public class FlexboxLayout extends ViewGroup implements FlexContainer {
     private void measureHorizontal(int widthMeasureSpec, int heightMeasureSpec) {
         mFlexLines.clear();
 
-        FlexboxHelper.FlexLinesResult flexLinesResult = mFlexboxHelper
-                .calculateHorizontalFlexLines(widthMeasureSpec, heightMeasureSpec);
-        mFlexLines = flexLinesResult.mFlexLines;
+        mFlexLinesResult.reset();
+        mFlexboxHelper
+                .calculateHorizontalFlexLines(mFlexLinesResult, widthMeasureSpec,
+                        heightMeasureSpec);
+        mFlexLines = mFlexLinesResult.mFlexLines;
 
         mFlexboxHelper.determineMainSize(widthMeasureSpec, heightMeasureSpec);
 
@@ -372,7 +380,7 @@ public class FlexboxLayout extends ViewGroup implements FlexContainer {
         // Expand the views if alignItems (or mAlignSelf in each child view) is set to stretch
         mFlexboxHelper.stretchViews();
         setMeasuredDimensionForFlex(mFlexDirection, widthMeasureSpec, heightMeasureSpec,
-                flexLinesResult.mChildState);
+                mFlexLinesResult.mChildState);
     }
 
     /**
@@ -389,9 +397,10 @@ public class FlexboxLayout extends ViewGroup implements FlexContainer {
      */
     private void measureVertical(int widthMeasureSpec, int heightMeasureSpec) {
         mFlexLines.clear();
-        FlexboxHelper.FlexLinesResult flexLinesResult = mFlexboxHelper
-                .calculateVerticalFlexLines(widthMeasureSpec, heightMeasureSpec);
-        mFlexLines = flexLinesResult.mFlexLines;
+        mFlexLinesResult.reset();
+        mFlexboxHelper.calculateVerticalFlexLines(mFlexLinesResult, widthMeasureSpec,
+                heightMeasureSpec);
+        mFlexLines = mFlexLinesResult.mFlexLines;
 
         mFlexboxHelper.determineMainSize(widthMeasureSpec, heightMeasureSpec);
         mFlexboxHelper.determineCrossSize(widthMeasureSpec, heightMeasureSpec,
@@ -400,7 +409,7 @@ public class FlexboxLayout extends ViewGroup implements FlexContainer {
         // Expand the views if alignItems (or mAlignSelf in each child view) is set to stretch
         mFlexboxHelper.stretchViews();
         setMeasuredDimensionForFlex(mFlexDirection, widthMeasureSpec, heightMeasureSpec,
-                flexLinesResult.mChildState);
+                mFlexLinesResult.mChildState);
     }
 
     /**

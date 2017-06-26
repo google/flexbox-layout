@@ -172,6 +172,12 @@ public class FlexboxLayoutManager extends RecyclerView.LayoutManager implements 
     private int mDirtyPosition = NO_POSITION;
 
     /**
+     * Used for storing the results of calculation of flex lines to avoid creating a new instance
+     * every time the calculation happens.
+     */
+    private FlexboxHelper.FlexLinesResult mFlexLinesResult = new FlexboxHelper.FlexLinesResult();
+
+    /**
      * Creates a default FlexboxLayoutManager.
      */
     public FlexboxLayoutManager(Context context) {
@@ -845,16 +851,19 @@ public class FlexboxLayoutManager extends RecyclerView.LayoutManager implements 
             // position
             mFlexLines.clear();
             assert mFlexboxHelper.mIndexToFlexLine != null;
+            mFlexLinesResult.reset();
             if (isMainAxisDirectionHorizontal()) {
-                flexLinesResult = mFlexboxHelper
-                        .calculateHorizontalFlexLinesToIndex(widthMeasureSpec, heightMeasureSpec,
+                mFlexboxHelper
+                        .calculateHorizontalFlexLinesToIndex(mFlexLinesResult,
+                                widthMeasureSpec, heightMeasureSpec,
                                 needsToFill, mAnchorInfo.mPosition, mFlexLines);
             } else {
-                flexLinesResult = mFlexboxHelper
-                        .calculateVerticalFlexLinesToIndex(widthMeasureSpec, heightMeasureSpec,
+                mFlexboxHelper
+                        .calculateVerticalFlexLinesToIndex(mFlexLinesResult,
+                                widthMeasureSpec, heightMeasureSpec,
                                 needsToFill, mAnchorInfo.mPosition, mFlexLines);
             }
-            mFlexLines = flexLinesResult.mFlexLines;
+            mFlexLines = mFlexLinesResult.mFlexLines;
             mFlexboxHelper.determineMainSize(widthMeasureSpec, heightMeasureSpec);
             mFlexboxHelper.stretchViews();
             mAnchorInfo.mFlexLinePosition =
@@ -868,6 +877,7 @@ public class FlexboxLayoutManager extends RecyclerView.LayoutManager implements 
             int fromIndex = mDirtyPosition != NO_POSITION ?
                     Math.min(mDirtyPosition, mAnchorInfo.mPosition) : mAnchorInfo.mPosition;
 
+            mFlexLinesResult.reset();
             if (isMainAxisDirectionHorizontal()) {
                 if (mFlexLines.size() > 0) {
                     // Remove the already calculated flex lines from the fromIndex (either of
@@ -875,13 +885,14 @@ public class FlexboxLayoutManager extends RecyclerView.LayoutManager implements 
                     // changed) and calculate beyond the available amount
                     // (visible area that needs to be filled)
                     mFlexboxHelper.clearFlexLines(mFlexLines, fromIndex);
-                    flexLinesResult = mFlexboxHelper.calculateFlexLines(widthMeasureSpec,
+                    mFlexboxHelper.calculateFlexLines(mFlexLinesResult, widthMeasureSpec,
                             heightMeasureSpec, needsToFill, fromIndex, mAnchorInfo.mPosition,
                             mFlexLines);
                 } else {
                     mFlexboxHelper.ensureIndexToFlexLine(childCount);
-                    flexLinesResult = mFlexboxHelper
-                            .calculateHorizontalFlexLines(widthMeasureSpec, heightMeasureSpec,
+                    mFlexboxHelper
+                            .calculateHorizontalFlexLines(mFlexLinesResult,
+                                    widthMeasureSpec, heightMeasureSpec,
                                     needsToFill, 0, mFlexLines);
                 }
             } else {
@@ -891,17 +902,17 @@ public class FlexboxLayoutManager extends RecyclerView.LayoutManager implements 
                     // changed) and calculate beyond the available amount
                     // (visible area that needs to be filled)
                     mFlexboxHelper.clearFlexLines(mFlexLines, fromIndex);
-                    flexLinesResult = mFlexboxHelper.calculateFlexLines(heightMeasureSpec,
+                    mFlexboxHelper.calculateFlexLines(mFlexLinesResult, heightMeasureSpec,
                             widthMeasureSpec, needsToFill, fromIndex, mAnchorInfo.mPosition,
                             mFlexLines);
                 } else {
                     mFlexboxHelper.ensureIndexToFlexLine(childCount);
-                    flexLinesResult = mFlexboxHelper
-                            .calculateVerticalFlexLines(widthMeasureSpec, heightMeasureSpec,
-                                    needsToFill, 0, mFlexLines);
+                    mFlexboxHelper
+                            .calculateVerticalFlexLines(mFlexLinesResult, widthMeasureSpec,
+                                    heightMeasureSpec, needsToFill, 0, mFlexLines);
                 }
             }
-            mFlexLines = flexLinesResult.mFlexLines;
+            mFlexLines = mFlexLinesResult.mFlexLines;
             mFlexboxHelper.determineMainSize(widthMeasureSpec, heightMeasureSpec,
                     fromIndex);
             // Unlike the FlexboxLayout not calling FlexboxHelper#determineCrossSize because
@@ -1785,7 +1796,7 @@ public class FlexboxLayoutManager extends RecyclerView.LayoutManager implements 
         int layoutDirection = delta > 0 ? LayoutState.LAYOUT_END : LayoutState.LAYOUT_START;
         int absDelta = Math.abs(delta);
 
-        updateLayoutState(recycler, layoutDirection, absDelta);
+        updateLayoutState(layoutDirection, absDelta);
 
         int freeScroll = mLayoutState.mScrollingOffset;
         int consumed = freeScroll + fill(recycler, state, mLayoutState);
@@ -1802,12 +1813,11 @@ public class FlexboxLayoutManager extends RecyclerView.LayoutManager implements 
      * Update the layout state as part of the scrolling. This method also update the flex lines
      * enough to display the view port including the delta of the scroll.
      *
-     * @param recycler        the Recycler instance
      * @param layoutDirection the layout direction value. Either of {@link LayoutState#LAYOUT_END}
      *                        or {@link LayoutState#LAYOUT_START}
      * @param absDelta        the absolute value of the delta that is about to be scrolled.
      */
-    private void updateLayoutState(RecyclerView.Recycler recycler, int layoutDirection,
+    private void updateLayoutState(int layoutDirection,
             int absDelta) {
         assert mFlexboxHelper.mIndexToFlexLine != null;
         // TODO: Consider updating LayoutState#mExtra to support better smooth scrolling
@@ -1848,13 +1858,14 @@ public class FlexboxLayoutManager extends RecyclerView.LayoutManager implements 
                 // flex container, need to calculate beyond the amount that needs to be filled
 
                 int needsToFill = absDelta - mLayoutState.mScrollingOffset;
+                mFlexLinesResult.reset();
                 if (needsToFill > 0) {
                     if (mainAxisHorizontal) {
-                        mFlexboxHelper.calculateHorizontalFlexLines(
+                        mFlexboxHelper.calculateHorizontalFlexLines(mFlexLinesResult,
                                 widthMeasureSpec, heightMeasureSpec, needsToFill,
                                 mLayoutState.mPosition, mFlexLines);
                     } else {
-                        mFlexboxHelper.calculateVerticalFlexLines(
+                        mFlexboxHelper.calculateVerticalFlexLines(mFlexLinesResult,
                                 widthMeasureSpec, heightMeasureSpec, needsToFill,
                                 mLayoutState.mPosition, mFlexLines);
                     }
