@@ -209,10 +209,11 @@ class FlexboxHelper {
      * Calculate how many flex lines are needed in the flex container.
      * This method should calculate all the flex lines from the existing flex items.
      *
-     * @see #calculateFlexLines(int, int, int, int, int, List)
+     * @see #calculateFlexLines(FlexLinesResult, int, int, int, int, int, List)
      */
-    FlexLinesResult calculateHorizontalFlexLines(int widthMeasureSpec, int heightMeasureSpec) {
-        return calculateFlexLines(widthMeasureSpec, heightMeasureSpec, Integer.MAX_VALUE,
+    void calculateHorizontalFlexLines(FlexLinesResult result, int widthMeasureSpec,
+            int heightMeasureSpec) {
+        calculateFlexLines(result, widthMeasureSpec, heightMeasureSpec, Integer.MAX_VALUE,
                 0, NO_POSITION, null);
     }
 
@@ -221,6 +222,9 @@ class FlexboxHelper {
      * Stop calculating it if the calculated amount along the cross size reaches the argument
      * as the needsCalcAmount.
      *
+     * @param result            an instance of {@link FlexLinesResult} that is going to contain a
+     *                          list of flex lines and the child state used by
+     *                          {@link View#setMeasuredDimension(int, int)}.
      * @param widthMeasureSpec  the width measure spec imposed by the flex container
      * @param heightMeasureSpec the height measure spec imposed by the flex container
      * @param needsCalcAmount   the amount of pixels where flex line calculation should be stopped
@@ -233,10 +237,10 @@ class FlexboxHelper {
      * @param fromIndex         the index of the child from which the calculation starts
      * @param existingLines     If not null, calculated flex lines will be added to this instance
      */
-    FlexLinesResult calculateHorizontalFlexLines(int widthMeasureSpec,
+    void calculateHorizontalFlexLines(FlexLinesResult result, int widthMeasureSpec,
             int heightMeasureSpec, int needsCalcAmount, int fromIndex,
             @Nullable List<FlexLine> existingLines) {
-        return calculateFlexLines(widthMeasureSpec, heightMeasureSpec, needsCalcAmount,
+        calculateFlexLines(result, widthMeasureSpec, heightMeasureSpec, needsCalcAmount,
                 fromIndex, NO_POSITION, existingLines);
     }
 
@@ -247,6 +251,9 @@ class FlexboxHelper {
      * flex lines which includes the view who has the index as the {@code toIndex} argument.
      * (First calculate to the toIndex, then calculate the amount of pixels as needsCalcAmount)
      *
+     * @param result            an instance of {@link FlexLinesResult} that is going to contain a
+     *                          list of flex lines and the child state used by
+     *                          {@link View#setMeasuredDimension(int, int)}.
      * @param widthMeasureSpec  the width measure spec imposed by the flex container
      * @param heightMeasureSpec the height measure spec imposed by the flex container
      * @param needsCalcAmount   the amount of pixels where flex line calculation should be stopped
@@ -262,9 +269,9 @@ class FlexboxHelper {
      *                          to the index, calculate the amount of pixels as the needsCalcAmount
      *                          argument in addition to that
      */
-    FlexLinesResult calculateHorizontalFlexLinesToIndex(int widthMeasureSpec, int heightMeasureSpec,
-            int needsCalcAmount, int toIndex, List<FlexLine> existingLines) {
-        return calculateFlexLines(widthMeasureSpec, heightMeasureSpec, needsCalcAmount,
+    void calculateHorizontalFlexLinesToIndex(FlexLinesResult result, int widthMeasureSpec,
+            int heightMeasureSpec, int needsCalcAmount, int toIndex, List<FlexLine> existingLines) {
+        calculateFlexLines(result, widthMeasureSpec, heightMeasureSpec, needsCalcAmount,
                 0, toIndex, existingLines);
     }
 
@@ -272,12 +279,15 @@ class FlexboxHelper {
      * Calculate how many flex lines are needed in the flex container.
      * This method should calculate all the flex lines from the existing flex items.
      *
+     * @param result            an instance of {@link FlexLinesResult} that is going to contain a
+     *                          list of flex lines and the child state used by
+     *                          {@link View#setMeasuredDimension(int, int)}.
      * @param widthMeasureSpec  the width measure spec imposed by the flex container
      * @param heightMeasureSpec the height measure spec imposed by the flex container
-     * @see #calculateFlexLines(int, int, int, int, int, List)
+     * @see #calculateFlexLines(FlexLinesResult, int, int, int, int, int, List)
      */
-    FlexLinesResult calculateVerticalFlexLines(int widthMeasureSpec, int heightMeasureSpec) {
-        return calculateFlexLines(heightMeasureSpec, widthMeasureSpec, Integer.MAX_VALUE,
+    void calculateVerticalFlexLines(FlexLinesResult result, int widthMeasureSpec, int heightMeasureSpec) {
+        calculateFlexLines(result, heightMeasureSpec, widthMeasureSpec, Integer.MAX_VALUE,
                 0, NO_POSITION, null);
     }
 
@@ -286,6 +296,9 @@ class FlexboxHelper {
      * Stop calculating it if the calculated amount along the cross size reaches the argument
      * as the needsCalcAmount.
      *
+     * @param result            an instance of {@link FlexLinesResult} that is going to contain a
+     *                          list of flex lines and the child state used by
+     *                          {@link View#setMeasuredDimension(int, int)}.
      * @param widthMeasureSpec  the width measure spec imposed by the flex container
      * @param heightMeasureSpec the height measure spec imposed by the flex container
      * @param needsCalcAmount   the amount of pixels where flex line calculation should be stopped
@@ -298,10 +311,10 @@ class FlexboxHelper {
      * @param fromIndex         the index of the child from which the calculation starts
      * @param existingLines     If not null, calculated flex lines will be added to this instance
      */
-    FlexLinesResult calculateVerticalFlexLines(int widthMeasureSpec,
+    void calculateVerticalFlexLines(FlexLinesResult result, int widthMeasureSpec,
             int heightMeasureSpec, int needsCalcAmount, int fromIndex,
             @Nullable List<FlexLine> existingLines) {
-        return calculateFlexLines(heightMeasureSpec, widthMeasureSpec, needsCalcAmount,
+        calculateFlexLines(result, heightMeasureSpec, widthMeasureSpec, needsCalcAmount,
                 fromIndex, NO_POSITION, existingLines);
     }
 
@@ -312,6 +325,9 @@ class FlexboxHelper {
      * flex lines which includes the view who has the index as the {@code toIndex} argument.
      * (First calculate to the toIndex, then calculate the amount of pixels as needsCalcAmount)
      *
+     * @param result            an instance of {@link FlexLinesResult} that is going to contain a
+     *                          list of flex lines and the child state used by
+     *                          {@link View#setMeasuredDimension(int, int)}.
      * @param widthMeasureSpec  the width measure spec imposed by the flex container
      * @param heightMeasureSpec the height measure spec imposed by the flex container
      * @param needsCalcAmount   the amount of pixels where flex line calculation should be stopped
@@ -327,9 +343,9 @@ class FlexboxHelper {
      *                          to the index, calculate the amount of pixels as the needsCalcAmount
      *                          argument in addition to that
      */
-    FlexLinesResult calculateVerticalFlexLinesToIndex(int widthMeasureSpec, int heightMeasureSpec,
-            int needsCalcAmount, int toIndex, List<FlexLine> existingLines) {
-        return calculateFlexLines(heightMeasureSpec, widthMeasureSpec, needsCalcAmount,
+    void calculateVerticalFlexLinesToIndex(FlexLinesResult result, int widthMeasureSpec,
+            int heightMeasureSpec, int needsCalcAmount, int toIndex, List<FlexLine> existingLines) {
+        calculateFlexLines(result, heightMeasureSpec, widthMeasureSpec, needsCalcAmount,
                 0, toIndex, existingLines);
     }
 
@@ -341,6 +357,9 @@ class FlexboxHelper {
      * attributes are done in a later procedure, so the views' measured width and measured
      * height may be changed in a later process.
      *
+     * @param result           an instance of {@link FlexLinesResult} that is going to contain a
+     *                         list of flex lines and the child state used by
+     *                         {@link View#setMeasuredDimension(int, int)}.
      * @param mainMeasureSpec  the main axis measure spec imposed by the flex container,
      *                         width for horizontal direction, height otherwise
      * @param crossMeasureSpec the cross axis measure spec imposed by the flex container,
@@ -359,11 +378,9 @@ class FlexboxHelper {
      *                         to the index, calculate the amount of pixels as the needsCalcAmount
      *                         argument in addition to that
      * @param existingLines    If not null, calculated flex lines will be added to this instance
-     * @return an instance of {@link FlexLinesResult} that contains a list of flex lines and the
-     * child state used by {@link View#setMeasuredDimension(int, int)}.
      */
-    FlexLinesResult calculateFlexLines(int mainMeasureSpec, int crossMeasureSpec,
-            int needsCalcAmount, int fromIndex, int toIndex,
+    void calculateFlexLines(FlexLinesResult result, int mainMeasureSpec,
+            int crossMeasureSpec, int needsCalcAmount, int fromIndex, int toIndex,
             @Nullable List<FlexLine> existingLines) {
 
         boolean isMainHorizontal = mFlexContainer.isMainAxisDirectionHorizontal();
@@ -380,7 +397,6 @@ class FlexboxHelper {
             flexLines = existingLines;
         }
 
-        FlexLinesResult result = new FlexLinesResult();
         result.mFlexLines = flexLines;
 
         boolean reachedToIndex = toIndex == NO_POSITION;
@@ -603,7 +619,6 @@ class FlexboxHelper {
         }
 
         result.mChildState = childState;
-        return result;
     }
 
     /**
@@ -1981,5 +1996,10 @@ class FlexboxHelper {
         List<FlexLine> mFlexLines;
 
         int mChildState;
+
+        void reset() {
+            mFlexLines = null;
+            mChildState = 0;
+        }
     }
 }

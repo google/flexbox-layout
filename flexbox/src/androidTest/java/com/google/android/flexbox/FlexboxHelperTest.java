@@ -81,8 +81,8 @@ public class FlexboxHelperTest {
                 .makeMeasureSpec(1000, View.MeasureSpec.UNSPECIFIED);
 
         mFlexboxHelper.ensureIndexToFlexLine(mFlexContainer.getFlexItemCount());
-        FlexboxHelper.FlexLinesResult result = mFlexboxHelper
-                .calculateHorizontalFlexLines(widthMeasureSpec, heightMeasureSpec);
+        FlexboxHelper.FlexLinesResult result = new FlexboxHelper.FlexLinesResult();
+        mFlexboxHelper.calculateHorizontalFlexLines(result, widthMeasureSpec, heightMeasureSpec);
 
         assertEquals(3, result.mFlexLines.size());
         assertEquals(300, result.mFlexLines.get(0).getMainSize());
@@ -134,8 +134,8 @@ public class FlexboxHelperTest {
         int heightMeasureSpec = View.MeasureSpec.makeMeasureSpec(500, View.MeasureSpec.EXACTLY);
 
         mFlexboxHelper.ensureIndexToFlexLine(mFlexContainer.getFlexItemCount());
-        FlexboxHelper.FlexLinesResult result = mFlexboxHelper
-                .calculateVerticalFlexLines(widthMeasureSpec, heightMeasureSpec);
+        FlexboxHelper.FlexLinesResult result = new FlexboxHelper.FlexLinesResult();
+        mFlexboxHelper.calculateVerticalFlexLines(result, widthMeasureSpec, heightMeasureSpec);
 
         assertEquals(3, result.mFlexLines.size());
         assertEquals(300, result.mFlexLines.get(0).getMainSize());
@@ -188,8 +188,8 @@ public class FlexboxHelperTest {
         int widthMeasureSpec = View.MeasureSpec.makeMeasureSpec(500, View.MeasureSpec.EXACTLY);
         int heightMeasureSpec = View.MeasureSpec
                 .makeMeasureSpec(1000, View.MeasureSpec.UNSPECIFIED);
-        FlexboxHelper.FlexLinesResult result = mFlexboxHelper
-                .calculateHorizontalFlexLines(widthMeasureSpec, heightMeasureSpec);
+        FlexboxHelper.FlexLinesResult result = new FlexboxHelper.FlexLinesResult();
+        mFlexboxHelper.calculateHorizontalFlexLines(result, widthMeasureSpec, heightMeasureSpec);
         mFlexContainer.setFlexLines(result.mFlexLines);
         mFlexboxHelper.determineMainSize(widthMeasureSpec, heightMeasureSpec);
 
@@ -231,8 +231,8 @@ public class FlexboxHelperTest {
         int widthMeasureSpec = View.MeasureSpec.makeMeasureSpec(1000, View.MeasureSpec.UNSPECIFIED);
         int heightMeasureSpec = View.MeasureSpec
                 .makeMeasureSpec(500, View.MeasureSpec.EXACTLY);
-        FlexboxHelper.FlexLinesResult result = mFlexboxHelper
-                .calculateVerticalFlexLines(widthMeasureSpec, heightMeasureSpec);
+        FlexboxHelper.FlexLinesResult result = new FlexboxHelper.FlexLinesResult();
+        mFlexboxHelper.calculateVerticalFlexLines(result, widthMeasureSpec, heightMeasureSpec);
         mFlexContainer.setFlexLines(result.mFlexLines);
         mFlexboxHelper.determineMainSize(widthMeasureSpec, heightMeasureSpec);
 
@@ -272,8 +272,8 @@ public class FlexboxHelperTest {
         int widthMeasureSpec = View.MeasureSpec.makeMeasureSpec(500, View.MeasureSpec.EXACTLY);
         int heightMeasureSpec = View.MeasureSpec
                 .makeMeasureSpec(1000, View.MeasureSpec.UNSPECIFIED);
-        FlexboxHelper.FlexLinesResult result = mFlexboxHelper
-                .calculateHorizontalFlexLines(widthMeasureSpec, heightMeasureSpec);
+        FlexboxHelper.FlexLinesResult result = new FlexboxHelper.FlexLinesResult();
+        mFlexboxHelper.calculateVerticalFlexLines(result, widthMeasureSpec, heightMeasureSpec);
         mFlexContainer.setFlexLines(result.mFlexLines);
         mFlexboxHelper.determineMainSize(widthMeasureSpec, heightMeasureSpec);
 
@@ -313,8 +313,8 @@ public class FlexboxHelperTest {
         int widthMeasureSpec = View.MeasureSpec.makeMeasureSpec(1000, View.MeasureSpec.UNSPECIFIED);
         int heightMeasureSpec = View.MeasureSpec
                 .makeMeasureSpec(500, View.MeasureSpec.EXACTLY);
-        FlexboxHelper.FlexLinesResult result = mFlexboxHelper
-                .calculateVerticalFlexLines(widthMeasureSpec, heightMeasureSpec);
+        FlexboxHelper.FlexLinesResult result = new FlexboxHelper.FlexLinesResult();
+        mFlexboxHelper.calculateVerticalFlexLines(result, widthMeasureSpec, heightMeasureSpec);
         mFlexContainer.setFlexLines(result.mFlexLines);
         mFlexboxHelper.determineMainSize(widthMeasureSpec, heightMeasureSpec);
 
@@ -355,8 +355,8 @@ public class FlexboxHelperTest {
         int widthMeasureSpec = View.MeasureSpec.makeMeasureSpec(500, View.MeasureSpec.EXACTLY);
         int heightMeasureSpec = View.MeasureSpec
                 .makeMeasureSpec(1000, View.MeasureSpec.EXACTLY);
-        FlexboxHelper.FlexLinesResult result = mFlexboxHelper
-                .calculateHorizontalFlexLines(widthMeasureSpec, heightMeasureSpec);
+        FlexboxHelper.FlexLinesResult result = new FlexboxHelper.FlexLinesResult();
+        mFlexboxHelper.calculateHorizontalFlexLines(result, widthMeasureSpec, heightMeasureSpec);
         mFlexContainer.setFlexLines(result.mFlexLines);
         mFlexboxHelper.determineMainSize(widthMeasureSpec, heightMeasureSpec);
         mFlexboxHelper
@@ -397,8 +397,8 @@ public class FlexboxHelperTest {
         int widthMeasureSpec = View.MeasureSpec.makeMeasureSpec(1000, View.MeasureSpec.EXACTLY);
         int heightMeasureSpec = View.MeasureSpec
                 .makeMeasureSpec(500, View.MeasureSpec.EXACTLY);
-        FlexboxHelper.FlexLinesResult result = mFlexboxHelper
-                .calculateVerticalFlexLines(widthMeasureSpec, heightMeasureSpec);
+        FlexboxHelper.FlexLinesResult result = new FlexboxHelper.FlexLinesResult();
+        mFlexboxHelper.calculateVerticalFlexLines(result, widthMeasureSpec, heightMeasureSpec);
         mFlexContainer.setFlexLines(result.mFlexLines);
         mFlexboxHelper.determineMainSize(widthMeasureSpec, heightMeasureSpec);
         mFlexboxHelper
