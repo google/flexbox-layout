@@ -1448,9 +1448,6 @@ public class FlexboxLayoutManager extends RecyclerView.LayoutManager implements 
                     + spaceBetweenItem);
             childRight -= (view.getMeasuredWidth() + lp.leftMargin + getLeftDecorationWidth(view)
                     + spaceBetweenItem);
-
-            flexLine.updatePositionFromView(view, getDecoratedLeft(view), getDecoratedTop(view),
-                    getDecoratedRight(view), getDecoratedBottom(view));
         }
         layoutState.mFlexLinePosition += mLayoutState.mLayoutDirection;
         return flexLine.getCrossSize();
@@ -1557,9 +1554,6 @@ public class FlexboxLayoutManager extends RecyclerView.LayoutManager implements 
                     + spaceBetweenItem);
             childBottom -= (view.getMeasuredHeight() + lp.bottomMargin +
                     getTopDecorationHeight(view) + spaceBetweenItem);
-
-            flexLine.updatePositionFromView(view, getDecoratedLeft(view), getDecoratedTop(view),
-                    getDecoratedRight(view), getDecoratedBottom(view));
         }
         layoutState.mFlexLinePosition += mLayoutState.mLayoutDirection;
         return flexLine.getCrossSize();

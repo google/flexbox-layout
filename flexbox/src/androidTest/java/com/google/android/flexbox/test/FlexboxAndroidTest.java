@@ -302,15 +302,11 @@ public class FlexboxAndroidTest {
         assertThat(flexLines.size(), is(2));
         FlexLine flexLine1 = flexLines.get(0);
         FlexboxTestActivity activity = mActivityRule.getActivity();
-        assertThat(flexLine1.getLeft(), is(TestUtil.dpToPixel(activity, 0)));
-        assertThat(flexLine1.getTop(), is(TestUtil.dpToPixel(activity, 0)));
-        assertThat(flexLine1.getRight(), is(TestUtil.dpToPixel(activity, 320)));
-        assertThat(flexLine1.getBottom(), is(TestUtil.dpToPixel(activity, 120)));
+        assertThat(flexLine1.getMainSize(), is(TestUtil.dpToPixel(activity, 320)));
+        assertThat(flexLine1.getCrossSize(), is(TestUtil.dpToPixel(activity, 120)));
         FlexLine flexLine2 = flexLines.get(1);
-        assertThat(flexLine2.getLeft(), is(TestUtil.dpToPixel(activity, 0)));
-        assertThat(flexLine2.getTop(), is(TestUtil.dpToPixel(activity, 120)));
-        assertThat(flexLine2.getRight(), is(TestUtil.dpToPixel(activity, 160)));
-        assertThat(flexLine2.getBottom(), is(TestUtil.dpToPixel(activity, 240)));
+        assertThat(flexLine2.getMainSize(), is(TestUtil.dpToPixel(activity, 160)));
+        assertThat(flexLine2.getCrossSize(), is(TestUtil.dpToPixel(activity, 120)));
     }
 
     @Test
@@ -321,6 +317,7 @@ public class FlexboxAndroidTest {
                     @Override
                     public void apply(FlexboxLayout flexboxLayout) {
                         flexboxLayout.setFlexWrap(FlexWrap.NOWRAP);
+                        flexboxLayout.setAlignItems(AlignItems.FLEX_START);
                     }
                 });
 
@@ -339,10 +336,8 @@ public class FlexboxAndroidTest {
         assertThat(flexLines.size(), is(1));
         FlexLine flexLine = flexLines.get(0);
         FlexboxTestActivity activity = mActivityRule.getActivity();
-        assertThat(flexLine.getLeft(), is(TestUtil.dpToPixel(activity, 0)));
-        assertThat(flexLine.getTop(), is(TestUtil.dpToPixel(activity, 0)));
-        assertThat(flexLine.getRight(), is(TestUtil.dpToPixel(activity, 480)));
-        assertThat(flexLine.getBottom(), is(TestUtil.dpToPixel(activity, 120)));
+        assertThat(flexLine.getMainSize(), is(TestUtil.dpToPixel(activity, 480)));
+        assertThat(flexLine.getCrossSize(), is(TestUtil.dpToPixel(activity, 300)));
     }
 
     @Test
@@ -2937,17 +2932,13 @@ public class FlexboxAndroidTest {
         List<FlexLine> flexLines = flexboxLayout.getFlexLines();
         assertThat(flexLines.size(), is(2));
         FlexLine flexLine1 = flexLines.get(0);
-        assertThat(flexLine1.getLeft(), isEqualAllowingError(TestUtil.dpToPixel(activity, 0)));
-        assertThat(flexLine1.getTop(), isEqualAllowingError(TestUtil.dpToPixel(activity, 0)));
         // The right should be 90 * 3 + 10 (divider)
-        assertThat(flexLine1.getRight(), isEqualAllowingError(TestUtil.dpToPixel(activity, 280)));
-        assertThat(flexLine1.getBottom(), isEqualAllowingError(TestUtil.dpToPixel(activity, 80)));
+        assertThat(flexLine1.getMainSize(), isEqualAllowingError(TestUtil.dpToPixel(activity, 280)));
+        assertThat(flexLine1.getCrossSize(), isEqualAllowingError(TestUtil.dpToPixel(activity, 80)));
         FlexLine flexLine2 = flexLines.get(1);
-        assertThat(flexLine2.getLeft(), isEqualAllowingError(TestUtil.dpToPixel(activity, 0)));
-        assertThat(flexLine2.getTop(), isEqualAllowingError(TestUtil.dpToPixel(activity, 80)));
         // The right should be 140 * 2 + 10 (divider)
-        assertThat(flexLine2.getRight(), isEqualAllowingError(TestUtil.dpToPixel(activity, 290)));
-        assertThat(flexLine2.getBottom(), isEqualAllowingError(TestUtil.dpToPixel(activity, 160)));
+        assertThat(flexLine2.getMainSize(), isEqualAllowingError(TestUtil.dpToPixel(activity, 290)));
+        assertThat(flexLine2.getCrossSize(), isEqualAllowingError(TestUtil.dpToPixel(activity, 80)));
     }
 
     @Test
@@ -2982,17 +2973,13 @@ public class FlexboxAndroidTest {
         List<FlexLine> flexLines = flexboxLayout.getFlexLines();
         assertThat(flexLines.size(), is(2));
         FlexLine flexLine1 = flexLines.get(0);
-        assertThat(flexLine1.getLeft(), isEqualAllowingError(TestUtil.dpToPixel(activity, 0)));
-        assertThat(flexLine1.getTop(), isEqualAllowingError(TestUtil.dpToPixel(activity, 0)));
         // The right should be 90 * 3 + 10 * 2(divider)
-        assertThat(flexLine1.getRight(), isEqualAllowingError(TestUtil.dpToPixel(activity, 290)));
-        assertThat(flexLine1.getBottom(), isEqualAllowingError(TestUtil.dpToPixel(activity, 80)));
+        assertThat(flexLine1.getMainSize(), isEqualAllowingError(TestUtil.dpToPixel(activity, 290)));
+        assertThat(flexLine1.getCrossSize(), isEqualAllowingError(TestUtil.dpToPixel(activity, 80)));
         FlexLine flexLine2 = flexLines.get(1);
-        assertThat(flexLine2.getLeft(), isEqualAllowingError(TestUtil.dpToPixel(activity, 0)));
-        assertThat(flexLine2.getTop(), isEqualAllowingError(TestUtil.dpToPixel(activity, 80)));
         // The right should be 140 * 2 + 10 (divider)
-        assertThat(flexLine2.getRight(), isEqualAllowingError(TestUtil.dpToPixel(activity, 290)));
-        assertThat(flexLine2.getBottom(), isEqualAllowingError(TestUtil.dpToPixel(activity, 160)));
+        assertThat(flexLine2.getMainSize(), isEqualAllowingError(TestUtil.dpToPixel(activity, 290)));
+        assertThat(flexLine2.getCrossSize(), isEqualAllowingError(TestUtil.dpToPixel(activity, 80)));
     }
 
     @Test
@@ -3028,17 +3015,13 @@ public class FlexboxAndroidTest {
         List<FlexLine> flexLines = flexboxLayout.getFlexLines();
         assertThat(flexLines.size(), is(2));
         FlexLine flexLine1 = flexLines.get(0);
-        assertThat(flexLine1.getLeft(), isEqualAllowingError(TestUtil.dpToPixel(activity, 0)));
-        assertThat(flexLine1.getTop(), isEqualAllowingError(TestUtil.dpToPixel(activity, 0)));
         // The right should be 90 * 3 + 10 (divider)
-        assertThat(flexLine1.getRight(), isEqualAllowingError(TestUtil.dpToPixel(activity, 280)));
-        assertThat(flexLine1.getBottom(), isEqualAllowingError(TestUtil.dpToPixel(activity, 80)));
+        assertThat(flexLine1.getMainSize(), isEqualAllowingError(TestUtil.dpToPixel(activity, 280)));
+        assertThat(flexLine1.getCrossSize(), isEqualAllowingError(TestUtil.dpToPixel(activity, 80)));
         FlexLine flexLine2 = flexLines.get(1);
-        assertThat(flexLine2.getLeft(), isEqualAllowingError(TestUtil.dpToPixel(activity, 0)));
-        assertThat(flexLine2.getTop(), isEqualAllowingError(TestUtil.dpToPixel(activity, 80)));
         // The right should be 140 * 2 + 10 (divider)
-        assertThat(flexLine2.getRight(), isEqualAllowingError(TestUtil.dpToPixel(activity, 290)));
-        assertThat(flexLine2.getBottom(), isEqualAllowingError(TestUtil.dpToPixel(activity, 160)));
+        assertThat(flexLine2.getMainSize(), isEqualAllowingError(TestUtil.dpToPixel(activity, 290)));
+        assertThat(flexLine2.getCrossSize(), isEqualAllowingError(TestUtil.dpToPixel(activity, 80)));
     }
 
     @Test
@@ -3079,17 +3062,13 @@ public class FlexboxAndroidTest {
         List<FlexLine> flexLines = flexboxLayout.getFlexLines();
         assertThat(flexLines.size(), is(2));
         FlexLine flexLine1 = flexLines.get(0);
-        assertThat(flexLine1.getLeft(), isEqualAllowingError(TestUtil.dpToPixel(activity, 0)));
-        assertThat(flexLine1.getTop(), isEqualAllowingError(TestUtil.dpToPixel(activity, 0)));
         // The right should be 90 * 3 + 10 * 4 (divider)
-        assertThat(flexLine1.getRight(), isEqualAllowingError(TestUtil.dpToPixel(activity, 310)));
-        assertThat(flexLine1.getBottom(), isEqualAllowingError(TestUtil.dpToPixel(activity, 80)));
+        assertThat(flexLine1.getMainSize(), isEqualAllowingError(TestUtil.dpToPixel(activity, 310)));
+        assertThat(flexLine1.getCrossSize(), isEqualAllowingError(TestUtil.dpToPixel(activity, 80)));
         FlexLine flexLine2 = flexLines.get(1);
-        assertThat(flexLine2.getLeft(), isEqualAllowingError(TestUtil.dpToPixel(activity, 0)));
-        assertThat(flexLine2.getTop(), isEqualAllowingError(TestUtil.dpToPixel(activity, 80)));
         // The right should be 140 * 2 + 10 * 3 (divider)
-        assertThat(flexLine2.getRight(), isEqualAllowingError(TestUtil.dpToPixel(activity, 310)));
-        assertThat(flexLine2.getBottom(), isEqualAllowingError(TestUtil.dpToPixel(activity, 160)));
+        assertThat(flexLine2.getMainSize(), isEqualAllowingError(TestUtil.dpToPixel(activity, 310)));
+        assertThat(flexLine2.getCrossSize(), isEqualAllowingError(TestUtil.dpToPixel(activity, 80)));
     }
 
     @Test
@@ -3128,17 +3107,12 @@ public class FlexboxAndroidTest {
         FlexLine flexLine1 = flexLines.get(0);
         // There is a horizontal divider at the beginning. Top and bottom coordinates are shifted
         // by the amount of 15
-        assertThat(flexLine1.getLeft(), isEqualAllowingError(TestUtil.dpToPixel(activity, 0)));
-        assertThat(flexLine1.getTop(), isEqualAllowingError(TestUtil.dpToPixel(activity, 15)));
         // The right should be 90 * 3
-        assertThat(flexLine1.getRight(), isEqualAllowingError(TestUtil.dpToPixel(activity, 270)));
-        assertThat(flexLine1.getBottom(), isEqualAllowingError(TestUtil.dpToPixel(activity, 95)));
+        assertThat(flexLine1.getMainSize(), isEqualAllowingError(TestUtil.dpToPixel(activity, 270)));
+        assertThat(flexLine1.getCrossSize(), isEqualAllowingError(TestUtil.dpToPixel(activity, 80)));
         FlexLine flexLine2 = flexLines.get(1);
-        assertThat(flexLine2.getLeft(), isEqualAllowingError(TestUtil.dpToPixel(activity, 0)));
-        assertThat(flexLine2.getTop(), isEqualAllowingError(TestUtil.dpToPixel(activity, 95)));
-        // The right should be 140
-        assertThat(flexLine2.getRight(), isEqualAllowingError(TestUtil.dpToPixel(activity, 280)));
-        assertThat(flexLine2.getBottom(), isEqualAllowingError(TestUtil.dpToPixel(activity, 175)));
+        assertThat(flexLine2.getMainSize(), isEqualAllowingError(TestUtil.dpToPixel(activity, 280)));
+        assertThat(flexLine2.getCrossSize(), isEqualAllowingError(TestUtil.dpToPixel(activity, 80)));
     }
 
     @Test
@@ -3175,19 +3149,19 @@ public class FlexboxAndroidTest {
         List<FlexLine> flexLines = flexboxLayout.getFlexLines();
         assertThat(flexLines.size(), is(2));
         FlexLine flexLine1 = flexLines.get(0);
-        assertThat(flexLine1.getLeft(), isEqualAllowingError(TestUtil.dpToPixel(activity, 0)));
-        assertThat(flexLine1.getTop(), isEqualAllowingError(TestUtil.dpToPixel(activity, 0)));
         // The right should be 90 * 3
-        assertThat(flexLine1.getRight(), isEqualAllowingError(TestUtil.dpToPixel(activity, 270)));
-        assertThat(flexLine1.getBottom(), isEqualAllowingError(TestUtil.dpToPixel(activity, 80)));
+        assertThat(flexLine1.getMainSize(),
+                isEqualAllowingError(TestUtil.dpToPixel(activity, 270)));
+        assertThat(flexLine1.getCrossSize(),
+                isEqualAllowingError(TestUtil.dpToPixel(activity, 80)));
         // There is a horizontal divider at the middle. Top and bottom coordinates are shifted
         // by the amount of 15
         FlexLine flexLine2 = flexLines.get(1);
-        assertThat(flexLine2.getLeft(), isEqualAllowingError(TestUtil.dpToPixel(activity, 0)));
-        assertThat(flexLine2.getTop(), isEqualAllowingError(TestUtil.dpToPixel(activity, 95)));
         // The right should be 140
-        assertThat(flexLine2.getRight(), isEqualAllowingError(TestUtil.dpToPixel(activity, 280)));
-        assertThat(flexLine2.getBottom(), isEqualAllowingError(TestUtil.dpToPixel(activity, 175)));
+        assertThat(flexLine2.getMainSize(),
+                isEqualAllowingError(TestUtil.dpToPixel(activity, 280)));
+        assertThat(flexLine2.getCrossSize(),
+                isEqualAllowingError(TestUtil.dpToPixel(activity, 80)));
     }
 
     @Test
@@ -3224,19 +3198,15 @@ public class FlexboxAndroidTest {
         List<FlexLine> flexLines = flexboxLayout.getFlexLines();
         assertThat(flexLines.size(), is(2));
         FlexLine flexLine1 = flexLines.get(0);
-        assertThat(flexLine1.getLeft(), isEqualAllowingError(TestUtil.dpToPixel(activity, 0)));
-        assertThat(flexLine1.getTop(), isEqualAllowingError(TestUtil.dpToPixel(activity, 0)));
         // The right should be 90 * 3
-        assertThat(flexLine1.getRight(), isEqualAllowingError(TestUtil.dpToPixel(activity, 270)));
-        assertThat(flexLine1.getBottom(), isEqualAllowingError(TestUtil.dpToPixel(activity, 80)));
+        assertThat(flexLine1.getMainSize(), isEqualAllowingError(TestUtil.dpToPixel(activity, 270)));
+        assertThat(flexLine1.getCrossSize(), isEqualAllowingError(TestUtil.dpToPixel(activity, 80)));
         // There is a horizontal divider at the middle. Top and bottom coordinates are shifted
         // by the amount of 15
         FlexLine flexLine2 = flexLines.get(1);
-        assertThat(flexLine2.getLeft(), isEqualAllowingError(TestUtil.dpToPixel(activity, 0)));
-        assertThat(flexLine2.getTop(), isEqualAllowingError(TestUtil.dpToPixel(activity, 80)));
         // The right should be 140
-        assertThat(flexLine2.getRight(), isEqualAllowingError(TestUtil.dpToPixel(activity, 280)));
-        assertThat(flexLine2.getBottom(), isEqualAllowingError(TestUtil.dpToPixel(activity, 160)));
+        assertThat(flexLine2.getMainSize(), isEqualAllowingError(TestUtil.dpToPixel(activity, 280)));
+        assertThat(flexLine2.getCrossSize(), isEqualAllowingError(TestUtil.dpToPixel(activity, 80)));
     }
 
     @Test
@@ -3344,17 +3314,14 @@ public class FlexboxAndroidTest {
         List<FlexLine> flexLines = flexboxLayout.getFlexLines();
         assertThat(flexLines.size(), is(2));
         FlexLine flexLine1 = flexLines.get(0);
-        assertThat(flexLine1.getLeft(), isEqualAllowingError(TestUtil.dpToPixel(activity, 0)));
-        assertThat(flexLine1.getTop(), isEqualAllowingError(TestUtil.dpToPixel(activity, 0)));
-        assertThat(flexLine1.getRight(), isEqualAllowingError(TestUtil.dpToPixel(activity, 80)));
+        assertThat(flexLine1.getCrossSize(), isEqualAllowingError(TestUtil.dpToPixel(activity, 80)));
         // The bottom should be 90 * 3 + 15
-        assertThat(flexLine1.getBottom(), isEqualAllowingError(TestUtil.dpToPixel(activity, 285)));
+        assertThat(flexLine1.getMainSize(), isEqualAllowingError(TestUtil.dpToPixel(activity, 285)));
         FlexLine flexLine2 = flexLines.get(1);
-        assertThat(flexLine2.getLeft(), isEqualAllowingError(TestUtil.dpToPixel(activity, 80)));
-        assertThat(flexLine2.getTop(), isEqualAllowingError(TestUtil.dpToPixel(activity, 0)));
-        assertThat(flexLine2.getRight(), isEqualAllowingError(TestUtil.dpToPixel(activity, 160)));
+        assertThat(flexLine2.getCrossSize(),
+                isEqualAllowingError(TestUtil.dpToPixel(activity, 80)));
         // The bottom should be 140 * 2 + 15
-        assertThat(flexLine2.getBottom(), isEqualAllowingError(TestUtil.dpToPixel(activity, 295)));
+        assertThat(flexLine2.getMainSize(), isEqualAllowingError(TestUtil.dpToPixel(activity, 295)));
     }
 
     @Test
@@ -3388,17 +3355,17 @@ public class FlexboxAndroidTest {
         List<FlexLine> flexLines = flexboxLayout.getFlexLines();
         assertThat(flexLines.size(), is(2));
         FlexLine flexLine1 = flexLines.get(0);
-        assertThat(flexLine1.getLeft(), isEqualAllowingError(TestUtil.dpToPixel(activity, 0)));
-        assertThat(flexLine1.getTop(), isEqualAllowingError(TestUtil.dpToPixel(activity, 0)));
-        assertThat(flexLine1.getRight(), isEqualAllowingError(TestUtil.dpToPixel(activity, 80)));
+        assertThat(flexLine1.getCrossSize(),
+                isEqualAllowingError(TestUtil.dpToPixel(activity, 80)));
         // The bottom should be 90 * 3 + 15 * 2
-        assertThat(flexLine1.getBottom(), isEqualAllowingError(TestUtil.dpToPixel(activity, 300)));
+        assertThat(flexLine1.getMainSize(),
+                isEqualAllowingError(TestUtil.dpToPixel(activity, 300)));
         FlexLine flexLine2 = flexLines.get(1);
-        assertThat(flexLine2.getLeft(), isEqualAllowingError(TestUtil.dpToPixel(activity, 80)));
-        assertThat(flexLine2.getTop(), isEqualAllowingError(TestUtil.dpToPixel(activity, 0)));
-        assertThat(flexLine2.getRight(), isEqualAllowingError(TestUtil.dpToPixel(activity, 160)));
+        assertThat(flexLine2.getCrossSize(),
+                isEqualAllowingError(TestUtil.dpToPixel(activity, 80)));
         // The bottom should be 140 * 2 + 15
-        assertThat(flexLine2.getBottom(), isEqualAllowingError(TestUtil.dpToPixel(activity, 295)));
+        assertThat(flexLine2.getMainSize(),
+                isEqualAllowingError(TestUtil.dpToPixel(activity, 295)));
     }
 
     @Test
@@ -3432,17 +3399,17 @@ public class FlexboxAndroidTest {
         List<FlexLine> flexLines = flexboxLayout.getFlexLines();
         assertThat(flexLines.size(), is(2));
         FlexLine flexLine1 = flexLines.get(0);
-        assertThat(flexLine1.getLeft(), isEqualAllowingError(TestUtil.dpToPixel(activity, 0)));
-        assertThat(flexLine1.getTop(), isEqualAllowingError(TestUtil.dpToPixel(activity, 0)));
-        assertThat(flexLine1.getRight(), isEqualAllowingError(TestUtil.dpToPixel(activity, 80)));
+        assertThat(flexLine1.getCrossSize(),
+                isEqualAllowingError(TestUtil.dpToPixel(activity, 80)));
         // The bottom should be 90 * 3 + 15
-        assertThat(flexLine1.getBottom(), isEqualAllowingError(TestUtil.dpToPixel(activity, 285)));
+        assertThat(flexLine1.getMainSize(),
+                isEqualAllowingError(TestUtil.dpToPixel(activity, 285)));
         FlexLine flexLine2 = flexLines.get(1);
-        assertThat(flexLine2.getLeft(), isEqualAllowingError(TestUtil.dpToPixel(activity, 80)));
-        assertThat(flexLine2.getTop(), isEqualAllowingError(TestUtil.dpToPixel(activity, 0)));
-        assertThat(flexLine2.getRight(), isEqualAllowingError(TestUtil.dpToPixel(activity, 160)));
+        assertThat(flexLine2.getCrossSize(),
+                isEqualAllowingError(TestUtil.dpToPixel(activity, 80)));
         // The bottom should be 140 * 2 + 15
-        assertThat(flexLine2.getBottom(), isEqualAllowingError(TestUtil.dpToPixel(activity, 295)));
+        assertThat(flexLine2.getMainSize(),
+                isEqualAllowingError(TestUtil.dpToPixel(activity, 295)));
     }
 
     @Test
@@ -3481,20 +3448,17 @@ public class FlexboxAndroidTest {
         List<FlexLine> flexLines = flexboxLayout.getFlexLines();
         assertThat(flexLines.size(), is(2));
         FlexLine flexLine1 = flexLines.get(0);
-        assertThat(flexLine1.getLeft(), isEqualAllowingError(TestUtil.dpToPixel(activity, 0)));
-        assertThat(flexLine1.getTop(), isEqualAllowingError(TestUtil.dpToPixel(activity, 0)));
-        assertThat(flexLine1.getRight(), isEqualAllowingError(TestUtil.dpToPixel(activity, 80), 2));
+        assertThat(flexLine1.getCrossSize(),
+                isEqualAllowingError(TestUtil.dpToPixel(activity, 80)));
         // The bottom should be 90 * 3 + 15 * 4
-        assertThat(flexLine1.getBottom(),
-                isEqualAllowingError(TestUtil.dpToPixel(activity, 330), 2));
+        assertThat(flexLine1.getMainSize(),
+                isEqualAllowingError(TestUtil.dpToPixel(activity, 330)));
         FlexLine flexLine2 = flexLines.get(1);
-        assertThat(flexLine2.getLeft(), isEqualAllowingError(TestUtil.dpToPixel(activity, 80), 2));
-        assertThat(flexLine2.getTop(), isEqualAllowingError(TestUtil.dpToPixel(activity, 0)));
-        assertThat(flexLine2.getRight(),
-                isEqualAllowingError(TestUtil.dpToPixel(activity, 160), 2));
+        assertThat(flexLine2.getCrossSize(),
+                isEqualAllowingError(TestUtil.dpToPixel(activity, 80)));
         // The bottom should be 140 * 2 + 15 * 3
-        assertThat(flexLine2.getBottom(),
-                isEqualAllowingError(TestUtil.dpToPixel(activity, 325), 2));
+        assertThat(flexLine2.getMainSize(),
+                isEqualAllowingError(TestUtil.dpToPixel(activity, 325)));
     }
 
     @Test

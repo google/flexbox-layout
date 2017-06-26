@@ -95,38 +95,6 @@ public class FlexLine {
     int mLastIndex;
 
     /**
-     * @return the distance in pixels from the top edge of this view's parent
-     * to the top edge of this FlexLine.
-     */
-    public int getLeft() {
-        return mLeft;
-    }
-
-    /**
-     * @return the distance in pixels from the top edge of this view's parent
-     * to the top edge of this FlexLine.
-     */
-    public int getTop() {
-        return mTop;
-    }
-
-    /**
-     * @return the distance in pixels from the right edge of this view's parent
-     * to the right edge of this FlexLine.
-     */
-    public int getRight() {
-        return mRight;
-    }
-
-    /**
-     * @return the distance in pixels from the bottom edge of this view's parent
-     * to the bottom edge of this FlexLine.
-     */
-    public int getBottom() {
-        return mBottom;
-    }
-
-    /**
      * @return the size of the flex line in pixels along the main axis of the flex container.
      */
     public int getMainSize() {
