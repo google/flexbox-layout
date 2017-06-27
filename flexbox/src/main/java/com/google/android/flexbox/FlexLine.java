@@ -31,16 +31,12 @@ public class FlexLine {
     FlexLine() {
     }
 
-    /** @see #getLeft() */
     int mLeft = Integer.MAX_VALUE;
 
-    /** @see #getTop() */
     int mTop = Integer.MAX_VALUE;
 
-    /** @see #getRight() */
     int mRight = Integer.MIN_VALUE;
 
-    /** @see #getBottom() */
     int mBottom = Integer.MIN_VALUE;
 
     /** @see #getMainSize() */
