@@ -588,7 +588,6 @@ public class FlexboxLayoutManager extends RecyclerView.LayoutManager implements 
         updateDirtyPosition(positionStart);
     }
 
-
     @Override
     public void onItemsUpdated(RecyclerView recyclerView, int positionStart, int itemCount,
             Object payload) {
@@ -819,7 +818,6 @@ public class FlexboxLayoutManager extends RecyclerView.LayoutManager implements 
         int widthMeasureSpec = View.MeasureSpec.makeMeasureSpec(getWidth(), getWidthMode());
         //noinspection ResourceType
         int heightMeasureSpec = View.MeasureSpec.makeMeasureSpec(getHeight(), getHeightMode());
-        FlexboxHelper.FlexLinesResult flexLinesResult;
         int width = getWidth();
         int height = getHeight();
         boolean isMainSizeChanged;
@@ -1482,7 +1480,6 @@ public class FlexboxLayoutManager extends RecyclerView.LayoutManager implements 
         int paddingBottom = getPaddingBottom();
         int parentHeight = getHeight();
 
-        // Either childLeft or childRight is used depending on the layoutState.mLayoutDirection
         int childLeft = layoutState.mOffset;
         if (layoutState.mLayoutDirection == LayoutState.LAYOUT_START) {
             childLeft = childLeft - flexLine.mCrossSize;
@@ -1859,13 +1856,27 @@ public class FlexboxLayoutManager extends RecyclerView.LayoutManager implements 
         boolean isMainAxisHorizontal = isMainAxisDirectionHorizontal();
         int parentLength = isMainAxisHorizontal ? mParent.getWidth() : mParent.getHeight();
         int mainAxisLength = isMainAxisHorizontal ? getWidth() : getHeight();
-        if (delta > 0) {
-            delta = Math.min(mainAxisLength
-                    - mAnchorInfo.mPerpendicularCoordinate
-                    - parentLength, delta);
+
+        boolean layoutRtl  = getLayoutDirection() == ViewCompat.LAYOUT_DIRECTION_RTL;
+        if (layoutRtl) {
+            int absDelta = Math.abs(delta);
+            if (delta < 0) {
+                delta = Math.min(mainAxisLength
+                        + mAnchorInfo.mPerpendicularCoordinate - parentLength, absDelta);
+                delta = -delta;
+            } else {
+                delta = mAnchorInfo.mPerpendicularCoordinate + delta > 0
+                        ? -mAnchorInfo.mPerpendicularCoordinate
+                        : delta;
+            }
         } else {
-            delta = mAnchorInfo.mPerpendicularCoordinate + delta >= 0 ? delta :
-                    -mAnchorInfo.mPerpendicularCoordinate;
+            if (delta > 0) {
+                delta = Math.min(mainAxisLength
+                        - mAnchorInfo.mPerpendicularCoordinate - parentLength, delta);
+            } else {
+                delta = mAnchorInfo.mPerpendicularCoordinate + delta >= 0 ? delta :
+                        -mAnchorInfo.mPerpendicularCoordinate;
+            }
         }
         return delta;
     }
@@ -1880,7 +1891,6 @@ public class FlexboxLayoutManager extends RecyclerView.LayoutManager implements 
      */
     private void updateLayoutState(int layoutDirection, int absDelta) {
         assert mFlexboxHelper.mIndexToFlexLine != null;
-        // TODO: Consider updating LayoutState#mExtra to support better smooth scrolling
         mLayoutState.mLayoutDirection = layoutDirection;
         boolean mainAxisHorizontal = isMainAxisDirectionHorizontal();
 
