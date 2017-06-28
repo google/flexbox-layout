@@ -5,29 +5,23 @@
 FlexboxLayout is a library project which brings the similar capabilities of
 [CSS Flexible Box Layout Module](https://www.w3.org/TR/css-flexbox-1) to Android.
 
-## Installation
+# Installation
 Add the following dependency to your `build.gradle` file:
 
-Stable
 ```
 dependencies {
-    compile 'com.google.android:flexbox:0.2.7'
+    compile 'com.google.android:flexbox:0.3.0'
 }
 ```
 
-OR
-
-Alpha including RecyclerView integration
-```
-dependencies {
-    compile 'com.google.android:flexbox:0.3.0-alpha4'
-}
-```
 See the [RecyclerView integration](RecyclerView.md) page for more details about using Flexbox inside
 the `RecyclerView`.
 
-## Usage
-FlexboxLayout extends the ViewGroup like LinearLayout and RelativeLayout.
+# Usage
+There are two ways of using Flexbox in your layout. 
+
+## FlexboxLayout 
+The first one is `FlexboxLayout` that extends the `ViewGroup` like `LinearLayout` and `RelativeLayout`.
 You can specify the attributes from a layout XML like:
 ```xml
 <com.google.android.flexbox.FlexboxLayout
@@ -65,7 +59,7 @@ You can specify the attributes from a layout XML like:
 Or from code like:
 ```java
 FlexboxLayout flexboxLayout = (FlexboxLayout) findViewById(R.id.flexbox_layout);
-flexboxLayout.setFlexDirection(FlexboxLayout.FLEX_DIRECTION_COLUMN);
+flexboxLayout.setFlexDirection(FlexDirection.ROW);
 
 View view = flexboxLayout.getChildAt(0);
 FlexboxLayout.LayoutParams lp = (FlexboxLayout.LayoutParams) view.getLayoutParams();
@@ -74,9 +68,62 @@ lp.flexGrow = 2;
 view.setLayoutParams(lp);
 ```
 
-## Supported attributes
+## FlexboxLayoutManager (within RecyclerView)
+The second one is `FlexboxLayoutManager` that can be used within `RecyclerView`.
 
-#### Attributes for the FlexboxLayout:
+```java
+RecyclerView recyclerView = (RecyclerView) context.findViewById(R.id.recyclerview);
+FlexboxLayoutManager layoutManager = new FlexboxLayoutManager(context);
+layoutManager.setFlexDirection(FlexDirection.COLUMN);
+layoutManager.setJustifyContent(JustifyContent.FLEX_END);
+recyclerView.setLayoutManager(layoutManager);
+```
+
+or for the attributes for the children of the `FlexboxLayoutManager` you can do like:
+
+```java
+mImageView.setImageDrawable(drawable);
+ViewGroup.LayoutParams lp = mImageView.getLayoutParams();
+if (lp instanceof FlexboxLayoutManager.LayoutParams) {
+    FlexboxLayoutManager.LayoutParams flexboxLp = (FlexboxLayoutManager.LayoutParams) lp;
+    flexboxLp.setFlexGrow(1.0f);
+    flexboxLp.setAlignSelf(AlignSelf.FLEX_END);
+}
+```
+
+The advantage of using `FlexboxLayoutManager` is that it recycles the views that go off the screen
+for reuse for the views that are appearing as the user scrolls instead of inflating every individual view.
+
+## Supported attributes / features comparison
+Due to some characteristics of `RecyclerView`, some Flexbox attributes are not available/not implemented
+to the `FlexboxLayoutManager`.
+Here is a quick overview of the attributes/features comparison between the two implementations.
+
+|Attribute / Feature|FlexboxLayout| FlexboxLayoutManager (RecyclerView)|
+| ------- |:-----------:|:----------------------------------:|
+|flexDirection|![Check](/assets/pngs/check_green_small.png)|![Check](/assets/pngs/check_green_small.png)|
+|flexWrap|![Check](/assets/pngs/check_green_small.png)|![Check](/assets/pngs/check_green_small.png) (except `wrap_reverse`)|
+|justifyContent|![Check](/assets/pngs/check_green_small.png)|![Check](/assets/pngs/check_green_small.png)|
+|alignItems|![Check](/assets/pngs/check_green_small.png)|![Check](/assets/pngs/check_green_small.png)|
+|alignContent|![Check](/assets/pngs/check_green_small.png)| - |
+|layout_order|![Check](/assets/pngs/check_green_small.png)| - |
+|layout_flexGrow|![Check](/assets/pngs/check_green_small.png)|![Check](/assets/pngs/check_green_small.png)|
+|layout_flexShrink|![Check](/assets/pngs/check_green_small.png)|![Check](/assets/pngs/check_green_small.png)|
+|layout_alignSelf|![Check](/assets/pngs/check_green_small.png)|![Check](/assets/pngs/check_green_small.png)|
+|layout_flexBasisPercent|![Check](/assets/pngs/check_green_small.png)|![Check](/assets/pngs/check_green_small.png)|
+|layout_(min/max)Width|![Check](/assets/pngs/check_green_small.png)|![Check](/assets/pngs/check_green_small.png)|
+|layout_(min/max)Height|![Check](/assets/pngs/check_green_small.png)|![Check](/assets/pngs/check_green_small.png)|
+|layout_wrapBefore|![Check](/assets/pngs/check_green_small.png)|![Check](/assets/pngs/check_green_small.png)|
+|Divider|![Check](/assets/pngs/check_green_small.png)|![Check](/assets/pngs/check_green_small.png)|
+|View recycling| - |![Check](/assets/pngs/check_green_small.png)|
+|Scrolling| *1 |![Check](/assets/pngs/check_green_small.png)|
+
+*1 Partially possible by wrapping it with `ScrollView`. But it isn't likely to work with large set
+   of views inside the layout. Because it doesn't consider view recycling.
+
+# Supported attributes
+
+## Attributes for the FlexboxLayout:
 
 * __flexDirection__
   * This attribute determines the direction of the main axis (and the cross axis, perpendicular to the main axis). The direction children items are placed inside the Flexbox layout.
@@ -200,7 +247,7 @@ view.setLayoutParams(lp);
   ![Dividers beginning and middle](/assets/divider-beginning-middle.png)
 
 
-#### Attributes for the children of a FlexboxLayout
+## Attributes for the children of a FlexboxLayout
 
 * __layout_order__ (integer)
   * This attribute can change how the ordering of the children views are laid out.
@@ -281,6 +328,8 @@ view.setLayoutParams(lp);
 
     ![Wrap before explanation](/assets/layout_wrapBefore.gif)
 
+# Others
+
 ## Known differences from the original CSS specification
 This library tries to achieve the same capabilities of the original
 [Flexible Box specification](https://www.w3.org/TR/css-flexbox-1) as much as possible,
@@ -317,15 +366,15 @@ equivalent attribute
 ## Xamarin Binding
 Xamarin binding is now available on [NuGet](https://www.nuget.org/packages/FlexboxLayoutXamarinBindingAndroid/) thanks to [@btripp](https://github.com/btripp)
 
-
-## Flexbox Playground demo app
+## Demo apps
+### Flexbox Playground demo app
 The `app` module works as a playground demo app for trying various values for the supported attributes.
 You can install it by
 ```
 ./gradlew demo-playground:installDebug
 ```
 
-## Cat gallery demo app
+### Cat gallery demo app
 The `demo-cat-gallery` module showcases the usage of the FlexboxLayoutManager inside the RecyclerView
 that handles various sizes of views aligned nicely regardless of the device width like the
 Google Photo app without loading all the images on the memory.
