@@ -92,7 +92,11 @@ if (lp instanceof FlexboxLayoutManager.LayoutParams) {
 ```
 
 The advantage of using `FlexboxLayoutManager` is that it recycles the views that go off the screen
-for reuse for the views that are appearing as the user scrolls instead of inflating every individual view.
+for reuse for the views that are appearing as the user scrolls instead of inflating every individual view,
+which consumes much less memory especially when the number of items contained in the Flexbox container is large.
+
+![FlexboxLayoutManager in action](/assets/flexbox-layoutmanager.gif)
+
 
 ## Supported attributes / features comparison
 Due to some characteristics of `RecyclerView`, some Flexbox attributes are not available/not implemented
