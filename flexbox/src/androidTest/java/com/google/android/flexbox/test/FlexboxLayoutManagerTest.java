@@ -3250,6 +3250,8 @@ public class FlexboxLayoutManagerTest {
                 GeneralLocation.BOTTOM_CENTER));
         onView(withId(R.id.recyclerview)).perform(swipe(GeneralLocation.TOP_CENTER,
                 GeneralLocation.BOTTOM_CENTER));
+        onView(withId(R.id.recyclerview)).perform(swipe(GeneralLocation.TOP_CENTER,
+                GeneralLocation.BOTTOM_CENTER));
         InstrumentationRegistry.getInstrumentation().waitForIdleSync();
 
         // Since a new item is inserted before the position, the index at the view who has the
