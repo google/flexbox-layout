@@ -1560,7 +1560,6 @@ class FlexboxHelper {
         }
         int flexDirection = mFlexContainer.getFlexDirection();
         if (mFlexContainer.getAlignItems() == AlignItems.STRETCH) {
-            int viewIndex = fromIndex;
             int flexLineIndex = 0;
             if (mIndexToFlexLine != null) {
                 flexLineIndex = mIndexToFlexLine[fromIndex];
@@ -1568,8 +1567,8 @@ class FlexboxHelper {
             List<FlexLine> flexLines = mFlexContainer.getFlexLinesInternal();
             for (int i = flexLineIndex, size = flexLines.size(); i < size; i++) {
                 FlexLine flexLine = flexLines.get(i);
-                for (int j = 0, itemCount = flexLine.mItemCount; j < itemCount;
-                        j++, viewIndex++) {
+                for (int j = 0, itemCount = flexLine.mItemCount; j < itemCount; j++) {
+                    int viewIndex = flexLine.mFirstIndex + j;
                     if (j >= mFlexContainer.getFlexItemCount()) {
                         continue;
                     }
