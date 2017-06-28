@@ -14,9 +14,6 @@ dependencies {
 }
 ```
 
-See the [RecyclerView integration](RecyclerView.md) page for more details about using Flexbox inside
-the `RecyclerView`.
-
 # Usage
 There are two ways of using Flexbox in your layout. 
 
