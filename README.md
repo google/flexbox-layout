@@ -369,7 +369,7 @@ Xamarin binding is now available on [NuGet](https://www.nuget.org/packages/Flexb
 
 ## Demo apps
 ### Flexbox Playground demo app
-The `app` module works as a playground demo app for trying various values for the supported attributes.
+The `demo-playground` module works as a playground demo app for trying various values for the supported attributes.
 You can install it by
 ```
 ./gradlew demo-playground:installDebug
