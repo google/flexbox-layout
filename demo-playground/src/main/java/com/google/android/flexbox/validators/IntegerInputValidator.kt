@@ -1,5 +1,5 @@
 /*
- * Copyright 2016 Google Inc. All rights reserved.
+ * Copyright 2017 Google Inc. All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,25 +14,27 @@
  * limitations under the License.
  */
 
-package com.google.android.flexbox.validators;
+package com.google.android.flexbox.validators
 
-import android.text.TextUtils;
+import android.text.TextUtils
 
 /**
  * Validator for the integers.
  */
-public class IntegerInputValidator implements InputValidator {
+class IntegerInputValidator : InputValidator {
 
-    @Override
-    public boolean isValidInput(CharSequence charSequence) {
+    override fun isValidInput(charSequence: CharSequence): Boolean {
         if (TextUtils.isEmpty(charSequence)) {
-            return false;
+            return false
         }
         try {
-            Integer.parseInt(charSequence.toString());
-        } catch (NumberFormatException | NullPointerException e) {
-            return false;
+            Integer.parseInt(charSequence.toString())
+        } catch (e: NumberFormatException) {
+            return false
+        } catch (e: NullPointerException) {
+            return false
         }
-        return true;
+
+        return true
     }
 }

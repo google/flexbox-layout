@@ -14,33 +14,22 @@
  * limitations under the License.
  */
 
-package com.google.android.flexbox;
+package com.google.android.flexbox
 
-import android.support.v7.widget.RecyclerView;
-import android.view.View;
-import android.view.ViewGroup;
+import android.support.v7.widget.RecyclerView
+import android.view.ViewGroup
 
 /**
- * Implementation for the {@link FlexItemChangedListener}.
+ * Implementation for the [FlexItemChangedListener].
  * It expects RecyclerView as the underlying flex container implementation.
  */
-public class FlexItemChangedListenerImplRecyclerView implements FlexItemChangedListener {
+internal class FlexItemChangedListenerImplRecyclerView(private val flexContainer: FlexContainer,
+                                              private val adapter: RecyclerView.Adapter<*>) : FlexItemChangedListener {
 
-    private FlexContainer mFlexContainer;
-
-    private RecyclerView.Adapter mAdapter;
-
-    public FlexItemChangedListenerImplRecyclerView(FlexContainer flexContainer,
-            RecyclerView.Adapter adapter) {
-        mFlexContainer = flexContainer;
-        mAdapter = adapter;
-    }
-
-    @Override
-    public void onFlexItemChanged(FlexItem flexItem, int viewIndex) {
-        View view = mFlexContainer.getFlexItemAt(viewIndex);
-        view.setLayoutParams((ViewGroup.LayoutParams) flexItem);
-        mAdapter.notifyDataSetChanged();
+    override fun onFlexItemChanged(flexItem: FlexItem, viewIndex: Int) {
+        val view = flexContainer.getFlexItemAt(viewIndex)
+        view.layoutParams = flexItem as ViewGroup.LayoutParams
+        adapter.notifyDataSetChanged()
         // TODO: An Exception is thrown if notifyItemChanged(int) is used.
         // Investigate that, but using LinearLayoutManager also produces the same Exception
         // java.lang.IllegalArgumentException: Called attach on a child which is not detached:

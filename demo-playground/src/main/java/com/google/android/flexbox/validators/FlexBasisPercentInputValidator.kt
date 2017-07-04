@@ -1,5 +1,5 @@
 /*
- * Copyright 2016 Google Inc. All rights reserved.
+ * Copyright 2017 Google Inc. All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,12 +14,17 @@
  * limitations under the License.
  */
 
-package com.google.android.flexbox;
+package com.google.android.flexbox.validators
+
+import android.text.TextUtils
 
 /**
- * A listener that listens to the change of a flex item
+ * Validator for the flex basis percent attribute.
  */
-public interface FlexItemChangedListener {
+class FlexBasisPercentInputValidator : InputValidator {
 
-    void onFlexItemChanged(FlexItem flexItem, int viewIndex);
+    override fun isValidInput(charSequence: CharSequence): Boolean {
+        // -1 represents not set
+        return !TextUtils.isEmpty(charSequence) && (TextUtils.isDigitsOnly(charSequence) || charSequence.toString() == "-1")
+    }
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright 2016 Google Inc. All rights reserved.
+ * Copyright 2017 Google Inc. All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,20 +14,19 @@
  * limitations under the License.
  */
 
-package com.google.android.flexbox.validators;
+package com.google.android.flexbox.validators
 
-import android.text.TextUtils;
+import android.text.TextUtils
 
 /**
- * Validator for the flex basis percent attribute.
+ * Validator for dimension values including match_parent and wrap_content.
  */
-public class FlexBasisPercentInputValidator implements InputValidator {
+class DimensionInputValidator : InputValidator {
 
-    @Override
-    public boolean isValidInput(CharSequence charSequence) {
-        // -1 represents not set
-        return !TextUtils.isEmpty(charSequence) &&
-                (TextUtils.isDigitsOnly(charSequence) ||
-                        charSequence.toString().equals("-1"));
+    override fun isValidInput(charSequence: CharSequence): Boolean {
+        // -1 represents match_parent, -2 represents wrap_content
+        return !TextUtils.isEmpty(charSequence) && (TextUtils.isDigitsOnly(charSequence) ||
+                charSequence.toString() == "-1" ||
+                charSequence.toString() == "-2")
     }
 }
