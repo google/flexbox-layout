@@ -27,11 +27,11 @@ import com.google.android.flexbox.FlexboxLayoutManager
  */
 internal class CatViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
 
-    private val mImageView = itemView.findViewById(R.id.imageview) as ImageView
+    private val imageView = itemView.findViewById(R.id.imageview) as ImageView
 
     internal fun bindTo(@DrawableRes drawableRes: Int) {
-        mImageView.setImageResource(drawableRes)
-        val lp = mImageView.layoutParams
+        imageView.setImageResource(drawableRes)
+        val lp = imageView.layoutParams
         if (lp is FlexboxLayoutManager.LayoutParams) {
             lp.flexGrow = 1f
         }
