@@ -25,6 +25,6 @@ class FlexBasisPercentInputValidator : InputValidator {
 
     override fun isValidInput(charSequence: CharSequence): Boolean {
         // -1 represents not set
-        return !TextUtils.isEmpty(charSequence) && (TextUtils.isDigitsOnly(charSequence) || charSequence.toString() == "-1")
+        return !charSequence.isNullOrEmpty() && (TextUtils.isDigitsOnly(charSequence) || charSequence.toString() == "-1")
     }
 }

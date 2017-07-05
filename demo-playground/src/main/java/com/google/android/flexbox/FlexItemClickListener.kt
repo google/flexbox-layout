@@ -35,6 +35,6 @@ internal class FlexItemClickListener(private val activity: AppCompatActivity, pr
 
     companion object {
 
-        private val EDIT_DIALOG_TAG = "edit_dialog_tag"
+        private const val EDIT_DIALOG_TAG = "edit_dialog_tag"
     }
 }

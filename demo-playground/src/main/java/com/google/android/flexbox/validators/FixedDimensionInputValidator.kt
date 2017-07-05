@@ -24,6 +24,6 @@ import android.text.TextUtils
 class FixedDimensionInputValidator : InputValidator {
 
     override fun isValidInput(charSequence: CharSequence): Boolean {
-        return !TextUtils.isEmpty(charSequence) && TextUtils.isDigitsOnly(charSequence)
+        return !charSequence.isNullOrEmpty() && TextUtils.isDigitsOnly(charSequence)
     }
 }

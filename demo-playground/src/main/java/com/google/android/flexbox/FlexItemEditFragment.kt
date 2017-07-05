@@ -22,7 +22,6 @@ import android.os.Bundle
 import android.support.design.widget.TextInputLayout
 import android.support.v4.app.DialogFragment
 import android.text.Editable
-import android.text.TextUtils
 import android.text.TextWatcher
 import android.view.KeyEvent
 import android.view.LayoutInflater
@@ -57,20 +56,12 @@ internal class FlexItemEditFragment : DialogFragment() {
 
     /**
      * Instance of a [FlexItem] being edited. At first it's created as another instance from
-     * the [.flexItem] because otherwise changes before clicking the ok button will be
-     * reflected if the [.flexItem] is changed directly.
+     * the [flexItem] because otherwise changes before clicking the ok button will be
+     * reflected if the [flexItem] is changed directly.
      */
     private lateinit var flexItemInEdit: FlexItem
 
     private var flexItemChangedListener: FlexItemChangedListener? = null
-
-    override fun onAttach(context: Context) {
-        super.onAttach(context)
-    }
-
-    override fun onDetach() {
-        super.onDetach()
-    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -81,18 +72,20 @@ internal class FlexItemEditFragment : DialogFragment() {
         } else {
             setStyle(DialogFragment.STYLE_NORMAL, android.R.style.Theme_Dialog)
         }
-        val args = arguments
-        flexItem = args.getParcelable<FlexItem>(FLEX_ITEM_KEY)
+        arguments.let {
+            flexItem = it.getParcelable<FlexItem>(FLEX_ITEM_KEY)
+            viewIndex = it.getInt(VIEW_INDEX_KEY)
+        }
         flexItemInEdit = createNewFlexItem(flexItem)
-        viewIndex = args.getInt(VIEW_INDEX_KEY)
 
-        val activity = activity
-        ALIGN_SELF_AUTO = activity.getString(R.string.auto)
-        ALIGN_SELF_FLEX_START = activity.getString(R.string.flex_start)
-        ALIGN_SELF_FLEX_END = activity.getString(R.string.flex_end)
-        ALIGN_SELF_CENTER = activity.getString(R.string.center)
-        ALIGN_SELF_BASELINE = activity.getString(R.string.baseline)
-        ALIGN_SELF_STRETCH = activity.getString(R.string.stretch)
+        activity.let {
+            ALIGN_SELF_AUTO = it.getString(R.string.auto)
+            ALIGN_SELF_FLEX_START = it.getString(R.string.flex_start)
+            ALIGN_SELF_FLEX_END = it.getString(R.string.flex_end)
+            ALIGN_SELF_CENTER = it.getString(R.string.center)
+            ALIGN_SELF_BASELINE = it.getString(R.string.baseline)
+            ALIGN_SELF_STRETCH = it.getString(R.string.stretch)
+        }
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?,
@@ -146,7 +139,7 @@ internal class FlexItemEditFragment : DialogFragment() {
         val widthInput = view
                 .findViewById(R.id.input_layout_width) as TextInputLayout
         val widthEdit = view.findViewById(R.id.edit_text_width) as EditText
-        widthEdit.setText(Util.pixelToDp(activity, flexItem.width).toString())
+        widthEdit.setText(activity.pixelToDp(flexItem.width).toString())
         widthEdit.addTextChangedListener(
                 FlexEditTextWatcher(activity, widthInput, DimensionInputValidator(),
                         R.string.must_be_minus_one_or_minus_two_or_non_negative_integer))
@@ -155,7 +148,7 @@ internal class FlexItemEditFragment : DialogFragment() {
                 .findViewById(R.id.input_layout_height) as TextInputLayout
         val heightEdit = view.findViewById(
                 R.id.edit_text_height) as EditText
-        heightEdit.setText(Util.pixelToDp(activity, flexItem.height).toString())
+        heightEdit.setText(activity.pixelToDp(flexItem.height).toString())
         heightEdit.addTextChangedListener(
                 FlexEditTextWatcher(activity, heightInput, DimensionInputValidator(),
                         R.string.must_be_minus_one_or_minus_two_or_non_negative_integer))
@@ -163,7 +156,7 @@ internal class FlexItemEditFragment : DialogFragment() {
         val minWidthInput = view
                 .findViewById(R.id.input_layout_min_width) as TextInputLayout
         val minWidthEdit = view.findViewById(R.id.edit_text_min_width) as EditText
-        minWidthEdit.setText(Util.pixelToDp(activity, flexItem.minWidth).toString())
+        minWidthEdit.setText(activity.pixelToDp(flexItem.minWidth).toString())
         minWidthEdit.addTextChangedListener(
                 FlexEditTextWatcher(activity, minWidthInput, FixedDimensionInputValidator(),
                         R.string.must_be_non_negative_integer))
@@ -172,7 +165,7 @@ internal class FlexItemEditFragment : DialogFragment() {
                 .findViewById(R.id.input_layout_min_height) as TextInputLayout
         val minHeightEdit = view.findViewById(
                 R.id.edit_text_min_height) as EditText
-        minHeightEdit.setText(Util.pixelToDp(activity, flexItem.minHeight).toString())
+        minHeightEdit.setText(activity.pixelToDp(flexItem.minHeight).toString())
         minHeightEdit.addTextChangedListener(
                 FlexEditTextWatcher(activity, minHeightInput, FixedDimensionInputValidator(),
                         R.string.must_be_non_negative_integer))
@@ -180,7 +173,7 @@ internal class FlexItemEditFragment : DialogFragment() {
         val maxWidthInput = view
                 .findViewById(R.id.input_layout_max_width) as TextInputLayout
         val maxWidthEdit = view.findViewById(R.id.edit_text_max_width) as EditText
-        maxWidthEdit.setText(Util.pixelToDp(activity, flexItem.maxWidth).toString())
+        maxWidthEdit.setText(activity.pixelToDp(flexItem.maxWidth).toString())
         maxWidthEdit.addTextChangedListener(
                 FlexEditTextWatcher(activity, maxWidthInput, FixedDimensionInputValidator(),
                         R.string.must_be_non_negative_integer))
@@ -189,7 +182,7 @@ internal class FlexItemEditFragment : DialogFragment() {
                 .findViewById(R.id.input_layout_max_height) as TextInputLayout
         val maxHeightEdit = view.findViewById(
                 R.id.edit_text_max_height) as EditText
-        maxHeightEdit.setText(Util.pixelToDp(activity, flexItem.maxHeight).toString())
+        maxHeightEdit.setText(activity.pixelToDp(flexItem.maxHeight).toString())
         maxHeightEdit.addTextChangedListener(
                 FlexEditTextWatcher(activity, maxHeightInput, FixedDimensionInputValidator(),
                         R.string.must_be_non_negative_integer))
@@ -204,19 +197,14 @@ internal class FlexItemEditFragment : DialogFragment() {
         alignSelfSpinner.adapter = arrayAdapter
         alignSelfSpinner.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
             override fun onItemSelected(parent: AdapterView<*>, ignored: View, position: Int, id: Long) {
-                val selected = parent.getItemAtPosition(position).toString()
-                if (selected == ALIGN_SELF_AUTO) {
-                    flexItemInEdit.alignSelf = AlignSelf.AUTO
-                } else if (selected == ALIGN_SELF_FLEX_START) {
-                    flexItemInEdit.alignSelf = AlignItems.FLEX_START
-                } else if (selected == ALIGN_SELF_FLEX_END) {
-                    flexItemInEdit.alignSelf = AlignItems.FLEX_END
-                } else if (selected == ALIGN_SELF_CENTER) {
-                    flexItemInEdit.alignSelf = AlignItems.CENTER
-                } else if (selected == ALIGN_SELF_BASELINE) {
-                    flexItemInEdit.alignSelf = AlignItems.BASELINE
-                } else if (selected == ALIGN_SELF_STRETCH) {
-                    flexItemInEdit.alignSelf = AlignItems.STRETCH
+                flexItemInEdit.alignSelf = when (parent.getItemAtPosition(position).toString()) {
+                    ALIGN_SELF_AUTO -> AlignSelf.AUTO
+                    ALIGN_SELF_FLEX_START -> AlignItems.FLEX_START
+                    ALIGN_SELF_FLEX_END -> AlignItems.FLEX_END
+                    ALIGN_SELF_CENTER -> AlignItems.CENTER
+                    ALIGN_SELF_BASELINE -> AlignItems.BASELINE
+                    ALIGN_SELF_STRETCH -> AlignItems.STRETCH
+                    else -> return
                 }
             }
 
@@ -323,47 +311,29 @@ internal class FlexItemEditFragment : DialogFragment() {
         }
 
         override fun afterTextChanged(editable: Editable) {
-            if (textInputLayout.isErrorEnabled || TextUtils.isEmpty(editable) ||
+            if (textInputLayout.isErrorEnabled || editable.isNullOrEmpty() ||
                     !inputValidator.isValidInput(editable.toString())) {
                 return
             }
-            val value: Number
-            when (textInputLayout.id) {
-                R.id.input_layout_flex_grow, R.id.input_layout_flex_shrink -> try {
-                    value = java.lang.Float.valueOf(editable.toString())
-                } catch (ignore: NumberFormatException) {
-                    return
-                } catch (ignore: NullPointerException) {
-                    return
-                }
-
-                else -> try {
-                    value = Integer.valueOf(editable.toString())
-                } catch (ignore: NumberFormatException) {
-                    return
-                } catch (ignore: NullPointerException) {
-                    return
-                }
-
-            }
-
+            val value = editable.toString().toFloatOrNull() ?: return
             when (textInputLayout.id) {
                 R.id.input_layout_order -> if (flexItemInEdit !is FlexboxLayoutManager.LayoutParams) {
                     flexItemInEdit.order = value.toInt()
-                }
-                R.id.input_layout_flex_grow -> flexItemInEdit.flexGrow = value.toFloat()
-                R.id.input_layout_flex_shrink -> flexItemInEdit.flexShrink = value.toFloat()
-                R.id.input_layout_width -> flexItemInEdit.width = Util.dpToPixel(context, value.toInt())
-                R.id.input_layout_height -> flexItemInEdit.height = Util.dpToPixel(context, value.toInt())
-                R.id.input_layout_flex_basis_percent -> if (value.toInt().toFloat() != FlexboxLayout.LayoutParams.FLEX_BASIS_PERCENT_DEFAULT) {
-                    flexItemInEdit.flexBasisPercent = (value.toInt() / 100.0).toFloat()
+                } else return
+                R.id.input_layout_flex_grow -> flexItemInEdit.flexGrow = value
+                R.id.input_layout_flex_shrink -> flexItemInEdit.flexShrink = value
+                R.id.input_layout_width -> flexItemInEdit.width = context.dpToPixel(value.toInt())
+                R.id.input_layout_height -> flexItemInEdit.height = context.dpToPixel(value.toInt())
+                R.id.input_layout_flex_basis_percent -> if (value != FlexboxLayout.LayoutParams.FLEX_BASIS_PERCENT_DEFAULT) {
+                    flexItemInEdit.flexBasisPercent = value.toInt() / 100.0f
                 } else {
                     flexItemInEdit.flexBasisPercent = FlexItem.FLEX_BASIS_PERCENT_DEFAULT
                 }
-                R.id.input_layout_min_width -> flexItemInEdit.minWidth = Util.dpToPixel(context, value.toInt())
-                R.id.input_layout_min_height -> flexItemInEdit.minHeight = Util.dpToPixel(context, value.toInt())
-                R.id.input_layout_max_width -> flexItemInEdit.maxWidth = Util.dpToPixel(context, value.toInt())
-                R.id.input_layout_max_height -> flexItemInEdit.maxHeight = Util.dpToPixel(context, value.toInt())
+                R.id.input_layout_min_width -> flexItemInEdit.minWidth = context.dpToPixel(value.toInt())
+                R.id.input_layout_min_height -> flexItemInEdit.minHeight = context.dpToPixel(value.toInt())
+                R.id.input_layout_max_width -> flexItemInEdit.maxWidth = context.dpToPixel(value.toInt())
+                R.id.input_layout_max_height -> flexItemInEdit.maxHeight = context.dpToPixel(value.toInt())
+                else -> return
             }
         }
     }
@@ -374,8 +344,7 @@ internal class FlexItemEditFragment : DialogFragment() {
             copyFlexItemValues(item, newItem)
             return newItem
         } else if (item is FlexboxLayoutManager.LayoutParams) {
-            val newItem = FlexboxLayoutManager.LayoutParams(item.getWidth(),
-                    item.getHeight())
+            val newItem = FlexboxLayoutManager.LayoutParams(item.getWidth(), item.getHeight())
             copyFlexItemValues(item, newItem)
             return newItem
         }
@@ -401,9 +370,9 @@ internal class FlexItemEditFragment : DialogFragment() {
 
     companion object {
 
-        private val FLEX_ITEM_KEY = "flex_item"
+        private const val FLEX_ITEM_KEY = "flex_item"
 
-        private val VIEW_INDEX_KEY = "view_index"
+        private const val VIEW_INDEX_KEY = "view_index"
 
         fun newInstance(flexItem: FlexItem, viewIndex: Int): FlexItemEditFragment {
             val fragment = FlexItemEditFragment()

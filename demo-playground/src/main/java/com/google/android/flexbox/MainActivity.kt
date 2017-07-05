@@ -44,8 +44,7 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         drawer.addDrawerListener(toggle)
         toggle.syncState()
 
-        val navigationView = findViewById(
-                R.id.nav_view) as NavigationView
+        val navigationView = findViewById(R.id.nav_view) as NavigationView
         val radioGroup = navigationView.getHeaderView(0)
                 .findViewById(R.id.radiogroup_container_implementation) as RadioGroup
         val fragmentManager = supportFragmentManager
@@ -103,8 +102,8 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
 
     companion object {
 
-        private val FLEXBOXLAYOUT_FRAGMENT = "flexboxlayout_fragment"
+        private const val FLEXBOXLAYOUT_FRAGMENT = "flexboxlayout_fragment"
 
-        private val RECYCLERVIEW_FRAGMENT = "recyclerview_fragment"
+        private const val RECYCLERVIEW_FRAGMENT = "recyclerview_fragment"
     }
 }

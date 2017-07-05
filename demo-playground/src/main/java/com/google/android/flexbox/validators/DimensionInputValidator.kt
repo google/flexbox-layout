@@ -25,7 +25,7 @@ class DimensionInputValidator : InputValidator {
 
     override fun isValidInput(charSequence: CharSequence): Boolean {
         // -1 represents match_parent, -2 represents wrap_content
-        return !TextUtils.isEmpty(charSequence) && (TextUtils.isDigitsOnly(charSequence) ||
+        return !charSequence.isNullOrEmpty() && (TextUtils.isDigitsOnly(charSequence) ||
                 charSequence.toString() == "-1" ||
                 charSequence.toString() == "-2")
     }

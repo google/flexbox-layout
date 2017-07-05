@@ -16,25 +16,12 @@
 
 package com.google.android.flexbox.validators
 
-import android.text.TextUtils
-
 /**
  * Validator for the integers.
  */
 class IntegerInputValidator : InputValidator {
 
     override fun isValidInput(charSequence: CharSequence): Boolean {
-        if (TextUtils.isEmpty(charSequence)) {
-            return false
-        }
-        try {
-            Integer.parseInt(charSequence.toString())
-        } catch (e: NumberFormatException) {
-            return false
-        } catch (e: NullPointerException) {
-            return false
-        }
-
-        return true
+        return charSequence.toString().toIntOrNull() != null
     }
 }

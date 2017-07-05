@@ -107,7 +107,7 @@ class FlexboxLayoutFragment : Fragment() {
 
     companion object {
 
-        private val FLEX_ITEMS_KEY = "flex_items_key"
+        private const val FLEX_ITEMS_KEY = "flex_items_key"
 
         fun newInstance(): FlexboxLayoutFragment {
             return FlexboxLayoutFragment()

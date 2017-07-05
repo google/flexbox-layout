@@ -60,8 +60,7 @@ internal class RecyclerViewFragment : Fragment() {
         val fragmentHelper = FragmentHelper(activity, flexboxLayoutManager)
         fragmentHelper.initializeViews()
 
-        val addFab = activity.findViewById(
-                R.id.add_fab) as FloatingActionButton
+        val addFab = activity.findViewById(R.id.add_fab) as FloatingActionButton
         addFab.setOnClickListener {
             val lp = FlexboxLayoutManager.LayoutParams(
                     ViewGroup.LayoutParams.WRAP_CONTENT,
@@ -85,7 +84,7 @@ internal class RecyclerViewFragment : Fragment() {
 
     companion object {
 
-        private val FLEX_ITEMS_KEY = "flex_items"
+        private const val FLEX_ITEMS_KEY = "flex_items"
 
         fun newInstance(): RecyclerViewFragment {
             return RecyclerViewFragment()

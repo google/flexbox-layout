@@ -27,7 +27,7 @@ import com.google.android.apps.flexbox.R
  */
 internal class FlexItemAdapter(private val activity: AppCompatActivity, private val flexContainer: FlexContainer) : RecyclerView.Adapter<FlexItemViewHolder>() {
 
-    private val layoutParams: MutableList<FlexboxLayoutManager.LayoutParams> = ArrayList()
+    private val layoutParams = mutableListOf<FlexboxLayoutManager.LayoutParams>()
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): FlexItemViewHolder {
         val view = LayoutInflater.from(parent.context)
@@ -59,10 +59,7 @@ internal class FlexItemAdapter(private val activity: AppCompatActivity, private 
         notifyItemRangeChanged(position, layoutParams.size)
     }
 
-    val items: MutableList<FlexboxLayoutManager.LayoutParams>
-        get() = layoutParams
+    val items get() = layoutParams
 
-    override fun getItemCount(): Int {
-        return layoutParams.size
-    }
+    override fun getItemCount() = layoutParams.size
 }

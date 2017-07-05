@@ -103,16 +103,11 @@ internal class FragmentHelper(private val activity: MainActivity, private val fl
      * @return a FlexItem instance, which attributes from the SharedPreferences are updated
      */
     fun setFlexItemAttributes(flexItem: FlexItem): FlexItem {
-        flexItem.width = Util.dpToPixel(activity,
-                readPreferenceAsInteger(activity.getString(R.string.new_width_key),
-                        DEFAULT_WIDTH))
-        flexItem.height = Util.dpToPixel(activity,
-                readPreferenceAsInteger(activity.getString(R.string.new_height_key),
-                        DEFAULT_HEIGHT))
+        flexItem.width = activity.dpToPixel(readPreferenceAsInteger(activity.getString(R.string.new_width_key), DEFAULT_WIDTH))
+        flexItem.height = activity.dpToPixel(readPreferenceAsInteger(activity.getString(R.string.new_height_key), DEFAULT_HEIGHT))
         // Order is not supported in the FlexboxLayoutManager
         if (flexItem !is FlexboxLayoutManager.LayoutParams) {
-            flexItem.order = readPreferenceAsInteger(activity.getString(R.string.new_flex_item_order_key),
-                    "1")
+            flexItem.order = readPreferenceAsInteger(activity.getString(R.string.new_flex_item_order_key), "1")
         }
         flexItem.flexGrow = readPreferenceAsFloat(activity.getString(R.string.new_flex_grow_key), "0.0")
         flexItem.flexShrink = readPreferenceAsFloat(activity.getString(R.string.new_flex_shrink_key), "1.0")
@@ -123,18 +118,18 @@ internal class FragmentHelper(private val activity: MainActivity, private val fl
     }
 
     private fun readPreferenceAsInteger(key: String, defValue: String): Int {
-        if (sharedPreferences.contains(key)) {
-            return Integer.valueOf(sharedPreferences.getString(key, defValue))!!
+        return if (sharedPreferences.contains(key)) {
+            sharedPreferences.getString(key, defValue).toIntOrNull() ?: defValue.toInt()
         } else {
-            return Integer.valueOf(defValue)!!
+            defValue.toInt()
         }
     }
 
     private fun readPreferenceAsFloat(key: String, defValue: String): Float {
-        if (sharedPreferences.contains(key)) {
-            return java.lang.Float.valueOf(sharedPreferences.getString(key, defValue))
+        return if (sharedPreferences.contains(key)) {
+            sharedPreferences.getString(key, defValue).toFloatOrNull() ?: defValue.toFloat()
         } else {
-            return java.lang.Float.valueOf(defValue)
+            defValue.toFloat()
         }
     }
 
@@ -158,12 +153,12 @@ internal class FragmentHelper(private val activity: MainActivity, private val fl
                 object : AdapterView.OnItemSelectedListener {
                     override fun onItemSelected(parent: AdapterView<*>, ignored: View?, position: Int,
                                                 id: Long) {
-                        val selected = parent.getItemAtPosition(position).toString()
-                        when (selected) {
-                            ROW -> flexContainer.flexDirection = FlexDirection.ROW
-                            ROW_REVERSE -> flexContainer.flexDirection = FlexDirection.ROW_REVERSE
-                            COLUMN -> flexContainer.flexDirection = FlexDirection.COLUMN
-                            COLUMN_REVERSE -> flexContainer.flexDirection = FlexDirection.COLUMN_REVERSE
+                        flexContainer.flexDirection = when (parent.getItemAtPosition(position).toString()) {
+                            ROW -> FlexDirection.ROW
+                            ROW_REVERSE -> FlexDirection.ROW_REVERSE
+                            COLUMN -> FlexDirection.COLUMN
+                            COLUMN_REVERSE -> FlexDirection.COLUMN_REVERSE
+                            else -> return
                         }
                     }
 
@@ -189,17 +184,18 @@ internal class FragmentHelper(private val activity: MainActivity, private val fl
                 object : AdapterView.OnItemSelectedListener {
                     override fun onItemSelected(parent: AdapterView<*>, ignored: View?, position: Int,
                                                 id: Long) {
-                        val selected = parent.getItemAtPosition(position).toString()
-                        when (selected) {
-                            NOWRAP -> flexContainer.flexWrap = FlexWrap.NOWRAP
-                            WRAP -> flexContainer.flexWrap = FlexWrap.WRAP
+                        flexContainer.flexWrap = when (parent.getItemAtPosition(position).toString()) {
+                            NOWRAP -> FlexWrap.NOWRAP
+                            WRAP -> FlexWrap.WRAP
                             WRAP_REVERSE -> if (flexContainer is FlexboxLayoutManager) {
                                 Toast.makeText(activity,
                                         R.string.wrap_reverse_not_supported,
                                         Toast.LENGTH_SHORT).show()
+                                return
                             } else {
-                                flexContainer.flexWrap = FlexWrap.WRAP_REVERSE
+                                FlexWrap.WRAP_REVERSE
                             }
+                            else -> return
                         }
                     }
 
@@ -224,13 +220,13 @@ internal class FragmentHelper(private val activity: MainActivity, private val fl
                 object : AdapterView.OnItemSelectedListener {
                     override fun onItemSelected(parent: AdapterView<*>, ignored: View?, position: Int,
                                                 id: Long) {
-                        val selected = parent.getItemAtPosition(position).toString()
-                        when (selected) {
-                            FLEX_START -> flexContainer.justifyContent = JustifyContent.FLEX_START
-                            FLEX_END -> flexContainer.justifyContent = JustifyContent.FLEX_END
-                            CENTER -> flexContainer.justifyContent = JustifyContent.CENTER
-                            SPACE_BETWEEN -> flexContainer.justifyContent = JustifyContent.SPACE_BETWEEN
-                            SPACE_AROUND -> flexContainer.justifyContent = JustifyContent.SPACE_AROUND
+                        flexContainer.justifyContent = when (parent.getItemAtPosition(position).toString()) {
+                            FLEX_START -> JustifyContent.FLEX_START
+                            FLEX_END -> JustifyContent.FLEX_END
+                            CENTER -> JustifyContent.CENTER
+                            SPACE_BETWEEN -> JustifyContent.SPACE_BETWEEN
+                            SPACE_AROUND -> JustifyContent.SPACE_AROUND
+                            else -> return
                         }
                     }
 
@@ -257,13 +253,13 @@ internal class FragmentHelper(private val activity: MainActivity, private val fl
                 object : AdapterView.OnItemSelectedListener {
                     override fun onItemSelected(parent: AdapterView<*>, ignored: View?, position: Int,
                                                 id: Long) {
-                        val selected = parent.getItemAtPosition(position).toString()
-                        when (selected) {
-                            FLEX_START -> flexContainer.alignItems = AlignItems.FLEX_START
-                            FLEX_END -> flexContainer.alignItems = AlignItems.FLEX_END
-                            CENTER -> flexContainer.alignItems = AlignItems.CENTER
-                            BASELINE -> flexContainer.alignItems = AlignItems.BASELINE
-                            STRETCH -> flexContainer.alignItems = AlignItems.STRETCH
+                        flexContainer.alignItems = when (parent.getItemAtPosition(position).toString()) {
+                            FLEX_START -> AlignItems.FLEX_START
+                            FLEX_END -> AlignItems.FLEX_END
+                            CENTER -> AlignItems.CENTER
+                            BASELINE -> AlignItems.BASELINE
+                            STRETCH -> AlignItems.STRETCH
+                            else -> return
                         }
                     }
 
@@ -295,14 +291,14 @@ internal class FragmentHelper(private val activity: MainActivity, private val fl
                                     Toast.LENGTH_SHORT).show()
                             return
                         }
-                        val selected = parent.getItemAtPosition(position).toString()
-                        when (selected) {
-                            FLEX_START -> flexContainer.alignContent = AlignContent.FLEX_START
-                            FLEX_END -> flexContainer.alignContent = AlignContent.FLEX_END
-                            CENTER -> flexContainer.alignContent = AlignContent.CENTER
-                            SPACE_BETWEEN -> flexContainer.alignContent = AlignContent.SPACE_BETWEEN
-                            SPACE_AROUND -> flexContainer.alignContent = AlignContent.SPACE_AROUND
-                            STRETCH -> flexContainer.alignContent = AlignContent.STRETCH
+                        flexContainer.alignContent = when (parent.getItemAtPosition(position).toString()) {
+                            FLEX_START -> AlignContent.FLEX_START
+                            FLEX_END -> AlignContent.FLEX_END
+                            CENTER -> AlignContent.CENTER
+                            SPACE_BETWEEN -> AlignContent.SPACE_BETWEEN
+                            SPACE_AROUND -> AlignContent.SPACE_AROUND
+                            STRETCH -> AlignContent.STRETCH
+                            else -> return
                         }
                     }
 
@@ -334,8 +330,8 @@ internal class FragmentHelper(private val activity: MainActivity, private val fl
 
     companion object {
 
-        private val DEFAULT_WIDTH = "120"
+        private const val DEFAULT_WIDTH = "120"
 
-        private val DEFAULT_HEIGHT = "80"
+        private const val DEFAULT_HEIGHT = "80"
     }
 }

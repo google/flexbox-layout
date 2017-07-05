@@ -16,21 +16,12 @@
 
 package com.google.android.flexbox.validators
 
-import android.text.TextUtils
-
 /**
  * Validator for non negative integers.
  */
 class NonNegativeDecimalInputValidator : InputValidator {
 
     override fun isValidInput(charSequence: CharSequence): Boolean {
-        try {
-            return !TextUtils.isEmpty(charSequence) && java.lang.Float.valueOf(charSequence.toString()) >= 0
-        } catch (ignore: NumberFormatException) {
-            return false
-        } catch (ignore: NullPointerException) {
-            return false
-        }
-
+        return charSequence.toString().toFloatOrNull() ?: -1f >= 0
     }
 }
