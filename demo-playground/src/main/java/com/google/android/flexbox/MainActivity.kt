@@ -1,0 +1,109 @@
+/*
+ * Copyright 2017 Google Inc. All rights reserved.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+package com.google.android.flexbox
+
+import android.content.Intent
+import android.os.Bundle
+import android.support.design.widget.NavigationView
+import android.support.v4.app.FragmentManager
+import android.support.v4.widget.DrawerLayout
+import android.support.v7.app.ActionBarDrawerToggle
+import android.support.v7.app.AppCompatActivity
+import android.support.v7.widget.Toolbar
+import android.view.Menu
+import android.view.MenuItem
+import android.widget.RadioGroup
+import com.google.android.apps.flexbox.R
+
+class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelectedListener {
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        setContentView(R.layout.activity_main)
+
+        val toolbar = findViewById(R.id.toolbar) as Toolbar
+        setSupportActionBar(toolbar)
+        val drawer = findViewById(R.id.drawer_layout) as DrawerLayout
+        val toggle = ActionBarDrawerToggle(
+                this, drawer, toolbar, R.string.navigation_drawer_open,
+                R.string.navigation_drawer_close)
+        drawer.addDrawerListener(toggle)
+        toggle.syncState()
+
+        val navigationView = findViewById(R.id.nav_view) as NavigationView
+        val radioGroup = navigationView.getHeaderView(0)
+                .findViewById(R.id.radiogroup_container_implementation) as RadioGroup
+        val fragmentManager = supportFragmentManager
+
+        radioGroup.setOnCheckedChangeListener { _, checkedId ->
+            if (checkedId == R.id.radiobutton_viewgroup) {
+                replaceToFlexboxLayoutFragment(fragmentManager)
+            } else {
+                replaceToRecyclerViewFragment(fragmentManager)
+            }
+        }
+
+        if (savedInstanceState == null) {
+            replaceToFlexboxLayoutFragment(fragmentManager)
+        }
+    }
+
+    private fun replaceToFlexboxLayoutFragment(fragmentManager: FragmentManager) {
+        var fragment: FlexboxLayoutFragment? = fragmentManager.findFragmentByTag(FLEXBOXLAYOUT_FRAGMENT) as FlexboxLayoutFragment?
+        if (fragment == null) {
+            fragment = FlexboxLayoutFragment.newInstance()
+        }
+        fragmentManager.beginTransaction()
+                .replace(R.id.container, fragment, FLEXBOXLAYOUT_FRAGMENT).commit()
+    }
+
+    private fun replaceToRecyclerViewFragment(fragmentManager: FragmentManager) {
+        var fragment: RecyclerViewFragment? = fragmentManager.findFragmentByTag(RECYCLERVIEW_FRAGMENT) as RecyclerViewFragment?
+        if (fragment == null) {
+            fragment = RecyclerViewFragment.newInstance()
+        }
+        fragmentManager.beginTransaction()
+                .replace(R.id.container, fragment, RECYCLERVIEW_FRAGMENT).commit()
+    }
+
+    override fun onNavigationItemSelected(item: MenuItem): Boolean {
+        return false
+    }
+
+    override fun onCreateOptionsMenu(menu: Menu): Boolean {
+        menuInflater.inflate(R.menu.menu_main, menu)
+        return true
+    }
+
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        val id = item.itemId
+
+        if (id == R.id.action_settings) {
+            val intent = Intent(this, SettingsActivity::class.java)
+            startActivity(intent)
+            return true
+        }
+        return super.onOptionsItemSelected(item)
+    }
+
+    companion object {
+
+        private const val FLEXBOXLAYOUT_FRAGMENT = "flexboxlayout_fragment"
+
+        private const val RECYCLERVIEW_FRAGMENT = "recyclerview_fragment"
+    }
+}

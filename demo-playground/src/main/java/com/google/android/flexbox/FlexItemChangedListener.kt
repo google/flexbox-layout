@@ -1,5 +1,5 @@
 /*
- * Copyright 2016 Google Inc. All rights reserved.
+ * Copyright 2017 Google Inc. All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,18 +14,12 @@
  * limitations under the License.
  */
 
-package com.google.android.flexbox.validators;
+package com.google.android.flexbox
 
 /**
- * Interface to verify a given input.
+ * A listener that listens to the change of a flex item
  */
-public interface InputValidator {
+internal interface FlexItemChangedListener {
 
-    /**
-     * Verifies if the given input is valid.
-     *
-     * @param charSequence the input to be verified
-     * @return {@code true} if charSequence is valid, {@code false} otherwise
-     */
-    boolean isValidInput(CharSequence charSequence);
+    fun onFlexItemChanged(flexItem: FlexItem, viewIndex: Int)
 }

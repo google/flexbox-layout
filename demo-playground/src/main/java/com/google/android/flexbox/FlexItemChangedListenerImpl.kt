@@ -1,5 +1,5 @@
 /*
- * Copyright 2016 Google Inc. All rights reserved.
+ * Copyright 2017 Google Inc. All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,21 +14,17 @@
  * limitations under the License.
  */
 
-package com.google.android.flexbox.validators;
+package com.google.android.flexbox
 
-import android.text.TextUtils;
+import android.view.ViewGroup
 
 /**
- * Validator for non negative integers.
+ * Default implementation for the [FlexItemChangedListener].
  */
-public class NonNegativeDecimalInputValidator implements InputValidator {
+internal class FlexItemChangedListenerImpl(private val flexContainer: FlexContainer) : FlexItemChangedListener {
 
-    @Override
-    public boolean isValidInput(CharSequence charSequence) {
-        try {
-            return !TextUtils.isEmpty(charSequence) && Float.valueOf(charSequence.toString()) >= 0;
-        } catch (NumberFormatException | NullPointerException ignore) {
-            return false;
-        }
+    override fun onFlexItemChanged(flexItem: FlexItem, viewIndex: Int) {
+        val view = flexContainer.getFlexItemAt(viewIndex)
+        view.layoutParams = flexItem as ViewGroup.LayoutParams
     }
 }

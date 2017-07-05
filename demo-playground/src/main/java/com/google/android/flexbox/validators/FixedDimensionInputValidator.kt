@@ -1,5 +1,5 @@
 /*
- * Copyright 2016 Google Inc. All rights reserved.
+ * Copyright 2017 Google Inc. All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,17 +14,16 @@
  * limitations under the License.
  */
 
-package com.google.android.flexbox.validators;
+package com.google.android.flexbox.validators
 
-import android.text.TextUtils;
+import android.text.TextUtils
 
 /**
  * Validator for dimension values.
  */
-public class FixedDimensionInputValidator implements InputValidator {
+class FixedDimensionInputValidator : InputValidator {
 
-    @Override
-    public boolean isValidInput(CharSequence charSequence) {
-        return !TextUtils.isEmpty(charSequence) && TextUtils.isDigitsOnly(charSequence);
+    override fun isValidInput(charSequence: CharSequence): Boolean {
+        return !charSequence.isNullOrEmpty() && TextUtils.isDigitsOnly(charSequence)
     }
 }
