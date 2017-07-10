@@ -26,12 +26,10 @@ import android.view.View
 internal class FlexItemClickListener(private val activity: AppCompatActivity, private val flexItemChangedListener: FlexItemChangedListener,
                                      private val viewIndex: Int) : View.OnClickListener {
 
-    override fun onClick(v: View) {
-        val fragment = FlexItemEditFragment
-                .newInstance(v.layoutParams as FlexItem, viewIndex)
-        fragment.setFlexItemChangedListener(flexItemChangedListener)
-        fragment.show(activity.supportFragmentManager, EDIT_DIALOG_TAG)
-    }
+    override fun onClick(v: View) =
+            FlexItemEditFragment.newInstance(v.layoutParams as FlexItem, viewIndex).apply {
+                setFlexItemChangedListener(flexItemChangedListener)
+            }.show(activity.supportFragmentManager, EDIT_DIALOG_TAG)
 
     companion object {
 
