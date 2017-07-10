@@ -374,13 +374,11 @@ internal class FlexItemEditFragment : DialogFragment() {
 
         private const val VIEW_INDEX_KEY = "view_index"
 
-        fun newInstance(flexItem: FlexItem, viewIndex: Int): FlexItemEditFragment {
-            val fragment = FlexItemEditFragment()
-            val args = Bundle()
-            args.putParcelable(FLEX_ITEM_KEY, flexItem)
-            args.putInt(VIEW_INDEX_KEY, viewIndex)
-            fragment.arguments = args
-            return fragment
+        fun newInstance(flexItem: FlexItem, viewIndex: Int) = FlexItemEditFragment().apply {
+            arguments = Bundle().apply {
+                putParcelable(FLEX_ITEM_KEY, flexItem)
+                putInt(VIEW_INDEX_KEY, viewIndex)
+            }
         }
     }
 }
