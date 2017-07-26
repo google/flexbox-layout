@@ -43,7 +43,7 @@ internal class SettingsActivity : FragmentActivity() {
      */
     class SettingsFragment : PreferenceFragmentCompat() {
 
-        override fun onCreatePreferences(savedInstanceState: Bundle, s: String) {
+        override fun onCreatePreferences(savedInstanceState: Bundle?, s: String?) {
             addPreferencesFromResource(R.xml.new_flex_item_preferences)
 
             val orderPreference = findPreference(
