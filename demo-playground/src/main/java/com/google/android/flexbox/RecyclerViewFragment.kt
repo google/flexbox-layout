@@ -41,7 +41,7 @@ internal class RecyclerViewFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        val recyclerView = view.findViewById(R.id.recyclerview) as RecyclerView
+        val recyclerView: RecyclerView = view.findViewById(R.id.recyclerview)
         val activity = activity as MainActivity
         val flexboxLayoutManager = FlexboxLayoutManager(activity)
         recyclerView.layoutManager = flexboxLayoutManager
@@ -60,7 +60,7 @@ internal class RecyclerViewFragment : Fragment() {
         val fragmentHelper = FragmentHelper(activity, flexboxLayoutManager)
         fragmentHelper.initializeViews()
 
-        val addFab = activity.findViewById(R.id.add_fab) as FloatingActionButton
+        val addFab: FloatingActionButton = activity.findViewById(R.id.add_fab)
         addFab.setOnClickListener {
             val lp = FlexboxLayoutManager.LayoutParams(
                     ViewGroup.LayoutParams.WRAP_CONTENT,
@@ -68,7 +68,7 @@ internal class RecyclerViewFragment : Fragment() {
             fragmentHelper.setFlexItemAttributes(lp)
             adapter.addItem(lp)
         }
-        val removeFab = activity.findViewById(R.id.remove_fab) as FloatingActionButton
+        val removeFab: FloatingActionButton = activity.findViewById(R.id.remove_fab)
         removeFab.setOnClickListener(View.OnClickListener {
             if (adapter.itemCount == 0) {
                 return@OnClickListener

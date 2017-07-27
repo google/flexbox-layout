@@ -27,7 +27,7 @@ import com.google.android.apps.flexbox.R
  */
 class FlexItemViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
 
-    private val textView: TextView = itemView.findViewById(R.id.textview) as TextView
+    private val textView: TextView = itemView.findViewById(R.id.textview)
 
     fun bindTo(params: RecyclerView.LayoutParams) {
         val adapterPosition = adapterPosition
