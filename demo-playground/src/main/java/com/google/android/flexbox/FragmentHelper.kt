@@ -67,7 +67,7 @@ internal class FragmentHelper(private val activity: MainActivity, private val fl
     fun initializeViews() {
         sharedPreferences = PreferenceManager.getDefaultSharedPreferences(activity)
         initializeStringResources()
-        val navigationView = activity.findViewById(R.id.nav_view) as NavigationView
+        val navigationView: NavigationView = activity.findViewById(R.id.nav_view)
         navigationView.setNavigationItemSelectedListener(activity)
         val navigationMenu = navigationView.menu
         initializeFlexDirectionSpinner(navigationMenu)

@@ -33,7 +33,7 @@ import java.util.*
  */
 class FlexboxLayoutFragment : Fragment() {
 
-    private lateinit var flexContainer: FlexContainer
+    private lateinit var flexContainer: FlexboxLayout
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?,
                               savedInstanceState: Bundle?): View? {
@@ -42,7 +42,7 @@ class FlexboxLayoutFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         val activity = activity as MainActivity
-        flexContainer = view.findViewById(R.id.flexbox_layout) as FlexboxLayout
+        flexContainer = view.findViewById(R.id.flexbox_layout)
 
         val fragmentHelper = FragmentHelper(activity, flexContainer)
         fragmentHelper.initializeViews()
@@ -64,7 +64,7 @@ class FlexboxLayoutFragment : Fragment() {
             }
         }
 
-        val addFab = activity.findViewById(R.id.add_fab) as FloatingActionButton
+        val addFab: FloatingActionButton = activity.findViewById(R.id.add_fab)
         addFab.setOnClickListener {
             val viewIndex = flexContainer.flexItemCount
             // index starts from 0. New View's index is N if N views ([0, 1, 2, ... N-1])
@@ -79,8 +79,7 @@ class FlexboxLayoutFragment : Fragment() {
                     FlexItemChangedListenerImpl(flexContainer), viewIndex))
             flexContainer.addView(textView)
         }
-        val removeFab = activity.findViewById(
-                R.id.remove_fab) as FloatingActionButton
+        val removeFab: FloatingActionButton = activity.findViewById(R.id.remove_fab)
         removeFab.setOnClickListener(View.OnClickListener {
             if (flexContainer.flexItemCount == 0) {
                 return@OnClickListener

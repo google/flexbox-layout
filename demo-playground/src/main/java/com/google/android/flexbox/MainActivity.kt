@@ -35,18 +35,18 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
-        val toolbar = findViewById(R.id.toolbar) as Toolbar
+        val toolbar: Toolbar = findViewById(R.id.toolbar)
         setSupportActionBar(toolbar)
-        val drawer = findViewById(R.id.drawer_layout) as DrawerLayout
+        val drawer: DrawerLayout = findViewById(R.id.drawer_layout)
         val toggle = ActionBarDrawerToggle(
                 this, drawer, toolbar, R.string.navigation_drawer_open,
                 R.string.navigation_drawer_close)
         drawer.addDrawerListener(toggle)
         toggle.syncState()
 
-        val navigationView = findViewById(R.id.nav_view) as NavigationView
-        val radioGroup = navigationView.getHeaderView(0)
-                .findViewById(R.id.radiogroup_container_implementation) as RadioGroup
+        val navigationView: NavigationView = findViewById(R.id.nav_view)
+        val radioGroup: RadioGroup = navigationView.getHeaderView(0)
+                .findViewById(R.id.radiogroup_container_implementation)
         val fragmentManager = supportFragmentManager
 
         radioGroup.setOnCheckedChangeListener { _, checkedId ->
