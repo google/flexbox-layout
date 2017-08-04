@@ -2264,6 +2264,27 @@ public class FlexboxAndroidTest {
 
     @Test
     @FlakyTest
+    public void testAlignItems_baseline_wrapContent() throws Throwable {
+        // This test verifies the issue that baseline calculation is broken on API level +24
+        // https://github.com/google/flexbox-layout/issues/341
+        final FlexboxTestActivity activity = mActivityRule.getActivity();
+        FlexboxLayout layout =
+                createFlexboxLayout(R.layout.activity_align_items_baseline_wrap_content);
+        TextView textView1 = activity.findViewById(R.id.text1);
+        TextView textView2 = activity.findViewById(R.id.text2);
+        TextView textView3 = activity.findViewById(R.id.text3);
+        int topPluBaseline1 = textView1.getTop() + textView1.getBaseline();
+        int topPluBaseline2 = textView2.getTop() + textView2.getBaseline();
+        int topPluBaseline3 = textView3.getTop() + textView3.getBaseline();
+
+        assertThat(topPluBaseline1, is(topPluBaseline2));
+        assertThat(topPluBaseline2, is(topPluBaseline3));
+        assertThat(layout.getFlexLines().size(), is(1));
+        assertTrue(layout.getFlexLines().get(0).getCrossSize() > textView1.getHeight());
+    }
+
+    @Test
+    @FlakyTest
     public void testAlignItems_baseline_wrapReverse() throws Throwable {
         final FlexboxTestActivity activity = mActivityRule.getActivity();
         createFlexboxLayout(R.layout.activity_align_items_baseline_test, new Configuration() {
