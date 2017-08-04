@@ -24,7 +24,6 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.annotation.VisibleForTesting;
 import android.support.v4.view.MarginLayoutParamsCompat;
-import android.support.v4.view.ViewCompat;
 import android.util.SparseIntArray;
 import android.view.View;
 import android.view.ViewGroup;
@@ -492,8 +491,8 @@ class FlexboxHelper {
             // less than the min width after the first measurement.
             checkSizeConstraints(child, i);
 
-            childState = ViewCompat.combineMeasuredStates(
-                    childState, ViewCompat.getMeasuredState(child));
+            childState = View.combineMeasuredStates(
+                    childState, child.getMeasuredState());
 
             if (isWrapRequired(child, mainMode, mainSize, flexLine.mMainSize,
                     getViewMeasuredSizeMain(child, isMainHorizontal)
