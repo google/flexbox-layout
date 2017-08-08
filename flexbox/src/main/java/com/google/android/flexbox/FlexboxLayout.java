@@ -349,28 +349,30 @@ public class FlexboxLayout extends ViewGroup implements FlexContainer {
 
         // TODO: Consider the case any individual child's mAlignSelf is set to ALIGN_SELF_BASELINE
         if (mAlignItems == AlignItems.BASELINE) {
-            int viewIndex = 0;
             for (FlexLine flexLine : mFlexLines) {
                 // The largest height value that also take the baseline shift into account
                 int largestHeightInLine = Integer.MIN_VALUE;
-                for (int i = viewIndex; i < viewIndex + flexLine.mItemCount; i++) {
-                    View child = getReorderedChildAt(i);
+                for (int i = 0; i < flexLine.mItemCount; i++) {
+                    int viewIndex = flexLine.mFirstIndex + i;
+                    View child = getReorderedChildAt(viewIndex);
+                    if (child == null || child.getVisibility() == View.GONE) {
+                        continue;
+                    }
                     LayoutParams lp = (LayoutParams) child.getLayoutParams();
                     if (mFlexWrap != FlexWrap.WRAP_REVERSE) {
                         int marginTop = flexLine.mMaxBaseline - child.getBaseline();
                         marginTop = Math.max(marginTop, lp.topMargin);
                         largestHeightInLine = Math.max(largestHeightInLine,
-                                child.getHeight() + marginTop + lp.bottomMargin);
+                                child.getMeasuredHeight() + marginTop + lp.bottomMargin);
                     } else {
                         int marginBottom = flexLine.mMaxBaseline - child.getMeasuredHeight() +
                                 child.getBaseline();
                         marginBottom = Math.max(marginBottom, lp.bottomMargin);
                         largestHeightInLine = Math.max(largestHeightInLine,
-                                child.getHeight() + lp.topMargin + marginBottom);
+                                child.getMeasuredHeight() + lp.topMargin + marginBottom);
                     }
                 }
                 flexLine.mCrossSize = largestHeightInLine;
-                viewIndex += flexLine.mItemCount;
             }
         }
 
