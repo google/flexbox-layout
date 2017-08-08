@@ -83,10 +83,6 @@ class TestAdapterMultiViewTypes extends RecyclerView.Adapter<TestViewHolder> {
         notifyItemInserted(position);
     }
 
-    Item getItemAt(int position) {
-        return mItems.get(position);
-    }
-
     @Override
     public int getItemCount() {
         return mItems.size();

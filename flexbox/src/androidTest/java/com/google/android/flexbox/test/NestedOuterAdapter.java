@@ -89,7 +89,7 @@ class NestedOuterAdapter extends RecyclerView.Adapter<NestedOuterAdapter.OuterVi
         OuterViewHolder(View itemView) {
             super(itemView);
 
-            mInnerRecyclerView = (RecyclerView) itemView.findViewById(R.id.recyclerview_inner);
+            mInnerRecyclerView = itemView.findViewById(R.id.recyclerview_inner);
         }
     }
 }

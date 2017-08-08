@@ -90,7 +90,7 @@ public class FlexboxLayoutManagerTest {
                 activity.setContentView(R.layout.recyclerview_reverse);
             }
         });
-        RecyclerView recyclerView = (RecyclerView) activity.findViewById(R.id.recyclerview);
+        RecyclerView recyclerView = activity.findViewById(R.id.recyclerview);
         RecyclerView.LayoutManager layoutManager = recyclerView.getLayoutManager();
         assertThat(recyclerView, is(notNullValue()));
         assertThat(layoutManager, is(instanceOf(FlexboxLayoutManager.class)));
@@ -109,7 +109,7 @@ public class FlexboxLayoutManagerTest {
                 activity.setContentView(R.layout.recyclerview_reverse);
             }
         });
-        RecyclerView recyclerView = (RecyclerView) activity.findViewById(R.id.recyclerview);
+        RecyclerView recyclerView = activity.findViewById(R.id.recyclerview);
         RecyclerView.LayoutManager layoutManager = recyclerView.getLayoutManager();
         assertThat(recyclerView, is(notNullValue()));
         assertThat(layoutManager, is(instanceOf(FlexboxLayoutManager.class)));
@@ -137,7 +137,7 @@ public class FlexboxLayoutManagerTest {
             @Override
             public void run() {
                 activity.setContentView(R.layout.recyclerview);
-                RecyclerView recyclerView = (RecyclerView) activity.findViewById(R.id.recyclerview);
+                RecyclerView recyclerView = activity.findViewById(R.id.recyclerview);
                 recyclerView.setLayoutManager(layoutManager);
                 recyclerView.setAdapter(adapter);
                 adapter.addItem(createLayoutParams(activity, 120, 80));
@@ -165,7 +165,7 @@ public class FlexboxLayoutManagerTest {
             @Override
             public void run() {
                 activity.setContentView(R.layout.recyclerview);
-                RecyclerView recyclerView = (RecyclerView) activity.findViewById(R.id.recyclerview);
+                RecyclerView recyclerView = activity.findViewById(R.id.recyclerview);
                 recyclerView.setLayoutManager(layoutManager);
                 recyclerView.setAdapter(adapter);
                 adapter.addItem(createLayoutParams(activity, 120, 80));
@@ -193,7 +193,7 @@ public class FlexboxLayoutManagerTest {
             @Override
             public void run() {
                 activity.setContentView(R.layout.recyclerview);
-                RecyclerView recyclerView = (RecyclerView) activity.findViewById(R.id.recyclerview);
+                RecyclerView recyclerView = activity.findViewById(R.id.recyclerview);
                 recyclerView.setLayoutManager(layoutManager);
                 recyclerView.setAdapter(adapter);
                 adapter.addItem(createLayoutParams(activity, 150, 90));
@@ -230,7 +230,7 @@ public class FlexboxLayoutManagerTest {
             @Override
             public void run() {
                 activity.setContentView(R.layout.recyclerview);
-                RecyclerView recyclerView = (RecyclerView) activity.findViewById(R.id.recyclerview);
+                RecyclerView recyclerView = activity.findViewById(R.id.recyclerview);
                 recyclerView.setLayoutManager(layoutManager);
                 recyclerView.setAdapter(adapter);
                 adapter.addItem(createLayoutParams(activity, 150, 90));
@@ -276,7 +276,7 @@ public class FlexboxLayoutManagerTest {
             @Override
             public void run() {
                 activity.setContentView(R.layout.recyclerview);
-                RecyclerView recyclerView = (RecyclerView) activity.findViewById(R.id.recyclerview);
+                RecyclerView recyclerView = activity.findViewById(R.id.recyclerview);
                 recyclerView.setLayoutManager(layoutManager);
                 recyclerView.setAdapter(adapter);
                 FlexboxLayoutManager.LayoutParams lp1 = createLayoutParams(activity, 150, 130);
@@ -315,7 +315,7 @@ public class FlexboxLayoutManagerTest {
             @Override
             public void run() {
                 activity.setContentView(R.layout.recyclerview);
-                RecyclerView recyclerView = (RecyclerView) activity.findViewById(R.id.recyclerview);
+                RecyclerView recyclerView = activity.findViewById(R.id.recyclerview);
                 recyclerView.setLayoutManager(layoutManager);
                 recyclerView.setAdapter(adapter);
                 adapter.addItem(createLayoutParams(activity, 120, 100));
@@ -354,7 +354,7 @@ public class FlexboxLayoutManagerTest {
             @Override
             public void run() {
                 activity.setContentView(R.layout.recyclerview);
-                RecyclerView recyclerView = (RecyclerView) activity.findViewById(R.id.recyclerview);
+                RecyclerView recyclerView = activity.findViewById(R.id.recyclerview);
                 recyclerView.setLayoutManager(layoutManager);
                 recyclerView.setAdapter(adapter);
                 adapter.addItem(createLayoutParams(activity, 120, 100));
@@ -402,7 +402,7 @@ public class FlexboxLayoutManagerTest {
             @Override
             public void run() {
                 activity.setContentView(R.layout.recyclerview);
-                RecyclerView recyclerView = (RecyclerView) activity.findViewById(R.id.recyclerview);
+                RecyclerView recyclerView = activity.findViewById(R.id.recyclerview);
                 recyclerView.setLayoutManager(layoutManager);
                 recyclerView.setAdapter(adapter);
                 FlexboxLayoutManager.LayoutParams lp1 = createLayoutParams(activity, 50, 100);
@@ -444,7 +444,7 @@ public class FlexboxLayoutManagerTest {
             @Override
             public void run() {
                 activity.setContentView(R.layout.recyclerview);
-                RecyclerView recyclerView = (RecyclerView) activity.findViewById(R.id.recyclerview);
+                RecyclerView recyclerView = activity.findViewById(R.id.recyclerview);
                 recyclerView.setLayoutManager(layoutManager);
                 recyclerView.setAdapter(adapter);
                 FlexboxLayoutManager.LayoutParams lp1 = createLayoutParams(activity, 50, 100);
@@ -486,7 +486,7 @@ public class FlexboxLayoutManagerTest {
             @Override
             public void run() {
                 activity.setContentView(R.layout.recyclerview);
-                RecyclerView recyclerView = (RecyclerView) activity.findViewById(R.id.recyclerview);
+                RecyclerView recyclerView = activity.findViewById(R.id.recyclerview);
                 recyclerView.setLayoutManager(layoutManager);
                 recyclerView.setAdapter(adapter);
                 FlexboxLayoutManager.LayoutParams lp1 = createLayoutParams(activity, 50, 100);
@@ -528,7 +528,7 @@ public class FlexboxLayoutManagerTest {
             @Override
             public void run() {
                 activity.setContentView(R.layout.recyclerview);
-                RecyclerView recyclerView = (RecyclerView) activity.findViewById(R.id.recyclerview);
+                RecyclerView recyclerView = activity.findViewById(R.id.recyclerview);
                 recyclerView.setLayoutManager(layoutManager);
                 recyclerView.setAdapter(adapter);
                 FlexboxLayoutManager.LayoutParams lp1 = createLayoutParams(activity, 50, 100);
@@ -570,7 +570,7 @@ public class FlexboxLayoutManagerTest {
             @Override
             public void run() {
                 activity.setContentView(R.layout.recyclerview);
-                RecyclerView recyclerView = (RecyclerView) activity.findViewById(R.id.recyclerview);
+                RecyclerView recyclerView = activity.findViewById(R.id.recyclerview);
                 recyclerView.setLayoutManager(layoutManager);
                 recyclerView.setAdapter(adapter);
                 FlexboxLayoutManager.LayoutParams lp1 = createLayoutParams(activity, 50, 100);
@@ -612,7 +612,7 @@ public class FlexboxLayoutManagerTest {
             @Override
             public void run() {
                 activity.setContentView(R.layout.recyclerview);
-                RecyclerView recyclerView = (RecyclerView) activity.findViewById(R.id.recyclerview);
+                RecyclerView recyclerView = activity.findViewById(R.id.recyclerview);
                 recyclerView.setLayoutManager(layoutManager);
                 recyclerView.setAdapter(adapter);
                 FlexboxLayoutManager.LayoutParams lp1 = createLayoutParams(activity, 50, 100);
@@ -656,7 +656,7 @@ public class FlexboxLayoutManagerTest {
             @Override
             public void run() {
                 activity.setContentView(R.layout.recyclerview);
-                RecyclerView recyclerView = (RecyclerView) activity.findViewById(R.id.recyclerview);
+                RecyclerView recyclerView = activity.findViewById(R.id.recyclerview);
                 recyclerView.setLayoutManager(layoutManager);
                 recyclerView.setAdapter(adapter);
                 FlexboxLayoutManager.LayoutParams lp1 = createLayoutParams(activity, 50, 100);
@@ -700,7 +700,7 @@ public class FlexboxLayoutManagerTest {
             @Override
             public void run() {
                 activity.setContentView(R.layout.recyclerview);
-                RecyclerView recyclerView = (RecyclerView) activity.findViewById(R.id.recyclerview);
+                RecyclerView recyclerView = activity.findViewById(R.id.recyclerview);
                 recyclerView.setLayoutManager(layoutManager);
                 recyclerView.setAdapter(adapter);
                 FlexboxLayoutManager.LayoutParams lp1 = createLayoutParams(activity, 50, 100);
@@ -744,7 +744,7 @@ public class FlexboxLayoutManagerTest {
             @Override
             public void run() {
                 activity.setContentView(R.layout.recyclerview);
-                RecyclerView recyclerView = (RecyclerView) activity.findViewById(R.id.recyclerview);
+                RecyclerView recyclerView = activity.findViewById(R.id.recyclerview);
                 recyclerView.setLayoutManager(layoutManager);
                 recyclerView.setAdapter(adapter);
                 FlexboxLayoutManager.LayoutParams lp1 = createLayoutParams(activity, 50, 100);
@@ -788,7 +788,7 @@ public class FlexboxLayoutManagerTest {
             @Override
             public void run() {
                 activity.setContentView(R.layout.recyclerview);
-                RecyclerView recyclerView = (RecyclerView) activity.findViewById(R.id.recyclerview);
+                RecyclerView recyclerView = activity.findViewById(R.id.recyclerview);
                 recyclerView.setLayoutManager(layoutManager);
                 recyclerView.setAdapter(adapter);
                 FlexboxLayoutManager.LayoutParams lp1 = createLayoutParams(activity, 50, 100);
@@ -832,7 +832,7 @@ public class FlexboxLayoutManagerTest {
             @Override
             public void run() {
                 activity.setContentView(R.layout.recyclerview);
-                RecyclerView recyclerView = (RecyclerView) activity.findViewById(R.id.recyclerview);
+                RecyclerView recyclerView = activity.findViewById(R.id.recyclerview);
                 recyclerView.setLayoutManager(layoutManager);
                 recyclerView.setAdapter(adapter);
                 FlexboxLayoutManager.LayoutParams lp1 = createLayoutParams(activity, 100, 50);
@@ -876,7 +876,7 @@ public class FlexboxLayoutManagerTest {
             @Override
             public void run() {
                 activity.setContentView(R.layout.recyclerview);
-                RecyclerView recyclerView = (RecyclerView) activity.findViewById(R.id.recyclerview);
+                RecyclerView recyclerView = activity.findViewById(R.id.recyclerview);
                 recyclerView.setLayoutManager(layoutManager);
                 recyclerView.setAdapter(adapter);
                 FlexboxLayoutManager.LayoutParams lp1 = createLayoutParams(activity, 100, 50);
@@ -920,7 +920,7 @@ public class FlexboxLayoutManagerTest {
             @Override
             public void run() {
                 activity.setContentView(R.layout.recyclerview);
-                RecyclerView recyclerView = (RecyclerView) activity.findViewById(R.id.recyclerview);
+                RecyclerView recyclerView = activity.findViewById(R.id.recyclerview);
                 recyclerView.setLayoutManager(layoutManager);
                 recyclerView.setAdapter(adapter);
                 FlexboxLayoutManager.LayoutParams lp1 = createLayoutParams(activity, 100, 50);
@@ -964,7 +964,7 @@ public class FlexboxLayoutManagerTest {
             @Override
             public void run() {
                 activity.setContentView(R.layout.recyclerview);
-                RecyclerView recyclerView = (RecyclerView) activity.findViewById(R.id.recyclerview);
+                RecyclerView recyclerView = activity.findViewById(R.id.recyclerview);
                 recyclerView.setLayoutManager(layoutManager);
                 recyclerView.setAdapter(adapter);
                 FlexboxLayoutManager.LayoutParams lp1 = createLayoutParams(activity, 100, 50);
@@ -1008,7 +1008,7 @@ public class FlexboxLayoutManagerTest {
             @Override
             public void run() {
                 activity.setContentView(R.layout.recyclerview);
-                RecyclerView recyclerView = (RecyclerView) activity.findViewById(R.id.recyclerview);
+                RecyclerView recyclerView = activity.findViewById(R.id.recyclerview);
                 recyclerView.setLayoutManager(layoutManager);
                 recyclerView.setAdapter(adapter);
                 FlexboxLayoutManager.LayoutParams lp1 = createLayoutParams(activity, 100, 50);
@@ -1052,7 +1052,7 @@ public class FlexboxLayoutManagerTest {
             @Override
             public void run() {
                 activity.setContentView(R.layout.recyclerview);
-                RecyclerView recyclerView = (RecyclerView) activity.findViewById(R.id.recyclerview);
+                RecyclerView recyclerView = activity.findViewById(R.id.recyclerview);
                 recyclerView.setLayoutManager(layoutManager);
                 recyclerView.setAdapter(adapter);
                 FlexboxLayoutManager.LayoutParams lp1 = createLayoutParams(activity, 100, 50);
@@ -1096,7 +1096,7 @@ public class FlexboxLayoutManagerTest {
             @Override
             public void run() {
                 activity.setContentView(R.layout.recyclerview);
-                RecyclerView recyclerView = (RecyclerView) activity.findViewById(R.id.recyclerview);
+                RecyclerView recyclerView = activity.findViewById(R.id.recyclerview);
                 recyclerView.setLayoutManager(layoutManager);
                 recyclerView.setAdapter(adapter);
                 FlexboxLayoutManager.LayoutParams lp1 = createLayoutParams(activity, 100, 50);
@@ -1140,7 +1140,7 @@ public class FlexboxLayoutManagerTest {
             @Override
             public void run() {
                 activity.setContentView(R.layout.recyclerview);
-                RecyclerView recyclerView = (RecyclerView) activity.findViewById(R.id.recyclerview);
+                RecyclerView recyclerView = activity.findViewById(R.id.recyclerview);
                 recyclerView.setLayoutManager(layoutManager);
                 recyclerView.setAdapter(adapter);
                 FlexboxLayoutManager.LayoutParams lp1 = createLayoutParams(activity, 100, 50);
@@ -1184,7 +1184,7 @@ public class FlexboxLayoutManagerTest {
             @Override
             public void run() {
                 activity.setContentView(R.layout.recyclerview);
-                RecyclerView recyclerView = (RecyclerView) activity.findViewById(R.id.recyclerview);
+                RecyclerView recyclerView = activity.findViewById(R.id.recyclerview);
                 recyclerView.setLayoutManager(layoutManager);
                 recyclerView.setAdapter(adapter);
                 FlexboxLayoutManager.LayoutParams lp1 = createLayoutParams(activity, 100, 50);
@@ -1228,7 +1228,7 @@ public class FlexboxLayoutManagerTest {
             @Override
             public void run() {
                 activity.setContentView(R.layout.recyclerview);
-                RecyclerView recyclerView = (RecyclerView) activity.findViewById(R.id.recyclerview);
+                RecyclerView recyclerView = activity.findViewById(R.id.recyclerview);
                 recyclerView.setLayoutManager(layoutManager);
                 recyclerView.setAdapter(adapter);
                 FlexboxLayoutManager.LayoutParams lp1 = createLayoutParams(activity, 100, 50);
@@ -1272,7 +1272,7 @@ public class FlexboxLayoutManagerTest {
             @Override
             public void run() {
                 activity.setContentView(R.layout.recyclerview);
-                RecyclerView recyclerView = (RecyclerView) activity.findViewById(R.id.recyclerview);
+                RecyclerView recyclerView = activity.findViewById(R.id.recyclerview);
                 recyclerView.setLayoutManager(layoutManager);
                 recyclerView.setAdapter(adapter);
                 for (int i = 0; i < 200; i++) {
@@ -1357,7 +1357,7 @@ public class FlexboxLayoutManagerTest {
             @Override
             public void run() {
                 activity.setContentView(R.layout.recyclerview);
-                RecyclerView recyclerView = (RecyclerView) activity.findViewById(R.id.recyclerview);
+                RecyclerView recyclerView = activity.findViewById(R.id.recyclerview);
                 layoutManager.setFlexDirection(FlexDirection.COLUMN);
                 recyclerView.setLayoutManager(layoutManager);
                 recyclerView.setAdapter(adapter);
@@ -1448,7 +1448,7 @@ public class FlexboxLayoutManagerTest {
             @Override
             public void run() {
                 activity.setContentView(R.layout.recyclerview);
-                RecyclerView recyclerView = (RecyclerView) activity.findViewById(R.id.recyclerview);
+                RecyclerView recyclerView = activity.findViewById(R.id.recyclerview);
                 layoutManager.setFlexDirection(FlexDirection.ROW);
                 layoutManager.setAlignItems(AlignItems.STRETCH);
                 recyclerView.setLayoutManager(layoutManager);
@@ -1487,7 +1487,7 @@ public class FlexboxLayoutManagerTest {
             @Override
             public void run() {
                 activity.setContentView(R.layout.recyclerview);
-                RecyclerView recyclerView = (RecyclerView) activity.findViewById(R.id.recyclerview);
+                RecyclerView recyclerView = activity.findViewById(R.id.recyclerview);
                 layoutManager.setFlexDirection(FlexDirection.COLUMN);
                 layoutManager.setAlignItems(AlignItems.STRETCH);
                 recyclerView.setLayoutManager(layoutManager);
@@ -1526,7 +1526,7 @@ public class FlexboxLayoutManagerTest {
             @Override
             public void run() {
                 activity.setContentView(R.layout.recyclerview);
-                RecyclerView recyclerView = (RecyclerView) activity.findViewById(R.id.recyclerview);
+                RecyclerView recyclerView = activity.findViewById(R.id.recyclerview);
                 layoutManager.setFlexDirection(FlexDirection.ROW);
                 layoutManager.setAlignItems(AlignItems.FLEX_START);
                 recyclerView.setLayoutManager(layoutManager);
@@ -1566,7 +1566,7 @@ public class FlexboxLayoutManagerTest {
             @Override
             public void run() {
                 activity.setContentView(R.layout.recyclerview);
-                RecyclerView recyclerView = (RecyclerView) activity.findViewById(R.id.recyclerview);
+                RecyclerView recyclerView = activity.findViewById(R.id.recyclerview);
                 layoutManager.setFlexDirection(FlexDirection.COLUMN);
                 layoutManager.setAlignItems(AlignItems.FLEX_START);
                 recyclerView.setLayoutManager(layoutManager);
@@ -1606,7 +1606,7 @@ public class FlexboxLayoutManagerTest {
             @Override
             public void run() {
                 activity.setContentView(R.layout.recyclerview);
-                RecyclerView recyclerView = (RecyclerView) activity.findViewById(R.id.recyclerview);
+                RecyclerView recyclerView = activity.findViewById(R.id.recyclerview);
                 layoutManager.setFlexDirection(FlexDirection.ROW);
                 layoutManager.setAlignItems(AlignItems.STRETCH);
                 recyclerView.setLayoutManager(layoutManager);
@@ -1657,7 +1657,7 @@ public class FlexboxLayoutManagerTest {
             @Override
             public void run() {
                 activity.setContentView(R.layout.recyclerview);
-                RecyclerView recyclerView = (RecyclerView) activity.findViewById(R.id.recyclerview);
+                RecyclerView recyclerView = activity.findViewById(R.id.recyclerview);
                 layoutManager.setFlexDirection(FlexDirection.COLUMN);
                 layoutManager.setAlignItems(AlignItems.STRETCH);
                 recyclerView.setLayoutManager(layoutManager);
@@ -1713,7 +1713,7 @@ public class FlexboxLayoutManagerTest {
             @Override
             public void run() {
                 activity.setContentView(R.layout.recyclerview);
-                RecyclerView recyclerView = (RecyclerView) activity.findViewById(R.id.recyclerview);
+                RecyclerView recyclerView = activity.findViewById(R.id.recyclerview);
                 layoutManager.setFlexDirection(FlexDirection.ROW);
                 layoutManager.setAlignItems(AlignItems.FLEX_START);
                 recyclerView.setLayoutManager(layoutManager);
@@ -1772,7 +1772,7 @@ public class FlexboxLayoutManagerTest {
             @Override
             public void run() {
                 activity.setContentView(R.layout.recyclerview);
-                RecyclerView recyclerView = (RecyclerView) activity.findViewById(R.id.recyclerview);
+                RecyclerView recyclerView = activity.findViewById(R.id.recyclerview);
                 layoutManager.setFlexDirection(FlexDirection.COLUMN);
                 layoutManager.setAlignItems(AlignItems.FLEX_START);
                 recyclerView.setLayoutManager(layoutManager);
@@ -1837,7 +1837,7 @@ public class FlexboxLayoutManagerTest {
             public void run() {
                 activity.setContentView(R.layout.recyclerview);
                 layoutManager.setFlexDirection(FlexDirection.ROW);
-                RecyclerView recyclerView = (RecyclerView) activity.findViewById(R.id.recyclerview);
+                RecyclerView recyclerView = activity.findViewById(R.id.recyclerview);
                 recyclerView.setLayoutManager(layoutManager);
                 recyclerView.setAdapter(adapter);
                 for (int i = 0; i < 50; i++) {
@@ -1866,7 +1866,7 @@ public class FlexboxLayoutManagerTest {
         // By this moment reached to the bottom
 
         // 4 comes from the number of flex items - positionInSecondBottomLine
-        RecyclerView recyclerView = (RecyclerView) activity.findViewById(R.id.recyclerview);
+        RecyclerView recyclerView = activity.findViewById(R.id.recyclerview);
         View anchorView = layoutManager.getChildAt(layoutManager.getChildCount() - 4);
         assertThat(recyclerView.getBottom() - anchorView.getTop(),
                 isEqualAllowingError(TestUtil.dpToPixel(activity, 210))); // 80 + 130
@@ -1882,7 +1882,7 @@ public class FlexboxLayoutManagerTest {
             @Override
             public void run() {
                 activity.setContentView(R.layout.recyclerview);
-                RecyclerView recyclerView = (RecyclerView) activity.findViewById(R.id.recyclerview);
+                RecyclerView recyclerView = activity.findViewById(R.id.recyclerview);
                 layoutManager.setFlexDirection(FlexDirection.ROW_REVERSE);
                 recyclerView.setLayoutManager(layoutManager);
                 recyclerView.setAdapter(adapter);
@@ -1930,7 +1930,7 @@ public class FlexboxLayoutManagerTest {
             @Override
             public void run() {
                 activity.setContentView(R.layout.recyclerview);
-                RecyclerView recyclerView = (RecyclerView) activity.findViewById(R.id.recyclerview);
+                RecyclerView recyclerView = activity.findViewById(R.id.recyclerview);
                 layoutManager.setFlexDirection(FlexDirection.ROW);
                 recyclerView.setLayoutManager(layoutManager);
                 recyclerView.setAdapter(adapter);
@@ -1963,7 +1963,7 @@ public class FlexboxLayoutManagerTest {
             @Override
             public void run() {
                 activity.setContentView(R.layout.recyclerview);
-                RecyclerView recyclerView = (RecyclerView) activity.findViewById(R.id.recyclerview);
+                RecyclerView recyclerView = activity.findViewById(R.id.recyclerview);
                 layoutManager.setFlexDirection(FlexDirection.COLUMN);
                 recyclerView.setLayoutManager(layoutManager);
                 recyclerView.setAdapter(adapter);
@@ -1996,7 +1996,7 @@ public class FlexboxLayoutManagerTest {
             @Override
             public void run() {
                 activity.setContentView(R.layout.recyclerview);
-                RecyclerView recyclerView = (RecyclerView) activity.findViewById(R.id.recyclerview);
+                RecyclerView recyclerView = activity.findViewById(R.id.recyclerview);
                 layoutManager.setFlexDirection(FlexDirection.ROW);
                 layoutManager.setAlignItems(AlignItems.FLEX_END);
                 recyclerView.setLayoutManager(layoutManager);
@@ -2054,7 +2054,7 @@ public class FlexboxLayoutManagerTest {
             @Override
             public void run() {
                 activity.setContentView(R.layout.recyclerview);
-                RecyclerView recyclerView = (RecyclerView) activity.findViewById(R.id.recyclerview);
+                RecyclerView recyclerView = activity.findViewById(R.id.recyclerview);
                 layoutManager.setFlexDirection(FlexDirection.ROW);
                 layoutManager.setAlignItems(AlignItems.FLEX_START);
                 recyclerView.setLayoutManager(layoutManager);
@@ -2105,7 +2105,7 @@ public class FlexboxLayoutManagerTest {
             @Override
             public void run() {
                 activity.setContentView(R.layout.recyclerview);
-                RecyclerView recyclerView = (RecyclerView) activity.findViewById(R.id.recyclerview);
+                RecyclerView recyclerView = activity.findViewById(R.id.recyclerview);
                 layoutManager.setFlexDirection(FlexDirection.ROW);
                 layoutManager.setAlignItems(AlignItems.STRETCH);
                 recyclerView.setLayoutManager(layoutManager);
@@ -2155,7 +2155,7 @@ public class FlexboxLayoutManagerTest {
             @Override
             public void run() {
                 activity.setContentView(R.layout.recyclerview);
-                RecyclerView recyclerView = (RecyclerView) activity.findViewById(R.id.recyclerview);
+                RecyclerView recyclerView = activity.findViewById(R.id.recyclerview);
                 layoutManager.setFlexDirection(FlexDirection.COLUMN);
                 layoutManager.setAlignItems(AlignItems.STRETCH);
                 recyclerView.setLayoutManager(layoutManager);
@@ -2210,7 +2210,7 @@ public class FlexboxLayoutManagerTest {
             @Override
             public void run() {
                 activity.setContentView(R.layout.recyclerview);
-                RecyclerView recyclerView = (RecyclerView) activity.findViewById(R.id.recyclerview);
+                RecyclerView recyclerView = activity.findViewById(R.id.recyclerview);
                 layoutManager.setFlexDirection(FlexDirection.ROW);
                 recyclerView.setLayoutManager(layoutManager);
                 recyclerView.addItemDecoration(itemDecoration);
@@ -2242,7 +2242,7 @@ public class FlexboxLayoutManagerTest {
         mActivityRule.runOnUiThread(new Runnable() {
             @Override
             public void run() {
-                RecyclerView recyclerView = (RecyclerView) activity.findViewById(R.id.recyclerview);
+                RecyclerView recyclerView = activity.findViewById(R.id.recyclerview);
                 recyclerView.removeItemDecoration(itemDecoration);
                 itemDecoration.setOrientation(HORIZONTAL);
                 recyclerView.addItemDecoration(itemDecoration);
@@ -2266,7 +2266,7 @@ public class FlexboxLayoutManagerTest {
         mActivityRule.runOnUiThread(new Runnable() {
             @Override
             public void run() {
-                RecyclerView recyclerView = (RecyclerView) activity.findViewById(R.id.recyclerview);
+                RecyclerView recyclerView = activity.findViewById(R.id.recyclerview);
                 recyclerView.removeItemDecoration(itemDecoration);
                 itemDecoration.setOrientation(VERTICAL);
                 recyclerView.addItemDecoration(itemDecoration);
@@ -2303,7 +2303,7 @@ public class FlexboxLayoutManagerTest {
             @Override
             public void run() {
                 activity.setContentView(R.layout.recyclerview);
-                RecyclerView recyclerView = (RecyclerView) activity.findViewById(R.id.recyclerview);
+                RecyclerView recyclerView = activity.findViewById(R.id.recyclerview);
                 layoutManager.setFlexDirection(FlexDirection.ROW_REVERSE);
                 recyclerView.setLayoutManager(layoutManager);
                 recyclerView.addItemDecoration(itemDecoration);
@@ -2338,7 +2338,7 @@ public class FlexboxLayoutManagerTest {
         mActivityRule.runOnUiThread(new Runnable() {
             @Override
             public void run() {
-                RecyclerView recyclerView = (RecyclerView) activity.findViewById(R.id.recyclerview);
+                RecyclerView recyclerView = activity.findViewById(R.id.recyclerview);
                 recyclerView.removeItemDecoration(itemDecoration);
                 itemDecoration.setOrientation(HORIZONTAL);
                 recyclerView.addItemDecoration(itemDecoration);
@@ -2365,7 +2365,7 @@ public class FlexboxLayoutManagerTest {
         mActivityRule.runOnUiThread(new Runnable() {
             @Override
             public void run() {
-                RecyclerView recyclerView = (RecyclerView) activity.findViewById(R.id.recyclerview);
+                RecyclerView recyclerView = activity.findViewById(R.id.recyclerview);
                 recyclerView.removeItemDecoration(itemDecoration);
                 itemDecoration.setOrientation(VERTICAL);
                 recyclerView.addItemDecoration(itemDecoration);
@@ -2405,7 +2405,7 @@ public class FlexboxLayoutManagerTest {
             @Override
             public void run() {
                 activity.setContentView(R.layout.recyclerview);
-                RecyclerView recyclerView = (RecyclerView) activity.findViewById(R.id.recyclerview);
+                RecyclerView recyclerView = activity.findViewById(R.id.recyclerview);
                 layoutManager.setFlexDirection(FlexDirection.COLUMN);
                 recyclerView.setLayoutManager(layoutManager);
                 recyclerView.addItemDecoration(itemDecoration);
@@ -2437,7 +2437,7 @@ public class FlexboxLayoutManagerTest {
         mActivityRule.runOnUiThread(new Runnable() {
             @Override
             public void run() {
-                RecyclerView recyclerView = (RecyclerView) activity.findViewById(R.id.recyclerview);
+                RecyclerView recyclerView = activity.findViewById(R.id.recyclerview);
                 recyclerView.removeItemDecoration(itemDecoration);
                 itemDecoration.setOrientation(HORIZONTAL);
                 recyclerView.addItemDecoration(itemDecoration);
@@ -2461,7 +2461,7 @@ public class FlexboxLayoutManagerTest {
         mActivityRule.runOnUiThread(new Runnable() {
             @Override
             public void run() {
-                RecyclerView recyclerView = (RecyclerView) activity.findViewById(R.id.recyclerview);
+                RecyclerView recyclerView = activity.findViewById(R.id.recyclerview);
                 recyclerView.removeItemDecoration(itemDecoration);
                 itemDecoration.setOrientation(VERTICAL);
                 recyclerView.addItemDecoration(itemDecoration);
@@ -2498,7 +2498,7 @@ public class FlexboxLayoutManagerTest {
             @Override
             public void run() {
                 activity.setContentView(R.layout.recyclerview);
-                RecyclerView recyclerView = (RecyclerView) activity.findViewById(R.id.recyclerview);
+                RecyclerView recyclerView = activity.findViewById(R.id.recyclerview);
                 layoutManager.setFlexDirection(FlexDirection.COLUMN_REVERSE);
                 recyclerView.setLayoutManager(layoutManager);
                 recyclerView.addItemDecoration(itemDecoration);
@@ -2533,7 +2533,7 @@ public class FlexboxLayoutManagerTest {
         mActivityRule.runOnUiThread(new Runnable() {
             @Override
             public void run() {
-                RecyclerView recyclerView = (RecyclerView) activity.findViewById(R.id.recyclerview);
+                RecyclerView recyclerView = activity.findViewById(R.id.recyclerview);
                 recyclerView.removeItemDecoration(itemDecoration);
                 itemDecoration.setOrientation(HORIZONTAL);
                 recyclerView.addItemDecoration(itemDecoration);
@@ -2560,7 +2560,7 @@ public class FlexboxLayoutManagerTest {
         mActivityRule.runOnUiThread(new Runnable() {
             @Override
             public void run() {
-                RecyclerView recyclerView = (RecyclerView) activity.findViewById(R.id.recyclerview);
+                RecyclerView recyclerView = activity.findViewById(R.id.recyclerview);
                 recyclerView.removeItemDecoration(itemDecoration);
                 itemDecoration.setOrientation(VERTICAL);
                 recyclerView.addItemDecoration(itemDecoration);
@@ -2596,7 +2596,7 @@ public class FlexboxLayoutManagerTest {
             @Override
             public void run() {
                 activity.setContentView(R.layout.recyclerview);
-                RecyclerView recyclerView = (RecyclerView) activity.findViewById(R.id.recyclerview);
+                RecyclerView recyclerView = activity.findViewById(R.id.recyclerview);
                 layoutManager.setFlexDirection(FlexDirection.ROW);
                 recyclerView.setLayoutManager(layoutManager);
                 recyclerView.setAdapter(adapter);
@@ -2679,7 +2679,7 @@ public class FlexboxLayoutManagerTest {
             @Override
             public void run() {
                 activity.setContentView(R.layout.recyclerview);
-                RecyclerView recyclerView = (RecyclerView) activity.findViewById(R.id.recyclerview);
+                RecyclerView recyclerView = activity.findViewById(R.id.recyclerview);
                 layoutManager.setFlexDirection(FlexDirection.COLUMN);
                 recyclerView.setLayoutManager(layoutManager);
                 recyclerView.setAdapter(adapter);
@@ -2762,7 +2762,7 @@ public class FlexboxLayoutManagerTest {
             @Override
             public void run() {
                 activity.setContentView(R.layout.recyclerview);
-                RecyclerView recyclerView = (RecyclerView) activity.findViewById(R.id.recyclerview);
+                RecyclerView recyclerView = activity.findViewById(R.id.recyclerview);
                 layoutManager.setFlexDirection(FlexDirection.ROW);
                 recyclerView.setLayoutManager(layoutManager);
                 recyclerView.setAdapter(adapter);
@@ -2806,7 +2806,7 @@ public class FlexboxLayoutManagerTest {
             @Override
             public void run() {
                 activity.setContentView(R.layout.recyclerview);
-                RecyclerView recyclerView = (RecyclerView) activity.findViewById(R.id.recyclerview);
+                RecyclerView recyclerView = activity.findViewById(R.id.recyclerview);
                 layoutManager.setFlexDirection(FlexDirection.COLUMN);
                 recyclerView.setLayoutManager(layoutManager);
                 recyclerView.setAdapter(adapter);
@@ -2855,7 +2855,7 @@ public class FlexboxLayoutManagerTest {
             @Override
             public void run() {
                 activity.setContentView(R.layout.recyclerview);
-                RecyclerView recyclerView = (RecyclerView) activity.findViewById(R.id.recyclerview);
+                RecyclerView recyclerView = activity.findViewById(R.id.recyclerview);
                 layoutManager.setFlexDirection(FlexDirection.ROW);
                 recyclerView.setLayoutManager(layoutManager);
                 recyclerView.setAdapter(adapter);
@@ -2923,7 +2923,7 @@ public class FlexboxLayoutManagerTest {
             @Override
             public void run() {
                 activity.setContentView(R.layout.recyclerview);
-                RecyclerView recyclerView = (RecyclerView) activity.findViewById(R.id.recyclerview);
+                RecyclerView recyclerView = activity.findViewById(R.id.recyclerview);
                 outerLayoutManager.setOrientation(LinearLayoutManager.VERTICAL);
                 recyclerView.setLayoutManager(outerLayoutManager);
                 recyclerView.setAdapter(adapter);
@@ -2962,7 +2962,7 @@ public class FlexboxLayoutManagerTest {
             @Override
             public void run() {
                 activity.setContentView(R.layout.recyclerview);
-                RecyclerView recyclerView = (RecyclerView) activity.findViewById(R.id.recyclerview);
+                RecyclerView recyclerView = activity.findViewById(R.id.recyclerview);
                 outerLayoutManager.setOrientation(LinearLayoutManager.HORIZONTAL);
                 recyclerView.setLayoutManager(outerLayoutManager);
                 recyclerView.setAdapter(adapter);
@@ -2990,7 +2990,7 @@ public class FlexboxLayoutManagerTest {
             @Override
             public void run() {
                 activity.setContentView(R.layout.recyclerview);
-                RecyclerView recyclerView = (RecyclerView) activity.findViewById(R.id.recyclerview);
+                RecyclerView recyclerView = activity.findViewById(R.id.recyclerview);
                 recyclerView.setLayoutManager(layoutManager);
                 recyclerView.setAdapter(adapter);
 
@@ -3040,7 +3040,7 @@ public class FlexboxLayoutManagerTest {
             @Override
             public void run() {
                 activity.setContentView(R.layout.recyclerview);
-                RecyclerView recyclerView = (RecyclerView) activity.findViewById(R.id.recyclerview);
+                RecyclerView recyclerView = activity.findViewById(R.id.recyclerview);
                 layoutManager.setFlexDirection(FlexDirection.COLUMN);
                 recyclerView.setLayoutManager(layoutManager);
                 recyclerView.setAdapter(adapter);
@@ -3093,7 +3093,7 @@ public class FlexboxLayoutManagerTest {
             @Override
             public void run() {
                 activity.setContentView(R.layout.recyclerview);
-                RecyclerView recyclerView = (RecyclerView) activity.findViewById(R.id.recyclerview);
+                RecyclerView recyclerView = activity.findViewById(R.id.recyclerview);
                 layoutManager.setFlexDirection(FlexDirection.ROW);
                 recyclerView.setLayoutManager(layoutManager);
                 recyclerView.setAdapter(adapter);
@@ -3149,7 +3149,7 @@ public class FlexboxLayoutManagerTest {
             @Override
             public void run() {
                 activity.setContentView(R.layout.recyclerview);
-                RecyclerView recyclerView = (RecyclerView) activity.findViewById(R.id.recyclerview);
+                RecyclerView recyclerView = activity.findViewById(R.id.recyclerview);
                 layoutManager.setFlexDirection(FlexDirection.COLUMN);
                 recyclerView.setLayoutManager(layoutManager);
                 recyclerView.setAdapter(adapter);
@@ -3209,14 +3209,14 @@ public class FlexboxLayoutManagerTest {
             @Override
             public void run() {
                 activity.setContentView(R.layout.recyclerview);
-                RecyclerView recyclerView = (RecyclerView) activity.findViewById(R.id.recyclerview);
+                RecyclerView recyclerView = activity.findViewById(R.id.recyclerview);
                 layoutManager.setFlexDirection(FlexDirection.ROW);
                 recyclerView.setLayoutManager(layoutManager);
                 recyclerView.setAdapter(adapter);
             }
         });
         InstrumentationRegistry.getInstrumentation().waitForIdleSync();
-        RecyclerView parent = (RecyclerView) activity.findViewById(R.id.recyclerview);
+        RecyclerView parent = activity.findViewById(R.id.recyclerview);
         TextView matchParentText = (TextView) layoutManager
                 .getChildAt(TestAdapterMultiViewTypes.POSITION_MATCH_PARENT);
         assertThat(matchParentText.getWidth(), is(parent.getWidth()));
@@ -3280,7 +3280,7 @@ public class FlexboxLayoutManagerTest {
             @Override
             public void run() {
                 activity.setContentView(R.layout.recyclerview);
-                RecyclerView recyclerView = (RecyclerView) activity.findViewById(R.id.recyclerview);
+                RecyclerView recyclerView = activity.findViewById(R.id.recyclerview);
                 layoutManager.setFlexDirection(FlexDirection.ROW);
                 recyclerView.setLayoutManager(layoutManager);
                 recyclerView.setAdapter(adapter);
@@ -3327,7 +3327,7 @@ public class FlexboxLayoutManagerTest {
             @Override
             public void run() {
                 activity.setContentView(R.layout.recyclerview);
-                RecyclerView recyclerView = (RecyclerView) activity.findViewById(R.id.recyclerview);
+                RecyclerView recyclerView = activity.findViewById(R.id.recyclerview);
                 layoutManager.setFlexDirection(FlexDirection.ROW);
                 recyclerView.setLayoutManager(layoutManager);
                 recyclerView.setAdapter(adapter);
@@ -3401,7 +3401,7 @@ public class FlexboxLayoutManagerTest {
             @Override
             public void run() {
                 activity.setContentView(R.layout.recyclerview);
-                RecyclerView recyclerView = (RecyclerView) activity.findViewById(R.id.recyclerview);
+                RecyclerView recyclerView = activity.findViewById(R.id.recyclerview);
                 layoutManager.setFlexDirection(FlexDirection.COLUMN);
                 recyclerView.setLayoutManager(layoutManager);
                 recyclerView.setAdapter(adapter);
@@ -3475,7 +3475,7 @@ public class FlexboxLayoutManagerTest {
             @Override
             public void run() {
                 activity.setContentView(R.layout.recyclerview);
-                RecyclerView recyclerView = (RecyclerView) activity.findViewById(R.id.recyclerview);
+                RecyclerView recyclerView = activity.findViewById(R.id.recyclerview);
                 layoutManager.setFlexDirection(FlexDirection.COLUMN);
                 recyclerView.setLayoutManager(layoutManager);
                 recyclerView.setAdapter(adapter);
@@ -3511,7 +3511,7 @@ public class FlexboxLayoutManagerTest {
             @Override
             public void run() {
                 activity.setContentView(R.layout.wrapped_recyclerview);
-                RecyclerView recyclerView = (RecyclerView) activity.findViewById(R.id.recyclerview);
+                RecyclerView recyclerView = activity.findViewById(R.id.recyclerview);
                 layoutManager.setFlexDirection(FlexDirection.ROW);
                 recyclerView.setLayoutManager(layoutManager);
                 recyclerView.setAdapter(adapter);
@@ -3555,7 +3555,7 @@ public class FlexboxLayoutManagerTest {
             @Override
             public void run() {
                 activity.setContentView(R.layout.wrapped_recyclerview_scroll_vertical);
-                RecyclerView recyclerView = (RecyclerView) activity.findViewById(R.id.recyclerview);
+                RecyclerView recyclerView = activity.findViewById(R.id.recyclerview);
                 layoutManager.setFlexDirection(FlexDirection.COLUMN);
                 recyclerView.setLayoutManager(layoutManager);
                 recyclerView.setAdapter(adapter);
@@ -3606,6 +3606,7 @@ public class FlexboxLayoutManagerTest {
         return new GeneralSwipeAction(Swipe.FAST, from, to, Press.FINGER);
     }
 
+    @SuppressWarnings("deprecation")
     private static Drawable getDrawable(Context context, @DrawableRes int resId) {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
             return context.getResources().getDrawable(resId, null);
