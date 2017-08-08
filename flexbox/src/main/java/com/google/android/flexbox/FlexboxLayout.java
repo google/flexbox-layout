@@ -451,25 +451,25 @@ public class FlexboxLayout extends ViewGroup implements FlexContainer {
         switch (widthMode) {
             case MeasureSpec.EXACTLY:
                 if (widthSize < calculatedMaxWidth) {
-                    childState = ViewCompat
-                            .combineMeasuredStates(childState, ViewCompat.MEASURED_STATE_TOO_SMALL);
+                    childState = View
+                            .combineMeasuredStates(childState, View.MEASURED_STATE_TOO_SMALL);
                 }
-                widthSizeAndState = ViewCompat.resolveSizeAndState(widthSize, widthMeasureSpec,
+                widthSizeAndState = View.resolveSizeAndState(widthSize, widthMeasureSpec,
                         childState);
                 break;
             case MeasureSpec.AT_MOST: {
                 if (widthSize < calculatedMaxWidth) {
-                    childState = ViewCompat
-                            .combineMeasuredStates(childState, ViewCompat.MEASURED_STATE_TOO_SMALL);
+                    childState = View
+                            .combineMeasuredStates(childState, View.MEASURED_STATE_TOO_SMALL);
                 } else {
                     widthSize = calculatedMaxWidth;
                 }
-                widthSizeAndState = ViewCompat.resolveSizeAndState(widthSize, widthMeasureSpec,
+                widthSizeAndState = View.resolveSizeAndState(widthSize, widthMeasureSpec,
                         childState);
                 break;
             }
             case MeasureSpec.UNSPECIFIED: {
-                widthSizeAndState = ViewCompat
+                widthSizeAndState = View
                         .resolveSizeAndState(calculatedMaxWidth, widthMeasureSpec, childState);
                 break;
             }
@@ -480,27 +480,27 @@ public class FlexboxLayout extends ViewGroup implements FlexContainer {
         switch (heightMode) {
             case MeasureSpec.EXACTLY:
                 if (heightSize < calculatedMaxHeight) {
-                    childState = ViewCompat.combineMeasuredStates(childState,
-                            ViewCompat.MEASURED_STATE_TOO_SMALL
-                                    >> ViewCompat.MEASURED_HEIGHT_STATE_SHIFT);
+                    childState = View.combineMeasuredStates(childState,
+                            View.MEASURED_STATE_TOO_SMALL
+                                    >> View.MEASURED_HEIGHT_STATE_SHIFT);
                 }
-                heightSizeAndState = ViewCompat.resolveSizeAndState(heightSize, heightMeasureSpec,
+                heightSizeAndState = View.resolveSizeAndState(heightSize, heightMeasureSpec,
                         childState);
                 break;
             case MeasureSpec.AT_MOST: {
                 if (heightSize < calculatedMaxHeight) {
-                    childState = ViewCompat.combineMeasuredStates(childState,
-                            ViewCompat.MEASURED_STATE_TOO_SMALL
-                                    >> ViewCompat.MEASURED_HEIGHT_STATE_SHIFT);
+                    childState = View.combineMeasuredStates(childState,
+                            View.MEASURED_STATE_TOO_SMALL
+                                    >> View.MEASURED_HEIGHT_STATE_SHIFT);
                 } else {
                     heightSize = calculatedMaxHeight;
                 }
-                heightSizeAndState = ViewCompat.resolveSizeAndState(heightSize, heightMeasureSpec,
+                heightSizeAndState = View.resolveSizeAndState(heightSize, heightMeasureSpec,
                         childState);
                 break;
             }
             case MeasureSpec.UNSPECIFIED: {
-                heightSizeAndState = ViewCompat.resolveSizeAndState(calculatedMaxHeight,
+                heightSizeAndState = View.resolveSizeAndState(calculatedMaxHeight,
                         heightMeasureSpec, childState);
                 break;
             }
