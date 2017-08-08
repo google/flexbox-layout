@@ -30,6 +30,6 @@ class TestViewHolder extends RecyclerView.ViewHolder {
     TestViewHolder(View itemView) {
         super(itemView);
 
-        mTextView = (TextView) itemView.findViewById(R.id.textview);
+        mTextView = itemView.findViewById(R.id.textview);
     }
 }

@@ -74,7 +74,7 @@ public class FlexboxLayoutManagerConfigChangeTest {
             @Override
             public void run() {
                 activity.setContentView(R.layout.recyclerview);
-                RecyclerView recyclerView = (RecyclerView) activity.findViewById(R.id.recyclerview);
+                RecyclerView recyclerView = activity.findViewById(R.id.recyclerview);
                 // This test assumes that the screen width and the height are different.
                 recyclerView.getLayoutParams().height = ViewGroup.LayoutParams.MATCH_PARENT;
                 recyclerView.getLayoutParams().width = ViewGroup.LayoutParams.MATCH_PARENT;
@@ -134,7 +134,7 @@ public class FlexboxLayoutManagerConfigChangeTest {
             @Override
             public void run() {
                 activity.setContentView(R.layout.recyclerview);
-                RecyclerView recyclerView = (RecyclerView) activity.findViewById(R.id.recyclerview);
+                RecyclerView recyclerView = activity.findViewById(R.id.recyclerview);
                 // This test assumes that the screen width and the height are different.
                 recyclerView.getLayoutParams().height = ViewGroup.LayoutParams.MATCH_PARENT;
                 recyclerView.getLayoutParams().width = ViewGroup.LayoutParams.MATCH_PARENT;

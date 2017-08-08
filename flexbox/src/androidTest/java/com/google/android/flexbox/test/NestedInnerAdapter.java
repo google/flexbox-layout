@@ -46,7 +46,8 @@ class NestedInnerAdapter extends RecyclerView.Adapter<NestedInnerAdapter.InnerVi
 
     @Override
     public void onBindViewHolder(InnerViewHolder holder, int position) {
-        holder.mTextView.setText(mInnerPosition + "-" + position);
+        String description = holder.mTextView.getResources().getString(R.string.item_description);
+        holder.mTextView.setText(String.format(description, mInnerPosition, position));
     }
 
     @Override
@@ -61,7 +62,7 @@ class NestedInnerAdapter extends RecyclerView.Adapter<NestedInnerAdapter.InnerVi
         InnerViewHolder(View itemView) {
             super(itemView);
 
-            mTextView = (TextView) itemView.findViewById(R.id.textview);
+            mTextView = itemView.findViewById(R.id.textview);
         }
     }
 }
