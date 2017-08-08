@@ -14,18 +14,12 @@
  * limitations under the License.
  */
 
-package com.google.android.flexbox.test;
+package com.google.android.flexbox.test
 
-import android.content.Context;
-import android.util.DisplayMetrics;
+import android.app.Activity
+import com.google.android.flexbox.FlexboxLayout
 
 /**
- * Utility class for tests.
+ * Activity for testing the [FlexboxLayout].
  */
-class TestUtil {
-
-    static int dpToPixel(Context context, int dp) {
-        DisplayMetrics displayMetrics = context.getResources().getDisplayMetrics();
-        return dp < 0 ? dp : Math.round(dp * displayMetrics.density);
-    }
-}
+class FlexboxTestActivity : Activity()
