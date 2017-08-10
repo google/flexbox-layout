@@ -14,18 +14,15 @@
  * limitations under the License.
  */
 
-package com.google.android.flexbox.test;
+package com.google.android.flexbox.test
 
-import android.content.Context;
-import android.util.DisplayMetrics;
+import android.support.v7.widget.RecyclerView
+import android.view.View
+import android.widget.TextView
 
 /**
- * Utility class for tests.
+ * ViewHolder implementation for a flex item for testing.
  */
-class TestUtil {
-
-    static int dpToPixel(Context context, int dp) {
-        DisplayMetrics displayMetrics = context.getResources().getDisplayMetrics();
-        return dp < 0 ? dp : Math.round(dp * displayMetrics.density);
-    }
+internal class TestViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
+    val textView: TextView = itemView.findViewById(R.id.textview)
 }

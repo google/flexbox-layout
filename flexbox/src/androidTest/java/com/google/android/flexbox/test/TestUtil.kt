@@ -14,15 +14,11 @@
  * limitations under the License.
  */
 
-package com.google.android.flexbox.test;
+package com.google.android.flexbox.test
 
-import com.google.android.flexbox.FlexboxLayout;
+import android.content.Context
 
-import android.app.Activity;
-
-/**
- * Activity for testing the {@link FlexboxLayout}.
- */
-public class FlexboxTestActivity extends Activity {
-
+internal fun Context.dpToPixel(dp: Int): Int {
+    val displayMetrics = this.resources.displayMetrics
+    return if (dp < 0) dp else Math.round(dp * displayMetrics.density)
 }

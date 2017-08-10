@@ -14,22 +14,12 @@
  * limitations under the License.
  */
 
-package com.google.android.flexbox.test;
+package com.google.android.flexbox.test
 
-import android.support.v7.widget.RecyclerView;
-import android.view.View;
-import android.widget.TextView;
+import android.app.Activity
+import com.google.android.flexbox.FlexboxLayout
 
 /**
- * ViewHolder implementation for a flex item for testing.
+ * Activity for testing the [FlexboxLayout].
  */
-class TestViewHolder extends RecyclerView.ViewHolder {
-
-    TextView mTextView;
-
-    TestViewHolder(View itemView) {
-        super(itemView);
-
-        mTextView = itemView.findViewById(R.id.textview);
-    }
-}
+class FlexboxTestActivity : Activity()
