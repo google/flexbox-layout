@@ -47,6 +47,7 @@ import org.junit.runner.RunWith
 @MediumTest
 class FlexboxLayoutManagerConfigChangeTest {
 
+    @JvmField
     @Rule
     var activityRule = ActivityTestRule(ConfigChangeActivity::class.java)
 

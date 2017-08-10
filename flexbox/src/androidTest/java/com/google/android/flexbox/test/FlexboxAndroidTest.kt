@@ -53,6 +53,7 @@ import org.junit.runner.RunWith
 @MediumTest
 class FlexboxAndroidTest {
 
+    @JvmField
     @Rule
     var activityRule = ActivityTestRule(FlexboxTestActivity::class.java)
 
@@ -2864,8 +2865,7 @@ class FlexboxAndroidTest {
         assertNotNull(divider)
         // Three text views are placed in the first row, thus two vertical middle dividers should
         // be placed
-        val widthSumFirstRow = text1.width + text2.width + text3.width
-        +divider!!.intrinsicWidth * 2
+        val widthSumFirstRow = text1.width + text2.width + text3.width + divider!!.intrinsicWidth * 2
         assertThat(text3.right, `is`(widthSumFirstRow))
         assertThat(text1.left, `is`(flexboxLayout.left))
         val flexLines = flexboxLayout.flexLines
@@ -3155,8 +3155,7 @@ class FlexboxAndroidTest {
         // The sum of three text views and the sum of thick dividers don't fit in one line.
         // The last text view should be placed to the next line.
         assertNotNull(divider)
-        val widthSumFirstRow = text1.width + text2.width
-        +divider!!.intrinsicWidth * 3
+        val widthSumFirstRow = text1.width + text2.width + divider!!.intrinsicWidth * 3
         assertThat(text2.right + divider.intrinsicWidth, `is`(widthSumFirstRow))
         assertThat(text1.left, `is`(not(flexboxLayout.left)))
         assertThat(text3.bottom, `is`(text1.height + text2.height))
@@ -3466,8 +3465,7 @@ class FlexboxAndroidTest {
         val text4 = activity.findViewById<TextView>(R.id.text4)
         val divider = ResourcesCompat.getDrawable(activity.resources, R.drawable.divider, null)
         assertNotNull(divider)
-        val heightSum = text1.height + text2.height + text3.height
-        +divider!!.intrinsicHeight * 4
+        val heightSum = text1.height + text2.height + text3.height + divider!!.intrinsicHeight * 4
         val widthSum = text1.width + text4.width + divider.intrinsicWidth * 3
         assertThat(text3.bottom + divider.intrinsicHeight, `is`(heightSum))
         assertThat(text4.right + divider.intrinsicWidth, `is`(widthSum))

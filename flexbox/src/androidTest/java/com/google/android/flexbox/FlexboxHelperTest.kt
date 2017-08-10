@@ -36,6 +36,7 @@ import org.junit.runner.RunWith
 @RunWith(AndroidJUnit4::class)
 class FlexboxHelperTest {
 
+    @JvmField
     @Rule
     var activityRule = ActivityTestRule(FlexboxTestActivity::class.java)
 

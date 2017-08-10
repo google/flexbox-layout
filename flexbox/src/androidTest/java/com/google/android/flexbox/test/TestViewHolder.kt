@@ -24,5 +24,5 @@ import android.widget.TextView
  * ViewHolder implementation for a flex item for testing.
  */
 internal class TestViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
-    var textView: TextView = itemView.findViewById(R.id.textview)
+    val textView: TextView = itemView.findViewById(R.id.textview)
 }

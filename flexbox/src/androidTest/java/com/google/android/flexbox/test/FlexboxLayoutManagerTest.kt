@@ -52,6 +52,7 @@ import org.junit.runner.RunWith
 @MediumTest
 class FlexboxLayoutManagerTest {
 
+    @JvmField
     @Rule
     var activityRule = ActivityTestRule(FlexboxTestActivity::class.java)
 
@@ -1578,8 +1579,7 @@ class FlexboxLayoutManagerTest {
     fun testScrollToBottom_middleItem_as_anchorPosition() {
         // There was an issue that the anchor position was based on the last item in the last
         // visible flex line when scrolling to bottom. But the anchor position should be based on
-        // the
-        // flex line position (view which has the maximum bottom position in the same flex line)
+        // the flex line position (view which has the maximum bottom position in the same flex line)
         // This test verifies the issue is fixed.
         val activity = activityRule.activity
         val layoutManager = FlexboxLayoutManager(activity)

@@ -46,6 +46,8 @@ import org.junit.runner.RunWith
 @RunWith(AndroidJUnit4::class)
 @MediumTest
 class MainActivityTest {
+
+    @JvmField
     @Rule
     var activityRule = ActivityTestRule(MainActivity::class.java)
 
