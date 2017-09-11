@@ -49,7 +49,7 @@ internal class RecyclerViewFragment : Fragment() {
         recyclerView.adapter = adapter
         if (savedInstanceState != null) {
             val layoutParams : List<FlexboxLayoutManager.LayoutParams>? = savedInstanceState
-                    .getParcelableArrayList<FlexboxLayoutManager.LayoutParams>(FLEX_ITEMS_KEY)
+                    .getParcelableArrayList(FLEX_ITEMS_KEY)
             layoutParams?.let {
                 for (i in layoutParams.indices) {
                     adapter.addItem(layoutParams[i])

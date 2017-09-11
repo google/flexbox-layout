@@ -67,13 +67,11 @@ internal class FlexItemEditFragment : DialogFragment() {
         super.onCreate(savedInstanceState)
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
             setStyle(DialogFragment.STYLE_NORMAL, android.R.style.Theme_Material_Light_Dialog)
-        } else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
-            setStyle(DialogFragment.STYLE_NORMAL, android.R.style.Theme_Holo_Light_Dialog)
         } else {
             setStyle(DialogFragment.STYLE_NORMAL, android.R.style.Theme_Dialog)
         }
         arguments.let {
-            flexItem = it.getParcelable<FlexItem>(FLEX_ITEM_KEY)
+            flexItem = it.getParcelable(FLEX_ITEM_KEY)
             viewIndex = it.getInt(VIEW_INDEX_KEY)
         }
         flexItemInEdit = createNewFlexItem(flexItem)
@@ -241,16 +239,15 @@ internal class FlexItemEditFragment : DialogFragment() {
         // devices,
         // doing it programmatically.
         for (i in textViews.indices) {
-            val index = i
-            textViews[index].setOnEditorActionListener { v, actionId, event ->
+            textViews[i].setOnEditorActionListener { v, actionId, event ->
                 if (actionId == EditorInfo.IME_ACTION_NEXT ||
                         actionId == EditorInfo.IME_ACTION_DONE ||
                         actionId == EditorInfo.IME_NULL
                                 && event.action == KeyEvent.ACTION_DOWN
                                 && event.keyCode == KeyEvent.KEYCODE_ENTER) {
-                    if (index + 1 < textViews.size) {
-                        textViews[index + 1].requestFocus()
-                    } else if (index == textViews.size - 1) {
+                    if (i + 1 < textViews.size) {
+                        textViews[i + 1].requestFocus()
+                    } else if (i == textViews.size - 1) {
                         val inputMethodManager = activity
                                 .getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
                         inputMethodManager.hideSoftInputFromWindow(v.windowToken, 0)
@@ -260,20 +257,20 @@ internal class FlexItemEditFragment : DialogFragment() {
             }
 
             // Suppress the key focus change by KeyEvent.ACTION_UP of the enter key
-            textViews[index].setOnKeyListener { _, keyCode, event -> keyCode == KeyEvent.KEYCODE_ENTER && event.action == KeyEvent.ACTION_UP }
+            textViews[i].setOnKeyListener { _, keyCode, event -> keyCode == KeyEvent.KEYCODE_ENTER && event.action == KeyEvent.ACTION_UP }
         }
 
     }
 
     private fun alignSelfAsString(alignSelf: Int): String {
-        when (alignSelf) {
-            AlignSelf.AUTO -> return ALIGN_SELF_AUTO
-            AlignItems.FLEX_START -> return ALIGN_SELF_FLEX_START
-            AlignItems.FLEX_END -> return ALIGN_SELF_FLEX_END
-            AlignItems.CENTER -> return ALIGN_SELF_CENTER
-            AlignItems.BASELINE -> return ALIGN_SELF_BASELINE
-            AlignItems.STRETCH -> return ALIGN_SELF_STRETCH
-            else -> return ALIGN_SELF_AUTO
+        return when (alignSelf) {
+            AlignSelf.AUTO -> ALIGN_SELF_AUTO
+            AlignItems.FLEX_START -> ALIGN_SELF_FLEX_START
+            AlignItems.FLEX_END -> ALIGN_SELF_FLEX_END
+            AlignItems.CENTER -> ALIGN_SELF_CENTER
+            AlignItems.BASELINE -> ALIGN_SELF_BASELINE
+            AlignItems.STRETCH -> ALIGN_SELF_STRETCH
+            else -> ALIGN_SELF_AUTO
         }
     }
 
@@ -297,7 +294,7 @@ internal class FlexItemEditFragment : DialogFragment() {
         }
 
         override fun afterTextChanged(editable: Editable) {
-            if (textInputLayout.isErrorEnabled || editable.isNullOrEmpty() ||
+            if (textInputLayout.isErrorEnabled || editable.isEmpty() ||
                     !inputValidator.isValidInput(editable.toString())) {
                 return
             }
