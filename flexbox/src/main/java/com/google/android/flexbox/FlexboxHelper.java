@@ -738,6 +738,11 @@ class FlexboxHelper {
 
     /**
      * Returns the flexItem's start margin in the main axis. Either start or top.
+     * For the backward compatibility for API level < 17, the horizontal margin is returned using
+     * {@link FlexItem#getMarginLeft} (ViewGroup.MarginLayoutParams#getMarginStart isn't available
+     * in API level < 17). Thus this method needs to be used with {@link #getFlexItemMarginEndMain}
+     * not to misuse the margin in RTL.
+     *
      *
      * @param flexItem         the flexItem
      * @param isMainHorizontal is the main axis horizontal
@@ -745,7 +750,7 @@ class FlexboxHelper {
      */
     private int getFlexItemMarginStartMain(FlexItem flexItem, boolean isMainHorizontal) {
         if (isMainHorizontal) {
-            return flexItem.getMarginStart();
+            return flexItem.getMarginLeft();
         }
 
         return flexItem.getMarginTop();
@@ -753,6 +758,10 @@ class FlexboxHelper {
 
     /**
      * Returns the flexItem's end margin in the main axis. Either end or bottom.
+     * For the backward compatibility for API level < 17, the horizontal margin is returned using
+     * {@link FlexItem#getMarginRight} (ViewGroup.MarginLayoutParams#getMarginEnd isn't available
+     * in API level < 17). Thus this method needs to be used with
+     * {@link #getFlexItemMarginStartMain} not to misuse the margin in RTL.
      *
      * @param flexItem         the flexItem
      * @param isMainHorizontal is the main axis horizontal
@@ -760,7 +769,7 @@ class FlexboxHelper {
      */
     private int getFlexItemMarginEndMain(FlexItem flexItem, boolean isMainHorizontal) {
         if (isMainHorizontal) {
-            return flexItem.getMarginEnd();
+            return flexItem.getMarginRight();
         }
 
         return flexItem.getMarginBottom();
@@ -768,6 +777,10 @@ class FlexboxHelper {
 
     /**
      * Returns the flexItem's start margin in the cross axis. Either start or top.
+     * For the backward compatibility for API level < 17, the horizontal margin is returned using
+     * {@link FlexItem#getMarginLeft} (ViewGroup.MarginLayoutParams#getMarginStart isn't available
+     * in API level < 17). Thus this method needs to be used with
+     * {@link #getFlexItemMarginEndCross} to not to misuse the margin in RTL.
      *
      * @param flexItem         the flexItem
      * @param isMainHorizontal is the main axis horizontal
@@ -778,11 +791,15 @@ class FlexboxHelper {
             return flexItem.getMarginTop();
         }
 
-        return flexItem.getMarginStart();
+        return flexItem.getMarginLeft();
     }
 
     /**
      * Returns the flexItem's end margin in the cross axis. Either end or bottom.
+     * For the backward compatibility for API level < 17, the horizontal margin is returned using
+     * {@link FlexItem#getMarginRight} (ViewGroup.MarginLayoutParams#getMarginEnd isn't available
+     * in API level < 17). Thus this method needs to be used with
+     * {@link #getFlexItemMarginStartCross} to not to misuse the margin in RTL.
      *
      * @param flexItem         the flexItem
      * @param isMainHorizontal is the main axis horizontal
@@ -793,7 +810,7 @@ class FlexboxHelper {
             return flexItem.getMarginBottom();
         }
 
-        return flexItem.getMarginEnd();
+        return flexItem.getMarginRight();
     }
 
     /**

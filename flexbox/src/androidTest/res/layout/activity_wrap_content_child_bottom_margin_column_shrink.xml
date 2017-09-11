@@ -29,6 +29,7 @@
         android:layout_width="24dp"
         android:layout_height="150dp"
         android:layout_marginEnd="12dp"
+        android:layout_marginRight="12dp"
         android:text="1"
         app:layout_flexShrink="1" />
 
