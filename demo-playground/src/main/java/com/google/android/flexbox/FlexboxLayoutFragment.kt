@@ -90,9 +90,9 @@ class FlexboxLayoutFragment : Fragment() {
 
     override fun onSaveInstanceState(outState: Bundle) {
         super.onSaveInstanceState(outState)
-        val flexItems = (0..flexContainer.flexItemCount - 1)
+        val flexItems = (0 until flexContainer.flexItemCount)
                 .map { flexContainer.getFlexItemAt(it) }
-                .mapTo(ArrayList<FlexItem>()) { it.layoutParams as FlexItem }
+                .mapTo(ArrayList()) { it.layoutParams as FlexItem }
         outState.putParcelableArrayList(FLEX_ITEMS_KEY, flexItems)
     }
 

@@ -18,7 +18,6 @@ package com.google.android.flexbox
 
 import android.content.SharedPreferences
 import android.support.design.widget.NavigationView
-import android.support.v4.view.MenuItemCompat
 import android.support.v7.preference.PreferenceManager
 import android.view.Menu
 import android.view.View
@@ -136,8 +135,7 @@ internal class FragmentHelper(private val activity: MainActivity, private val fl
     private fun initializeSpinner(currentValue: Int, menuItemId: Int, navigationMenu: Menu,
                                   arrayResourceId: Int, listener: AdapterView.OnItemSelectedListener,
                                   converter: ValueToStringConverter) {
-        val spinner = MenuItemCompat
-                .getActionView(navigationMenu.findItem(menuItemId)) as Spinner
+        val spinner = navigationMenu.findItem(menuItemId).actionView as Spinner
         val adapter = ArrayAdapter.createFromResource(activity,
                 arrayResourceId, R.layout.spinner_item)
         spinner.adapter = adapter
@@ -167,12 +165,12 @@ internal class FragmentHelper(private val activity: MainActivity, private val fl
                     }
                 }, object : ValueToStringConverter {
             override fun asString(value: Int): String {
-                when (value) {
-                    FlexDirection.ROW -> return ROW
-                    FlexDirection.ROW_REVERSE -> return ROW_REVERSE
-                    FlexDirection.COLUMN -> return COLUMN
-                    FlexDirection.COLUMN_REVERSE -> return COLUMN_REVERSE
-                    else -> return ROW
+                return when (value) {
+                    FlexDirection.ROW -> ROW
+                    FlexDirection.ROW_REVERSE -> ROW_REVERSE
+                    FlexDirection.COLUMN -> COLUMN
+                    FlexDirection.COLUMN_REVERSE -> COLUMN_REVERSE
+                    else -> ROW
                 }
             }
         })
@@ -204,11 +202,11 @@ internal class FragmentHelper(private val activity: MainActivity, private val fl
                     }
                 }, object : ValueToStringConverter {
             override fun asString(value: Int): String {
-                when (value) {
-                    FlexWrap.NOWRAP -> return NOWRAP
-                    FlexWrap.WRAP -> return WRAP
-                    FlexWrap.WRAP_REVERSE -> return WRAP_REVERSE
-                    else -> return NOWRAP
+                return when (value) {
+                    FlexWrap.NOWRAP -> NOWRAP
+                    FlexWrap.WRAP -> WRAP
+                    FlexWrap.WRAP_REVERSE -> WRAP_REVERSE
+                    else -> NOWRAP
                 }
             }
         })
@@ -235,13 +233,13 @@ internal class FragmentHelper(private val activity: MainActivity, private val fl
                     }
                 }, object : ValueToStringConverter {
             override fun asString(value: Int): String {
-                when (value) {
-                    JustifyContent.FLEX_START -> return FLEX_START
-                    JustifyContent.FLEX_END -> return FLEX_END
-                    JustifyContent.CENTER -> return CENTER
-                    JustifyContent.SPACE_AROUND -> return SPACE_AROUND
-                    JustifyContent.SPACE_BETWEEN -> return SPACE_BETWEEN
-                    else -> return FLEX_START
+                return when (value) {
+                    JustifyContent.FLEX_START -> FLEX_START
+                    JustifyContent.FLEX_END -> FLEX_END
+                    JustifyContent.CENTER -> CENTER
+                    JustifyContent.SPACE_AROUND -> SPACE_AROUND
+                    JustifyContent.SPACE_BETWEEN -> SPACE_BETWEEN
+                    else -> FLEX_START
                 }
             }
         })
@@ -268,13 +266,13 @@ internal class FragmentHelper(private val activity: MainActivity, private val fl
                     }
                 }, object : ValueToStringConverter {
             override fun asString(value: Int): String {
-                when (value) {
-                    AlignItems.FLEX_START -> return FLEX_START
-                    AlignItems.FLEX_END -> return FLEX_END
-                    AlignItems.CENTER -> return CENTER
-                    AlignItems.BASELINE -> return BASELINE
-                    AlignItems.STRETCH -> return STRETCH
-                    else -> return STRETCH
+                return when (value) {
+                    AlignItems.FLEX_START -> FLEX_START
+                    AlignItems.FLEX_END -> FLEX_END
+                    AlignItems.CENTER -> CENTER
+                    AlignItems.BASELINE -> BASELINE
+                    AlignItems.STRETCH -> STRETCH
+                    else -> STRETCH
                 }
             }
         })
