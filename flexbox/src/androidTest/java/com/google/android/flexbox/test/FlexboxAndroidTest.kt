@@ -3777,6 +3777,78 @@ class FlexboxAndroidTest {
         onView(withId(R.id.text3)).check(isTopAlignedWith(withId(R.id.flexbox_layout)))
     }
 
+    @Test
+    @FlakyTest
+    @Throws(Throwable::class)
+    fun testAddItemProgrammatically_withMarginLayoutParams() {
+        val activity = activityRule.activity
+        val flexboxLayout = createFlexboxLayout(R.layout.activity_empty_children,
+        object : Configuration {
+            override fun apply(flexboxLayout: FlexboxLayout) {
+                flexboxLayout.alignItems = AlignItems.FLEX_START
+                val first = createTextView(activity, "1", 0)
+                val second = createTextView(activity, "2", 0)
+                val lp1 = ViewGroup.MarginLayoutParams(100, 100)
+                lp1.setMargins(10, 10, 10, 10)
+                val lp2 = ViewGroup.MarginLayoutParams(100, 100)
+                lp2.setMargins(20, 20, 20, 20)
+                first.layoutParams = lp1
+                second.layoutParams = lp2
+                flexboxLayout.addView(first)
+                flexboxLayout.addView(second)
+            }
+        })
+
+        assertThat(flexboxLayout.childCount, `is`(2))
+        val view1 = flexboxLayout.getChildAt(0)
+        val view2 = flexboxLayout.getChildAt(1)
+        // Assert the coordinates of the views added programmatically with margins
+        assertThat(view1.left, `is`(10))
+        assertThat(view1.top, `is`(10))
+        assertThat(view1.bottom, `is`(110))
+        assertThat(view1.right, `is`(110))
+        assertThat(view2.left, `is`(140))
+        assertThat(view2.top, `is`(20))
+        assertThat(view2.bottom, `is`(120))
+        assertThat(view2.right, `is`(240))
+    }
+
+    @Test
+    @FlakyTest
+    @Throws(Throwable::class)
+    fun testAddItemProgrammatically_withFlexboxLayoutLayoutParams() {
+        val activity = activityRule.activity
+        val flexboxLayout = createFlexboxLayout(R.layout.activity_empty_children,
+                object : Configuration {
+                    override fun apply(flexboxLayout: FlexboxLayout) {
+                        flexboxLayout.alignItems = AlignItems.FLEX_START
+                        val first = createTextView(activity, "1", 0)
+                        val second = createTextView(activity, "2", 0)
+                        val lp1 = FlexboxLayout.LayoutParams(100, 100)
+                        lp1.setMargins(10, 10, 10, 10)
+                        val lp2 = FlexboxLayout.LayoutParams(100, 100)
+                        lp2.setMargins(20, 20, 20, 20)
+                        first.layoutParams = lp1
+                        second.layoutParams = lp2
+                        flexboxLayout.addView(first)
+                        flexboxLayout.addView(second)
+                    }
+                })
+
+        assertThat(flexboxLayout.childCount, `is`(2))
+        val view1 = flexboxLayout.getChildAt(0)
+        val view2 = flexboxLayout.getChildAt(1)
+        // Assert the coordinates of the views added programmatically with margins
+        assertThat(view1.left, `is`(10))
+        assertThat(view1.top, `is`(10))
+        assertThat(view1.bottom, `is`(110))
+        assertThat(view1.right, `is`(110))
+        assertThat(view2.left, `is`(140))
+        assertThat(view2.top, `is`(20))
+        assertThat(view2.bottom, `is`(120))
+        assertThat(view2.right, `is`(240))
+    }
+
     @Throws(Throwable::class)
     private fun createFlexboxLayout(@LayoutRes activityLayoutResId: Int,
                                     configuration: Configuration = Configuration.EMPTY): FlexboxLayout {

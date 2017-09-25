@@ -1106,8 +1106,13 @@ public class FlexboxLayout extends ViewGroup implements FlexContainer {
     }
 
     @Override
-    protected ViewGroup.LayoutParams generateLayoutParams(ViewGroup.LayoutParams p) {
-        return new LayoutParams(p);
+    protected ViewGroup.LayoutParams generateLayoutParams(ViewGroup.LayoutParams lp) {
+        if (lp instanceof FlexboxLayout.LayoutParams) {
+            return new FlexboxLayout.LayoutParams((FlexboxLayout.LayoutParams) lp);
+        } else if (lp instanceof MarginLayoutParams) {
+            return new FlexboxLayout.LayoutParams((MarginLayoutParams) lp);
+        }
+        return new LayoutParams(lp);
     }
 
     @FlexDirection
