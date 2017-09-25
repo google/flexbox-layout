@@ -57,7 +57,7 @@ class FlexboxLayoutFragment : Fragment() {
                 flexContainer.addView(textView)
             }
         } else {
-            for (i in 0..flexContainer.flexItemCount - 1) {
+            for (i in 0 until flexContainer.flexItemCount) {
                 flexContainer.getFlexItemAt(i).setOnClickListener(
                         FlexItemClickListener(activity,
                                 FlexItemChangedListenerImpl(flexContainer), i))
