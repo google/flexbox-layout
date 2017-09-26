@@ -927,21 +927,21 @@ public class FlexboxLayout extends ViewGroup implements FlexContainer {
      *                        {@code false} otherwise
      */
     private void drawDividersHorizontal(Canvas canvas, boolean isRtl, boolean fromBottomToTop) {
-        int currentViewIndex = 0;
         int paddingLeft = getPaddingLeft();
         int paddingRight = getPaddingRight();
         int horizontalDividerLength = Math.max(0, getWidth() - paddingRight - paddingLeft);
         for (int i = 0, size = mFlexLines.size(); i < size; i++) {
             FlexLine flexLine = mFlexLines.get(i);
             for (int j = 0; j < flexLine.mItemCount; j++) {
-                View view = getReorderedChildAt(currentViewIndex);
+                int viewIndex = flexLine.mFirstIndex + j;
+                View view = getReorderedChildAt(viewIndex);
                 if (view == null || view.getVisibility() == View.GONE) {
                     continue;
                 }
                 LayoutParams lp = (LayoutParams) view.getLayoutParams();
 
                 // Judge if the beginning or middle divider is needed
-                if (hasDividerBeforeChildAtAlongMainAxis(currentViewIndex, j)) {
+                if (hasDividerBeforeChildAtAlongMainAxis(viewIndex, j)) {
                     int dividerLeft;
                     if (isRtl) {
                         dividerLeft = view.getRight() + lp.rightMargin;
@@ -966,7 +966,6 @@ public class FlexboxLayout extends ViewGroup implements FlexContainer {
                                 flexLine.mCrossSize);
                     }
                 }
-                currentViewIndex++;
             }
 
             // Judge if the beginning or middle dividers are needed before the flex line
@@ -1008,7 +1007,6 @@ public class FlexboxLayout extends ViewGroup implements FlexContainer {
      *                        {@code false} otherwise
      */
     private void drawDividersVertical(Canvas canvas, boolean isRtl, boolean fromBottomToTop) {
-        int currentViewIndex = 0;
         int paddingTop = getPaddingTop();
         int paddingBottom = getPaddingBottom();
         int verticalDividerLength = Math.max(0, getHeight() - paddingBottom - paddingTop);
@@ -1017,14 +1015,15 @@ public class FlexboxLayout extends ViewGroup implements FlexContainer {
 
             // Draw horizontal dividers if needed
             for (int j = 0; j < flexLine.mItemCount; j++) {
-                View view = getReorderedChildAt(currentViewIndex);
+                int viewIndex = flexLine.mFirstIndex + j;
+                View view = getReorderedChildAt(viewIndex);
                 if (view == null || view.getVisibility() == View.GONE) {
                     continue;
                 }
                 LayoutParams lp = (LayoutParams) view.getLayoutParams();
 
                 // Judge if the beginning or middle divider is needed
-                if (hasDividerBeforeChildAtAlongMainAxis(currentViewIndex, j)) {
+                if (hasDividerBeforeChildAtAlongMainAxis(viewIndex, j)) {
                     int dividerTop;
                     if (fromBottomToTop) {
                         dividerTop = view.getBottom() + lp.bottomMargin;
@@ -1049,7 +1048,6 @@ public class FlexboxLayout extends ViewGroup implements FlexContainer {
                                 flexLine.mCrossSize);
                     }
                 }
-                currentViewIndex++;
             }
 
             // Judge if the beginning or middle dividers are needed before the flex line
