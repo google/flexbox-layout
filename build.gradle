@@ -21,12 +21,12 @@ buildscript {
         minSdkVersion = 14
         targetSdkVersion = 27
         compileSdkVersion = 27
-        buildToolsVersion = "27.0.0"
-        androidGradlePluginVersion = "2.3.3"
+        buildToolsVersion = "27.0.1"
+        androidGradlePluginVersion = "3.0.1"
         androidMavenGradlePluginVersion = "1.5"
         gradleBintrayPluginVersion = "1.6"
-        kotlinVersion = "1.1.60"
-        supportLibVersion = "27.0.0"
+        kotlinVersion = "1.1.61"
+        supportLibVersion = "27.0.1"
         espressoVersion = "3.0.0"
         testRunnerVersion = "1.0.0"
         junitVersion = "4.12"
@@ -34,9 +34,7 @@ buildscript {
 
     repositories {
         jcenter()
-        maven {
-            url 'https://maven.google.com'
-        }
+        google()
     }
     dependencies {
         classpath "com.android.tools.build:gradle:$androidGradlePluginVersion"
@@ -51,9 +49,7 @@ buildscript {
 allprojects {
     repositories {
         jcenter()
-        maven {
-            url 'https://maven.google.com'
-        }
+        google()
     }
 }
 

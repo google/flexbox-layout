@@ -38,17 +38,17 @@ import com.google.android.flexbox.validators.*
  */
 internal class FlexItemEditFragment : DialogFragment() {
 
-    private lateinit var ALIGN_SELF_AUTO: String
+    private lateinit var alignSelfAuto: String
 
-    private lateinit var ALIGN_SELF_FLEX_START: String
+    private lateinit var alignSelfFlexStart: String
 
-    private lateinit var ALIGN_SELF_FLEX_END: String
+    private lateinit var alignSelfFlexEnd: String
 
-    private lateinit var ALIGN_SELF_CENTER: String
+    private lateinit var alignSelfCenter: String
 
-    private lateinit var ALIGN_SELF_BASELINE: String
+    private lateinit var alignSelfBaseline: String
 
-    private lateinit var ALIGN_SELF_STRETCH: String
+    private lateinit var alignSelfStretch: String
 
     private var viewIndex: Int = 0
 
@@ -77,12 +77,12 @@ internal class FlexItemEditFragment : DialogFragment() {
         flexItemInEdit = createNewFlexItem(flexItem)
 
         activity?.let {
-            ALIGN_SELF_AUTO = it.getString(R.string.auto)
-            ALIGN_SELF_FLEX_START = it.getString(R.string.flex_start)
-            ALIGN_SELF_FLEX_END = it.getString(R.string.flex_end)
-            ALIGN_SELF_CENTER = it.getString(R.string.center)
-            ALIGN_SELF_BASELINE = it.getString(R.string.baseline)
-            ALIGN_SELF_STRETCH = it.getString(R.string.stretch)
+            alignSelfAuto = it.getString(R.string.auto)
+            alignSelfFlexStart = it.getString(R.string.flex_start)
+            alignSelfFlexEnd = it.getString(R.string.flex_end)
+            alignSelfCenter = it.getString(R.string.center)
+            alignSelfBaseline = it.getString(R.string.baseline)
+            alignSelfStretch = it.getString(R.string.stretch)
         }
     }
 
@@ -182,12 +182,12 @@ internal class FlexItemEditFragment : DialogFragment() {
         alignSelfSpinner.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
             override fun onItemSelected(parent: AdapterView<*>, ignored: View, position: Int, id: Long) {
                 flexItemInEdit.alignSelf = when (parent.getItemAtPosition(position).toString()) {
-                    ALIGN_SELF_AUTO -> AlignSelf.AUTO
-                    ALIGN_SELF_FLEX_START -> AlignItems.FLEX_START
-                    ALIGN_SELF_FLEX_END -> AlignItems.FLEX_END
-                    ALIGN_SELF_CENTER -> AlignItems.CENTER
-                    ALIGN_SELF_BASELINE -> AlignItems.BASELINE
-                    ALIGN_SELF_STRETCH -> AlignItems.STRETCH
+                    alignSelfAuto -> AlignSelf.AUTO
+                    alignSelfFlexStart -> AlignItems.FLEX_START
+                    alignSelfFlexEnd -> AlignItems.FLEX_END
+                    alignSelfCenter -> AlignItems.CENTER
+                    alignSelfBaseline -> AlignItems.BASELINE
+                    alignSelfStretch -> AlignItems.STRETCH
                     else -> return
                 }
             }
@@ -249,8 +249,8 @@ internal class FlexItemEditFragment : DialogFragment() {
                         textViews[i + 1].requestFocus()
                     } else if (i == textViews.size - 1) {
                         val inputMethodManager = activity?.getSystemService(
-                                Context.INPUT_METHOD_SERVICE) as InputMethodManager
-                        inputMethodManager.hideSoftInputFromWindow(v.windowToken, 0)
+                                Context.INPUT_METHOD_SERVICE) as InputMethodManager?
+                        inputMethodManager?.hideSoftInputFromWindow(v.windowToken, 0)
                     }
                 }
                 true
@@ -264,13 +264,13 @@ internal class FlexItemEditFragment : DialogFragment() {
 
     private fun alignSelfAsString(alignSelf: Int): String {
         return when (alignSelf) {
-            AlignSelf.AUTO -> ALIGN_SELF_AUTO
-            AlignItems.FLEX_START -> ALIGN_SELF_FLEX_START
-            AlignItems.FLEX_END -> ALIGN_SELF_FLEX_END
-            AlignItems.CENTER -> ALIGN_SELF_CENTER
-            AlignItems.BASELINE -> ALIGN_SELF_BASELINE
-            AlignItems.STRETCH -> ALIGN_SELF_STRETCH
-            else -> ALIGN_SELF_AUTO
+            AlignSelf.AUTO -> alignSelfAuto
+            AlignItems.FLEX_START -> alignSelfFlexStart
+            AlignItems.FLEX_END -> alignSelfFlexEnd
+            AlignItems.CENTER -> alignSelfCenter
+            AlignItems.BASELINE -> alignSelfBaseline
+            AlignItems.STRETCH -> alignSelfStretch
+            else -> alignSelfAuto
         }
     }
 
