@@ -38,17 +38,17 @@ import com.google.android.flexbox.validators.*
  */
 internal class FlexItemEditFragment : DialogFragment() {
 
-    private lateinit var ALIGN_SELF_AUTO: String
+    private lateinit var alignSelfAuto: String
 
-    private lateinit var ALIGN_SELF_FLEX_START: String
+    private lateinit var alignSelfFlexStart: String
 
-    private lateinit var ALIGN_SELF_FLEX_END: String
+    private lateinit var alignSelfFlexEnd: String
 
-    private lateinit var ALIGN_SELF_CENTER: String
+    private lateinit var alignSelfCenter: String
 
-    private lateinit var ALIGN_SELF_BASELINE: String
+    private lateinit var alignSelfBaseline: String
 
-    private lateinit var ALIGN_SELF_STRETCH: String
+    private lateinit var alignSelfStretch: String
 
     private var viewIndex: Int = 0
 
@@ -70,19 +70,19 @@ internal class FlexItemEditFragment : DialogFragment() {
         } else {
             setStyle(DialogFragment.STYLE_NORMAL, android.R.style.Theme_Dialog)
         }
-        arguments.let {
+        arguments?.let {
             flexItem = it.getParcelable(FLEX_ITEM_KEY)
             viewIndex = it.getInt(VIEW_INDEX_KEY)
         }
         flexItemInEdit = createNewFlexItem(flexItem)
 
-        activity.let {
-            ALIGN_SELF_AUTO = it.getString(R.string.auto)
-            ALIGN_SELF_FLEX_START = it.getString(R.string.flex_start)
-            ALIGN_SELF_FLEX_END = it.getString(R.string.flex_end)
-            ALIGN_SELF_CENTER = it.getString(R.string.center)
-            ALIGN_SELF_BASELINE = it.getString(R.string.baseline)
-            ALIGN_SELF_STRETCH = it.getString(R.string.stretch)
+        activity?.let {
+            alignSelfAuto = it.getString(R.string.auto)
+            alignSelfFlexStart = it.getString(R.string.flex_start)
+            alignSelfFlexEnd = it.getString(R.string.flex_end)
+            alignSelfCenter = it.getString(R.string.center)
+            alignSelfBaseline = it.getString(R.string.baseline)
+            alignSelfStretch = it.getString(R.string.stretch)
         }
     }
 
@@ -91,12 +91,12 @@ internal class FlexItemEditFragment : DialogFragment() {
         val view = inflater.inflate(R.layout.fragment_flex_item_edit, container, false)
         dialog.setTitle((viewIndex + 1).toString())
 
-        val activity = activity
+        val context = activity ?: return view
         val orderTextInput: TextInputLayout = view.findViewById(R.id.input_layout_order)
         val orderEdit: EditText = view.findViewById(R.id.edit_text_order)
         orderEdit.setText(flexItem.order.toString())
         orderEdit.addTextChangedListener(
-                FlexEditTextWatcher(activity, orderTextInput, IntegerInputValidator(),
+                FlexEditTextWatcher(context, orderTextInput, IntegerInputValidator(),
                         R.string.must_be_integer))
         if (flexItem is FlexboxLayoutManager.LayoutParams) {
             // Order is not enabled in FlexboxLayoutManager
@@ -107,14 +107,14 @@ internal class FlexItemEditFragment : DialogFragment() {
         val flexGrowEdit: EditText = view.findViewById(R.id.edit_text_flex_grow)
         flexGrowEdit.setText(flexItem.flexGrow.toString())
         flexGrowEdit.addTextChangedListener(
-                FlexEditTextWatcher(activity, flexGrowInput, NonNegativeDecimalInputValidator(),
+                FlexEditTextWatcher(context, flexGrowInput, NonNegativeDecimalInputValidator(),
                         R.string.must_be_non_negative_float))
 
         val flexShrinkInput: TextInputLayout = view.findViewById(R.id.input_layout_flex_shrink)
         val flexShrinkEdit: EditText = view.findViewById(R.id.edit_text_flex_shrink)
         flexShrinkEdit.setText(flexItem.flexShrink.toString())
         flexShrinkEdit.addTextChangedListener(
-                FlexEditTextWatcher(activity, flexShrinkInput, NonNegativeDecimalInputValidator(),
+                FlexEditTextWatcher(context, flexShrinkInput, NonNegativeDecimalInputValidator(),
                         R.string.must_be_non_negative_float))
 
         val flexBasisPercentInput: TextInputLayout =
@@ -127,49 +127,49 @@ internal class FlexItemEditFragment : DialogFragment() {
             flexBasisPercentEdit.setText(flexItem.flexBasisPercent.toInt().toString())
         }
         flexBasisPercentEdit.addTextChangedListener(
-                FlexEditTextWatcher(activity, flexBasisPercentInput, FlexBasisPercentInputValidator(),
+                FlexEditTextWatcher(context, flexBasisPercentInput, FlexBasisPercentInputValidator(),
                         R.string.must_be_minus_one_or_non_negative_integer))
 
         val widthInput: TextInputLayout = view.findViewById(R.id.input_layout_width)
         val widthEdit: EditText = view.findViewById(R.id.edit_text_width)
-        widthEdit.setText(activity.pixelToDp(flexItem.width).toString())
+        widthEdit.setText(context.pixelToDp(flexItem.width).toString())
         widthEdit.addTextChangedListener(
-                FlexEditTextWatcher(activity, widthInput, DimensionInputValidator(),
+                FlexEditTextWatcher(context, widthInput, DimensionInputValidator(),
                         R.string.must_be_minus_one_or_minus_two_or_non_negative_integer))
 
         val heightInput: TextInputLayout = view.findViewById(R.id.input_layout_height)
         val heightEdit: EditText= view.findViewById(R.id.edit_text_height)
-        heightEdit.setText(activity.pixelToDp(flexItem.height).toString())
+        heightEdit.setText(context.pixelToDp(flexItem.height).toString())
         heightEdit.addTextChangedListener(
-                FlexEditTextWatcher(activity, heightInput, DimensionInputValidator(),
+                FlexEditTextWatcher(context, heightInput, DimensionInputValidator(),
                         R.string.must_be_minus_one_or_minus_two_or_non_negative_integer))
 
         val minWidthInput: TextInputLayout = view.findViewById(R.id.input_layout_min_width)
         val minWidthEdit: EditText = view.findViewById(R.id.edit_text_min_width)
-        minWidthEdit.setText(activity.pixelToDp(flexItem.minWidth).toString())
+        minWidthEdit.setText(context.pixelToDp(flexItem.minWidth).toString())
         minWidthEdit.addTextChangedListener(
-                FlexEditTextWatcher(activity, minWidthInput, FixedDimensionInputValidator(),
+                FlexEditTextWatcher(context, minWidthInput, FixedDimensionInputValidator(),
                         R.string.must_be_non_negative_integer))
 
         val minHeightInput: TextInputLayout = view.findViewById(R.id.input_layout_min_height)
         val minHeightEdit: EditText = view.findViewById(R.id.edit_text_min_height)
-        minHeightEdit.setText(activity.pixelToDp(flexItem.minHeight).toString())
+        minHeightEdit.setText(context.pixelToDp(flexItem.minHeight).toString())
         minHeightEdit.addTextChangedListener(
-                FlexEditTextWatcher(activity, minHeightInput, FixedDimensionInputValidator(),
+                FlexEditTextWatcher(context, minHeightInput, FixedDimensionInputValidator(),
                         R.string.must_be_non_negative_integer))
 
         val maxWidthInput: TextInputLayout = view.findViewById(R.id.input_layout_max_width)
         val maxWidthEdit: EditText = view.findViewById(R.id.edit_text_max_width)
-        maxWidthEdit.setText(activity.pixelToDp(flexItem.maxWidth).toString())
+        maxWidthEdit.setText(context.pixelToDp(flexItem.maxWidth).toString())
         maxWidthEdit.addTextChangedListener(
-                FlexEditTextWatcher(activity, maxWidthInput, FixedDimensionInputValidator(),
+                FlexEditTextWatcher(context, maxWidthInput, FixedDimensionInputValidator(),
                         R.string.must_be_non_negative_integer))
 
         val maxHeightInput: TextInputLayout = view.findViewById(R.id.input_layout_max_height)
         val maxHeightEdit: EditText = view.findViewById(R.id.edit_text_max_height)
-        maxHeightEdit.setText(activity.pixelToDp(flexItem.maxHeight).toString())
+        maxHeightEdit.setText(context.pixelToDp(flexItem.maxHeight).toString())
         maxHeightEdit.addTextChangedListener(
-                FlexEditTextWatcher(activity, maxHeightInput, FixedDimensionInputValidator(),
+                FlexEditTextWatcher(context, maxHeightInput, FixedDimensionInputValidator(),
                         R.string.must_be_non_negative_integer))
 
         setNextFocusesOnEnterDown(orderEdit, flexGrowEdit, flexShrinkEdit, flexBasisPercentEdit,
@@ -182,12 +182,12 @@ internal class FlexItemEditFragment : DialogFragment() {
         alignSelfSpinner.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
             override fun onItemSelected(parent: AdapterView<*>, ignored: View, position: Int, id: Long) {
                 flexItemInEdit.alignSelf = when (parent.getItemAtPosition(position).toString()) {
-                    ALIGN_SELF_AUTO -> AlignSelf.AUTO
-                    ALIGN_SELF_FLEX_START -> AlignItems.FLEX_START
-                    ALIGN_SELF_FLEX_END -> AlignItems.FLEX_END
-                    ALIGN_SELF_CENTER -> AlignItems.CENTER
-                    ALIGN_SELF_BASELINE -> AlignItems.BASELINE
-                    ALIGN_SELF_STRETCH -> AlignItems.STRETCH
+                    alignSelfAuto -> AlignSelf.AUTO
+                    alignSelfFlexStart -> AlignItems.FLEX_START
+                    alignSelfFlexEnd -> AlignItems.FLEX_END
+                    alignSelfCenter -> AlignItems.CENTER
+                    alignSelfBaseline -> AlignItems.BASELINE
+                    alignSelfStretch -> AlignItems.STRETCH
                     else -> return
                 }
             }
@@ -248,9 +248,9 @@ internal class FlexItemEditFragment : DialogFragment() {
                     if (i + 1 < textViews.size) {
                         textViews[i + 1].requestFocus()
                     } else if (i == textViews.size - 1) {
-                        val inputMethodManager = activity
-                                .getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
-                        inputMethodManager.hideSoftInputFromWindow(v.windowToken, 0)
+                        val inputMethodManager = activity?.getSystemService(
+                                Context.INPUT_METHOD_SERVICE) as InputMethodManager?
+                        inputMethodManager?.hideSoftInputFromWindow(v.windowToken, 0)
                     }
                 }
                 true
@@ -264,13 +264,13 @@ internal class FlexItemEditFragment : DialogFragment() {
 
     private fun alignSelfAsString(alignSelf: Int): String {
         return when (alignSelf) {
-            AlignSelf.AUTO -> ALIGN_SELF_AUTO
-            AlignItems.FLEX_START -> ALIGN_SELF_FLEX_START
-            AlignItems.FLEX_END -> ALIGN_SELF_FLEX_END
-            AlignItems.CENTER -> ALIGN_SELF_CENTER
-            AlignItems.BASELINE -> ALIGN_SELF_BASELINE
-            AlignItems.STRETCH -> ALIGN_SELF_STRETCH
-            else -> ALIGN_SELF_AUTO
+            AlignSelf.AUTO -> alignSelfAuto
+            AlignItems.FLEX_START -> alignSelfFlexStart
+            AlignItems.FLEX_END -> alignSelfFlexEnd
+            AlignItems.CENTER -> alignSelfCenter
+            AlignItems.BASELINE -> alignSelfBaseline
+            AlignItems.STRETCH -> alignSelfStretch
+            else -> alignSelfAuto
         }
     }
 
@@ -289,7 +289,7 @@ internal class FlexItemEditFragment : DialogFragment() {
                 textInputLayout.error = ""
             } else {
                 textInputLayout.isErrorEnabled = true
-                textInputLayout.error = activity.resources.getString(errorMessageId)
+                textInputLayout.error = activity?.resources?.getString(errorMessageId)
             }
         }
 

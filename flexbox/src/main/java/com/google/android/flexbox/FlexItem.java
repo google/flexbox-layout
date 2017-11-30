@@ -17,7 +17,7 @@
 package com.google.android.flexbox;
 
 import android.os.Parcelable;
-import android.support.v4.view.ViewCompat;
+import android.view.View;
 
 /**
  * An interface that has the common behavior as a flex item contained in a flex container.
@@ -39,7 +39,7 @@ interface FlexItem extends Parcelable {
     float FLEX_BASIS_PERCENT_DEFAULT = -1f;
 
     /** The maximum size of the max width and max height attributes */
-    int MAX_SIZE = Integer.MAX_VALUE & ViewCompat.MEASURED_SIZE_MASK;
+    int MAX_SIZE = Integer.MAX_VALUE & View.MEASURED_SIZE_MASK;
 
     /**
      * @return the width attribute of the flex item.

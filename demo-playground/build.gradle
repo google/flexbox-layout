@@ -40,17 +40,17 @@ android {
 }
 
 dependencies {
-    compile project(":flexbox")
-    compile "com.android.support:support-v4:${rootProject.ext.supportLibVersion}"
-    compile "com.android.support:appcompat-v7:${rootProject.ext.supportLibVersion}"
-    compile "com.android.support:preference-v7:${rootProject.ext.supportLibVersion}"
-    compile "com.android.support:preference-v14:${rootProject.ext.supportLibVersion}"
-    compile "com.android.support:design:${rootProject.ext.supportLibVersion}"
-    compile "org.jetbrains.kotlin:kotlin-stdlib:$kotlinVersion"
+    implementation project(":flexbox")
+    implementation "com.android.support:support-v4:${rootProject.ext.supportLibVersion}"
+    implementation "com.android.support:appcompat-v7:${rootProject.ext.supportLibVersion}"
+    implementation "com.android.support:preference-v7:${rootProject.ext.supportLibVersion}"
+    implementation "com.android.support:preference-v14:${rootProject.ext.supportLibVersion}"
+    implementation "com.android.support:design:${rootProject.ext.supportLibVersion}"
+    implementation "org.jetbrains.kotlin:kotlin-stdlib:$kotlinVersion"
 
-    testCompile "junit:junit:${rootProject.ext.junitVersion}"
+    testImplementation "junit:junit:${rootProject.ext.junitVersion}"
 
-    androidTestCompile "com.android.support:support-annotations:${rootProject.ext.supportLibVersion}"
-    androidTestCompile "com.android.support.test:runner:${rootProject.ext.testRunnerVersion}"
-    androidTestCompile "com.android.support.test.espresso:espresso-core:${rootProject.ext.espressoVersion}"
+    androidTestImplementation "com.android.support:support-annotations:${rootProject.ext.supportLibVersion}"
+    androidTestImplementation "com.android.support.test:runner:${rootProject.ext.testRunnerVersion}"
+    androidTestImplementation "com.android.support.test.espresso:espresso-core:${rootProject.ext.espressoVersion}"
 }
