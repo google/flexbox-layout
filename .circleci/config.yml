@@ -1,0 +1,43 @@
+version: 2
+jobs:
+  build:
+    working_directory: ~/code
+    docker:
+      - image: circleci/android:api-27-alpha
+    environment:
+      JVM_OPTS: -Xmx3200m
+      MAX_RETRY: 4
+    steps:
+      - checkout
+      - restore_cache:
+          key: jars-{{ checksum "build.gradle" }}-{{ checksum  "flexbox/build.gradle" }}
+      - run:
+          name: Download Dependencies
+          command: ./gradlew androidDependencies
+      - run:
+          name: Set up gcloud service key
+          command: |
+            if [ -n "$GCLOUD_SERVICE_KEY" ]; then echo ${GCLOUD_SERVICE_KEY} | base64 --decode > ${HOME}/client-secret.json ;
+                gcloud config set project ${GCLOUD_PROJECT} ;
+                gcloud auth activate-service-account ${GCLOUD_SERVICE_ACCOUNT} --key-file ${HOME}/client-secret.json ;
+            fi
+      - save_cache:
+          paths:
+            - ~/.gradle
+          key: jars-{{ checksum "build.gradle" }}-{{ checksum  "flexbox/build.gradle" }}
+      - run:
+          name: Build apks
+          command: ./gradlew build assembleAndroidTest
+      - run:
+          name: Run Firebase Test Lab
+          command: |
+            if [ -n "$GCLOUD_SERVICE_KEY" ]; then set +e ;
+              counter=0 ;
+              result=1 ;
+              while [ $result != 0 -a $counter -lt $MAX_RETRY ]; do
+                gcloud firebase test android run --type instrumentation --app demo-playground/build/outputs/apk/demo-playground-debug.apk --test flexbox/build/outputs/apk/flexbox-debug-androidTest.apk --device-ids hammerhead,sailfish --os-version-ids 19,21,23,24,25,26 --locales en --orientations portrait,landscape --results-bucket ${GCLOUD_TEST_BUCKET_LIBRARY} --timeout 180s ;
+                result=$? ;
+                let counter=counter+1 ;
+              done
+              exit $result ;
+            fi
