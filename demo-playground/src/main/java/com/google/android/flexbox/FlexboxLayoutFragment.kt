@@ -99,7 +99,7 @@ class FlexboxLayoutFragment : Fragment() {
     private fun createBaseFlexItemTextView(context: Context, index: Int): TextView {
         return TextView(context).apply {
             setBackgroundResource(R.drawable.flex_item_background)
-            text = (index + 1).toString()
+            text = (index + 1).toString() + "This is really a long string."
             gravity = Gravity.CENTER
         }
     }
