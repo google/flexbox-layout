@@ -180,7 +180,8 @@ internal class FlexItemEditFragment : DialogFragment() {
                 R.array.array_align_self, R.layout.spinner_item)
         alignSelfSpinner.adapter = arrayAdapter
         alignSelfSpinner.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
-            override fun onItemSelected(parent: AdapterView<*>, ignored: View, position: Int, id: Long) {
+            override fun onItemSelected(parent: AdapterView<*>, ignored: View?, position: Int,
+                                        id: Long) {
                 flexItemInEdit.alignSelf = when (parent.getItemAtPosition(position).toString()) {
                     alignSelfAuto -> AlignSelf.AUTO
                     alignSelfFlexStart -> AlignItems.FLEX_START
@@ -199,7 +200,8 @@ internal class FlexItemEditFragment : DialogFragment() {
 
         val wrapBeforeCheckBox: CheckBox = view.findViewById(R.id.checkbox_wrap_before)
         wrapBeforeCheckBox.isChecked = flexItem.isWrapBefore
-        wrapBeforeCheckBox.setOnCheckedChangeListener { _, isChecked -> flexItemInEdit.isWrapBefore = isChecked }
+        wrapBeforeCheckBox.setOnCheckedChangeListener { _, isChecked ->
+            flexItemInEdit.isWrapBefore = isChecked }
         val alignSelfPosition = arrayAdapter
                 .getPosition(alignSelfAsString(flexItem.alignSelf))
         alignSelfSpinner.setSelection(alignSelfPosition)
