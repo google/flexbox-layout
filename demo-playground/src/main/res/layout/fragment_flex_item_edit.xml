@@ -128,8 +128,10 @@ limitations under the License.
 
         <android.support.design.widget.TextInputLayout
             android:id="@+id/input_layout_min_width"
-            android:layout_width="150dp"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
+            app:layout_flexBasisPercent="22%"
+            app:layout_minWidth="130dp"
             app:layout_wrapBefore="true"
             app:layout_flexGrow="1">
 
@@ -145,8 +147,10 @@ limitations under the License.
 
         <android.support.design.widget.TextInputLayout
             android:id="@+id/input_layout_min_height"
-            android:layout_width="150dp"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
+            app:layout_flexBasisPercent="22%"
+            app:layout_minWidth="130dp"
             app:layout_flexGrow="1">
 
             <EditText
@@ -161,8 +165,10 @@ limitations under the License.
 
         <android.support.design.widget.TextInputLayout
             android:id="@+id/input_layout_max_width"
-            android:layout_width="150dp"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
+            app:layout_flexBasisPercent="22%"
+            app:layout_minWidth="130dp"
             app:layout_flexGrow="1">
 
             <EditText
@@ -177,8 +183,10 @@ limitations under the License.
 
         <android.support.design.widget.TextInputLayout
             android:id="@+id/input_layout_max_height"
-            android:layout_width="150dp"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
+            app:layout_flexBasisPercent="22%"
+            app:layout_minWidth="130dp"
             app:layout_flexGrow="1">
 
             <EditText
@@ -193,7 +201,7 @@ limitations under the License.
 
         <CheckBox
             android:id="@+id/checkbox_wrap_before"
-            android:layout_width="150dp"
+            android:layout_width="130dp"
             android:layout_height="wrap_content"
             android:text="@string/hint_wrap_before"
             app:layout_wrapBefore="true"
