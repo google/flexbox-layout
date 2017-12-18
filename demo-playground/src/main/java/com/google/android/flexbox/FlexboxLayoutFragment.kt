@@ -56,12 +56,11 @@ class FlexboxLayoutFragment : Fragment() {
                 textView.layoutParams = flexItem as FlexboxLayout.LayoutParams
                 flexContainer.addView(textView)
             }
-        } else {
-            for (i in 0 until flexContainer.flexItemCount) {
-                flexContainer.getFlexItemAt(i).setOnClickListener(
-                        FlexItemClickListener(activity,
-                                FlexItemChangedListenerImpl(flexContainer), i))
-            }
+        }
+        for (i in 0 until flexContainer.flexItemCount) {
+            flexContainer.getFlexItemAt(i).setOnClickListener(
+                    FlexItemClickListener(activity,
+                            FlexItemChangedListenerImpl(flexContainer), i))
         }
 
         val addFab: FloatingActionButton = activity.findViewById(R.id.add_fab)
