@@ -25,7 +25,7 @@ buildscript {
         androidGradlePluginVersion = "3.0.1"
         androidMavenGradlePluginVersion = "1.5"
         gradleBintrayPluginVersion = "1.6"
-        kotlinVersion = "1.1.61"
+        kotlinVersion = "1.2.0"
         supportLibVersion = "27.0.2"
         espressoVersion = "3.0.0"
         testRunnerVersion = "1.0.0"
