@@ -41,11 +41,13 @@ android {
 }
 
 dependencies {
-    api "com.android.support:support-compat:${rootProject.ext.supportLibVersion}"
-    api "com.android.support:recyclerview-v7:${rootProject.ext.supportLibVersion}"
+    compileOnly "com.android.support:support-compat:${rootProject.ext.supportLibVersion}"
+    compileOnly "com.android.support:recyclerview-v7:${rootProject.ext.supportLibVersion}"
 
     testImplementation "junit:junit:${rootProject.ext.junitVersion}"
 
+    androidTestImplementation "com.android.support:support-compat:${rootProject.ext.supportLibVersion}"
+    androidTestImplementation "com.android.support:recyclerview-v7:${rootProject.ext.supportLibVersion}"
     androidTestImplementation "com.android.support:support-annotations:${rootProject.ext.supportLibVersion}"
     androidTestImplementation "com.android.support.test:runner:${rootProject.ext.testRunnerVersion}"
     androidTestImplementation "com.android.support.test.espresso:espresso-core:${rootProject.ext.espressoVersion}"
