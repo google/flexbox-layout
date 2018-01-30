@@ -253,8 +253,6 @@ public class FlexboxLayout extends ViewGroup implements FlexContainer {
 
     @Override
     protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
-        super.onMeasure(widthMeasureSpec, heightMeasureSpec);
-
         if (mOrderCache == null) {
             mOrderCache = new SparseIntArray(getChildCount());
         }
