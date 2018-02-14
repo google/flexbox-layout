@@ -40,6 +40,7 @@ limitations under the License.
             <enum name="center" value="2" />
             <enum name="space_between" value="3" />
             <enum name="space_around" value="4" />
+            <enum name="space_evenly" value="5" />
         </attr>
 
         <attr name="alignItems">

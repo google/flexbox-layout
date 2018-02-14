@@ -61,6 +61,8 @@ internal class FragmentHelper(private val activity: MainActivity, private val fl
 
     private lateinit var SPACE_AROUND: String
 
+    private lateinit var SPACE_EVENLY: String
+
     private lateinit var sharedPreferences: SharedPreferences
 
     fun initializeViews() {
@@ -91,6 +93,7 @@ internal class FragmentHelper(private val activity: MainActivity, private val fl
         STRETCH = activity.getString(R.string.stretch)
         SPACE_BETWEEN = activity.getString(R.string.space_between)
         SPACE_AROUND = activity.getString(R.string.space_around)
+        SPACE_EVENLY = activity.getString(R.string.space_evenly)
     }
 
     /**
@@ -224,6 +227,7 @@ internal class FragmentHelper(private val activity: MainActivity, private val fl
                             CENTER -> JustifyContent.CENTER
                             SPACE_BETWEEN -> JustifyContent.SPACE_BETWEEN
                             SPACE_AROUND -> JustifyContent.SPACE_AROUND
+                            SPACE_EVENLY -> JustifyContent.SPACE_EVENLY
                             else -> return
                         }
                     }
@@ -239,6 +243,7 @@ internal class FragmentHelper(private val activity: MainActivity, private val fl
                     JustifyContent.CENTER -> CENTER
                     JustifyContent.SPACE_AROUND -> SPACE_AROUND
                     JustifyContent.SPACE_BETWEEN -> SPACE_BETWEEN
+                    JustifyContent.SPACE_EVENLY -> SPACE_EVENLY
                     else -> FLEX_START
                 }
             }

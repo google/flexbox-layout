@@ -1469,6 +1469,14 @@ public class FlexboxLayoutManager extends RecyclerView.LayoutManager implements 
                 spaceBetweenItem = (parentWidth - flexLine.mMainSize) / denominator;
                 childRight = parentWidth - paddingRight;
                 break;
+            case JustifyContent.SPACE_EVENLY:
+                if (flexLine.mItemCount != 0) {
+                    spaceBetweenItem = (parentWidth - flexLine.mMainSize)
+                            / (float) (flexLine.mItemCount + 1);
+                }
+                childLeft = paddingLeft + spaceBetweenItem;
+                childRight = parentWidth - paddingRight - spaceBetweenItem;
+                break;
             default:
                 throw new IllegalStateException(
                         "Invalid justifyContent is set: " + mJustifyContent);
@@ -1579,6 +1587,14 @@ public class FlexboxLayoutManager extends RecyclerView.LayoutManager implements 
                 float denominator = flexLine.mItemCount != 1 ? flexLine.mItemCount - 1 : 1f;
                 spaceBetweenItem = (parentHeight - flexLine.mMainSize) / denominator;
                 childBottom = parentHeight - paddingBottom;
+                break;
+            case JustifyContent.SPACE_EVENLY:
+                if (flexLine.mItemCount != 0) {
+                    spaceBetweenItem = (parentHeight - flexLine.mMainSize)
+                            / (float) (flexLine.mItemCount + 1);
+                }
+                childTop = paddingTop + spaceBetweenItem;
+                childBottom = parentHeight - paddingBottom - spaceBetweenItem;
                 break;
             default:
                 throw new IllegalStateException(

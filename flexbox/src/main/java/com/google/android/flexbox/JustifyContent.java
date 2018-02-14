@@ -47,4 +47,14 @@ public @interface JustifyContent {
      * the flex lines.
      */
     int SPACE_AROUND = 4;
+
+    /**
+     * Flex items are evenly distributed along the flex line. The difference between
+     * {@link #SPACE_AROUND} is that all the spaces between items should be the same as the
+     * space before the first item and after the last item.
+     * See
+     * <a href="https://developer.mozilla.org/en-US/docs/Web/CSS/justify-content">the document on MDN</a>
+     * for more details.
+     */
+    int SPACE_EVENLY = 5;
 }
