@@ -719,6 +719,34 @@ class FlexboxAndroidTest {
     @Test
     @FlakyTest
     @Throws(Throwable::class)
+    fun testJustifyContent_spaceEvenly() {
+        val activity = activityRule.activity
+        val flexboxLayout = createFlexboxLayout(R.layout.activity_justify_content_test,
+                object : Configuration {
+                    override fun apply(flexboxLayout: FlexboxLayout) {
+                        flexboxLayout.justifyContent = JustifyContent.SPACE_EVENLY
+                    }
+                })
+
+        assertThat(flexboxLayout.justifyContent, `is`(JustifyContent.SPACE_EVENLY))
+        onView(withId(R.id.text1)).check(isTopAlignedWith(withId(R.id.flexbox_layout)))
+        onView(withId(R.id.text2)).check(isTopAlignedWith(withId(R.id.flexbox_layout)))
+        onView(withId(R.id.text3)).check(isTopAlignedWith(withId(R.id.flexbox_layout)))
+
+        val textView1 = activity.findViewById<TextView>(R.id.text1)
+        val textView2 = activity.findViewById<TextView>(R.id.text2)
+        val textView3 = activity.findViewById<TextView>(R.id.text3)
+        var space = flexboxLayout.width - textView1.width - textView2.width - textView3.width
+        space /= 4 // Divide by the number of children + 1
+        assertThat(textView1.left, isEqualAllowingError(space))
+        assertThat(textView2.left - textView1.right, isEqualAllowingError(space))
+        assertThat(textView3.left - textView2.right, isEqualAllowingError(space))
+        assertThat(flexboxLayout.right - textView3.right, isEqualAllowingError(space))
+    }
+
+    @Test
+    @FlakyTest
+    @Throws(Throwable::class)
     fun testJustifyContent_spaceAround_withPadding() {
         val activity = activityRule.activity
         val padding = 40
@@ -743,6 +771,35 @@ class FlexboxAndroidTest {
         val spaceInMiddle = space * 2
         assertThat(textView2.left - textView1.right, isEqualAllowingError(spaceInMiddle))
         assertThat(textView3.left - textView2.right, isEqualAllowingError(spaceInMiddle))
+        assertThat(flexboxLayout.right - textView3.right - padding, isEqualAllowingError(space))
+    }
+
+    @Test
+    @FlakyTest
+    @Throws(Throwable::class)
+    fun testJustifyContent_spaceEvenly_withPadding() {
+        val activity = activityRule.activity
+        val padding = 40
+        val flexboxLayout = createFlexboxLayout(R.layout.activity_justify_content_test,
+                object : Configuration {
+                    override fun apply(flexboxLayout: FlexboxLayout) {
+                        flexboxLayout.justifyContent = JustifyContent.SPACE_EVENLY
+                        flexboxLayout.setPadding(padding, padding, padding, padding)
+                    }
+                })
+
+        assertThat(flexboxLayout.justifyContent, `is`(JustifyContent.SPACE_EVENLY))
+
+        val textView1 = activity.findViewById<TextView>(R.id.text1)
+        val textView2 = activity.findViewById<TextView>(R.id.text2)
+        val textView3 = activity.findViewById<TextView>(R.id.text3)
+        var space = flexboxLayout.width - textView1.width - textView2.width - textView3.width -
+                padding * 2
+        space /= 4 // Divide by the number of children + 1
+        assertThat(textView1.left - padding, isEqualAllowingError(space))
+
+        assertThat(textView2.left - textView1.right, isEqualAllowingError(space))
+        assertThat(textView3.left - textView2.right, isEqualAllowingError(space))
         assertThat(flexboxLayout.right - textView3.right - padding, isEqualAllowingError(space))
     }
 
@@ -910,6 +967,36 @@ class FlexboxAndroidTest {
     @Test
     @FlakyTest
     @Throws(Throwable::class)
+    fun testJustifyContent_spaceEvenly_flexDirection_column() {
+        val activity = activityRule.activity
+        val flexboxLayout = createFlexboxLayout(R.layout.activity_justify_content_test,
+                object : Configuration {
+                    override fun apply(flexboxLayout: FlexboxLayout) {
+                        flexboxLayout.justifyContent = JustifyContent.SPACE_EVENLY
+                        flexboxLayout.flexDirection = FlexDirection.COLUMN
+                    }
+                })
+
+        assertThat(flexboxLayout.justifyContent, `is`(JustifyContent.SPACE_EVENLY))
+        assertThat(flexboxLayout.flexDirection, `is`(FlexDirection.COLUMN))
+        onView(withId(R.id.text1)).check(isLeftAlignedWith(withId(R.id.flexbox_layout)))
+        onView(withId(R.id.text2)).check(isLeftAlignedWith(withId(R.id.flexbox_layout)))
+        onView(withId(R.id.text3)).check(isLeftAlignedWith(withId(R.id.flexbox_layout)))
+
+        val textView1 = activity.findViewById<TextView>(R.id.text1)
+        val textView2 = activity.findViewById<TextView>(R.id.text2)
+        val textView3 = activity.findViewById<TextView>(R.id.text3)
+        var space = flexboxLayout.height - textView1.height - textView2.height - textView3.height
+        space /= 4 // Divide by the number of children + 1
+        assertThat(textView1.top, isEqualAllowingError(space))
+        assertThat(textView2.top - textView1.bottom, isEqualAllowingError(space))
+        assertThat(textView3.top - textView2.bottom, isEqualAllowingError(space))
+        assertThat(flexboxLayout.bottom - textView3.bottom, isEqualAllowingError(space))
+    }
+
+    @Test
+    @FlakyTest
+    @Throws(Throwable::class)
     fun testJustifyContent_spaceAround_flexDirection_column_withPadding() {
         val activity = activityRule.activity
         val padding = 40
@@ -936,6 +1023,37 @@ class FlexboxAndroidTest {
         assertThat(textView2.top - textView1.bottom, isEqualAllowingError(spaceInMiddle))
         assertThat(textView3.top - textView2.bottom, isEqualAllowingError(spaceInMiddle))
         assertThat(flexboxLayout.bottom - textView3.bottom - padding, isEqualAllowingError(space))
+    }
+
+    @Test
+    @FlakyTest
+    @Throws(Throwable::class)
+    fun testJustifyContent_spaceEvenly_flexDirection_column_withPadding() {
+        val activity = activityRule.activity
+        val padding = 40
+        val flexboxLayout = createFlexboxLayout(R.layout.activity_justify_content_test,
+                object : Configuration {
+                    override fun apply(flexboxLayout: FlexboxLayout) {
+                        flexboxLayout.justifyContent = JustifyContent.SPACE_EVENLY
+                        flexboxLayout.flexDirection = FlexDirection.COLUMN
+                        flexboxLayout.setPadding(padding, padding, padding, padding)
+                    }
+                })
+
+        assertThat(flexboxLayout.justifyContent, `is`(JustifyContent.SPACE_EVENLY))
+        assertThat(flexboxLayout.flexDirection, `is`(FlexDirection.COLUMN))
+
+        val textView1 = activity.findViewById<TextView>(R.id.text1)
+        val textView2 = activity.findViewById<TextView>(R.id.text2)
+        val textView3 = activity.findViewById<TextView>(R.id.text3)
+        var space = flexboxLayout.height - textView1.height - textView2.height - textView3.height -
+                padding * 2
+        space /= 4 // Divide by the number of children + 1
+        assertThat(textView1.top - padding, isEqualAllowingError(space))
+        assertThat(textView2.top - textView1.bottom, isEqualAllowingError(space))
+        assertThat(textView3.top - textView2.bottom, isEqualAllowingError(space))
+        assertThat(flexboxLayout.bottom - textView3.bottom - padding,
+                isEqualAllowingError(space))
     }
 
     @Test

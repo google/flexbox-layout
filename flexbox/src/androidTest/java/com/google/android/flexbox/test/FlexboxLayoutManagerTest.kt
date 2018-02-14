@@ -479,6 +479,41 @@ class FlexboxLayoutManagerTest {
         assertThat(layoutManager.getChildAt(2).right, isEqualAllowingError(activity.dpToPixel(292)))
     }
 
+
+    @Test
+    @FlakyTest
+    @Throws(Throwable::class)
+    fun testJustifyContent_spaceEvenly_direction_row() {
+        val activity = activityRule.activity
+        val layoutManager = FlexboxLayoutManager(activity)
+        val adapter = TestAdapter()
+        activityRule.runOnUiThread {
+            activity.setContentView(R.layout.recyclerview)
+            val recyclerView = activity.findViewById<RecyclerView>(R.id.recyclerview)
+            recyclerView.layoutManager = layoutManager
+            recyclerView.adapter = adapter
+            val lp1 = createLayoutParams(activity, 50, 100)
+            adapter.addItem(lp1)
+            val lp2 = createLayoutParams(activity, 50, 100)
+            adapter.addItem(lp2)
+            val lp3 = createLayoutParams(activity, 50, 100)
+            adapter.addItem(lp3)
+            layoutManager.justifyContent = JustifyContent.SPACE_EVENLY
+            // RecyclerView width: 320, height: 240.
+        }
+        InstrumentationRegistry.getInstrumentation().waitForIdleSync()
+
+        assertThat(layoutManager.justifyContent, `is`(JustifyContent.SPACE_EVENLY))
+        assertThat(layoutManager.flexItemCount, `is`(3))
+        assertThat(layoutManager.flexLines.size, `is`(1))
+        assertThat(layoutManager.getChildAt(0).left, isEqualAllowingError(activity.dpToPixel(43)))
+        assertThat(layoutManager.getChildAt(0).right, isEqualAllowingError(activity.dpToPixel(93)))
+        assertThat(layoutManager.getChildAt(1).left, isEqualAllowingError(activity.dpToPixel(135)))
+        assertThat(layoutManager.getChildAt(1).right, isEqualAllowingError(activity.dpToPixel(185)))
+        assertThat(layoutManager.getChildAt(2).left, isEqualAllowingError(activity.dpToPixel(228)))
+        assertThat(layoutManager.getChildAt(2).right, isEqualAllowingError(activity.dpToPixel(278)))
+    }
+
     @Test
     @FlakyTest
     @Throws(Throwable::class)
@@ -655,6 +690,42 @@ class FlexboxLayoutManagerTest {
         assertThat(layoutManager.getChildAt(1).right, isEqualAllowingError(activity.dpToPixel(185)))
         assertThat(layoutManager.getChildAt(2).left, isEqualAllowingError(activity.dpToPixel(28)))
         assertThat(layoutManager.getChildAt(2).right, isEqualAllowingError(activity.dpToPixel(78)))
+    }
+
+    @Test
+    @FlakyTest
+    @Throws(Throwable::class)
+    fun testJustifyContent_spaceEvenly_direction_rowReverse() {
+        val activity = activityRule.activity
+        val layoutManager = FlexboxLayoutManager(activity)
+        val adapter = TestAdapter()
+        activityRule.runOnUiThread {
+            activity.setContentView(R.layout.recyclerview)
+            val recyclerView = activity.findViewById<RecyclerView>(R.id.recyclerview)
+            recyclerView.layoutManager = layoutManager
+            recyclerView.adapter = adapter
+            val lp1 = createLayoutParams(activity, 50, 100)
+            adapter.addItem(lp1)
+            val lp2 = createLayoutParams(activity, 50, 100)
+            adapter.addItem(lp2)
+            val lp3 = createLayoutParams(activity, 50, 100)
+            adapter.addItem(lp3)
+            layoutManager.flexDirection = FlexDirection.ROW_REVERSE
+            layoutManager.justifyContent = JustifyContent.SPACE_EVENLY
+            // RecyclerView width: 320, height: 240.
+        }
+        InstrumentationRegistry.getInstrumentation().waitForIdleSync()
+
+        assertThat(layoutManager.flexDirection, `is`(FlexDirection.ROW_REVERSE))
+        assertThat(layoutManager.justifyContent, `is`(JustifyContent.SPACE_EVENLY))
+        assertThat(layoutManager.flexItemCount, `is`(3))
+        assertThat(layoutManager.flexLines.size, `is`(1))
+        assertThat(layoutManager.getChildAt(0).left, isEqualAllowingError(activity.dpToPixel(228)))
+        assertThat(layoutManager.getChildAt(0).right, isEqualAllowingError(activity.dpToPixel(278)))
+        assertThat(layoutManager.getChildAt(1).left, isEqualAllowingError(activity.dpToPixel(135)))
+        assertThat(layoutManager.getChildAt(1).right, isEqualAllowingError(activity.dpToPixel(185)))
+        assertThat(layoutManager.getChildAt(2).left, isEqualAllowingError(activity.dpToPixel(43)))
+        assertThat(layoutManager.getChildAt(2).right, isEqualAllowingError(activity.dpToPixel(93)))
     }
 
     @Test
@@ -840,6 +911,42 @@ class FlexboxLayoutManagerTest {
     @Test
     @FlakyTest
     @Throws(Throwable::class)
+    fun testJustifyContent_spaceEvenly_direction_column() {
+        val activity = activityRule.activity
+        val layoutManager = FlexboxLayoutManager(activity)
+        val adapter = TestAdapter()
+        activityRule.runOnUiThread {
+            activity.setContentView(R.layout.recyclerview)
+            val recyclerView = activity.findViewById<RecyclerView>(R.id.recyclerview)
+            recyclerView.layoutManager = layoutManager
+            recyclerView.adapter = adapter
+            val lp1 = createLayoutParams(activity, 100, 50)
+            adapter.addItem(lp1)
+            val lp2 = createLayoutParams(activity, 100, 50)
+            adapter.addItem(lp2)
+            val lp3 = createLayoutParams(activity, 100, 50)
+            adapter.addItem(lp3)
+            layoutManager.flexDirection = FlexDirection.COLUMN
+            layoutManager.justifyContent = JustifyContent.SPACE_EVENLY
+            // RecyclerView width: 320, height: 240.
+        }
+        InstrumentationRegistry.getInstrumentation().waitForIdleSync()
+
+        assertThat(layoutManager.flexDirection, `is`(FlexDirection.COLUMN))
+        assertThat(layoutManager.justifyContent, `is`(JustifyContent.SPACE_EVENLY))
+        assertThat(layoutManager.flexItemCount, `is`(3))
+        assertThat(layoutManager.flexLines.size, `is`(1))
+        assertThat(layoutManager.getChildAt(0).top, isEqualAllowingError(activity.dpToPixel(23)))
+        assertThat(layoutManager.getChildAt(0).bottom, isEqualAllowingError(activity.dpToPixel(73)))
+        assertThat(layoutManager.getChildAt(1).top, isEqualAllowingError(activity.dpToPixel(95)))
+        assertThat(layoutManager.getChildAt(1).bottom, isEqualAllowingError(activity.dpToPixel(145)))
+        assertThat(layoutManager.getChildAt(2).top, isEqualAllowingError(activity.dpToPixel(167)))
+        assertThat(layoutManager.getChildAt(2).bottom, isEqualAllowingError(activity.dpToPixel(217)))
+    }
+
+    @Test
+    @FlakyTest
+    @Throws(Throwable::class)
     fun testJustifyContent_spaceBetween_direction_column() {
         val activity = activityRule.activity
         val layoutManager = FlexboxLayoutManager(activity)
@@ -1015,6 +1122,42 @@ class FlexboxLayoutManagerTest {
         assertThat(layoutManager.getChildAt(1).bottom, isEqualAllowingError(activity.dpToPixel(145)))
         assertThat(layoutManager.getChildAt(2).top, isEqualAllowingError(activity.dpToPixel(15)))
         assertThat(layoutManager.getChildAt(2).bottom, isEqualAllowingError(activity.dpToPixel(65)))
+    }
+
+    @Test
+    @FlakyTest
+    @Throws(Throwable::class)
+    fun testJustifyContent_spaceEvenly_direction_columnReverse() {
+        val activity = activityRule.activity
+        val layoutManager = FlexboxLayoutManager(activity)
+        val adapter = TestAdapter()
+        activityRule.runOnUiThread {
+            activity.setContentView(R.layout.recyclerview)
+            val recyclerView = activity.findViewById<RecyclerView>(R.id.recyclerview)
+            recyclerView.layoutManager = layoutManager
+            recyclerView.adapter = adapter
+            val lp1 = createLayoutParams(activity, 100, 50)
+            adapter.addItem(lp1)
+            val lp2 = createLayoutParams(activity, 100, 50)
+            adapter.addItem(lp2)
+            val lp3 = createLayoutParams(activity, 100, 50)
+            adapter.addItem(lp3)
+            layoutManager.flexDirection = FlexDirection.COLUMN_REVERSE
+            layoutManager.justifyContent = JustifyContent.SPACE_EVENLY
+            // RecyclerView width: 320, height: 240.
+        }
+        InstrumentationRegistry.getInstrumentation().waitForIdleSync()
+
+        assertThat(layoutManager.flexDirection, `is`(FlexDirection.COLUMN_REVERSE))
+        assertThat(layoutManager.justifyContent, `is`(JustifyContent.SPACE_EVENLY))
+        assertThat(layoutManager.flexItemCount, `is`(3))
+        assertThat(layoutManager.flexLines.size, `is`(1))
+        assertThat(layoutManager.getChildAt(0).top, isEqualAllowingError(activity.dpToPixel(167)))
+        assertThat(layoutManager.getChildAt(0).bottom, isEqualAllowingError(activity.dpToPixel(217)))
+        assertThat(layoutManager.getChildAt(1).top, isEqualAllowingError(activity.dpToPixel(95)))
+        assertThat(layoutManager.getChildAt(1).bottom, isEqualAllowingError(activity.dpToPixel(145)))
+        assertThat(layoutManager.getChildAt(2).top, isEqualAllowingError(activity.dpToPixel(23)))
+        assertThat(layoutManager.getChildAt(2).bottom, isEqualAllowingError(activity.dpToPixel(73)))
     }
 
     @Test

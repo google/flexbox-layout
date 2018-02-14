@@ -641,7 +641,7 @@ public class FlexboxLayout extends ViewGroup implements FlexContainer {
                     childLeft = paddingLeft + (width - flexLine.mMainSize) / 2f;
                     childRight = width - paddingRight - (width - flexLine.mMainSize) / 2f;
                     break;
-                case JustifyContent.SPACE_AROUND:
+                case JustifyContent.SPACE_AROUND: {
                     int visibleCount = flexLine.getItemCountNotGone();
                     if (visibleCount != 0) {
                         spaceBetweenItem = (width - flexLine.mMainSize)
@@ -650,13 +650,25 @@ public class FlexboxLayout extends ViewGroup implements FlexContainer {
                     childLeft = paddingLeft + spaceBetweenItem / 2f;
                     childRight = width - paddingRight - spaceBetweenItem / 2f;
                     break;
-                case JustifyContent.SPACE_BETWEEN:
+                }
+                case JustifyContent.SPACE_BETWEEN: {
                     childLeft = paddingLeft;
-                    int visibleItem = flexLine.getItemCountNotGone();
-                    float denominator = visibleItem != 1 ? visibleItem - 1 : 1f;
+                    int visibleCount = flexLine.getItemCountNotGone();
+                    float denominator = visibleCount != 1 ? visibleCount - 1 : 1f;
                     spaceBetweenItem = (width - flexLine.mMainSize) / denominator;
                     childRight = width - paddingRight;
                     break;
+                }
+                case JustifyContent.SPACE_EVENLY: {
+                    int visibleCount = flexLine.getItemCountNotGone();
+                    if (visibleCount != 0) {
+                        spaceBetweenItem = (width - flexLine.mMainSize)
+                                / (float) (visibleCount + 1);
+                    }
+                    childLeft = paddingLeft + spaceBetweenItem;
+                    childRight = width - paddingRight - spaceBetweenItem;
+                    break;
+                }
                 default:
                     throw new IllegalStateException(
                             "Invalid justifyContent is set: " + mJustifyContent);
@@ -786,7 +798,7 @@ public class FlexboxLayout extends ViewGroup implements FlexContainer {
                     childTop = paddingTop + (height - flexLine.mMainSize) / 2f;
                     childBottom = height - paddingBottom - (height - flexLine.mMainSize) / 2f;
                     break;
-                case JustifyContent.SPACE_AROUND:
+                case JustifyContent.SPACE_AROUND: {
                     int visibleCount = flexLine.getItemCountNotGone();
                     if (visibleCount != 0) {
                         spaceBetweenItem = (height - flexLine.mMainSize)
@@ -795,13 +807,25 @@ public class FlexboxLayout extends ViewGroup implements FlexContainer {
                     childTop = paddingTop + spaceBetweenItem / 2f;
                     childBottom = height - paddingBottom - spaceBetweenItem / 2f;
                     break;
-                case JustifyContent.SPACE_BETWEEN:
+                }
+                case JustifyContent.SPACE_BETWEEN: {
                     childTop = paddingTop;
-                    int visibleItem = flexLine.getItemCountNotGone();
-                    float denominator = visibleItem != 1 ? visibleItem - 1 : 1f;
+                    int visibleCount = flexLine.getItemCountNotGone();
+                    float denominator = visibleCount != 1 ? visibleCount - 1 : 1f;
                     spaceBetweenItem = (height - flexLine.mMainSize) / denominator;
                     childBottom = height - paddingBottom;
                     break;
+                }
+                case JustifyContent.SPACE_EVENLY: {
+                    int visibleCount = flexLine.getItemCountNotGone();
+                    if (visibleCount != 0) {
+                        spaceBetweenItem = (height - flexLine.mMainSize)
+                                / (float) (visibleCount + 1);
+                    }
+                    childTop = paddingTop + spaceBetweenItem;
+                    childBottom = height - paddingBottom - spaceBetweenItem;
+                    break;
+                }
                 default:
                     throw new IllegalStateException(
                             "Invalid justifyContent is set: " + mJustifyContent);
