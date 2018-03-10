@@ -95,7 +95,7 @@ which consumes much less memory especially when the number of items contained in
 ![FlexboxLayoutManager in action](/assets/flexbox-layoutmanager.gif)
 
 
-## Supported attributes / features comparison
+## Supported attributes/features comparison
 Due to some characteristics of `RecyclerView`, some Flexbox attributes are not available/not implemented
 to the `FlexboxLayoutManager`.
 Here is a quick overview of the attributes/features comparison between the two implementations.
@@ -119,7 +119,7 @@ Here is a quick overview of the attributes/features comparison between the two i
 |View recycling| - |![Check](/assets/pngs/check_green_small.png)|
 |Scrolling| *1 |![Check](/assets/pngs/check_green_small.png)|
 
-*1 Partially possible by wrapping it with `ScrollView`. But it isn't likely to work with large set
+*1 Partially possible by wrapping it with `ScrollView`. But it isn't likely to work with a large set
    of views inside the layout. Because it doesn't consider view recycling.
 
 # Supported attributes
@@ -302,7 +302,7 @@ Here is a quick overview of the attributes/features comparison between the two i
 
 * __layout_minWidth__ / __layout_minHeight__ (dimension)
   * These attributes impose minimum size constraints for the children of FlexboxLayout.
-  A child view won't be shrank less than the value of these attributes (varies based on the
+  A child view won't shrink less than the value of these attributes (varies based on the
   `flexDirection` attribute as to which attribute imposes the size constraint along the
   main axis) regardless of the `layout_flexShrink` attribute.
 
@@ -320,11 +320,11 @@ Here is a quick overview of the attributes/features comparison between the two i
   * This attribute forces a flex line wrapping, the default value is `false`.
   i.e. if this is set to `true` for a
   flex item, the item will become the first item of a flex line. (A wrapping happens
-  regardless of the flex items being processed in the the previous flex line)
+  regardless of the flex items being processed in the previous flex line)
   This attribute is ignored if the `flex_wrap` attribute is set to `nowrap`.
   The equivalent attribute isn't defined in the original CSS Flexible Box Module
   specification, but having this attribute is useful for Android developers. For example, to flatten
-  the layouts when building a grid like layout or for a situation where developers want
+  the layouts when building a grid-like layout or for a situation where developers want
   to put a new flex line to make a semantic difference from the previous one, etc.
 
     ![Wrap before explanation](/assets/layout_wrapBefore.gif)
@@ -380,7 +380,7 @@ The `demo-cat-gallery` module showcases the usage of the FlexboxLayoutManager in
 that handles various sizes of views aligned nicely regardless of the device width like the
 Google Photo app without loading all the images on the memory.
 Thus compared to using the {@link FlexboxLayout}, it's much less likely to abuse the memory,
-which some times leads to the OutOfMemoryError.
+which sometimes leads to the OutOfMemoryError.
 ```
 ./gradlew demo-cat-gallery:installDebug
 ```
