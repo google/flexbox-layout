@@ -21,12 +21,11 @@ buildscript {
         minSdkVersion = 14
         targetSdkVersion = 27
         compileSdkVersion = 27
-        buildToolsVersion = "27.0.2"
         androidGradlePluginVersion = "3.0.1"
         androidMavenGradlePluginVersion = "1.5"
         gradleBintrayPluginVersion = "1.6"
-        kotlinVersion = "1.2.0"
-        supportLibVersion = "27.0.2"
+        kotlinVersion = "1.2.30"
+        supportLibVersion = "27.1.0"
         espressoVersion = "3.0.0"
         testRunnerVersion = "1.0.0"
         junitVersion = "4.12"
