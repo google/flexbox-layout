@@ -25,7 +25,9 @@ import com.google.android.flexbox.FlexboxLayoutManager
 /**
  * [RecyclerView.Adapter] implementation for [TestViewHolder].
  */
-internal class TestAdapter private constructor(private val layoutParams: MutableList<FlexboxLayoutManager.LayoutParams>) : RecyclerView.Adapter<TestViewHolder>() {
+internal class TestAdapter private constructor(
+        private val layoutParams: MutableList<FlexboxLayoutManager.LayoutParams>)
+    : RecyclerView.Adapter<TestViewHolder>() {
 
     private val receivedPayloads = mutableListOf<Any>()
 
@@ -44,8 +46,8 @@ internal class TestAdapter private constructor(private val layoutParams: Mutable
         holder.textView.layoutParams = layoutParams[position]
     }
 
-    override fun onBindViewHolder(holder: TestViewHolder, position: Int, payloads: List<Any>?) {
-        payloads?.let(receivedPayloads::addAll)
+    override fun onBindViewHolder(holder: TestViewHolder, position: Int, payloads: List<Any>) {
+        receivedPayloads.addAll(payloads)
         onBindViewHolder(holder, position)
     }
 
