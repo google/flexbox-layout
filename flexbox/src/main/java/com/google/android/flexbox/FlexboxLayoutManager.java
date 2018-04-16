@@ -2876,7 +2876,7 @@ public class FlexboxLayoutManager extends RecyclerView.LayoutManager implements 
             mPosition = getPosition(anchor);
             mAssignedFromSavedState = false;
             assert mFlexboxHelper.mIndexToFlexLine != null;
-            int flexLinePosition = mFlexboxHelper.mIndexToFlexLine[mPosition];
+            int flexLinePosition = mPosition != NO_POSITION ? mFlexboxHelper.mIndexToFlexLine[mPosition] : 0;
             mFlexLinePosition = flexLinePosition != NO_POSITION ? flexLinePosition : 0;
             // It's likely that the view is the first item in a flex line, but if not get the
             // index of the first item in the same line because the calculation of the flex lines
