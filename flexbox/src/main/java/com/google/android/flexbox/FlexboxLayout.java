@@ -115,6 +115,11 @@ public class FlexboxLayout extends ViewGroup implements FlexContainer {
     private int mAlignContent;
 
     /**
+     * The current value of the {@link }
+     */
+    private int mMaxLine = NOT_SET;
+
+    /**
      * The int definition to be used as the arguments for the {@link #setShowDivider(int)},
      * {@link #setShowDividerHorizontal(int)} or {@link #setShowDividerVertical(int)}.
      * One or more of the values (such as
@@ -1201,6 +1206,19 @@ public class FlexboxLayout extends ViewGroup implements FlexContainer {
     public void setAlignContent(@AlignContent int alignContent) {
         if (mAlignContent != alignContent) {
             mAlignContent = alignContent;
+            requestLayout();
+        }
+    }
+
+    @Override
+    public int getMaxLine() {
+        return mMaxLine;
+    }
+
+    @Override
+    public void setMaxLine(int maxLine) {
+        if (mMaxLine != maxLine) {
+            mMaxLine = maxLine;
             requestLayout();
         }
     }

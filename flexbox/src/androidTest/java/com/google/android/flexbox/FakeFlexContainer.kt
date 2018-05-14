@@ -18,6 +18,7 @@ package com.google.android.flexbox
 
 import android.view.View
 import android.view.ViewGroup
+import com.google.android.flexbox.FlexContainer.NOT_SET
 
 /**
  * Fake implementation of [FlexContainer].
@@ -42,6 +43,8 @@ internal class FakeFlexContainer : FlexContainer {
 
     @AlignContent
     private var alignContent = AlignContent.STRETCH
+
+    private var maxLine = -1
 
     override fun getFlexItemCount() = views.size
 
@@ -93,6 +96,12 @@ internal class FakeFlexContainer : FlexContainer {
 
     override fun setAlignItems(@AlignItems alignItems: Int) {
         this.alignItems = alignItems
+    }
+
+    override fun getMaxLine(): Int = this.maxLine
+
+    override fun setMaxLine(maxLine: Int) {
+        this.maxLine = maxLine
     }
 
     override fun getFlexLines() = flexLines

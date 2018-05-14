@@ -3310,6 +3310,30 @@ class FlexboxLayoutManagerTest {
         assertThat(layoutManager.getChildAt(0).top, `is`(0))
     }
 
+    @Test
+    @FlakyTest
+    @Throws(Throwable::class)
+    fun testMaxLine() {
+        val activity = activityRule.activity
+        val layoutManager = FlexboxLayoutManager(activity)
+        val adapter = TestAdapter()
+        activityRule.runOnUiThread {
+            activity.setContentView(R.layout.recyclerview)
+            val recyclerView = activity.findViewById<RecyclerView>(R.id.recyclerview)
+            layoutManager.flexDirection = FlexDirection.ROW
+            layoutManager.maxLine = 3
+            recyclerView.layoutManager = layoutManager
+            recyclerView.adapter = adapter
+            for (i in 1..50) {
+                val lp = createLayoutParams(activity, 100, 70)
+                lp.flexShrink = 0f
+                adapter.addItem(lp)
+            }
+        }
+        InstrumentationRegistry.getInstrumentation().waitForIdleSync()
+        assertThat(layoutManager.flexLines.size, `is`(3))
+    }
+
     /**
      * Creates a new flex item.
      *

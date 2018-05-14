@@ -18,6 +18,7 @@ package com.google.android.flexbox;
 
 import static android.support.v7.widget.RecyclerView.NO_POSITION;
 
+import static com.google.android.flexbox.FlexContainer.NOT_SET;
 import static com.google.android.flexbox.FlexItem.FLEX_BASIS_PERCENT_DEFAULT;
 
 import android.support.annotation.NonNull;
@@ -498,7 +499,7 @@ class FlexboxHelper {
                     getViewMeasuredSizeMain(child, isMainHorizontal)
                             + getFlexItemMarginStartMain(flexItem, isMainHorizontal) +
                             getFlexItemMarginEndMain(flexItem, isMainHorizontal),
-                    flexItem, i, indexInFlexLine)) {
+                    flexItem, i, indexInFlexLine, flexLines.size())) {
                 if (flexLine.getItemCountNotGone() > 0) {
                     addFlexLine(flexLines, flexLine, i > 0 ? i - 1 : 0, sumCrossSize);
                     sumCrossSize += flexLine.mCrossSize;
@@ -823,12 +824,15 @@ class FlexboxHelper {
      * @param childLength   the length of a child view which is to be collected to the flex line
      * @param flexItem      the LayoutParams for the view being determined whether a new flex line
      *                      is needed
+     * @param index         the index of the view being added within the entire flex container
+     * @param indexInFlexLine the index of the view being added within the current flex line
+     * @param flexLinesSize the number of the existing flexlines size
      * @return {@code true} if a wrap is required, {@code false} otherwise
      * @see FlexContainer#getFlexWrap()
      * @see FlexContainer#setFlexWrap(int)
      */
     private boolean isWrapRequired(View view, int mode, int maxSize, int currentLength,
-            int childLength, FlexItem flexItem, int index, int indexInFlexLine) {
+            int childLength, FlexItem flexItem, int index, int indexInFlexLine, int flexLinesSize) {
         if (mFlexContainer.getFlexWrap() == FlexWrap.NOWRAP) {
             return false;
         }
@@ -836,6 +840,12 @@ class FlexboxHelper {
             return true;
         }
         if (mode == View.MeasureSpec.UNSPECIFIED) {
+            return false;
+        }
+        int maxLine = mFlexContainer.getMaxLine();
+        // Judge the condition by adding 1 to the current flexLinesSize because the flex line
+        // being computed isn't added to the flexLinesSize.
+        if (maxLine != NOT_SET && maxLine <= flexLinesSize + 1) {
             return false;
         }
         int decorationLength =

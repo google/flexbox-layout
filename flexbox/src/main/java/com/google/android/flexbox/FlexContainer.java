@@ -26,6 +26,8 @@ import java.util.List;
  */
 interface FlexContainer {
 
+    int NOT_SET = -1;
+
     /**
      * @return the number of flex items contained in the flex container.
      */
@@ -269,6 +271,18 @@ interface FlexContainer {
      * @param flexLines the list of flex lines
      */
     void setFlexLines(List<FlexLine> flexLines);
+
+    /**
+     * @return the current value of the maximum number of flex lines. If not set, {@link #NOT_SET}
+     * is returned.
+     */
+    int getMaxLine();
+
+    /**
+     *
+     * @param maxLine the int value, which specifies the maximum number of flex lines
+     */
+    void setMaxLine(int maxLine);
 
     /**
      * @return the list of the flex lines including dummy flex lines (flex line that doesn't have

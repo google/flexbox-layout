@@ -3967,6 +3967,28 @@ class FlexboxAndroidTest {
         assertThat(view2.right, `is`(240))
     }
 
+    @Test
+    @FlakyTest
+    @Throws(Throwable::class)
+    fun testMaxLines() {
+        val activity = activityRule.activity
+        val flexboxLayout = createFlexboxLayout(R.layout.activity_empty_children,
+                object : Configuration {
+                    override fun apply(flexboxLayout: FlexboxLayout) {
+                        flexboxLayout.maxLine = 3
+                        for (i in 1..50) {
+                            val textView = createTextView(activity, i.toString(), 0)
+                            val lp = FlexboxLayout.LayoutParams(100, 100)
+                            lp.flexShrink = 0f
+                            textView.layoutParams = lp
+                            flexboxLayout.addView(textView)
+                        }
+                    }
+                })
+        assertThat(flexboxLayout.childCount, `is`(50))
+        assertThat(flexboxLayout.flexLines.size, `is`(3))
+    }
+
     @Throws(Throwable::class)
     private fun createFlexboxLayout(@LayoutRes activityLayoutResId: Int,
                                     configuration: Configuration = Configuration.EMPTY): FlexboxLayout {
