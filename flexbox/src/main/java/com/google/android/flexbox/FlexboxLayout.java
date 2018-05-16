@@ -56,6 +56,7 @@ import java.util.List;
  * <li>{@code dividerDrawable}</li>
  * <li>{@code dividerDrawableHorizontal}</li>
  * <li>{@code dividerDrawableVertical}</li>
+ * <li>{@code maxLine}</li>
  * </ul>
  * for the FlexboxLayout.
  *
@@ -113,6 +114,11 @@ public class FlexboxLayout extends ViewGroup implements FlexContainer {
      * @see AlignContent
      */
     private int mAlignContent;
+
+    /**
+     * The current value of the {@link }
+     */
+    private int mMaxLine = NOT_SET;
 
     /**
      * The int definition to be used as the arguments for the {@link #setShowDivider(int)},
@@ -218,6 +224,7 @@ public class FlexboxLayout extends ViewGroup implements FlexContainer {
                 .getInt(R.styleable.FlexboxLayout_justifyContent, JustifyContent.FLEX_START);
         mAlignItems = a.getInt(R.styleable.FlexboxLayout_alignItems, AlignItems.STRETCH);
         mAlignContent = a.getInt(R.styleable.FlexboxLayout_alignContent, AlignContent.STRETCH);
+        mMaxLine = a.getInt(R.styleable.FlexboxLayout_maxLine, NOT_SET);
         Drawable drawable = a.getDrawable(R.styleable.FlexboxLayout_dividerDrawable);
         if (drawable != null) {
             setDividerDrawableHorizontal(drawable);
@@ -1201,6 +1208,19 @@ public class FlexboxLayout extends ViewGroup implements FlexContainer {
     public void setAlignContent(@AlignContent int alignContent) {
         if (mAlignContent != alignContent) {
             mAlignContent = alignContent;
+            requestLayout();
+        }
+    }
+
+    @Override
+    public int getMaxLine() {
+        return mMaxLine;
+    }
+
+    @Override
+    public void setMaxLine(int maxLine) {
+        if (mMaxLine != maxLine) {
+            mMaxLine = maxLine;
             requestLayout();
         }
     }

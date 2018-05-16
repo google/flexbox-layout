@@ -82,6 +82,13 @@ limitations under the License.
             <flag name="middle" value="2" />
             <flag name="end" value="4" />
         </attr>
+
+        <!--
+            The attribute that specifies the maximum number of flex lines. This attribute is
+            effective only when the flexWrap attribute is "wrap" or "wrap_reverse".
+        -->
+        <attr name="maxLine" format="integer" />
+
     </declare-styleable>
 
     <declare-styleable name="FlexboxLayout_Layout">

@@ -88,6 +88,8 @@ public class FlexboxLayoutManager extends RecyclerView.LayoutManager implements 
      */
     private int mAlignItems;
 
+    private int mMaxLine = NOT_SET;
+
     /**
      * True if the layout direction is right to left, false otherwise.
      */
@@ -351,6 +353,19 @@ public class FlexboxLayoutManager extends RecyclerView.LayoutManager implements 
         throw new UnsupportedOperationException("Setting the alignContent in the "
                 + "FlexboxLayoutManager is not supported. Use FlexboxLayout "
                 + "if you need to use this attribute.");
+    }
+
+    @Override
+    public int getMaxLine() {
+        return mMaxLine;
+    }
+
+    @Override
+    public void setMaxLine(int maxLine) {
+        if (mMaxLine != maxLine) {
+            mMaxLine = maxLine;
+            requestLayout();
+        }
     }
 
     @Override
