@@ -56,6 +56,7 @@ import java.util.List;
  * <li>{@code dividerDrawable}</li>
  * <li>{@code dividerDrawableHorizontal}</li>
  * <li>{@code dividerDrawableVertical}</li>
+ * <li>{@code maxLine}</li>
  * </ul>
  * for the FlexboxLayout.
  *
@@ -223,6 +224,7 @@ public class FlexboxLayout extends ViewGroup implements FlexContainer {
                 .getInt(R.styleable.FlexboxLayout_justifyContent, JustifyContent.FLEX_START);
         mAlignItems = a.getInt(R.styleable.FlexboxLayout_alignItems, AlignItems.STRETCH);
         mAlignContent = a.getInt(R.styleable.FlexboxLayout_alignContent, AlignContent.STRETCH);
+        mMaxLine = a.getInt(R.styleable.FlexboxLayout_maxLine, NOT_SET);
         Drawable drawable = a.getDrawable(R.styleable.FlexboxLayout_dividerDrawable);
         if (drawable != null) {
             setDividerDrawableHorizontal(drawable);
