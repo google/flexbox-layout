@@ -116,7 +116,7 @@ public class FlexboxLayout extends ViewGroup implements FlexContainer {
     private int mAlignContent;
 
     /**
-     * The current value of the {@link }
+     * The current value of the maxLine attribute, which specifies the maximum number of flex lines.
      */
     private int mMaxLine = NOT_SET;
 
