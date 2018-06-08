@@ -17,8 +17,8 @@
 package com.google.android.flexbox
 
 import android.content.SharedPreferences
-import android.support.design.widget.NavigationView
-import android.support.v7.preference.PreferenceManager
+import com.google.android.material.navigation.NavigationView
+import androidx.preference.PreferenceManager
 import android.view.Menu
 import android.view.View
 import android.widget.AdapterView

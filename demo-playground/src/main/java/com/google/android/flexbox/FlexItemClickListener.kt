@@ -16,7 +16,7 @@
 
 package com.google.android.flexbox
 
-import android.support.v7.app.AppCompatActivity
+import androidx.appcompat.app.AppCompatActivity
 import android.view.View
 
 /**

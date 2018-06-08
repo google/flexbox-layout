@@ -16,7 +16,7 @@
 
 package com.google.android.flexbox.test
 
-import android.support.v7.widget.RecyclerView
+import androidx.recyclerview.widget.RecyclerView
 import android.view.Gravity
 import android.view.LayoutInflater
 import android.view.ViewGroup
@@ -74,10 +74,10 @@ internal class TestAdapterMultiViewTypes : RecyclerView.Adapter<TestViewHolder>(
 
     companion object {
 
-        internal val POSITION_MATCH_PARENT = 3
-        private val ITEMS = 50
+        internal const val POSITION_MATCH_PARENT = 3
+        private const val ITEMS = 50
 
-        private val VIEW_TYPE_NORMAL = 0
-        private val VIEW_TYPE_MATCH_PARENT = 1
+        private const val VIEW_TYPE_NORMAL = 0
+        private const val VIEW_TYPE_MATCH_PARENT = 1
     }
 }

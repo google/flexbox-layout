@@ -19,7 +19,7 @@
              xmlns:android="http://schemas.android.com/apk/res/android"
              android:layout_width="320dp"
              android:layout_height="240dp">
-    <android.support.v7.widget.RecyclerView android:id="@+id/recyclerview"
+    <androidx.recyclerview.widget.RecyclerView android:id="@+id/recyclerview"
                                             android:layout_width="600dp"
                                             android:layout_height="match_parent"/>
 </FrameLayout>

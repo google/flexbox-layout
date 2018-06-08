@@ -19,16 +19,16 @@ package com.google.android.flexbox.test
 import android.content.Context
 import android.content.pm.ActivityInfo
 import android.content.res.Configuration
-import android.support.test.InstrumentationRegistry
-import android.support.test.espresso.Espresso.onView
-import android.support.test.espresso.ViewAction
-import android.support.test.espresso.action.*
-import android.support.test.espresso.matcher.ViewMatchers.withId
-import android.support.test.filters.FlakyTest
-import android.support.test.filters.MediumTest
-import android.support.test.rule.ActivityTestRule
-import android.support.test.runner.AndroidJUnit4
-import android.support.v7.widget.RecyclerView
+import androidx.test.InstrumentationRegistry
+import androidx.test.espresso.Espresso.onView
+import androidx.test.espresso.ViewAction
+import androidx.test.espresso.action.*
+import androidx.test.espresso.matcher.ViewMatchers.withId
+import androidx.test.filters.FlakyTest
+import androidx.test.filters.MediumTest
+import androidx.test.rule.ActivityTestRule
+import androidx.test.runner.AndroidJUnit4
+import androidx.recyclerview.widget.RecyclerView
 import android.view.ViewGroup
 import com.google.android.flexbox.FlexDirection
 import com.google.android.flexbox.FlexboxLayoutManager
@@ -63,7 +63,7 @@ class FlexboxLayoutManagerConfigChangeTest {
 
         activityRule.runOnUiThread {
             activity.setContentView(R.layout.recyclerview)
-            val recyclerView = activity.findViewById<RecyclerView>(R.id.recyclerview)
+            val recyclerView = activity.findViewById<androidx.recyclerview.widget.RecyclerView>(R.id.recyclerview)
             // This test assumes that the screen width and the height are different.
             recyclerView.layoutParams.height = ViewGroup.LayoutParams.MATCH_PARENT
             recyclerView.layoutParams.width = ViewGroup.LayoutParams.MATCH_PARENT
@@ -112,7 +112,7 @@ class FlexboxLayoutManagerConfigChangeTest {
 
         activityRule.runOnUiThread {
             activity.setContentView(R.layout.recyclerview)
-            val recyclerView = activity.findViewById<RecyclerView>(R.id.recyclerview)
+            val recyclerView = activity.findViewById<androidx.recyclerview.widget.RecyclerView>(R.id.recyclerview)
             // This test assumes that the screen width and the height are different.
             recyclerView.layoutParams.height = ViewGroup.LayoutParams.MATCH_PARENT
             recyclerView.layoutParams.width = ViewGroup.LayoutParams.MATCH_PARENT

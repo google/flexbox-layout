@@ -16,8 +16,8 @@
 
 package com.google.android.flexbox.apps.catgallery
 
-import android.support.annotation.DrawableRes
-import android.support.v7.widget.RecyclerView
+import androidx.annotation.DrawableRes
+import androidx.recyclerview.widget.RecyclerView
 import android.view.View
 import android.widget.ImageView
 import com.google.android.flexbox.FlexboxLayoutManager
