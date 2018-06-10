@@ -16,7 +16,6 @@
 
 package com.google.android.flexbox.test
 
-import androidx.recyclerview.widget.RecyclerView
 import android.view.View
 import android.widget.TextView
 

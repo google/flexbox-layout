@@ -24,13 +24,6 @@ import android.graphics.PointF;
 import android.graphics.Rect;
 import android.os.Parcel;
 import android.os.Parcelable;
-
-import androidx.core.view.ViewCompat;
-import androidx.recyclerview.widget.LinearLayoutManager;
-import androidx.recyclerview.widget.LinearSmoothScroller;
-import androidx.recyclerview.widget.OrientationHelper;
-import androidx.recyclerview.widget.RecyclerView;
-
 import android.util.AttributeSet;
 import android.util.Log;
 import android.util.SparseArray;
@@ -39,6 +32,12 @@ import android.view.ViewGroup;
 
 import java.util.ArrayList;
 import java.util.List;
+
+import androidx.core.view.ViewCompat;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.LinearSmoothScroller;
+import androidx.recyclerview.widget.OrientationHelper;
+import androidx.recyclerview.widget.RecyclerView;
 
 /**
  * LayoutManager for the {@link RecyclerView}. This class is intended to be used within a

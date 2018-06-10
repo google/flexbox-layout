@@ -16,10 +16,10 @@
 
 package com.google.android.flexbox;
 
-import androidx.annotation.IntDef;
-
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
+
+import androidx.annotation.IntDef;
 
 /**
  * The direction children items are placed inside the flex container, it determines the

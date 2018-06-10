@@ -17,7 +17,11 @@
 package com.google.android.flexbox.test
 
 import android.content.Context
+import android.view.View
+import android.view.ViewGroup
+import android.widget.TextView
 import androidx.annotation.LayoutRes
+import androidx.core.content.res.ResourcesCompat
 import androidx.test.InstrumentationRegistry
 import androidx.test.espresso.Espresso.onView
 import androidx.test.espresso.ViewAssertion
@@ -28,10 +32,6 @@ import androidx.test.filters.FlakyTest
 import androidx.test.filters.MediumTest
 import androidx.test.rule.ActivityTestRule
 import androidx.test.runner.AndroidJUnit4
-import androidx.core.content.res.ResourcesCompat
-import android.view.View
-import android.view.ViewGroup
-import android.widget.TextView
 import com.google.android.flexbox.*
 import com.google.android.flexbox.test.IsEqualAllowingError.Companion.isEqualAllowingError
 import junit.framework.Assert.assertEquals

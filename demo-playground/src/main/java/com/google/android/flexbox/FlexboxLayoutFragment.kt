@@ -31,7 +31,7 @@ import java.util.*
 /**
  * Fragment that contains the [FlexboxLayout] as the playground.
  */
-class FlexboxLayoutFragment : androidx.fragment.app.Fragment() {
+class FlexboxLayoutFragment : Fragment() {
 
     private lateinit var flexContainer: FlexboxLayout
 

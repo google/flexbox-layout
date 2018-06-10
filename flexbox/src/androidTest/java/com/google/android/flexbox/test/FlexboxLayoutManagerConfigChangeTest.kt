@@ -19,6 +19,8 @@ package com.google.android.flexbox.test
 import android.content.Context
 import android.content.pm.ActivityInfo
 import android.content.res.Configuration
+import android.view.ViewGroup
+import androidx.recyclerview.widget.RecyclerView
 import androidx.test.InstrumentationRegistry
 import androidx.test.espresso.Espresso.onView
 import androidx.test.espresso.ViewAction
@@ -28,8 +30,6 @@ import androidx.test.filters.FlakyTest
 import androidx.test.filters.MediumTest
 import androidx.test.rule.ActivityTestRule
 import androidx.test.runner.AndroidJUnit4
-import androidx.recyclerview.widget.RecyclerView
-import android.view.ViewGroup
 import com.google.android.flexbox.FlexDirection
 import com.google.android.flexbox.FlexboxLayoutManager
 import org.hamcrest.Matchers.`is`
@@ -63,7 +63,7 @@ class FlexboxLayoutManagerConfigChangeTest {
 
         activityRule.runOnUiThread {
             activity.setContentView(R.layout.recyclerview)
-            val recyclerView = activity.findViewById<androidx.recyclerview.widget.RecyclerView>(R.id.recyclerview)
+            val recyclerView = activity.findViewById<RecyclerView>(R.id.recyclerview)
             // This test assumes that the screen width and the height are different.
             recyclerView.layoutParams.height = ViewGroup.LayoutParams.MATCH_PARENT
             recyclerView.layoutParams.width = ViewGroup.LayoutParams.MATCH_PARENT
@@ -112,7 +112,7 @@ class FlexboxLayoutManagerConfigChangeTest {
 
         activityRule.runOnUiThread {
             activity.setContentView(R.layout.recyclerview)
-            val recyclerView = activity.findViewById<androidx.recyclerview.widget.RecyclerView>(R.id.recyclerview)
+            val recyclerView = activity.findViewById<RecyclerView>(R.id.recyclerview)
             // This test assumes that the screen width and the height are different.
             recyclerView.layoutParams.height = ViewGroup.LayoutParams.MATCH_PARENT
             recyclerView.layoutParams.width = ViewGroup.LayoutParams.MATCH_PARENT

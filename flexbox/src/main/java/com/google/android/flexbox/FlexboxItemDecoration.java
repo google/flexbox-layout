@@ -23,10 +23,11 @@ import android.content.res.TypedArray;
 import android.graphics.Canvas;
 import android.graphics.Rect;
 import android.graphics.drawable.Drawable;
-import androidx.recyclerview.widget.RecyclerView;
 import android.view.View;
 
 import java.util.List;
+
+import androidx.recyclerview.widget.RecyclerView;
 
 /**
  * {@link RecyclerView.ItemDecoration} implementation that can be used as item decorations between

@@ -18,8 +18,8 @@ package com.google.android.flexbox.apps.catgallery
 
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
-import androidx.recyclerview.widget.RecyclerView
 import androidx.appcompat.widget.Toolbar
+import androidx.recyclerview.widget.RecyclerView
 import com.google.android.flexbox.AlignItems
 import com.google.android.flexbox.FlexDirection
 import com.google.android.flexbox.FlexWrap

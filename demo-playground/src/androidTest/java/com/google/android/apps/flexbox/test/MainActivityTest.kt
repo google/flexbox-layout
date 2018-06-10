@@ -17,6 +17,11 @@
 package com.google.android.apps.flexbox.test
 
 import android.content.pm.ActivityInfo
+import android.view.View
+import android.widget.ArrayAdapter
+import android.widget.RadioGroup
+import android.widget.Spinner
+import android.widget.TextView
 import androidx.test.InstrumentationRegistry
 import androidx.test.espresso.Espresso.onView
 import androidx.test.espresso.action.ViewActions.*
@@ -25,11 +30,6 @@ import androidx.test.filters.FlakyTest
 import androidx.test.filters.MediumTest
 import androidx.test.rule.ActivityTestRule
 import androidx.test.runner.AndroidJUnit4
-import android.view.View
-import android.widget.ArrayAdapter
-import android.widget.RadioGroup
-import android.widget.Spinner
-import android.widget.TextView
 import com.google.android.apps.flexbox.R
 import com.google.android.flexbox.*
 import com.google.android.material.navigation.NavigationView
