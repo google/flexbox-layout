@@ -39,4 +39,7 @@ This repository follows the official Android code style.
 When you send a patch, please try to follow that.
 Here are the example steps to follow:
 
-1. Use the Project scheme in the Android Studio (It should be already saved as `.idea/codeStyleSettings.xml` and applied as the Project schema)
+1. From Android Studio or IntelliJ IDEA, navigate to "Preferences" -> "Editor" -> "Code Style"
+1. Select "Import Scheme" by clicking the gear icon next to the Scheme pull down
+1. Choose <root directory of flexbox-layout>/tool/codeStyleSettings.xml
+1. Create a new scheme by typing a scheme name in the "To" edit box or apply to the current scheme.
