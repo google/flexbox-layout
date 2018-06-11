@@ -19,8 +19,8 @@ package com.google.android.flexbox
 import android.content.Context
 import android.os.Build
 import android.os.Bundle
-import android.support.design.widget.TextInputLayout
-import android.support.v4.app.DialogFragment
+import com.google.android.material.textfield.TextInputLayout
+import androidx.fragment.app.DialogFragment
 import android.text.Editable
 import android.text.TextWatcher
 import android.view.KeyEvent
@@ -333,7 +333,7 @@ internal class FlexItemEditFragment : DialogFragment() {
             copyFlexItemValues(item, newItem)
             return newItem
         }
-        throw IllegalArgumentException("Unknown FlexItem: " + item)
+        throw IllegalArgumentException("Unknown FlexItem: $item")
     }
 
     private fun copyFlexItemValues(from: FlexItem, to: FlexItem) {

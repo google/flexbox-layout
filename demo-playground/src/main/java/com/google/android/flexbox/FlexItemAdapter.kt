@@ -16,8 +16,8 @@
 
 package com.google.android.flexbox
 
-import android.support.v7.app.AppCompatActivity
-import android.support.v7.widget.RecyclerView
+import androidx.appcompat.app.AppCompatActivity
+import androidx.recyclerview.widget.RecyclerView
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import com.google.android.apps.flexbox.R
@@ -25,7 +25,9 @@ import com.google.android.apps.flexbox.R
 /**
  * [RecyclerView.Adapter] implementation for [FlexItemViewHolder].
  */
-internal class FlexItemAdapter(private val activity: AppCompatActivity, private val flexContainer: FlexContainer) : RecyclerView.Adapter<FlexItemViewHolder>() {
+internal class FlexItemAdapter(private val activity: AppCompatActivity,
+                               private val flexContainer: FlexContainer)
+    : RecyclerView.Adapter<FlexItemViewHolder>() {
 
     private val layoutParams = mutableListOf<FlexboxLayoutManager.LayoutParams>()
 

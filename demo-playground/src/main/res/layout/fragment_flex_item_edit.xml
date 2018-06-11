@@ -29,7 +29,7 @@ limitations under the License.
         android:paddingStart="@dimen/margin_medium"
         app:flexWrap="wrap">
 
-        <android.support.design.widget.TextInputLayout
+        <com.google.android.material.textfield.TextInputLayout
             android:id="@+id/input_layout_order"
             android:layout_width="100dp"
             android:layout_height="wrap_content"
@@ -43,9 +43,9 @@ limitations under the License.
                 android:inputType="numberSigned"
                 android:lines="1"
                 android:maxLines="1" />
-        </android.support.design.widget.TextInputLayout>
+        </com.google.android.material.textfield.TextInputLayout>
 
-        <android.support.design.widget.TextInputLayout
+        <com.google.android.material.textfield.TextInputLayout
             android:id="@+id/input_layout_flex_grow"
             android:layout_width="100dp"
             android:layout_height="wrap_content"
@@ -59,9 +59,9 @@ limitations under the License.
                 android:inputType="numberDecimal"
                 android:lines="1"
                 android:maxLines="1" />
-        </android.support.design.widget.TextInputLayout>
+        </com.google.android.material.textfield.TextInputLayout>
 
-        <android.support.design.widget.TextInputLayout
+        <com.google.android.material.textfield.TextInputLayout
             android:id="@+id/input_layout_flex_shrink"
             android:layout_width="100dp"
             android:layout_height="wrap_content"
@@ -75,9 +75,9 @@ limitations under the License.
                 android:inputType="numberDecimal"
                 android:lines="1"
                 android:maxLines="1" />
-        </android.support.design.widget.TextInputLayout>
+        </com.google.android.material.textfield.TextInputLayout>
 
-        <android.support.design.widget.TextInputLayout
+        <com.google.android.material.textfield.TextInputLayout
             android:id="@+id/input_layout_flex_basis_percent"
             android:layout_width="200dp"
             android:layout_height="wrap_content"
@@ -91,9 +91,9 @@ limitations under the License.
                 android:inputType="numberSigned"
                 android:lines="1"
                 android:maxLines="1" />
-        </android.support.design.widget.TextInputLayout>
+        </com.google.android.material.textfield.TextInputLayout>
 
-        <android.support.design.widget.TextInputLayout
+        <com.google.android.material.textfield.TextInputLayout
             android:id="@+id/input_layout_width"
             android:layout_width="300dp"
             android:layout_height="wrap_content"
@@ -108,9 +108,9 @@ limitations under the License.
                 android:inputType="numberSigned"
                 android:lines="1"
                 android:maxLines="1" />
-        </android.support.design.widget.TextInputLayout>
+        </com.google.android.material.textfield.TextInputLayout>
 
-        <android.support.design.widget.TextInputLayout
+        <com.google.android.material.textfield.TextInputLayout
             android:id="@+id/input_layout_height"
             android:layout_width="300dp"
             android:layout_height="wrap_content"
@@ -124,9 +124,9 @@ limitations under the License.
                 android:inputType="numberSigned"
                 android:lines="1"
                 android:maxLines="1" />
-        </android.support.design.widget.TextInputLayout>
+        </com.google.android.material.textfield.TextInputLayout>
 
-        <android.support.design.widget.TextInputLayout
+        <com.google.android.material.textfield.TextInputLayout
             android:id="@+id/input_layout_min_width"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
@@ -143,9 +143,9 @@ limitations under the License.
                 android:inputType="number"
                 android:hint="@string/hint_min_width"
                 android:maxLines="1" />
-        </android.support.design.widget.TextInputLayout>
+        </com.google.android.material.textfield.TextInputLayout>
 
-        <android.support.design.widget.TextInputLayout
+        <com.google.android.material.textfield.TextInputLayout
             android:id="@+id/input_layout_min_height"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
@@ -161,9 +161,9 @@ limitations under the License.
                 android:inputType="number"
                 android:hint="@string/hint_min_height"
                 android:maxLines="1" />
-        </android.support.design.widget.TextInputLayout>
+        </com.google.android.material.textfield.TextInputLayout>
 
-        <android.support.design.widget.TextInputLayout
+        <com.google.android.material.textfield.TextInputLayout
             android:id="@+id/input_layout_max_width"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
@@ -179,9 +179,9 @@ limitations under the License.
                 android:inputType="number"
                 android:hint="@string/hint_max_width"
                 android:maxLines="1" />
-        </android.support.design.widget.TextInputLayout>
+        </com.google.android.material.textfield.TextInputLayout>
 
-        <android.support.design.widget.TextInputLayout
+        <com.google.android.material.textfield.TextInputLayout
             android:id="@+id/input_layout_max_height"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
@@ -197,7 +197,7 @@ limitations under the License.
                 android:inputType="number"
                 android:hint="@string/hint_max_height"
                 android:maxLines="1" />
-        </android.support.design.widget.TextInputLayout>
+        </com.google.android.material.textfield.TextInputLayout>
 
         <CheckBox
             android:id="@+id/checkbox_wrap_before"

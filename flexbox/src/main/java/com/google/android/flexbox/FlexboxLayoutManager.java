@@ -16,19 +16,14 @@
 
 package com.google.android.flexbox;
 
-import static android.support.v7.widget.LinearLayoutManager.INVALID_OFFSET;
-import static android.support.v7.widget.RecyclerView.NO_POSITION;
+import static androidx.recyclerview.widget.LinearLayoutManager.INVALID_OFFSET;
+import static androidx.recyclerview.widget.RecyclerView.NO_POSITION;
 
 import android.content.Context;
 import android.graphics.PointF;
 import android.graphics.Rect;
 import android.os.Parcel;
 import android.os.Parcelable;
-import android.support.v4.view.ViewCompat;
-import android.support.v7.widget.LinearLayoutManager;
-import android.support.v7.widget.LinearSmoothScroller;
-import android.support.v7.widget.OrientationHelper;
-import android.support.v7.widget.RecyclerView;
 import android.util.AttributeSet;
 import android.util.Log;
 import android.util.SparseArray;
@@ -37,6 +32,12 @@ import android.view.ViewGroup;
 
 import java.util.ArrayList;
 import java.util.List;
+
+import androidx.core.view.ViewCompat;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.LinearSmoothScroller;
+import androidx.recyclerview.widget.OrientationHelper;
+import androidx.recyclerview.widget.RecyclerView;
 
 /**
  * LayoutManager for the {@link RecyclerView}. This class is intended to be used within a
@@ -1985,7 +1986,7 @@ public class FlexboxLayoutManager extends RecyclerView.LayoutManager implements 
         int parentLength = isMainAxisHorizontal ? mParent.getWidth() : mParent.getHeight();
         int mainAxisLength = isMainAxisHorizontal ? getWidth() : getHeight();
 
-        boolean layoutRtl  = getLayoutDirection() == ViewCompat.LAYOUT_DIRECTION_RTL;
+        boolean layoutRtl = getLayoutDirection() == ViewCompat.LAYOUT_DIRECTION_RTL;
         if (layoutRtl) {
             int absDelta = Math.abs(delta);
             if (delta < 0) {
@@ -2315,7 +2316,7 @@ public class FlexboxLayoutManager extends RecyclerView.LayoutManager implements 
     }
 
     /**
-     * Copied from {@link android.support.v7.widget.RecyclerView.LayoutManager#shouldMeasureChild
+     * Copied from {@link RecyclerView.LayoutManager#shouldMeasureChild
      * (View,
      * int, int, RecyclerView.LayoutParams)}}
      */
@@ -2329,7 +2330,7 @@ public class FlexboxLayoutManager extends RecyclerView.LayoutManager implements 
 
     /**
      * Copied from
-     * {@link android.support.v7.widget.RecyclerView.LayoutManager#isMeasurementUpToDate(int, int,
+     * {@link RecyclerView.LayoutManager#isMeasurementUpToDate(int, int,
      * int)}
      */
     private static boolean isMeasurementUpToDate(int childSize, int spec, int dimension) {
@@ -2516,7 +2517,7 @@ public class FlexboxLayoutManager extends RecyclerView.LayoutManager implements 
     /**
      * @param position the index of the view
      * @return the index of the {@link FlexLine}, which includes the view whose index is passed as
-     *         the position argument.
+     * the position argument.
      */
     int getPositionToFlexLineIndex(int position) {
         assert mFlexboxHelper.mIndexToFlexLine != null;

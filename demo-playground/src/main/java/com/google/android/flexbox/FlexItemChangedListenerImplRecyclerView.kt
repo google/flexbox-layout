@@ -16,7 +16,7 @@
 
 package com.google.android.flexbox
 
-import android.support.v7.widget.RecyclerView
+import androidx.recyclerview.widget.RecyclerView
 import android.view.ViewGroup
 
 /**

@@ -16,9 +16,9 @@
 
 package com.google.android.flexbox
 
-import android.support.test.rule.ActivityTestRule
-import android.support.test.runner.AndroidJUnit4
 import android.view.View
+import androidx.test.rule.ActivityTestRule
+import androidx.test.runner.AndroidJUnit4
 import com.google.android.flexbox.test.FlexboxTestActivity
 import com.google.android.flexbox.test.IsEqualAllowingError.Companion.isEqualAllowingError
 import junit.framework.Assert.assertEquals
