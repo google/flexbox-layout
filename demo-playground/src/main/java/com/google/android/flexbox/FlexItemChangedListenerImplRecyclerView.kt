@@ -16,8 +16,8 @@
 
 package com.google.android.flexbox
 
-import androidx.recyclerview.widget.RecyclerView
 import android.view.ViewGroup
+import androidx.recyclerview.widget.RecyclerView
 
 /**
  * Implementation for the [FlexItemChangedListener].
