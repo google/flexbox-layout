@@ -17,11 +17,11 @@
 package com.google.android.flexbox
 
 import android.os.Bundle
+import android.widget.Toast
 import androidx.fragment.app.FragmentActivity
 import androidx.preference.EditTextPreference
 import androidx.preference.Preference
 import androidx.preference.PreferenceFragmentCompat
-import android.widget.Toast
 import com.google.android.apps.flexbox.R
 import com.google.android.flexbox.validators.DimensionInputValidator
 import com.google.android.flexbox.validators.FlexBasisPercentInputValidator

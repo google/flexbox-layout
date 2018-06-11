@@ -19,8 +19,6 @@ package com.google.android.flexbox
 import android.content.Context
 import android.os.Build
 import android.os.Bundle
-import com.google.android.material.textfield.TextInputLayout
-import androidx.fragment.app.DialogFragment
 import android.text.Editable
 import android.text.TextWatcher
 import android.view.KeyEvent
@@ -30,8 +28,10 @@ import android.view.ViewGroup
 import android.view.inputmethod.EditorInfo
 import android.view.inputmethod.InputMethodManager
 import android.widget.*
+import androidx.fragment.app.DialogFragment
 import com.google.android.apps.flexbox.R
 import com.google.android.flexbox.validators.*
+import com.google.android.material.textfield.TextInputLayout
 
 /**
  * DialogFragment that changes the properties for a flex item.
