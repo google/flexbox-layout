@@ -33,6 +33,7 @@ import android.view.ViewGroup;
 import java.util.ArrayList;
 import java.util.List;
 
+import androidx.annotation.NonNull;
 import androidx.core.view.ViewCompat;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.LinearSmoothScroller;
@@ -599,38 +600,37 @@ public class FlexboxLayoutManager extends RecyclerView.LayoutManager implements 
     }
 
     @Override
-    public void onItemsAdded(RecyclerView recyclerView, int positionStart, int itemCount) {
+    public void onItemsAdded(@NonNull RecyclerView recyclerView, int positionStart, int itemCount) {
         super.onItemsAdded(recyclerView, positionStart, itemCount);
         updateDirtyPosition(positionStart);
     }
 
     @Override
-    public void onItemsUpdated(RecyclerView recyclerView, int positionStart, int itemCount,
+    public void onItemsUpdated(@NonNull RecyclerView recyclerView, int positionStart, int itemCount,
             Object payload) {
         super.onItemsUpdated(recyclerView, positionStart, itemCount, payload);
         updateDirtyPosition(positionStart);
     }
 
     @Override
-    public void onItemsUpdated(RecyclerView recyclerView, int positionStart, int itemCount) {
+    public void onItemsUpdated(@NonNull RecyclerView recyclerView, int positionStart, int itemCount) {
         super.onItemsUpdated(recyclerView, positionStart, itemCount);
         updateDirtyPosition(positionStart);
     }
 
     @Override
-    public void onItemsRemoved(RecyclerView recyclerView, int positionStart, int itemCount) {
+    public void onItemsRemoved(@NonNull RecyclerView recyclerView, int positionStart, int itemCount) {
         super.onItemsRemoved(recyclerView, positionStart, itemCount);
         updateDirtyPosition(positionStart);
     }
 
     @Override
-    public void onItemsMoved(RecyclerView recyclerView, int from, int to, int itemCount) {
+    public void onItemsMoved(@NonNull RecyclerView recyclerView, int from, int to, int itemCount) {
         super.onItemsMoved(recyclerView, from, to, itemCount);
         updateDirtyPosition(Math.min(from, to));
     }
 
     private void updateDirtyPosition(int positionStart) {
-        int firstVisiblePosition = findFirstVisibleItemPosition();
         int lastVisiblePosition = findLastVisibleItemPosition();
         if (positionStart >= lastVisiblePosition) {
             return;
@@ -649,9 +649,6 @@ public class FlexboxLayoutManager extends RecyclerView.LayoutManager implements 
 
         View firstView = getChildClosestToStart();
         if (firstView == null) {
-            return;
-        }
-        if (firstVisiblePosition <= positionStart && positionStart <= lastVisiblePosition) {
             return;
         }
 
