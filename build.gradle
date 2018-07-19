@@ -22,15 +22,15 @@ buildscript {
         targetSdkVersion = 28
         compileSdkVersion = 28
 
-        androidGradlePluginVersion = "3.0.1"
+        androidGradlePluginVersion = "3.2.0-beta04"
         androidMavenGradlePluginVersion = "1.5"
-        androidxCoreVersion = "1.0.0-alpha3"
+        androidxCoreVersion = "1.0.0-beta01"
         androidxEspressoVersion = "3.1.0-alpha3"
         androidxTestVersion = "1.1.0-alpha3"
         junitVersion = "4.12"
         gradleBintrayPluginVersion = "1.6"
-        kotlinVersion = "1.2.41"
-        materialVersion = "1.0.0-alpha3"
+        kotlinVersion = "1.2.51"
+        materialVersion = "1.0.0-beta01"
         testRunnerVersion = "1.0.0"
     }
 
@@ -39,7 +39,7 @@ buildscript {
         google()
     }
     dependencies {
-        classpath "com.android.tools.build:gradle:3.2.0-alpha17"
+        classpath "com.android.tools.build:gradle:$androidGradlePluginVersion"
         classpath "com.github.dcendents:android-maven-gradle-plugin:$androidMavenGradlePluginVersion"
         classpath "com.jfrog.bintray.gradle:gradle-bintray-plugin:$gradleBintrayPluginVersion"
         classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlinVersion"
