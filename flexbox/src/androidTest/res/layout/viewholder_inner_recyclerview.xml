@@ -14,7 +14,7 @@
   ~ limitations under the License.
   -->
 <!-- The nested RecyclerViews tests verify the wrap_content behavior -->
-<android.support.v7.widget.RecyclerView
+<androidx.recyclerview.widget.RecyclerView
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:id="@+id/recyclerview_inner"
     android:layout_width="200dp"

@@ -15,7 +15,7 @@
   -->
 <!-- Some APIs in espresso requires the view being performed is at least 90% visible to the
      user, using the small width so that low resolution devices are covered-->
-<android.support.v7.widget.RecyclerView android:id="@+id/recyclerview"
+<androidx.recyclerview.widget.RecyclerView android:id="@+id/recyclerview"
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="320dp"
     android:layout_height="240dp" />

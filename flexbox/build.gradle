@@ -28,7 +28,7 @@ android {
         versionCode 1
         versionName "$mavenVersion"
 
-        testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
+        testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
 
         consumerProguardFiles 'proguard-rules.txt'
     }
@@ -40,15 +40,16 @@ android {
 }
 
 dependencies {
-    compileOnly "com.android.support:support-compat:${rootProject.ext.supportLibVersion}"
-    compileOnly "com.android.support:recyclerview-v7:${rootProject.ext.supportLibVersion}"
+    compileOnly "androidx.core:core:${rootProject.androidxCoreVersion}"
+    compileOnly "androidx.recyclerview:recyclerview:${rootProject.androidxCoreVersion}"
 
-    testImplementation "junit:junit:${rootProject.ext.junitVersion}"
+    testImplementation "junit:junit:${rootProject.junitVersion}"
 
-    androidTestImplementation "com.android.support:support-compat:${rootProject.ext.supportLibVersion}"
-    androidTestImplementation "com.android.support:recyclerview-v7:${rootProject.ext.supportLibVersion}"
-    androidTestImplementation "com.android.support:support-annotations:${rootProject.ext.supportLibVersion}"
-    androidTestImplementation "com.android.support.test:runner:${rootProject.ext.testRunnerVersion}"
-    androidTestImplementation "com.android.support.test.espresso:espresso-core:${rootProject.ext.espressoVersion}"
-    androidTestImplementation "org.jetbrains.kotlin:kotlin-stdlib:${rootProject.ext.kotlinVersion}"
+    androidTestImplementation "androidx.core:core:${rootProject.androidxCoreVersion}"
+    androidTestImplementation "androidx.recyclerview:recyclerview:${rootProject.androidxCoreVersion}"
+    androidTestImplementation "androidx.annotation:annotation:${rootProject.androidxCoreVersion}"
+    androidTestImplementation "androidx.test:runner:${rootProject.androidxTestVersion}"
+    androidTestImplementation "androidx.test:rules:${rootProject.androidxTestVersion}"
+    androidTestImplementation "androidx.test.espresso:espresso-core:${rootProject.androidxEspressoVersion}"
+    androidTestImplementation "org.jetbrains.kotlin:kotlin-stdlib:${rootProject.kotlinVersion}"
 }

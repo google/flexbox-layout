@@ -16,8 +16,8 @@
 
 package com.google.android.flexbox
 
-import android.support.v7.app.AppCompatActivity
 import android.view.View
+import androidx.appcompat.app.AppCompatActivity
 
 /**
  * Implementation of the [android.view.View.OnClickListener] when a flex item is clicked in

@@ -16,10 +16,10 @@
 
 package com.google.android.flexbox;
 
-import android.support.annotation.IntDef;
-
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
+
+import androidx.annotation.IntDef;
 
 /**
  * This attribute controls whether the flex container is single-line or multi-line, and the

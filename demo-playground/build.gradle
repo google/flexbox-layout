@@ -27,7 +27,7 @@ android {
         versionCode 1
         versionName "1.0"
 
-        testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
+        testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
     }
     buildTypes {
         release {
@@ -40,16 +40,17 @@ android {
 
 dependencies {
     implementation project(":flexbox")
-    implementation "com.android.support:support-v4:${rootProject.ext.supportLibVersion}"
-    implementation "com.android.support:appcompat-v7:${rootProject.ext.supportLibVersion}"
-    implementation "com.android.support:preference-v7:${rootProject.ext.supportLibVersion}"
-    implementation "com.android.support:preference-v14:${rootProject.ext.supportLibVersion}"
-    implementation "com.android.support:design:${rootProject.ext.supportLibVersion}"
+    implementation "androidx.legacy:legacy-support-v4:${rootProject.androidxCoreVersion}"
+    implementation "androidx.appcompat:appcompat:${rootProject.androidxCoreVersion}"
+    implementation "androidx.preference:preference:${rootProject.androidxCoreVersion}"
+    implementation "androidx.legacy:legacy-preference-v14:${rootProject.androidxCoreVersion}"
+    implementation "com.google.android.material:material:${rootProject.materialVersion}"
     implementation "org.jetbrains.kotlin:kotlin-stdlib:$kotlinVersion"
 
     testImplementation "junit:junit:${rootProject.ext.junitVersion}"
 
-    androidTestImplementation "com.android.support:support-annotations:${rootProject.ext.supportLibVersion}"
-    androidTestImplementation "com.android.support.test:runner:${rootProject.ext.testRunnerVersion}"
-    androidTestImplementation "com.android.support.test.espresso:espresso-core:${rootProject.ext.espressoVersion}"
+    androidTestImplementation "androidx.annotation:annotation:${rootProject.androidxCoreVersion}"
+    androidTestImplementation "androidx.test:runner:${rootProject.androidxTestVersion}"
+    androidTestImplementation "androidx.test:rules:${rootProject.androidxTestVersion}"
+    androidTestImplementation "androidx.test.espresso:espresso-core:${rootProject.androidxEspressoVersion}"
 }

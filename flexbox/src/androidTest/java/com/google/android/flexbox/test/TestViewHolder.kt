@@ -16,13 +16,12 @@
 
 package com.google.android.flexbox.test
 
-import android.support.v7.widget.RecyclerView
 import android.view.View
 import android.widget.TextView
 
 /**
  * ViewHolder implementation for a flex item for testing.
  */
-internal class TestViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
+internal class TestViewHolder(itemView: View) : androidx.recyclerview.widget.RecyclerView.ViewHolder(itemView) {
     val textView: TextView = itemView.findViewById(R.id.textview)
 }
