@@ -16,10 +16,10 @@
 
 package com.google.android.flexbox;
 
-import android.support.annotation.IntDef;
-
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
+
+import androidx.annotation.IntDef;
 
 /** This attribute controls the alignment of the flex lines in the flex container. */
 @IntDef({AlignContent.FLEX_START, AlignContent.FLEX_END, AlignContent.CENTER,

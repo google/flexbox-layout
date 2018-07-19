@@ -18,7 +18,6 @@ package com.google.android.flexbox
 
 import android.view.View
 import android.view.ViewGroup
-import com.google.android.flexbox.FlexContainer.NOT_SET
 
 /**
  * Fake implementation of [FlexContainer].
