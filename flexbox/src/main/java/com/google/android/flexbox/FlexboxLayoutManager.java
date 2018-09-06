@@ -2227,7 +2227,7 @@ public class FlexboxLayoutManager extends RecyclerView.LayoutManager implements 
         if (DEBUG) {
             Log.d(TAG, "computeHorizontalScrollOffset: " + scrollOffset);
         }
-        return computeScrollOffset(state);
+        return scrollOffset;
     }
 
     @Override
