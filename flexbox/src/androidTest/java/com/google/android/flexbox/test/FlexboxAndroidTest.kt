@@ -34,14 +34,14 @@ import androidx.test.rule.ActivityTestRule
 import androidx.test.runner.AndroidJUnit4
 import com.google.android.flexbox.*
 import com.google.android.flexbox.test.IsEqualAllowingError.Companion.isEqualAllowingError
-import junit.framework.Assert.assertEquals
-import junit.framework.Assert.assertTrue
 import org.hamcrest.Description
 import org.hamcrest.TypeSafeMatcher
 import org.hamcrest.core.Is.`is`
 import org.hamcrest.core.IsNot.not
+import org.junit.Assert.assertEquals
 import org.junit.Assert.assertNotNull
 import org.junit.Assert.assertThat
+import org.junit.Assert.assertTrue
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -4015,7 +4015,7 @@ class FlexboxAndroidTest {
     private fun hasWidth(width: Int): ViewAssertion {
         return matches(object : TypeSafeMatcher<View>() {
             override fun describeTo(description: Description) {
-                description.appendText("expected width: " + width)
+                description.appendText("expected width: $width")
             }
 
             override fun describeMismatchSafely(item: View, mismatchDescription: Description) {
@@ -4029,7 +4029,7 @@ class FlexboxAndroidTest {
     private fun hasHeight(height: Int): ViewAssertion {
         return matches(object : TypeSafeMatcher<View>() {
             override fun describeTo(description: Description) {
-                description.appendText("expected height: " + height)
+                description.appendText("expected height: $height")
             }
 
             override fun describeMismatchSafely(item: View, mismatchDescription: Description) {

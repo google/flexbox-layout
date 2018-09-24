@@ -37,10 +37,10 @@ import com.google.android.flexbox.*
 import com.google.android.flexbox.FlexboxItemDecoration.HORIZONTAL
 import com.google.android.flexbox.FlexboxItemDecoration.VERTICAL
 import com.google.android.flexbox.test.IsEqualAllowingError.Companion.isEqualAllowingError
-import junit.framework.Assert.assertTrue
 import org.hamcrest.Matchers.*
 import org.hamcrest.core.IsNot.not
 import org.junit.Assert.assertThat
+import org.junit.Assert.assertTrue
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith

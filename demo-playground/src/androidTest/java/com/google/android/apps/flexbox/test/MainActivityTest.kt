@@ -33,9 +33,9 @@ import androidx.test.runner.AndroidJUnit4
 import com.google.android.apps.flexbox.R
 import com.google.android.flexbox.*
 import com.google.android.material.navigation.NavigationView
-import junit.framework.Assert.*
 import org.hamcrest.MatcherAssert.assertThat
 import org.hamcrest.core.Is.`is`
+import org.junit.Assert.*
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith

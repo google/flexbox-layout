@@ -24,14 +24,13 @@ buildscript {
 
         androidGradlePluginVersion = "3.2.0-beta04"
         androidMavenGradlePluginVersion = "1.5"
-        androidxCoreVersion = "1.0.0-beta01"
-        androidxEspressoVersion = "3.1.0-alpha3"
-        androidxTestVersion = "1.1.0-alpha3"
+        androidxCoreVersion = "1.0.0"
+        androidxEspressoVersion = "3.1.0-alpha4"
+        androidxTestVersion = "1.1.0-alpha4"
         junitVersion = "4.12"
         gradleBintrayPluginVersion = "1.6"
-        kotlinVersion = "1.2.51"
-        materialVersion = "1.0.0-beta01"
-        testRunnerVersion = "1.0.0"
+        kotlinVersion = "1.2.70"
+        materialVersion = "1.0.0"
     }
 
     repositories {
