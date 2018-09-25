@@ -10,14 +10,14 @@ Add the following dependency to your `build.gradle` file:
 
 ```
 dependencies {
-    implementation 'com.google.android:flexbox:1.0.0'
+    implementation 'com.google.android:flexbox:1.1.0'
 }
 ```
 
 # Usage
-There are two ways of using Flexbox in your layout. 
+There are two ways of using Flexbox in your layout.
 
-## FlexboxLayout 
+## FlexboxLayout
 The first one is `FlexboxLayout` that extends the `ViewGroup` like `LinearLayout` and `RelativeLayout`.
 You can specify the attributes from a layout XML like:
 ```xml

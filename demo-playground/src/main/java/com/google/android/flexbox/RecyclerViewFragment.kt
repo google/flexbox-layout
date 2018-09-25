@@ -17,13 +17,13 @@
 package com.google.android.flexbox
 
 import android.os.Bundle
-import android.support.design.widget.FloatingActionButton
-import android.support.v4.app.Fragment
-import android.support.v7.widget.RecyclerView
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.fragment.app.Fragment
+import androidx.recyclerview.widget.RecyclerView
 import com.google.android.apps.flexbox.R
+import com.google.android.material.floatingactionbutton.FloatingActionButton
 
 /**
  * Fragment that contains the [RecyclerView] and the [FlexboxLayoutManager] as its

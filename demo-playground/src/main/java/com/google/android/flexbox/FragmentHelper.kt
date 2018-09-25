@@ -17,15 +17,15 @@
 package com.google.android.flexbox
 
 import android.content.SharedPreferences
-import android.support.design.widget.NavigationView
-import android.support.v7.preference.PreferenceManager
 import android.view.Menu
 import android.view.View
 import android.widget.AdapterView
 import android.widget.ArrayAdapter
 import android.widget.Spinner
 import android.widget.Toast
+import androidx.preference.PreferenceManager
 import com.google.android.apps.flexbox.R
+import com.google.android.material.navigation.NavigationView
 
 /**
  * Helper class that has the common logic for initializing the Fragment for the play ground demo

@@ -27,7 +27,7 @@ android {
         versionCode 1
         versionName "1.0"
 
-        testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
+        testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
     }
     buildTypes {
         release {
@@ -40,8 +40,8 @@ android {
 
 dependencies {
     implementation project(path: ":flexbox")
-    implementation "com.android.support:appcompat-v7:${rootProject.ext.supportLibVersion}"
-    implementation "com.android.support:design:${rootProject.ext.supportLibVersion}"
-    implementation "com.android.support:recyclerview-v7:${rootProject.ext.supportLibVersion}"
-    implementation "org.jetbrains.kotlin:kotlin-stdlib:${rootProject.ext.kotlinVersion}"
+    implementation "androidx.appcompat:appcompat:${rootProject.androidxCoreVersion}"
+    implementation "androidx.recyclerview:recyclerview:${rootProject.androidxCoreVersion}"
+    implementation "com.google.android.material:material:${rootProject.materialVersion}"
+    implementation "org.jetbrains.kotlin:kotlin-stdlib:${rootProject.kotlinVersion}"
 }

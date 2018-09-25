@@ -19,16 +19,18 @@
 buildscript {
     ext {
         minSdkVersion = 14
-        targetSdkVersion = 27
-        compileSdkVersion = 27
-        androidGradlePluginVersion = "3.1.3"
+        targetSdkVersion = 28
+        compileSdkVersion = 28
+
+        androidGradlePluginVersion = "3.2.0"
         androidMavenGradlePluginVersion = "1.5"
-        gradleBintrayPluginVersion = "1.6"
-        kotlinVersion = "1.2.30"
-        supportLibVersion = "27.1.0"
-        espressoVersion = "3.0.0"
-        testRunnerVersion = "1.0.0"
+        androidxCoreVersion = "1.0.0"
+        androidxEspressoVersion = "3.1.0-alpha4"
+        androidxTestVersion = "1.1.0-alpha4"
         junitVersion = "4.12"
+        gradleBintrayPluginVersion = "1.6"
+        kotlinVersion = "1.2.70"
+        materialVersion = "1.0.0"
     }
 
     repositories {

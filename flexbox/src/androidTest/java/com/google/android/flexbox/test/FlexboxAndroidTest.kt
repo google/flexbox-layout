@@ -17,31 +17,31 @@
 package com.google.android.flexbox.test
 
 import android.content.Context
-import android.support.annotation.LayoutRes
-import android.support.test.InstrumentationRegistry
-import android.support.test.espresso.Espresso.onView
-import android.support.test.espresso.ViewAssertion
-import android.support.test.espresso.assertion.PositionAssertions.*
-import android.support.test.espresso.assertion.ViewAssertions.matches
-import android.support.test.espresso.matcher.ViewMatchers.withId
-import android.support.test.filters.FlakyTest
-import android.support.test.filters.MediumTest
-import android.support.test.rule.ActivityTestRule
-import android.support.test.runner.AndroidJUnit4
-import android.support.v4.content.res.ResourcesCompat
 import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
+import androidx.annotation.LayoutRes
+import androidx.core.content.res.ResourcesCompat
+import androidx.test.InstrumentationRegistry
+import androidx.test.espresso.Espresso.onView
+import androidx.test.espresso.ViewAssertion
+import androidx.test.espresso.assertion.PositionAssertions.*
+import androidx.test.espresso.assertion.ViewAssertions.matches
+import androidx.test.espresso.matcher.ViewMatchers.withId
+import androidx.test.filters.FlakyTest
+import androidx.test.filters.MediumTest
+import androidx.test.rule.ActivityTestRule
+import androidx.test.runner.AndroidJUnit4
 import com.google.android.flexbox.*
 import com.google.android.flexbox.test.IsEqualAllowingError.Companion.isEqualAllowingError
-import junit.framework.Assert.assertEquals
-import junit.framework.Assert.assertTrue
 import org.hamcrest.Description
 import org.hamcrest.TypeSafeMatcher
 import org.hamcrest.core.Is.`is`
 import org.hamcrest.core.IsNot.not
+import org.junit.Assert.assertEquals
 import org.junit.Assert.assertNotNull
 import org.junit.Assert.assertThat
+import org.junit.Assert.assertTrue
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -4015,7 +4015,7 @@ class FlexboxAndroidTest {
     private fun hasWidth(width: Int): ViewAssertion {
         return matches(object : TypeSafeMatcher<View>() {
             override fun describeTo(description: Description) {
-                description.appendText("expected width: " + width)
+                description.appendText("expected width: $width")
             }
 
             override fun describeMismatchSafely(item: View, mismatchDescription: Description) {
@@ -4029,7 +4029,7 @@ class FlexboxAndroidTest {
     private fun hasHeight(height: Int): ViewAssertion {
         return matches(object : TypeSafeMatcher<View>() {
             override fun describeTo(description: Description) {
-                description.appendText("expected height: " + height)
+                description.appendText("expected height: $height")
             }
 
             override fun describeMismatchSafely(item: View, mismatchDescription: Description) {

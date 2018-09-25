@@ -16,9 +16,9 @@
 
 package com.google.android.flexbox.apps.catgallery
 
-import android.support.v7.widget.RecyclerView
 import android.view.LayoutInflater
 import android.view.ViewGroup
+import androidx.recyclerview.widget.RecyclerView
 
 /**
  * Adapter class that handles the data set with the {@link RecyclerView.LayoutManager}
