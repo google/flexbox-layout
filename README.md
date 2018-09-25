@@ -10,7 +10,7 @@ Add the following dependency to your `build.gradle` file:
 
 ```
 dependencies {
-    implementation 'com.google.android:flexbox:1.1.0-beta1'
+    implementation 'com.google.android:flexbox:1.1.0'
 }
 ```
 

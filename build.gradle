@@ -22,7 +22,7 @@ buildscript {
         targetSdkVersion = 28
         compileSdkVersion = 28
 
-        androidGradlePluginVersion = "3.2.0-beta04"
+        androidGradlePluginVersion = "3.2.0"
         androidMavenGradlePluginVersion = "1.5"
         androidxCoreVersion = "1.0.0"
         androidxEspressoVersion = "3.1.0-alpha4"
