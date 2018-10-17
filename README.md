@@ -14,6 +14,11 @@ dependencies {
 }
 ```
 
+**Note that starting from 1.1.0 version, the library is expected to use with AndroidX. Please migrate to [AndroidX](https://developer.android.com/jetpack/androidx/migrate) if you use 1.1.0 or above.**
+
+**Please use the versions 1.0.0 if you haven't migrated to AndroidX.**
+
+
 # Usage
 There are two ways of using Flexbox in your layout.
 
