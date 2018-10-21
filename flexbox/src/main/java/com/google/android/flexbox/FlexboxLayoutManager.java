@@ -246,18 +246,10 @@ public class FlexboxLayoutManager extends RecyclerView.LayoutManager implements 
         Properties properties = getProperties(context, attrs, defStyleAttr, defStyleRes);
         switch (properties.orientation) {
             case LinearLayoutManager.HORIZONTAL:
-                if (properties.reverseLayout) {
-                    setFlexDirection(FlexDirection.ROW_REVERSE);
-                } else {
-                    setFlexDirection(FlexDirection.ROW);
-                }
+                setFlexDirection(properties.reverseLayout ? FlexDirection.ROW_REVERSE : FlexDirection.ROW);
                 break;
             case LinearLayoutManager.VERTICAL:
-                if (properties.reverseLayout) {
-                    setFlexDirection(FlexDirection.COLUMN_REVERSE);
-                } else {
-                    setFlexDirection(FlexDirection.COLUMN);
-                }
+                setFlexDirection(properties.reverseLayout ? FlexDirection.COLUMN_REVERSE : FlexDirection.COLUMN);
                 break;
         }
         setFlexWrap(FlexWrap.WRAP);
