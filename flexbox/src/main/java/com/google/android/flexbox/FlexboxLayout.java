@@ -520,11 +520,9 @@ public class FlexboxLayout extends ViewGroup implements FlexContainer {
 
     @Override
     public int getLargestMainSize() {
-        int largestSize = Integer.MIN_VALUE;
-        for (FlexLine flexLine : mFlexLines) {
-            largestSize = Math.max(largestSize, flexLine.mMainSize);
-        }
-        return largestSize;
+        return mFlexLines.stream()
+            .map(FlexLine::getMainSize)
+            .reduce(Integer.MIN_VALUE, Math::max);
     }
 
     @Override
