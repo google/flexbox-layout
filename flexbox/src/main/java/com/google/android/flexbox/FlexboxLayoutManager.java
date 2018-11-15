@@ -1895,18 +1895,27 @@ public class FlexboxLayoutManager extends RecyclerView.LayoutManager implements 
 
     @Override
     public boolean canScrollHorizontally() {
-        return !isMainAxisDirectionHorizontal() || getWidth() > mParent.getWidth();
+        if (mFlexWrap == FlexWrap.NOWRAP) {
+            return isMainAxisDirectionHorizontal();
+        } else {
+            return !isMainAxisDirectionHorizontal() || getWidth() > mParent.getWidth();
+        }
     }
 
     @Override
     public boolean canScrollVertically() {
-        return isMainAxisDirectionHorizontal() || getHeight() > mParent.getHeight();
+        if (mFlexWrap == FlexWrap.NOWRAP) {
+            return !isMainAxisDirectionHorizontal();
+        } else {
+            return isMainAxisDirectionHorizontal() || getHeight() > mParent.getHeight();
+        }
     }
 
     @Override
     public int scrollHorizontallyBy(int dx, RecyclerView.Recycler recycler,
             RecyclerView.State state) {
-        if (!isMainAxisDirectionHorizontal()) {
+        if (!isMainAxisDirectionHorizontal() ||
+                (mFlexWrap == FlexWrap.NOWRAP && isMainAxisDirectionHorizontal())) {
             int scrolled = handleScrollingCrossAxis(dx, recycler, state);
             mViewCache.clear();
             return scrolled;
@@ -2873,17 +2882,38 @@ public class FlexboxLayoutManager extends RecyclerView.LayoutManager implements 
                 // We need to use the anchor view as starting from right if the flex direction is
                 // (column or column_reverse) and layout direction is RTL.
                 if (mLayoutFromEnd) {
-                    mCoordinate = mOrientationHelper.getDecoratedStart(anchor) +
-                            mOrientationHelper.getTotalSpaceChange();
+                    // When the flex wrap is nowrap, the orientation helper is changed to
+                    // perpendicular. Need to use the mSubOrientationHelper to be consistent with
+                    // when flex wrap is not nowrap.
+                    if (mFlexWrap == FlexWrap.NOWRAP) {
+                        mCoordinate = mSubOrientationHelper.getDecoratedStart(anchor) +
+                                mSubOrientationHelper.getTotalSpaceChange();
+                    } else {
+                        mCoordinate = mOrientationHelper.getDecoratedStart(anchor) +
+                                mOrientationHelper.getTotalSpaceChange();
+                    }
                 } else {
-                    mCoordinate = mOrientationHelper.getDecoratedEnd(anchor);
+                    if (mFlexWrap == FlexWrap.NOWRAP) {
+                        mCoordinate = mSubOrientationHelper.getDecoratedEnd(anchor);
+                    } else {
+                        mCoordinate = mOrientationHelper.getDecoratedEnd(anchor);
+                    }
                 }
             } else {
                 if (mLayoutFromEnd) {
-                    mCoordinate = mOrientationHelper.getDecoratedEnd(anchor) +
-                            mOrientationHelper.getTotalSpaceChange();
+                    if (mFlexWrap == FlexWrap.NOWRAP) {
+                        mCoordinate = mSubOrientationHelper.getDecoratedEnd(anchor) +
+                                mSubOrientationHelper.getTotalSpaceChange();
+                    } else {
+                        mCoordinate = mOrientationHelper.getDecoratedEnd(anchor) +
+                                mOrientationHelper.getTotalSpaceChange();
+                    }
                 } else {
-                    mCoordinate = mOrientationHelper.getDecoratedStart(anchor);
+                    if (mFlexWrap == FlexWrap.NOWRAP) {
+                        mCoordinate = mSubOrientationHelper.getDecoratedStart(anchor);
+                    } else {
+                        mCoordinate = mOrientationHelper.getDecoratedStart(anchor);
+                    }
                 }
             }
             mPosition = getPosition(anchor);

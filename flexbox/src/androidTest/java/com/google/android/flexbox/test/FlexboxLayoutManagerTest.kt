@@ -3409,6 +3409,37 @@ class FlexboxLayoutManagerTest {
         assertThat(layoutManager.flexLines.size, `is`(3))
     }
 
+    @Test
+    @FlakyTest
+    @Throws(Throwable::class)
+    fun testNowrap_justifyContentCenter() {
+        // This is to fix https://github.com/google/flexbox-layout/issues/469
+        val activity = activityRule.activity
+        val layoutManager = FlexboxLayoutManager(activity)
+        val adapter = TestAdapter()
+        val height = 70
+        activityRule.runOnUiThread {
+            activity.setContentView(R.layout.recyclerview)
+            val recyclerView = activity.findViewById<RecyclerView>(R.id.recyclerview)
+            layoutManager.flexDirection = FlexDirection.ROW
+            layoutManager.flexWrap = FlexWrap.NOWRAP
+            layoutManager.justifyContent = JustifyContent.CENTER
+            recyclerView.layoutManager = layoutManager
+            recyclerView.adapter = adapter
+            for (i in 1..3) {
+                val lp = createLayoutParams(activity, 100, height)
+                adapter.addItem(lp)
+            }
+        }
+        InstrumentationRegistry.getInstrumentation().waitForIdleSync()
+        val view1Bottom= layoutManager.getChildAt(0)?.bottom ?: 0
+        val view2Bottom = layoutManager.getChildAt(1)?.bottom ?: 0
+        val view3Bottom = layoutManager.getChildAt(2)?.bottom ?: 0
+        assertThat(view1Bottom, `is`(activity.dpToPixel(height)))
+        assertThat(view2Bottom, `is`(activity.dpToPixel(height)))
+        assertThat(view3Bottom, `is`(activity.dpToPixel(height)))
+    }
+
     /**
      * Creates a new flex item.
      *
