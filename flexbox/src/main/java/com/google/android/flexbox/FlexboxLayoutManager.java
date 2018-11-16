@@ -789,7 +789,7 @@ public class FlexboxLayoutManager extends RecyclerView.LayoutManager implements 
             gap = mOrientationHelper.getEndAfterPadding() - startOffset;
             if (gap > 0) {
                 // check if we should fix this gap.
-                fixOffset = handleScrollingCrossAxis(-gap, recycler, state);
+                fixOffset = handleScrollingMainOrientation(-gap, recycler, state);
             } else {
                 return 0; // nothing to fix
             }
@@ -797,7 +797,7 @@ public class FlexboxLayoutManager extends RecyclerView.LayoutManager implements 
             gap = startOffset - mOrientationHelper.getStartAfterPadding();
             if (gap > 0) {
                 // check if we should fix this gap.
-                fixOffset = -handleScrollingCrossAxis(gap, recycler, state);
+                fixOffset = -handleScrollingMainOrientation(gap, recycler, state);
             } else {
                 return 0; // nothing to fix
             }
@@ -828,14 +828,14 @@ public class FlexboxLayoutManager extends RecyclerView.LayoutManager implements 
         if (columnAndRtl) {
             gap = endOffset - mOrientationHelper.getStartAfterPadding();
             if (gap > 0) {
-                fixOffset = handleScrollingCrossAxis(gap, recycler, state);
+                fixOffset = handleScrollingMainOrientation(gap, recycler, state);
             } else {
                 return 0; // nothing to fix
             }
         } else {
             gap = mOrientationHelper.getEndAfterPadding() - endOffset;
             if (gap > 0) {
-                fixOffset = -handleScrollingCrossAxis(-gap, recycler, state);
+                fixOffset = -handleScrollingMainOrientation(-gap, recycler, state);
             } else {
                 return 0; // nothing to fix
             }
@@ -1895,23 +1895,32 @@ public class FlexboxLayoutManager extends RecyclerView.LayoutManager implements 
 
     @Override
     public boolean canScrollHorizontally() {
-        return !isMainAxisDirectionHorizontal() || getWidth() > mParent.getWidth();
+        if (mFlexWrap == FlexWrap.NOWRAP) {
+            return isMainAxisDirectionHorizontal();
+        } else {
+            return !isMainAxisDirectionHorizontal() || getWidth() > mParent.getWidth();
+        }
     }
 
     @Override
     public boolean canScrollVertically() {
-        return isMainAxisDirectionHorizontal() || getHeight() > mParent.getHeight();
+        if (mFlexWrap == FlexWrap.NOWRAP) {
+            return !isMainAxisDirectionHorizontal();
+        } else {
+            return isMainAxisDirectionHorizontal() || getHeight() > mParent.getHeight();
+        }
     }
 
     @Override
     public int scrollHorizontallyBy(int dx, RecyclerView.Recycler recycler,
             RecyclerView.State state) {
-        if (!isMainAxisDirectionHorizontal()) {
-            int scrolled = handleScrollingCrossAxis(dx, recycler, state);
+        if (!isMainAxisDirectionHorizontal() ||
+                (mFlexWrap == FlexWrap.NOWRAP && isMainAxisDirectionHorizontal())) {
+            int scrolled = handleScrollingMainOrientation(dx, recycler, state);
             mViewCache.clear();
             return scrolled;
         } else {
-            int scrolled = handleScrollingMainAxis(dx);
+            int scrolled = handleScrollingSubOrientation(dx);
             mAnchorInfo.mPerpendicularCoordinate += scrolled;
             mSubOrientationHelper.offsetChildren(-scrolled);
             return scrolled;
@@ -1921,12 +1930,13 @@ public class FlexboxLayoutManager extends RecyclerView.LayoutManager implements 
     @Override
     public int scrollVerticallyBy(int dy, RecyclerView.Recycler recycler,
             RecyclerView.State state) {
-        if (isMainAxisDirectionHorizontal()) {
-            int scrolled = handleScrollingCrossAxis(dy, recycler, state);
+        if (isMainAxisDirectionHorizontal() ||
+                (mFlexWrap == FlexWrap.NOWRAP && !isMainAxisDirectionHorizontal())) {
+            int scrolled = handleScrollingMainOrientation(dy, recycler, state);
             mViewCache.clear();
             return scrolled;
         } else {
-            int scrolled = handleScrollingMainAxis(dy);
+            int scrolled = handleScrollingSubOrientation(dy);
             mAnchorInfo.mPerpendicularCoordinate += scrolled;
             mSubOrientationHelper.offsetChildren(-scrolled);
             return scrolled;
@@ -1934,13 +1944,15 @@ public class FlexboxLayoutManager extends RecyclerView.LayoutManager implements 
     }
 
     /**
+     * Handle the scrolling along the direction of {@link #mOrientationHelper}.
+     *
      * @param delta    the delta for the amount that is being scrolled
      *                 (either horizontally or vertically)
      * @param recycler the Recycler instance
      * @param state    the Recycler.State instance
      * @return the amount actually scrolled
      */
-    private int handleScrollingCrossAxis(int delta, RecyclerView.Recycler recycler,
+    private int handleScrollingMainOrientation(int delta, RecyclerView.Recycler recycler,
             RecyclerView.State state) {
         if (getChildCount() == 0 || delta == 0) {
             return 0;
@@ -1974,7 +1986,14 @@ public class FlexboxLayoutManager extends RecyclerView.LayoutManager implements 
         return scrolled;
     }
 
-    private int handleScrollingMainAxis(int delta) {
+    /**
+     * Handle the scrolling along the direction of {@link #mSubOrientationHelper}.
+     *
+     * @param delta    the delta for the amount that is being scrolled
+     *                 (either horizontally or vertically)
+     * @return  the amount actually scrolled
+     */
+    private int handleScrollingSubOrientation(int delta) {
         if (getChildCount() == 0 || delta == 0) {
             return 0;
         }
@@ -2869,21 +2888,30 @@ public class FlexboxLayoutManager extends RecyclerView.LayoutManager implements 
         }
 
         private void assignFromView(View anchor) {
+            OrientationHelper orientationHelper;
+            // When the flex wrap is nowrap, the orientation helper is changed to
+            // perpendicular. Need to use the mSubOrientationHelper to be consistent with
+            // when flex wrap is not nowrap.
+            if (mFlexWrap == FlexWrap.NOWRAP) {
+                orientationHelper = mSubOrientationHelper;
+            } else {
+                orientationHelper = mOrientationHelper;
+            }
             if (!isMainAxisDirectionHorizontal() && mIsRtl) {
                 // We need to use the anchor view as starting from right if the flex direction is
                 // (column or column_reverse) and layout direction is RTL.
                 if (mLayoutFromEnd) {
-                    mCoordinate = mOrientationHelper.getDecoratedStart(anchor) +
-                            mOrientationHelper.getTotalSpaceChange();
+                    mCoordinate = orientationHelper.getDecoratedStart(anchor) +
+                        orientationHelper.getTotalSpaceChange();
                 } else {
-                    mCoordinate = mOrientationHelper.getDecoratedEnd(anchor);
+                    mCoordinate = orientationHelper.getDecoratedEnd(anchor);
                 }
             } else {
                 if (mLayoutFromEnd) {
-                    mCoordinate = mOrientationHelper.getDecoratedEnd(anchor) +
-                            mOrientationHelper.getTotalSpaceChange();
+                    mCoordinate = orientationHelper.getDecoratedEnd(anchor) +
+                        orientationHelper.getTotalSpaceChange();
                 } else {
-                    mCoordinate = mOrientationHelper.getDecoratedStart(anchor);
+                    mCoordinate = orientationHelper.getDecoratedStart(anchor);
                 }
             }
             mPosition = getPosition(anchor);
