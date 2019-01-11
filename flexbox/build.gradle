@@ -41,13 +41,13 @@ android {
 
 dependencies {
     compileOnly "androidx.core:core:${rootProject.androidxCoreVersion}"
-    compileOnly "androidx.recyclerview:recyclerview:${rootProject.androidxCoreVersion}"
+    compileOnly "androidx.recyclerview:recyclerview:${rootProject.androidxRecyclerViewVersion}"
 
     testImplementation "junit:junit:${rootProject.junitVersion}"
 
     androidTestImplementation "androidx.core:core:${rootProject.androidxCoreVersion}"
-    androidTestImplementation "androidx.recyclerview:recyclerview:${rootProject.androidxCoreVersion}"
-    androidTestImplementation "androidx.annotation:annotation:${rootProject.androidxCoreVersion}"
+    androidTestImplementation "androidx.recyclerview:recyclerview:${rootProject.androidxRecyclerViewVersion}"
+    androidTestImplementation "androidx.annotation:annotation:${rootProject.androidxAnnotationVersion}"
     androidTestImplementation "androidx.test:runner:${rootProject.androidxTestVersion}"
     androidTestImplementation "androidx.test:rules:${rootProject.androidxTestVersion}"
     androidTestImplementation "androidx.test.espresso:espresso-core:${rootProject.androidxEspressoVersion}"

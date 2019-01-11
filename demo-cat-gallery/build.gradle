@@ -40,8 +40,8 @@ android {
 
 dependencies {
     implementation project(path: ":flexbox")
-    implementation "androidx.appcompat:appcompat:${rootProject.androidxCoreVersion}"
-    implementation "androidx.recyclerview:recyclerview:${rootProject.androidxCoreVersion}"
+    implementation "androidx.appcompat:appcompat:${rootProject.androidxAppCompatVersion}"
+    implementation "androidx.recyclerview:recyclerview:${rootProject.androidxRecyclerViewVersion}"
     implementation "com.google.android.material:material:${rootProject.materialVersion}"
     implementation "org.jetbrains.kotlin:kotlin-stdlib:${rootProject.kotlinVersion}"
 }
