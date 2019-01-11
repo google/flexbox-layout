@@ -40,16 +40,16 @@ android {
 
 dependencies {
     implementation project(":flexbox")
-    implementation "androidx.legacy:legacy-support-v4:${rootProject.androidxCoreVersion}"
-    implementation "androidx.appcompat:appcompat:${rootProject.androidxCoreVersion}"
-    implementation "androidx.preference:preference:${rootProject.androidxCoreVersion}"
-    implementation "androidx.legacy:legacy-preference-v14:${rootProject.androidxCoreVersion}"
+    implementation "androidx.legacy:legacy-support-v4:${rootProject.androidxLegacySupportV4Version}"
+    implementation "androidx.appcompat:appcompat:${rootProject.androidxAppCompatVersion}"
+    implementation "androidx.preference:preference:${rootProject.androidxPreferenceVersion}"
+    implementation "androidx.legacy:legacy-preference-v14:${rootProject.androidxPreferenceV14Version}"
     implementation "com.google.android.material:material:${rootProject.materialVersion}"
     implementation "org.jetbrains.kotlin:kotlin-stdlib:$kotlinVersion"
 
     testImplementation "junit:junit:${rootProject.ext.junitVersion}"
 
-    androidTestImplementation "androidx.annotation:annotation:${rootProject.androidxCoreVersion}"
+    androidTestImplementation "androidx.annotation:annotation:${rootProject.androidxAnnotationVersion}"
     androidTestImplementation "androidx.test:runner:${rootProject.androidxTestVersion}"
     androidTestImplementation "androidx.test:rules:${rootProject.androidxTestVersion}"
     androidTestImplementation "androidx.test.espresso:espresso-core:${rootProject.androidxEspressoVersion}"
