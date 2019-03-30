@@ -23,7 +23,7 @@ import androidx.annotation.IntDef;
 
 /** This attribute controls the alignment along the main axis. */
 @IntDef({JustifyContent.FLEX_START, JustifyContent.FLEX_END, JustifyContent.CENTER,
-        JustifyContent.SPACE_BETWEEN, JustifyContent.SPACE_AROUND})
+        JustifyContent.SPACE_BETWEEN, JustifyContent.SPACE_AROUND, JustifyContent.SPACE_EVENLY})
 @Retention(RetentionPolicy.SOURCE)
 public @interface JustifyContent {
 
