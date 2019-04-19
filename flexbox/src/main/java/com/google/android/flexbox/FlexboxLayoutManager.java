@@ -1898,7 +1898,7 @@ public class FlexboxLayoutManager extends RecyclerView.LayoutManager implements 
         if (mFlexWrap == FlexWrap.NOWRAP) {
             return isMainAxisDirectionHorizontal();
         } else {
-            return !isMainAxisDirectionHorizontal() || getWidth() > mParent.getWidth();
+            return isMainAxisDirectionHorizontal() || getHeight() > (mParent != null ? mParent.getHeight() : 0);
         }
     }
 
