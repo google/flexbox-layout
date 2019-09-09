@@ -121,7 +121,7 @@ internal class FragmentHelper(private val activity: MainActivity, private val fl
 
     private fun readPreferenceAsInteger(key: String, defValue: String): Int {
         return if (sharedPreferences.contains(key)) {
-            sharedPreferences.getString(key, defValue).toIntOrNull() ?: defValue.toInt()
+            sharedPreferences.getString(key, defValue)?.toIntOrNull() ?: defValue.toInt()
         } else {
             defValue.toInt()
         }
@@ -129,7 +129,7 @@ internal class FragmentHelper(private val activity: MainActivity, private val fl
 
     private fun readPreferenceAsFloat(key: String, defValue: String): Float {
         return if (sharedPreferences.contains(key)) {
-            sharedPreferences.getString(key, defValue).toFloatOrNull() ?: defValue.toFloat()
+            sharedPreferences.getString(key, defValue)?.toFloatOrNull() ?: defValue.toFloat()
         } else {
             defValue.toFloat()
         }
