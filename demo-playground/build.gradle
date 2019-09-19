@@ -40,10 +40,8 @@ android {
 
 dependencies {
     implementation project(":flexbox")
-    implementation "androidx.legacy:legacy-support-v4:${rootProject.androidxLegacySupportV4Version}"
     implementation "androidx.appcompat:appcompat:${rootProject.androidxAppCompatVersion}"
     implementation "androidx.preference:preference:${rootProject.androidxPreferenceVersion}"
-    implementation "androidx.legacy:legacy-preference-v14:${rootProject.androidxPreferenceV14Version}"
     implementation "com.google.android.material:material:${rootProject.materialVersion}"
     implementation "org.jetbrains.kotlin:kotlin-stdlib:$kotlinVersion"
 
