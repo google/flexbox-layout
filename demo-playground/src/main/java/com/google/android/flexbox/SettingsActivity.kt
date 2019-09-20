@@ -47,8 +47,8 @@ internal class SettingsActivity : FragmentActivity() {
             addPreferencesFromResource(R.xml.new_flex_item_preferences)
 
             val orderPreference = findPreference(
-                    getString(R.string.new_flex_item_order_key)) as EditTextPreference
-            orderPreference.onPreferenceChangeListener = Preference.OnPreferenceChangeListener { _, newValue ->
+                    getString(R.string.new_flex_item_order_key)) as EditTextPreference?
+            orderPreference?.onPreferenceChangeListener = Preference.OnPreferenceChangeListener { _, newValue ->
                 val validator = IntegerInputValidator()
                 if (!validator.isValidInput(newValue.toString())) {
                     Toast.makeText(activity,
@@ -60,8 +60,8 @@ internal class SettingsActivity : FragmentActivity() {
             }
 
             val flexGrowPreference = findPreference(
-                    getString(R.string.new_flex_grow_key)) as EditTextPreference
-            flexGrowPreference.onPreferenceChangeListener = Preference.OnPreferenceChangeListener { _, newValue ->
+                    getString(R.string.new_flex_grow_key)) as EditTextPreference?
+            flexGrowPreference?.onPreferenceChangeListener = Preference.OnPreferenceChangeListener { _, newValue ->
                 val validator = NonNegativeDecimalInputValidator()
                 if (!validator.isValidInput(newValue.toString())) {
                     Toast.makeText(activity,
@@ -73,8 +73,8 @@ internal class SettingsActivity : FragmentActivity() {
             }
 
             val flexShrinkPreference = findPreference(
-                    getString(R.string.new_flex_shrink_key)) as EditTextPreference
-            flexShrinkPreference.onPreferenceChangeListener = Preference.OnPreferenceChangeListener { _, newValue ->
+                    getString(R.string.new_flex_shrink_key)) as EditTextPreference?
+            flexShrinkPreference?.onPreferenceChangeListener = Preference.OnPreferenceChangeListener { _, newValue ->
                 val validator = NonNegativeDecimalInputValidator()
                 if (!validator.isValidInput(newValue.toString())) {
                     Toast.makeText(activity,
@@ -86,8 +86,8 @@ internal class SettingsActivity : FragmentActivity() {
             }
 
             val flexBasisPercentPreference = findPreference(
-                    getString(R.string.new_flex_basis_percent_key)) as EditTextPreference
-            flexBasisPercentPreference.onPreferenceChangeListener = Preference.OnPreferenceChangeListener { _, newValue ->
+                    getString(R.string.new_flex_basis_percent_key)) as EditTextPreference?
+            flexBasisPercentPreference?.onPreferenceChangeListener = Preference.OnPreferenceChangeListener { _, newValue ->
                 val validator = FlexBasisPercentInputValidator()
                 if (!validator.isValidInput(newValue.toString())) {
                     Toast.makeText(activity,
@@ -99,8 +99,8 @@ internal class SettingsActivity : FragmentActivity() {
             }
 
             val widthPreference = findPreference(
-                    getString(R.string.new_width_key)) as EditTextPreference
-            widthPreference.onPreferenceChangeListener = Preference.OnPreferenceChangeListener { _, newValue ->
+                    getString(R.string.new_width_key)) as EditTextPreference?
+            widthPreference?.onPreferenceChangeListener = Preference.OnPreferenceChangeListener { _, newValue ->
                 val validator = DimensionInputValidator()
                 if (!validator.isValidInput(newValue.toString())) {
                     Toast.makeText(activity,
@@ -112,8 +112,8 @@ internal class SettingsActivity : FragmentActivity() {
             }
 
             val heightPreference = findPreference(
-                    getString(R.string.new_height_key)) as EditTextPreference
-            heightPreference.onPreferenceChangeListener = Preference.OnPreferenceChangeListener { _, newValue ->
+                    getString(R.string.new_height_key)) as EditTextPreference?
+            heightPreference?.onPreferenceChangeListener = Preference.OnPreferenceChangeListener { _, newValue ->
                 val validator = DimensionInputValidator()
                 if (!validator.isValidInput(newValue.toString())) {
                     Toast.makeText(activity,
