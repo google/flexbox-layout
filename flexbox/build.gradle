@@ -37,6 +37,10 @@ android {
             minifyEnabled false
         }
     }
+
+    libraryVariants.all {
+        it.generateBuildConfigProvider.configure { enabled = false }
+    }
 }
 
 dependencies {
