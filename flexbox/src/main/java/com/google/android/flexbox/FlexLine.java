@@ -90,6 +90,10 @@ public class FlexLine {
 
     int mLastIndex;
 
+    boolean mAnyItemsHaveFlexGrow;
+
+    boolean mAnyItemsHaveFlexShrink;
+
     /**
      * @return the size of the flex line in pixels along the main axis of the flex container.
      */

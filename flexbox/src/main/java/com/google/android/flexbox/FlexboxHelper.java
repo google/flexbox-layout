@@ -18,6 +18,9 @@ package com.google.android.flexbox;
 
 import static com.google.android.flexbox.FlexContainer.NOT_SET;
 import static com.google.android.flexbox.FlexItem.FLEX_BASIS_PERCENT_DEFAULT;
+import static com.google.android.flexbox.FlexItem.FLEX_GROW_DEFAULT;
+import static com.google.android.flexbox.FlexItem.FLEX_SHRINK_DEFAULT;
+import static com.google.android.flexbox.FlexItem.FLEX_SHRINK_NOT_SET;
 
 import static androidx.recyclerview.widget.RecyclerView.NO_POSITION;
 
@@ -442,6 +445,9 @@ class FlexboxHelper {
             if (flexItem.getAlignSelf() == AlignItems.STRETCH) {
                 flexLine.mIndicesAlignSelfStretch.add(i);
             }
+
+            flexLine.mAnyItemsHaveFlexGrow |= flexItem.getFlexGrow() != FLEX_GROW_DEFAULT;
+            flexLine.mAnyItemsHaveFlexShrink |= flexItem.getFlexShrink() != FLEX_SHRINK_NOT_SET;
 
             int childMainSize = getFlexItemSizeMain(flexItem, isMainHorizontal);
 
@@ -971,10 +977,10 @@ class FlexboxHelper {
         List<FlexLine> flexLines = mFlexContainer.getFlexLinesInternal();
         for (int i = flexLineIndex, size = flexLines.size(); i < size; i++) {
             FlexLine flexLine = flexLines.get(i);
-            if (flexLine.mMainSize < mainSize) {
+            if (flexLine.mMainSize < mainSize && flexLine.mAnyItemsHaveFlexGrow) {
                 expandFlexItems(widthMeasureSpec, heightMeasureSpec, flexLine,
                         mainSize, paddingAlongMainAxis, false);
-            } else {
+            } else if (flexLine.mAnyItemsHaveFlexShrink) {
                 shrinkFlexItems(widthMeasureSpec, heightMeasureSpec, flexLine,
                         mainSize, paddingAlongMainAxis, false);
             }

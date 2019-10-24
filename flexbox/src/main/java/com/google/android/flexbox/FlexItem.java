@@ -35,6 +35,9 @@ interface FlexItem extends Parcelable {
     /** The default value for the flex shrink attribute */
     float FLEX_SHRINK_DEFAULT = 1f;
 
+    /** The value representing the flex shrink attribute is not set  */
+    float FLEX_SHRINK_NOT_SET = 0f;
+
     /** The default value for the flex basis percent attribute */
     float FLEX_BASIS_PERCENT_DEFAULT = -1f;
 
