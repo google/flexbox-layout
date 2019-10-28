@@ -446,9 +446,6 @@ class FlexboxHelper {
                 flexLine.mIndicesAlignSelfStretch.add(i);
             }
 
-            flexLine.mAnyItemsHaveFlexGrow |= flexItem.getFlexGrow() != FLEX_GROW_DEFAULT;
-            flexLine.mAnyItemsHaveFlexShrink |= flexItem.getFlexShrink() != FLEX_SHRINK_NOT_SET;
-
             int childMainSize = getFlexItemSizeMain(flexItem, isMainHorizontal);
 
             if (flexItem.getFlexBasisPercent() != FLEX_BASIS_PERCENT_DEFAULT
@@ -556,12 +553,13 @@ class FlexboxHelper {
                 flexLine.mFirstIndex = i;
                 indexInFlexLine = 0;
                 largestSizeInCross = Integer.MIN_VALUE;
-                flexLine.mAnyItemsHaveFlexGrow |= flexItem.getFlexGrow() != FLEX_GROW_DEFAULT;
-                flexLine.mAnyItemsHaveFlexShrink |= flexItem.getFlexShrink() != FLEX_SHRINK_NOT_SET;
             } else {
                 flexLine.mItemCount++;
                 indexInFlexLine++;
             }
+            flexLine.mAnyItemsHaveFlexGrow |= flexItem.getFlexGrow() != FLEX_GROW_DEFAULT;
+            flexLine.mAnyItemsHaveFlexShrink |= flexItem.getFlexShrink() != FLEX_SHRINK_NOT_SET;
+
             if (mIndexToFlexLine != null) {
                 mIndexToFlexLine[i] = flexLines.size();
             }
