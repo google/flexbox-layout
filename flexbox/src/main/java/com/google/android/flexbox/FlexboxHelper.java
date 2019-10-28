@@ -982,7 +982,7 @@ class FlexboxHelper {
             if (flexLine.mMainSize < mainSize && flexLine.mAnyItemsHaveFlexGrow) {
                 expandFlexItems(widthMeasureSpec, heightMeasureSpec, flexLine,
                         mainSize, paddingAlongMainAxis, false);
-            } else if (flexLine.mAnyItemsHaveFlexShrink) {
+            } else if (flexLine.mMainSize > mainSize && flexLine.mAnyItemsHaveFlexShrink) {
                 shrinkFlexItems(widthMeasureSpec, heightMeasureSpec, flexLine,
                         mainSize, paddingAlongMainAxis, false);
             }
