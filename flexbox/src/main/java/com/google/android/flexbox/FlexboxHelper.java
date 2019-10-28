@@ -1579,7 +1579,7 @@ class FlexboxHelper {
 
     /**
      * Expand the view if the {@link FlexContainer#getAlignItems()} attribute is set to {@link
-     * AlignItems#STRETCH} or {@link FlexboxLayout.LayoutParams#mAlignSelf} is set as
+     * AlignItems#STRETCH} or {@link FlexItem#getAlignSelf()} is set as
      * {@link AlignItems#STRETCH}.
      *
      * @param fromIndex the index from which value, stretch is calculated
@@ -1587,7 +1587,7 @@ class FlexboxHelper {
      * @see FlexContainer#setFlexDirection(int)
      * @see FlexContainer#getAlignItems()
      * @see FlexContainer#setAlignItems(int)
-     * @see FlexboxLayout.LayoutParams#mAlignSelf
+     * @see FlexItem#getAlignSelf()
      */
     void stretchViews(int fromIndex) {
         if (fromIndex >= mFlexContainer.getFlexItemCount()) {
@@ -2016,6 +2016,7 @@ class FlexboxHelper {
             return index - another.index;
         }
 
+        @NonNull
         @Override
         public String toString() {
             return "Order{" +
