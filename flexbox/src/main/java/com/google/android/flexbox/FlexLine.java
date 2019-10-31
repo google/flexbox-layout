@@ -65,7 +65,7 @@ public class FlexLine {
 
     /**
      * The largest value of the individual child's baseline (obtained by View#getBaseline()
-     * if the {@link FlexboxLayout#mAlignItems} value is not {@link AlignItems#BASELINE}
+     * if the {@link FlexContainer#getAlignItems()} value is not {@link AlignItems#BASELINE}
      * or the flex direction is vertical, this value is not used.
      * If the alignment direction is from the bottom to top,
      * (e.g. flexWrap == WRAP_REVERSE and flexDirection == ROW)
@@ -89,6 +89,18 @@ public class FlexLine {
     int mFirstIndex;
 
     int mLastIndex;
+
+    /**
+     * Set to true if any {@link FlexItem}s in this line have {@link FlexItem#getFlexGrow()}
+     * attributes set (have the value other than {@link FlexItem#FLEX_GROW_DEFAULT})
+     */
+    boolean mAnyItemsHaveFlexGrow;
+
+    /**
+     * Set to true if any {@link FlexItem}s in this line have {@link FlexItem#getFlexShrink()}
+     * attributes set (have the value other than {@link FlexItem#FLEX_SHRINK_NOT_SET})
+     */
+    boolean mAnyItemsHaveFlexShrink;
 
     /**
      * @return the size of the flex line in pixels along the main axis of the flex container.

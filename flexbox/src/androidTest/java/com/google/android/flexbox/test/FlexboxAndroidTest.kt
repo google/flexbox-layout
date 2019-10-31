@@ -833,6 +833,7 @@ class FlexboxAndroidTest {
                     override fun apply(flexboxLayout: FlexboxLayout) {
                         flexboxLayout.justifyContent = JustifyContent.FLEX_END
                         flexboxLayout.flexDirection = FlexDirection.COLUMN
+                        flexboxLayout.alignItems = AlignItems.STRETCH
                     }
                 })
 

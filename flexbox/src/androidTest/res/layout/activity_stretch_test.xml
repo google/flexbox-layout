@@ -20,7 +20,8 @@
     android:layout_height="360dp"
     app:flexDirection="row"
     app:flexWrap="wrap"
-    app:alignItems="stretch">
+    app:alignItems="stretch"
+    app:alignContent="stretch" >
 
     <TextView
         android:id="@+id/text1"

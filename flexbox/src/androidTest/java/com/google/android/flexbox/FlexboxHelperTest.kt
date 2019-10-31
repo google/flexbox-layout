@@ -427,4 +427,43 @@ class FlexboxHelperTest {
         assertThat(flexboxHelper.extractHigherInt(combined), `is`(higher))
         assertThat(flexboxHelper.extractLowerInt(combined), `is`(lower))
     }
+
+    @Test
+    fun testFlexLine_anyItemsHaveFlexGrow() {
+        val activity = activityRule.activity
+        val lp1 = FlexboxLayout.LayoutParams(100, 100).apply {
+            flexGrow = 1.0f
+        }
+        val view1 = View(activity)
+        view1.layoutParams = lp1
+        val lp2 = FlexboxLayout.LayoutParams(100, 200)
+        val view2 = View(activity)
+        view2.layoutParams = lp2
+        val lp3 = FlexboxLayout.LayoutParams(100, 300)
+        val view3 = View(activity)
+        view3.layoutParams = lp3
+        val lp4 = FlexboxLayout.LayoutParams(100, 400).apply {
+            flexGrow = 2.0f
+        }
+        val view4 = View(activity)
+        view4.layoutParams = lp4
+        flexContainer.apply {
+            addView(view1)
+            addView(view2)
+            addView(view3)
+            addView(view4)
+            flexDirection = FlexDirection.COLUMN
+            flexWrap = FlexWrap.WRAP
+            alignContent = AlignContent.STRETCH
+        }
+        val widthMeasureSpec = View.MeasureSpec.makeMeasureSpec(1000, View.MeasureSpec.EXACTLY)
+        val heightMeasureSpec = View.MeasureSpec.makeMeasureSpec(500, View.MeasureSpec.EXACTLY)
+        val result = FlexboxHelper.FlexLinesResult()
+        flexboxHelper.calculateVerticalFlexLines(result, widthMeasureSpec, heightMeasureSpec)
+        flexContainer.flexLines = result.mFlexLines
+        assertThat(flexContainer.flexLines.size, `is`(3))
+        assertThat(flexContainer.flexLines[0].mAnyItemsHaveFlexGrow, `is`(true))
+        assertThat(flexContainer.flexLines[1].mAnyItemsHaveFlexGrow, `is`(false))
+        assertThat(flexContainer.flexLines[2].mAnyItemsHaveFlexGrow, `is`(true))
+    }
 }

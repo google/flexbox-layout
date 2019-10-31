@@ -18,6 +18,9 @@ package com.google.android.flexbox;
 
 import static com.google.android.flexbox.FlexContainer.NOT_SET;
 import static com.google.android.flexbox.FlexItem.FLEX_BASIS_PERCENT_DEFAULT;
+import static com.google.android.flexbox.FlexItem.FLEX_GROW_DEFAULT;
+import static com.google.android.flexbox.FlexItem.FLEX_SHRINK_DEFAULT;
+import static com.google.android.flexbox.FlexItem.FLEX_SHRINK_NOT_SET;
 
 import static androidx.recyclerview.widget.RecyclerView.NO_POSITION;
 
@@ -554,6 +557,9 @@ class FlexboxHelper {
                 flexLine.mItemCount++;
                 indexInFlexLine++;
             }
+            flexLine.mAnyItemsHaveFlexGrow |= flexItem.getFlexGrow() != FLEX_GROW_DEFAULT;
+            flexLine.mAnyItemsHaveFlexShrink |= flexItem.getFlexShrink() != FLEX_SHRINK_NOT_SET;
+
             if (mIndexToFlexLine != null) {
                 mIndexToFlexLine[i] = flexLines.size();
             }
@@ -971,10 +977,10 @@ class FlexboxHelper {
         List<FlexLine> flexLines = mFlexContainer.getFlexLinesInternal();
         for (int i = flexLineIndex, size = flexLines.size(); i < size; i++) {
             FlexLine flexLine = flexLines.get(i);
-            if (flexLine.mMainSize < mainSize) {
+            if (flexLine.mMainSize < mainSize && flexLine.mAnyItemsHaveFlexGrow) {
                 expandFlexItems(widthMeasureSpec, heightMeasureSpec, flexLine,
                         mainSize, paddingAlongMainAxis, false);
-            } else {
+            } else if (flexLine.mMainSize > mainSize && flexLine.mAnyItemsHaveFlexShrink) {
                 shrinkFlexItems(widthMeasureSpec, heightMeasureSpec, flexLine,
                         mainSize, paddingAlongMainAxis, false);
             }
@@ -1571,7 +1577,7 @@ class FlexboxHelper {
 
     /**
      * Expand the view if the {@link FlexContainer#getAlignItems()} attribute is set to {@link
-     * AlignItems#STRETCH} or {@link FlexboxLayout.LayoutParams#mAlignSelf} is set as
+     * AlignItems#STRETCH} or {@link FlexItem#getAlignSelf()} is set as
      * {@link AlignItems#STRETCH}.
      *
      * @param fromIndex the index from which value, stretch is calculated
@@ -1579,7 +1585,7 @@ class FlexboxHelper {
      * @see FlexContainer#setFlexDirection(int)
      * @see FlexContainer#getAlignItems()
      * @see FlexContainer#setAlignItems(int)
-     * @see FlexboxLayout.LayoutParams#mAlignSelf
+     * @see FlexItem#getAlignSelf()
      */
     void stretchViews(int fromIndex) {
         if (fromIndex >= mFlexContainer.getFlexItemCount()) {
@@ -2008,6 +2014,7 @@ class FlexboxHelper {
             return index - another.index;
         }
 
+        @NonNull
         @Override
         public String toString() {
             return "Order{" +
