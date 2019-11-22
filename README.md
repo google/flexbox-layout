@@ -374,7 +374,7 @@ equivalent attribute
   more control over when a wrapping happens.
 
 (5) Default values for `alignItems` and `alignContent` are set to `flex_start` instead of `stretch`.
-  * Setting `stretch` for the `alignItems` is expensive because the children of `FlexboxLayout` are calculated more than twice. The difference is more obvious when the layout hierarchy is deeply nested.
+  * Setting `stretch` for the `alignItems` is expensive because the children of `FlexboxLayout` are measured more than twice. The difference is more obvious when the layout hierarchy is deeply nested.
 
 ## Xamarin Binding
 Xamarin binding is now available on [NuGet](https://www.nuget.org/packages/FlexboxLayoutXamarinBindingAndroid/) thanks to [@btripp](https://github.com/btripp)
