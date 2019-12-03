@@ -34,23 +34,23 @@ import com.google.android.flexbox.FlexboxLayoutManager
  */
 class MainActivity : AppCompatActivity() {
 
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_main)
-
-        val toolbar: Toolbar = findViewById(R.id.toolbar)
-        setSupportActionBar(toolbar)
-
-        val flexboxLayoutManager = FlexboxLayoutManager(this).apply {
-            flexWrap = FlexWrap.WRAP
-            flexDirection = FlexDirection.ROW
-            alignItems = AlignItems.STRETCH
-        }
-
-        val recyclerView: RecyclerView = findViewById(R.id.recyclerview)
-        recyclerView.apply {
-            layoutManager = flexboxLayoutManager
-            adapter = CatAdapter()
-        }
-    }
+//    override fun onCreate(savedInstanceState: Bundle?) {
+//        super.onCreate(savedInstanceState)
+//        setContentView(R.layout.activity_main)
+//
+//        val toolbar: Toolbar = findViewById(R.id.toolbar)
+//        setSupportActionBar(toolbar)
+//
+//        val flexboxLayoutManager = FlexboxLayoutManager(this).apply {
+//            flexWrap = FlexWrap.WRAP
+//            flexDirection = FlexDirection.ROW
+//            alignItems = AlignItems.STRETCH
+//        }
+//
+//        val recyclerView: RecyclerView = findViewById(R.id.recyclerview)
+//        recyclerView.apply {
+//            layoutManager = flexboxLayoutManager
+//            adapter = CatAdapter()
+//        }
+//    }
 }

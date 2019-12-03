@@ -946,7 +946,10 @@ class FlexboxHelper {
             case FlexDirection.ROW_REVERSE:
                 int widthMode = View.MeasureSpec.getMode(widthMeasureSpec);
                 int widthSize = View.MeasureSpec.getSize(widthMeasureSpec);
+                int largestMainSize = mFlexContainer.getLargestMainSize();
                 if (widthMode == View.MeasureSpec.EXACTLY) {
+                    mainSize = widthSize;
+                } else if (largestMainSize > widthSize) {
                     mainSize = widthSize;
                 } else {
                     mainSize = mFlexContainer.getLargestMainSize();

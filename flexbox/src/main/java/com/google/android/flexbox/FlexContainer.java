@@ -298,4 +298,6 @@ interface FlexContainer {
      * @param view     the view instance
      */
     void updateViewCache(int position, View view);
+
+    int getWidth();
 }
