@@ -12,7 +12,6 @@ class CustomWrongFlexboxLayout(context: Context?) : FlexboxLayout(context) {
     Log.e("CustomFlexbox specs",
         "MeasureSpecs from parent: Width" + MeasureSpec.toString(widthMeasureSpec) + " | Height" + MeasureSpec.toString(heightMeasureSpec))
     super.onMeasure(widthMeasureSpec, heightMeasureSpec)
-//    super.onMeasure(widthMeasureSpec, MeasureSpec.makeMeasureSpec(0, MeasureSpec.UNSPECIFIED))
 
     Log.e("CustomFlexbox result", "Measure result: Width: $measuredWidth | Height: $measuredHeight")
   }

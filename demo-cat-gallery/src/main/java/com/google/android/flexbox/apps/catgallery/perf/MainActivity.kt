@@ -17,9 +17,9 @@ class MainActivity : AppCompatActivity() {
 
     container = findViewById(R.id.container)
     val now = System.currentTimeMillis()
-    Log.e("stretch", "Started building Flexbox ui")
+    Log.e("Flexbox", "Started building Flexbox ui")
     textViewMeasurementBuilder = TextViewMeasurementBuilder(this)
     textViewMeasurementBuilder.build(container)
-    Log.e("stretch", "Finished building Flexbox ui in ${(System.currentTimeMillis() - now)} ms")
+    Log.e("Flexbox", "Finished building Flexbox ui in ${(System.currentTimeMillis() - now)} ms")
   }
 }

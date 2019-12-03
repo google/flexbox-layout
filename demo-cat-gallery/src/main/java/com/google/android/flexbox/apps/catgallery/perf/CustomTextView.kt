@@ -10,7 +10,6 @@ class CustomTextView(context: Context?) : TextView(context) {
     Log.e("CustomTextView specs",
         "MeasureSpecs from parent: Width" + MeasureSpec.toString(widthMeasureSpec) + " | Height" + MeasureSpec.toString(heightMeasureSpec))
     super.onMeasure(widthMeasureSpec, heightMeasureSpec)
-//    super.onMeasure(widthMeasureSpec, MeasureSpec.makeMeasureSpec(0, MeasureSpec.UNSPECIFIED))
 
     Log.e("CustomTextView result", "Measure result: Width: $width | Height: $measuredHeight")
   }

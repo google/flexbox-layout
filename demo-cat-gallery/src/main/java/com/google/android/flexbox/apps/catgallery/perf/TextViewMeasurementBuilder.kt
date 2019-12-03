@@ -33,6 +33,7 @@ class TextViewMeasurementBuilder(
 
     root.addView(imageview())
     root.addView(textView)
+//    root.addView(imageview())
 
     wrapper.addView(edittext(textView))
     wrapper.addView(root)
