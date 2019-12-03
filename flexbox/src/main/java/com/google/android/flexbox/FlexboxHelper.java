@@ -952,7 +952,7 @@ class FlexboxHelper {
                 } else if (largestMainSize > widthSize) {
                     mainSize = widthSize;
                 } else {
-                    mainSize = mFlexContainer.getLargestMainSize();
+                    mainSize = largestMainSize;
                 }
                 paddingAlongMainAxis = mFlexContainer.getPaddingLeft()
                         + mFlexContainer.getPaddingRight();
