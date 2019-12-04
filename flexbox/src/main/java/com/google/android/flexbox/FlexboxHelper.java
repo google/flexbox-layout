@@ -949,10 +949,8 @@ class FlexboxHelper {
                 int largestMainSize = mFlexContainer.getLargestMainSize();
                 if (widthMode == View.MeasureSpec.EXACTLY) {
                     mainSize = widthSize;
-                } else if (largestMainSize > widthSize) {
-                    mainSize = widthSize;
                 } else {
-                    mainSize = largestMainSize;
+                    mainSize = largestMainSize > widthSize ? widthSize : largestMainSize;
                 }
                 paddingAlongMainAxis = mFlexContainer.getPaddingLeft()
                         + mFlexContainer.getPaddingRight();
