@@ -17,6 +17,7 @@
 package com.google.android.flexbox
 
 import android.view.View
+import android.widget.TextView
 import androidx.test.rule.ActivityTestRule
 import androidx.test.runner.AndroidJUnit4
 import com.google.android.flexbox.test.FlexboxTestActivity
@@ -35,6 +36,13 @@ import org.junit.runner.RunWith
  */
 @RunWith(AndroidJUnit4::class)
 class FlexboxHelperTest {
+
+    private val LONG_TEXT = "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do " +
+            "eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim " +
+            "veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo " +
+            "consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum " +
+            "dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, " +
+            "sunt in culpa qui officia deserunt mollit anim id est laborum."
 
     @JvmField
     @Rule
@@ -323,6 +331,72 @@ class FlexboxHelperTest {
         assertThat(view3.measuredHeight, `is`(125))
         assertThat(view4.measuredWidth, `is`(100))
         assertThat(view4.measuredHeight, `is`(125))
+    }
+
+    @Test
+    @Throws(Throwable::class)
+    fun testDetermineMainSize_directionRow_fixedSizeViewAndShrinkable_doNotExceedMaxMainSize() {
+        val activity = activityRule.activity
+        val lp1 = FlexboxLayout.LayoutParams(100, 100)
+        val view1 = View(activity)
+        lp1.flexShrink = 0f
+        view1.layoutParams = lp1
+        val lp2 = FlexboxLayout.LayoutParams(
+                FlexboxLayout.LayoutParams.WRAP_CONTENT,
+                FlexboxLayout.LayoutParams.WRAP_CONTENT)
+        val view2 = TextView(activity)
+        view2.layoutParams = lp2
+        view2.text = LONG_TEXT
+        flexContainer.addView(view1)
+        flexContainer.addView(view2)
+        flexContainer.flexWrap = FlexWrap.NOWRAP
+        val widthMeasureSpec = View.MeasureSpec.makeMeasureSpec(500, View.MeasureSpec.AT_MOST)
+        val heightMeasureSpec = View.MeasureSpec.makeMeasureSpec(1000, View.MeasureSpec.UNSPECIFIED)
+        val result = FlexboxHelper.FlexLinesResult()
+        flexboxHelper.calculateHorizontalFlexLines(result, widthMeasureSpec, heightMeasureSpec)
+        flexContainer.flexLines = result.mFlexLines
+        flexboxHelper.determineMainSize(widthMeasureSpec, heightMeasureSpec)
+
+        // Container with WRAP_CONTENT and a max width forces resizable children to shrink
+        // to avoid exceeding max available space.
+        assertThat(view1.measuredWidth, `is`(100))
+        assertThat(view2.measuredWidth, `is`(400))
+    }
+
+    @Test
+    @Throws(Throwable::class)
+    fun testDetermineMainSize_directionRow_twoFixedSizeViewsAndShrinkable_doNotExceedMaxMainSize() {
+        val activity = activityRule.activity
+        val lp1 = FlexboxLayout.LayoutParams(100, 100)
+        val view1 = View(activity)
+        lp1.flexShrink = 0f
+        view1.layoutParams = lp1
+        val lp2 = FlexboxLayout.LayoutParams(
+                FlexboxLayout.LayoutParams.WRAP_CONTENT,
+                FlexboxLayout.LayoutParams.WRAP_CONTENT)
+        val view2 = TextView(activity)
+        view2.layoutParams = lp2
+        view2.text = LONG_TEXT
+        val lp3 = FlexboxLayout.LayoutParams(100, 100)
+        val view3 = View(activity)
+        lp3.flexShrink = 0f
+        view3.layoutParams = lp3
+        flexContainer.addView(view1)
+        flexContainer.addView(view2)
+        flexContainer.addView(view3)
+        flexContainer.flexWrap = FlexWrap.NOWRAP
+        val widthMeasureSpec = View.MeasureSpec.makeMeasureSpec(500, View.MeasureSpec.AT_MOST)
+        val heightMeasureSpec = View.MeasureSpec.makeMeasureSpec(1000, View.MeasureSpec.UNSPECIFIED)
+        val result = FlexboxHelper.FlexLinesResult()
+        flexboxHelper.calculateHorizontalFlexLines(result, widthMeasureSpec, heightMeasureSpec)
+        flexContainer.flexLines = result.mFlexLines
+        flexboxHelper.determineMainSize(widthMeasureSpec, heightMeasureSpec)
+
+        // Container with WRAP_CONTENT and a max width forces resizable children to shrink
+        // to avoid exceeding max available space.
+        assertThat(view1.measuredWidth, `is`(100))
+        assertThat(view2.measuredWidth, `is`(300))
+        assertThat(view3.measuredWidth, `is`(100))
     }
 
     @Test
