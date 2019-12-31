@@ -19,14 +19,15 @@ package com.google.android.flexbox;
 import static com.google.android.flexbox.FlexContainer.NOT_SET;
 import static com.google.android.flexbox.FlexItem.FLEX_BASIS_PERCENT_DEFAULT;
 import static com.google.android.flexbox.FlexItem.FLEX_GROW_DEFAULT;
-import static com.google.android.flexbox.FlexItem.FLEX_SHRINK_DEFAULT;
 import static com.google.android.flexbox.FlexItem.FLEX_SHRINK_NOT_SET;
 
 import static androidx.recyclerview.widget.RecyclerView.NO_POSITION;
 
+import android.graphics.drawable.Drawable;
 import android.util.SparseIntArray;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.CompoundButton;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -37,6 +38,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 import androidx.core.view.MarginLayoutParamsCompat;
+import androidx.core.widget.CompoundButtonCompat;
 
 /**
  * Offers various calculations for Flexbox to use the common logic between the classes such as
@@ -317,7 +319,8 @@ class FlexboxHelper {
      */
     void calculateVerticalFlexLines(FlexLinesResult result, int widthMeasureSpec,
             int heightMeasureSpec, int needsCalcAmount, int fromIndex,
-            @Nullable List<FlexLine> existingLines) {
+            @Nullable List<FlexLine> existingLines)
+    {
         calculateFlexLines(result, heightMeasureSpec, widthMeasureSpec, needsCalcAmount,
                 fromIndex, NO_POSITION, existingLines);
     }
@@ -438,6 +441,8 @@ class FlexboxHelper {
                     addFlexLine(flexLines, flexLine, i, sumCrossSize);
                 }
                 continue;
+            } else if (child instanceof CompoundButton) {
+                evaluateMinimumSizeForCompoundButton((CompoundButton) child);
             }
 
             FlexItem flexItem = (FlexItem) child.getLayoutParams();
@@ -626,6 +631,28 @@ class FlexboxHelper {
         }
 
         result.mChildState = childState;
+    }
+
+    /**
+     * Compound buttons (ex. {{@link android.widget.CheckBox}}, {@link android.widget.ToggleButton})
+     * have a button drawable with minimum height and width specified for them.
+     * To align the behavior with CSS Flexbox we want to respect these minimum measurement to avoid
+     * these drawables from being cut off during calculation. When the compound button has a minimum
+     * width or height already specified we will not make any change since we assume those were
+     * voluntarily set by the user.
+     *
+     * @param compoundButton the compound button that need to be evaluated
+     */
+    private void evaluateMinimumSizeForCompoundButton(CompoundButton compoundButton) {
+        FlexItem flexItem = (FlexItem) compoundButton.getLayoutParams();
+        int minWidth = flexItem.getMinWidth();
+        int minHeight = flexItem.getMinHeight();
+
+        Drawable drawable = CompoundButtonCompat.getButtonDrawable(compoundButton);
+        int drawableMinWidth = drawable == null ? 0 : drawable.getMinimumWidth();
+        int drawableMinHeight = drawable == null ? 0 : drawable.getMinimumHeight();
+        flexItem.setMinWidth(minWidth == NOT_SET ? drawableMinWidth : minWidth);
+        flexItem.setMinHeight(minHeight == NOT_SET ? drawableMinHeight : minHeight);
     }
 
     /**
