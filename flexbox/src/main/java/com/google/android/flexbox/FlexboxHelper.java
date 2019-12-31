@@ -319,8 +319,7 @@ class FlexboxHelper {
      */
     void calculateVerticalFlexLines(FlexLinesResult result, int widthMeasureSpec,
             int heightMeasureSpec, int needsCalcAmount, int fromIndex,
-            @Nullable List<FlexLine> existingLines)
-    {
+            @Nullable List<FlexLine> existingLines) {
         calculateFlexLines(result, heightMeasureSpec, widthMeasureSpec, needsCalcAmount,
                 fromIndex, NO_POSITION, existingLines);
     }
