@@ -23,7 +23,6 @@ import androidx.test.rule.ActivityTestRule
 import androidx.test.runner.AndroidJUnit4
 import com.google.android.flexbox.test.FlexboxTestActivity
 import com.google.android.flexbox.test.IsEqualAllowingError.Companion.isEqualAllowingError
-import com.google.android.flexbox.test.dpToPixel
 import org.hamcrest.Matchers.`is`
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertNotNull
