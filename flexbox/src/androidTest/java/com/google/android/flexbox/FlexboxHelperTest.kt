@@ -17,11 +17,13 @@
 package com.google.android.flexbox
 
 import android.view.View
+import android.widget.CheckBox
 import android.widget.TextView
 import androidx.test.rule.ActivityTestRule
 import androidx.test.runner.AndroidJUnit4
 import com.google.android.flexbox.test.FlexboxTestActivity
 import com.google.android.flexbox.test.IsEqualAllowingError.Companion.isEqualAllowingError
+import com.google.android.flexbox.test.dpToPixel
 import org.hamcrest.Matchers.`is`
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertNotNull
@@ -397,6 +399,74 @@ class FlexboxHelperTest {
         assertThat(view1.measuredWidth, `is`(100))
         assertThat(view2.measuredWidth, `is`(300))
         assertThat(view3.measuredWidth, `is`(100))
+    }
+
+    @Test
+    @Throws(Throwable::class)
+    fun testDetermineMainSize_directionRow_considerCompoundButtonImplicitMinSizeWhenNotSpecified() {
+        val containerWidth = 500
+        val activity = activityRule.activity
+        val lp1 = FlexboxLayout.LayoutParams(
+                FlexboxLayout.LayoutParams.WRAP_CONTENT,
+                FlexboxLayout.LayoutParams.WRAP_CONTENT)
+        val view1 = CheckBox(activity)
+        view1.layoutParams = lp1
+        val lp2 = FlexboxLayout.LayoutParams(
+                FlexboxLayout.LayoutParams.WRAP_CONTENT,
+                FlexboxLayout.LayoutParams.WRAP_CONTENT)
+        val view2 = TextView(activity)
+        view2.layoutParams = lp2
+        view2.text = LONG_TEXT
+        flexContainer.addView(view1)
+        flexContainer.addView(view2)
+        flexContainer.flexWrap = FlexWrap.NOWRAP
+        val widthMeasureSpec = View.MeasureSpec.makeMeasureSpec(containerWidth, View.MeasureSpec.AT_MOST)
+        val heightMeasureSpec = View.MeasureSpec.makeMeasureSpec(1000, View.MeasureSpec.UNSPECIFIED)
+        val result = FlexboxHelper.FlexLinesResult()
+        flexboxHelper.calculateHorizontalFlexLines(result, widthMeasureSpec, heightMeasureSpec)
+        flexContainer.flexLines = result.mFlexLines
+        flexboxHelper.determineMainSize(widthMeasureSpec, heightMeasureSpec)
+
+        // CompoundButton will use its ButtonDrawable minWidth to determine its size when
+        // no minimum width is set on it.
+        val drawableMinWidth = view1.buttonDrawable!!.minimumWidth
+        val expectedTextWidth = containerWidth - drawableMinWidth
+        assertThat(view1.measuredWidth, `is`(drawableMinWidth))
+        assertThat(view2.measuredWidth, `is`(expectedTextWidth))
+    }
+
+    @Test
+    @Throws(Throwable::class)
+    fun testDetermineMainSize_directionRow_considerCompoundButtonExplicitMinSizeWhenSpecified() {
+        val containerWidth = 500
+        val compoundButtonMinWidth = 150
+        val activity = activityRule.activity
+        val lp1 = FlexboxLayout.LayoutParams(
+                FlexboxLayout.LayoutParams.WRAP_CONTENT,
+                FlexboxLayout.LayoutParams.WRAP_CONTENT)
+        lp1.minWidth = compoundButtonMinWidth
+        val view1 = CheckBox(activity)
+        view1.layoutParams = lp1
+        val lp2 = FlexboxLayout.LayoutParams(
+                FlexboxLayout.LayoutParams.WRAP_CONTENT,
+                FlexboxLayout.LayoutParams.WRAP_CONTENT)
+        val view2 = TextView(activity)
+        view2.layoutParams = lp2
+        view2.text = LONG_TEXT
+        flexContainer.addView(view1)
+        flexContainer.addView(view2)
+        flexContainer.flexWrap = FlexWrap.NOWRAP
+        val widthMeasureSpec = View.MeasureSpec.makeMeasureSpec(containerWidth, View.MeasureSpec.AT_MOST)
+        val heightMeasureSpec = View.MeasureSpec.makeMeasureSpec(1000, View.MeasureSpec.UNSPECIFIED)
+        val result = FlexboxHelper.FlexLinesResult()
+        flexboxHelper.calculateHorizontalFlexLines(result, widthMeasureSpec, heightMeasureSpec)
+        flexContainer.flexLines = result.mFlexLines
+        flexboxHelper.determineMainSize(widthMeasureSpec, heightMeasureSpec)
+
+        // CompoundButton will be measured based on its explicitly specified minWidth.
+        val expectedTextWidth = containerWidth - compoundButtonMinWidth
+        assertThat(view1.measuredWidth, `is`(compoundButtonMinWidth))
+        assertThat(view2.measuredWidth, `is`(expectedTextWidth))
     }
 
     @Test
