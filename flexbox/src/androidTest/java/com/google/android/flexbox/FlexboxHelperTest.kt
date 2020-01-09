@@ -19,6 +19,7 @@ package com.google.android.flexbox
 import android.view.View
 import android.widget.CheckBox
 import android.widget.TextView
+import androidx.core.widget.CompoundButtonCompat
 import androidx.test.rule.ActivityTestRule
 import androidx.test.runner.AndroidJUnit4
 import com.google.android.flexbox.test.FlexboxTestActivity
@@ -428,7 +429,7 @@ class FlexboxHelperTest {
 
         // CompoundButton will use its ButtonDrawable minWidth to determine its size when
         // no minimum width is set on it.
-        val drawableMinWidth = view1.buttonDrawable!!.minimumWidth
+        val drawableMinWidth = CompoundButtonCompat.getButtonDrawable(view1)!!.minimumWidth
         val expectedTextWidth = containerWidth - drawableMinWidth
         assertThat(view1.measuredWidth, `is`(drawableMinWidth))
         assertThat(view2.measuredWidth, `is`(expectedTextWidth))
