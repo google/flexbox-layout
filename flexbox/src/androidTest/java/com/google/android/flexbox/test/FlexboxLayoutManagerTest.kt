@@ -24,20 +24,33 @@ import android.widget.TextView
 import androidx.core.content.res.ResourcesCompat
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import androidx.test.InstrumentationRegistry
 import androidx.test.espresso.Espresso.onView
 import androidx.test.espresso.ViewAction
-import androidx.test.espresso.action.*
+import androidx.test.espresso.action.CoordinatesProvider
+import androidx.test.espresso.action.GeneralLocation
+import androidx.test.espresso.action.GeneralSwipeAction
+import androidx.test.espresso.action.Press
+import androidx.test.espresso.action.Swipe
 import androidx.test.espresso.matcher.ViewMatchers.withId
+import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.filters.FlakyTest
 import androidx.test.filters.MediumTest
+import androidx.test.platform.app.InstrumentationRegistry
 import androidx.test.rule.ActivityTestRule
-import androidx.test.runner.AndroidJUnit4
-import com.google.android.flexbox.*
+import com.google.android.flexbox.AlignItems
+import com.google.android.flexbox.AlignSelf
+import com.google.android.flexbox.FlexDirection
+import com.google.android.flexbox.FlexWrap
+import com.google.android.flexbox.FlexboxItemDecoration
 import com.google.android.flexbox.FlexboxItemDecoration.HORIZONTAL
 import com.google.android.flexbox.FlexboxItemDecoration.VERTICAL
+import com.google.android.flexbox.FlexboxLayoutManager
+import com.google.android.flexbox.JustifyContent
 import com.google.android.flexbox.test.IsEqualAllowingError.Companion.isEqualAllowingError
-import org.hamcrest.Matchers.*
+import org.hamcrest.Matchers.`is`
+import org.hamcrest.Matchers.instanceOf
+import org.hamcrest.Matchers.lessThan
+import org.hamcrest.Matchers.notNullValue
 import org.hamcrest.core.IsNot.not
 import org.junit.Assert.assertThat
 import org.junit.Assert.assertTrue
@@ -2808,7 +2821,7 @@ class FlexboxLayoutManagerTest {
         // https://github.com/google/flexbox-layout/issues/208, the width of the inner
         // RecyclerViews were set to 0.
         val activity = activityRule.activity
-        val outerLayoutManager = androidx.recyclerview.widget.LinearLayoutManager(activity)
+        val outerLayoutManager = LinearLayoutManager(activity)
 
         // Give the inner adapter item count enough so that inner RecyclerView with
         // FlexboxLayoutManager wraps its items
@@ -2818,7 +2831,7 @@ class FlexboxLayoutManagerTest {
         activityRule.runOnUiThread {
             activity.setContentView(R.layout.recyclerview)
             val recyclerView = activity.findViewById<RecyclerView>(R.id.recyclerview)
-            outerLayoutManager.orientation = androidx.recyclerview.widget.LinearLayoutManager.HORIZONTAL
+            outerLayoutManager.orientation = LinearLayoutManager.HORIZONTAL
             recyclerView.layoutManager = outerLayoutManager
             recyclerView.adapter = adapter
         }
