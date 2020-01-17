@@ -22,7 +22,7 @@ ext {
 
     mavenGroup = 'com.google.android'
     mavenArtifactId = 'flexbox'
-    mavenVersion = '2.0.0'
+    mavenVersion = '2.0.1'
 
     bintrayOrg = 'google'
 }
