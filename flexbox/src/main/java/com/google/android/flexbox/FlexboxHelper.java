@@ -540,11 +540,12 @@ class FlexboxHelper {
                         // so far into account. In that case, the width of the child needs to be
                         // measured again note that we don't need to judge if the wrapping occurs
                         // because it doesn't change the size along the main axis.
+                        int padding = mFlexContainer.getPaddingLeft() + mFlexContainer.getPaddingRight()
+                                + flexItem.getMarginLeft() + flexItem.getMarginRight()
+                                + sumCrossSize;
                         childCrossMeasureSpec = mFlexContainer.getChildWidthMeasureSpec(
                                 crossMeasureSpec,
-                                mFlexContainer.getPaddingLeft() + mFlexContainer.getPaddingRight()
-                                        + flexItem.getMarginLeft()
-                                        + flexItem.getMarginRight() + sumCrossSize,
+                                padding,
                                 flexItem.getWidth());
                         child.measure(childCrossMeasureSpec, childMainMeasureSpec);
                         checkSizeConstraints(child, i);

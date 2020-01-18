@@ -481,13 +481,39 @@ public class FlexboxLayoutManager extends RecyclerView.LayoutManager implements 
 
     @Override
     public int getChildWidthMeasureSpec(int widthSpec, int padding, int childDimension) {
-        return getChildMeasureSpec(getWidth(), getWidthMode(), padding, childDimension,
+        /*
+        The main idea that FlexboxHelper, counting size of the view
+        with dimension MATCH_PARENT with the idea, that new View should take place that we have on the screen.
+        For example screenWidth = 1080, firstFlexLineWidth = 1000. So this view will be 80
+        It sounds logic, but we have a problem, when we already take all 1080px by first flexline.
+        FlexboxHelper don't know about size of Recycler, so it can't manage it.
+        So good point to check size is this place
+        But are we have a permission to decide this?
+         */
+        int recyclerWidth = getWidth();
+        if (childDimension == LayoutParams.MATCH_PARENT && padding == recyclerWidth) {
+            childDimension = recyclerWidth;
+        }
+        return getChildMeasureSpec(recyclerWidth, getWidthMode(), padding, childDimension,
                 canScrollHorizontally());
     }
 
     @Override
     public int getChildHeightMeasureSpec(int heightSpec, int padding, int childDimension) {
-        return getChildMeasureSpec(getHeight(), getHeightMode(), padding, childDimension,
+        /*
+        The main idea that FlexboxHelper, counting size of the view
+        with dimension MATCH_PARENT with the idea, that new View should take place that we have on the screen.
+        For example screenWidth = 1080, firstFlexLineWidth = 1000. So this view will be 80
+        It sounds logic, but we have a problem, when we already take all 1080px by first flexline.
+        FlexboxHelper don't know about size of Recycler, so it can't manage it.
+        So good point to check size is this place
+        But are we have a permission to decide this?
+         */
+        int recyclerHeight = getHeight();
+        if (childDimension == LayoutParams.MATCH_PARENT && padding == recyclerHeight) {
+            childDimension = recyclerHeight;
+        }
+        return getChildMeasureSpec(recyclerHeight, getHeightMode(), padding, childDimension,
                 canScrollVertically());
     }
 
