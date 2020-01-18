@@ -20,8 +20,8 @@ import android.view.View
 import android.widget.CheckBox
 import android.widget.TextView
 import androidx.core.widget.CompoundButtonCompat
+import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.rule.ActivityTestRule
-import androidx.test.runner.AndroidJUnit4
 import com.google.android.flexbox.test.FlexboxTestActivity
 import com.google.android.flexbox.test.IsEqualAllowingError.Companion.isEqualAllowingError
 import org.hamcrest.Matchers.`is`
