@@ -976,7 +976,7 @@ class FlexboxHelper {
                 if (widthMode == View.MeasureSpec.EXACTLY) {
                     mainSize = widthSize;
                 } else {
-                    mainSize = largestMainSize > widthSize ? widthSize : largestMainSize;
+                    mainSize = Math.min(largestMainSize, widthSize);
                 }
                 paddingAlongMainAxis = mFlexContainer.getPaddingLeft()
                         + mFlexContainer.getPaddingRight();
@@ -1016,10 +1016,10 @@ class FlexboxHelper {
 
     private void ensureChildrenFrozen(int size) {
         if (mChildrenFrozen == null) {
-            mChildrenFrozen = new boolean[size < INITIAL_CAPACITY ? INITIAL_CAPACITY : size];
+            mChildrenFrozen = new boolean[Math.max(size, INITIAL_CAPACITY)];
         } else if (mChildrenFrozen.length < size) {
             int newCapacity = mChildrenFrozen.length * 2;
-            mChildrenFrozen = new boolean[newCapacity >= size ? newCapacity : size];
+            mChildrenFrozen = new boolean[Math.max(newCapacity, size)];
         } else {
             Arrays.fill(mChildrenFrozen, false);
         }
@@ -1908,20 +1908,20 @@ class FlexboxHelper {
 
     void ensureMeasuredSizeCache(int size) {
         if (mMeasuredSizeCache == null) {
-            mMeasuredSizeCache = new long[size < INITIAL_CAPACITY ? INITIAL_CAPACITY : size];
+            mMeasuredSizeCache = new long[Math.max(size, INITIAL_CAPACITY)];
         } else if (mMeasuredSizeCache.length < size) {
             int newCapacity = mMeasuredSizeCache.length * 2;
-            newCapacity = newCapacity >= size ? newCapacity : size;
+            newCapacity = Math.max(newCapacity, size);
             mMeasuredSizeCache = Arrays.copyOf(mMeasuredSizeCache, newCapacity);
         }
     }
 
     void ensureMeasureSpecCache(int size) {
         if (mMeasureSpecCache == null) {
-            mMeasureSpecCache = new long[size < INITIAL_CAPACITY ? INITIAL_CAPACITY : size];
+            mMeasureSpecCache = new long[Math.max(size, INITIAL_CAPACITY)];
         } else if (mMeasureSpecCache.length < size) {
             int newCapacity = mMeasureSpecCache.length * 2;
-            newCapacity = newCapacity >= size ? newCapacity : size;
+            newCapacity = Math.max(newCapacity, size);
             mMeasureSpecCache = Arrays.copyOf(mMeasureSpecCache, newCapacity);
         }
     }
@@ -1977,10 +1977,10 @@ class FlexboxHelper {
 
     void ensureIndexToFlexLine(int size) {
         if (mIndexToFlexLine == null) {
-            mIndexToFlexLine = new int[size < INITIAL_CAPACITY ? INITIAL_CAPACITY : size];
+            mIndexToFlexLine = new int[Math.max(size, INITIAL_CAPACITY)];
         } else if (mIndexToFlexLine.length < size) {
             int newCapacity = mIndexToFlexLine.length * 2;
-            newCapacity = newCapacity >= size ? newCapacity : size;
+            newCapacity = Math.max(newCapacity, size);
             mIndexToFlexLine = Arrays.copyOf(mIndexToFlexLine, newCapacity);
         }
     }
@@ -2002,8 +2002,8 @@ class FlexboxHelper {
 
         // Deleting from the last to avoid unneeded copy it happens when deleting the middle of the
         // item in the ArrayList
-        for (int i = flexLines.size() - 1; i >= fromFlexLine; i--) {
-            flexLines.remove(i);
+        if (flexLines.size() > fromFlexLine) {
+            flexLines.subList(fromFlexLine, flexLines.size()).clear();
         }
 
         int fillTo = mIndexToFlexLine.length - 1;

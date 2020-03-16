@@ -27,6 +27,7 @@ import android.view.View;
 
 import java.util.List;
 
+import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 /**
@@ -87,14 +88,20 @@ public class FlexboxItemDecoration extends RecyclerView.ItemDecoration {
     }
 
     @Override
-    public void onDraw(Canvas canvas, RecyclerView parent, RecyclerView.State state) {
+    public void onDraw(
+            @NonNull Canvas canvas,
+            @NonNull RecyclerView parent,
+            @NonNull RecyclerView.State state) {
         drawHorizontalDecorations(canvas, parent);
         drawVerticalDecorations(canvas, parent);
     }
 
     @Override
-    public void getItemOffsets(Rect outRect, View view, RecyclerView parent,
-            RecyclerView.State state) {
+    public void getItemOffsets(
+            @NonNull Rect outRect,
+            @NonNull View view,
+            RecyclerView parent,
+            @NonNull RecyclerView.State state) {
         int position = parent.getChildAdapterPosition(view);
         if (position == 0) {
             return;
