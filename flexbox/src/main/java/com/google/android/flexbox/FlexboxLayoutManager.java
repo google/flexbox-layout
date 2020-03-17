@@ -51,8 +51,8 @@ public class FlexboxLayoutManager extends RecyclerView.LayoutManager implements 
     private static final String TAG = "FlexboxLayoutManager";
 
     /**
-     * Temporary Rect instance to be passed to
-     * {@link RecyclerView.LayoutManager#calculateItemDecorationsForChild}
+     * Temporary Rect instance to be passed to a method that needs a Rect instance for receiving
+     * output (e.g.{@link RecyclerView.LayoutManager#calculateItemDecorationsForChild})
      * to avoid creating a Rect instance every time.
      */
     private static final Rect TEMP_RECT = new Rect();
@@ -113,6 +113,8 @@ public class FlexboxLayoutManager extends RecyclerView.LayoutManager implements 
      * (such as the one in {@link #onLayoutChildren(RecyclerView.Recycler, RecyclerView.State)})
      */
     private RecyclerView.Recycler mRecycler;
+
+    private RecyclerView mRecyclerView;
 
     /**
      * A snapshot of the {@link RecyclerView.State} instance at a given moment.
@@ -389,11 +391,23 @@ public class FlexboxLayoutManager extends RecyclerView.LayoutManager implements 
 
     @Override
     public int getDecorationLengthMainAxis(View view, int index, int indexInFlexLine) {
+        int result = 0;
         if (isMainAxisDirectionHorizontal()) {
-            return getLeftDecorationWidth(view) + getRightDecorationWidth(view);
+            result = result + getLeftDecorationWidth(view) + getRightDecorationWidth(view);
+            for (int i = 0; i < mRecyclerView.getItemDecorationCount(); i++) {
+                mRecyclerView.getItemDecorationAt(i).getItemOffsets(
+                        TEMP_RECT, view, mRecyclerView, mState);
+                result = result + TEMP_RECT.right + TEMP_RECT.left;
+            }
         } else {
-            return getTopDecorationHeight(view) + getBottomDecorationHeight(view);
+            result = result + getTopDecorationHeight(view) + getBottomDecorationHeight(view);
+            for (int i = 0; i < mRecyclerView.getItemDecorationCount(); i++) {
+                mRecyclerView.getItemDecorationAt(i).getItemOffsets(
+                        TEMP_RECT, view, mRecyclerView, mState);
+                result = result + TEMP_RECT.bottom - TEMP_RECT.top;
+            }
         }
+        return result;
     }
 
     @Override
@@ -1902,11 +1916,13 @@ public class FlexboxLayoutManager extends RecyclerView.LayoutManager implements 
     public void onAttachedToWindow(RecyclerView recyclerView) {
         super.onAttachedToWindow(recyclerView);
         mParent = (View) recyclerView.getParent();
+        mRecyclerView = recyclerView;
     }
 
     @Override
     public void onDetachedFromWindow(RecyclerView view, RecyclerView.Recycler recycler) {
         super.onDetachedFromWindow(view, recycler);
+        mRecyclerView = null;
         if (mRecycleChildrenOnDetach) {
             if (DEBUG) {
                 Log.d(TAG, "onDetachedFromWindow. Recycling children in the recycler");

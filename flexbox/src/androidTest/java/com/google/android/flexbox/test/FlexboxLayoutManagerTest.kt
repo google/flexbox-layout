@@ -2497,6 +2497,68 @@ class FlexboxLayoutManagerTest {
     @Test
     @FlakyTest
     @Throws(Throwable::class)
+    fun testDecoration_length_is_included_in_wrapCondition_direction_row() {
+        val activity = activityRule.activity
+        val layoutManager = FlexboxLayoutManager(activity)
+        val adapter = TestAdapter()
+        val drawable = ResourcesCompat.getDrawable(activity.resources, R.drawable.divider_thick, null)
+        val itemDecoration = FlexboxItemDecoration(activity)
+        itemDecoration.setDrawable(drawable)
+
+        activityRule.runOnUiThread {
+            activity.setContentView(R.layout.recyclerview)
+            val recyclerView = activity.findViewById<RecyclerView>(R.id.recyclerview)
+            layoutManager.flexDirection = FlexDirection.ROW
+            recyclerView.layoutManager = layoutManager
+            recyclerView.addItemDecoration(itemDecoration)
+            recyclerView.adapter = adapter
+
+            adapter.addItem(createLayoutParams(activity, 90, 110))
+            adapter.addItem(createLayoutParams(activity, 90, 110))
+            adapter.addItem(createLayoutParams(activity, 90, 110))
+            // RecyclerView width: 320, height: 240.
+        }
+        InstrumentationRegistry.getInstrumentation().waitForIdleSync()
+
+        // Including the length of decorations, the size should be 2
+        assertThat(layoutManager.flexDirection, `is`(FlexDirection.ROW))
+        assertThat(layoutManager.flexLines.size, `is`(2))
+    }
+
+    @Test
+    @FlakyTest
+    @Throws(Throwable::class)
+    fun testDecoration_length_is_included_in_wrapCondition_direction_column() {
+        val activity = activityRule.activity
+        val layoutManager = FlexboxLayoutManager(activity)
+        val adapter = TestAdapter()
+        val drawable = ResourcesCompat.getDrawable(activity.resources, R.drawable.divider_thick, null)
+        val itemDecoration = FlexboxItemDecoration(activity)
+        itemDecoration.setDrawable(drawable)
+
+        activityRule.runOnUiThread {
+            activity.setContentView(R.layout.recyclerview)
+            val recyclerView = activity.findViewById<RecyclerView>(R.id.recyclerview)
+            layoutManager.flexDirection = FlexDirection.COLUMN
+            recyclerView.layoutManager = layoutManager
+            recyclerView.addItemDecoration(itemDecoration)
+            recyclerView.adapter = adapter
+
+            adapter.addItem(createLayoutParams(activity, 100, 68))
+            adapter.addItem(createLayoutParams(activity, 100, 68))
+            adapter.addItem(createLayoutParams(activity, 100, 68))
+            // RecyclerView width: 320, height: 240.
+        }
+        InstrumentationRegistry.getInstrumentation().waitForIdleSync()
+
+        // Including the length of decorations, the size should be 2
+        assertThat(layoutManager.flexDirection, `is`(FlexDirection.COLUMN))
+        assertThat(layoutManager.flexLines.size, `is`(2))
+    }
+
+    @Test
+    @FlakyTest
+    @Throws(Throwable::class)
     fun testScrollToPosition_direction_row() {
         val activity = activityRule.activity
         val layoutManager = FlexboxLayoutManager(activity)
