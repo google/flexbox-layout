@@ -32,7 +32,6 @@ import android.view.ViewGroup;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
 
 import androidx.annotation.NonNull;
 import androidx.core.view.ViewCompat;
@@ -747,8 +746,8 @@ public class FlexboxLayoutManager extends RecyclerView.LayoutManager implements 
 
         int startOffset;
         int endOffset;
+        int filledToEnd = fill(recycler, state, mLayoutState);
         if (mAnchorInfo.mLayoutFromEnd) {
-            int filledToEnd = fill(recycler, state, mLayoutState);
             if (DEBUG) {
                 Log.d(TAG, String.format("filled: %d toward start", filledToEnd));
             }
@@ -760,7 +759,6 @@ public class FlexboxLayoutManager extends RecyclerView.LayoutManager implements 
             }
             endOffset = mLayoutState.mOffset;
         } else {
-            int filledToEnd = fill(recycler, state, mLayoutState);
             if (DEBUG) {
                 Log.d(TAG, String.format("filled: %d toward end", filledToEnd));
             }
