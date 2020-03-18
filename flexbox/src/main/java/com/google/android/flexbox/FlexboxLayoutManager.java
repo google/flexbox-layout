@@ -412,11 +412,23 @@ public class FlexboxLayoutManager extends RecyclerView.LayoutManager implements 
 
     @Override
     public int getDecorationLengthCrossAxis(View view) {
+        int result = 0;
         if (isMainAxisDirectionHorizontal()) {
-            return getTopDecorationHeight(view) + getBottomDecorationHeight(view);
+            result = result + getTopDecorationHeight(view) + getBottomDecorationHeight(view);
+            for (int i = 0; i < mRecyclerView.getItemDecorationCount(); i++) {
+                mRecyclerView.getItemDecorationAt(i).getItemOffsets(
+                        TEMP_RECT, view, mRecyclerView, mState);
+                result = result + TEMP_RECT.bottom - TEMP_RECT.top;
+            }
         } else {
-            return getLeftDecorationWidth(view) + getRightDecorationWidth(view);
+            result = result + getLeftDecorationWidth(view) + getRightDecorationWidth(view);
+            for (int i = 0; i < mRecyclerView.getItemDecorationCount(); i++) {
+                mRecyclerView.getItemDecorationAt(i).getItemOffsets(
+                        TEMP_RECT, view, mRecyclerView, mState);
+                result = result + TEMP_RECT.right + TEMP_RECT.left;
+            }
         }
+        return result;
     }
 
     @Override
@@ -2373,8 +2385,7 @@ public class FlexboxLayoutManager extends RecyclerView.LayoutManager implements 
     }
 
     /**
-     * Copied from {@link RecyclerView.LayoutManager#shouldMeasureChild
-     * (View,
+     * Copied from RecyclerView.LayoutManager#shouldMeasureChild(View,
      * int, int, RecyclerView.LayoutParams)}}
      */
     private boolean shouldMeasureChild(View child, int widthSpec, int heightSpec,
@@ -2387,8 +2398,7 @@ public class FlexboxLayoutManager extends RecyclerView.LayoutManager implements 
 
     /**
      * Copied from
-     * {@link RecyclerView.LayoutManager#isMeasurementUpToDate(int, int,
-     * int)}
+     * RecyclerView.LayoutManager#isMeasurementUpToDate(int, int, int)}
      */
     private static boolean isMeasurementUpToDate(int childSize, int spec, int dimension) {
         final int specMode = View.MeasureSpec.getMode(spec);
@@ -2493,7 +2503,6 @@ public class FlexboxLayoutManager extends RecyclerView.LayoutManager implements 
      * @see #findFirstCompletelyVisibleItemPosition()
      * @see #findLastVisibleItemPosition()
      */
-    @SuppressWarnings("WeakerAccess")
     public int findFirstVisibleItemPosition() {
         final View child = findOneVisibleChild(0, getChildCount(), false);
         return child == null ? NO_POSITION : getPosition(child);
@@ -2508,7 +2517,6 @@ public class FlexboxLayoutManager extends RecyclerView.LayoutManager implements 
      * @see #findFirstVisibleItemPosition()
      * @see #findLastCompletelyVisibleItemPosition()
      */
-    @SuppressWarnings("WeakerAccess")
     public int findFirstCompletelyVisibleItemPosition() {
         final View child = findOneVisibleChild(0, getChildCount(), true);
         return child == null ? NO_POSITION : getPosition(child);
@@ -2527,7 +2535,6 @@ public class FlexboxLayoutManager extends RecyclerView.LayoutManager implements 
      * @see #findLastCompletelyVisibleItemPosition()
      * @see #findFirstVisibleItemPosition()
      */
-    @SuppressWarnings("WeakerAccess")
     public int findLastVisibleItemPosition() {
         final View child = findOneVisibleChild(getChildCount() - 1, -1, false);
         return child == null ? NO_POSITION : getPosition(child);
@@ -2542,7 +2549,6 @@ public class FlexboxLayoutManager extends RecyclerView.LayoutManager implements 
      * @see #findLastVisibleItemPosition()
      * @see #findFirstCompletelyVisibleItemPosition()
      */
-    @SuppressWarnings("WeakerAccess")
     public int findLastCompletelyVisibleItemPosition() {
         final View child = findOneVisibleChild(getChildCount() - 1, -1, true);
         return child == null ? NO_POSITION : getPosition(child);
