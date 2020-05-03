@@ -69,8 +69,8 @@ flexboxLayout.setFlexDirection(FlexDirection.ROW);
 
 View view = flexboxLayout.getChildAt(0);
 FlexboxLayout.LayoutParams lp = (FlexboxLayout.LayoutParams) view.getLayoutParams();
-lp.order = -1;
-lp.flexGrow = 2;
+lp.setOrder(-1);
+lp.setFlexGrow(2);
 view.setLayoutParams(lp);
 ```
 
