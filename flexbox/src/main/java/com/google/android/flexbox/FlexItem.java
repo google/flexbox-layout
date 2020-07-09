@@ -231,7 +231,7 @@ interface FlexItem extends Parcelable {
      * If this value is set, the length specified from layout_width
      * (or layout_height) is overridden by the calculated value from this attribute.
      * This attribute is only effective when the parent's MeasureSpec mode is
-     * MeasureSpec.EXACTLY. The de
+     * MeasureSpec.EXACTLY. The default value is -1, which means not set.
      */
     float getFlexBasisPercent();
 
