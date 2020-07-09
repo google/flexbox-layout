@@ -161,6 +161,7 @@ Here is a quick overview of the attributes/features comparison between the two i
     * center
     * space_between
     * space_around
+    * space_evenly
 
     ![Justify Content explanation](/assets/justify-content.gif)
 
