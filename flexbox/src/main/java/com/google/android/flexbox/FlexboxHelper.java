@@ -24,6 +24,7 @@ import static com.google.android.flexbox.FlexItem.FLEX_SHRINK_NOT_SET;
 import static androidx.recyclerview.widget.RecyclerView.NO_POSITION;
 
 import android.graphics.drawable.Drawable;
+import android.util.Log;
 import android.util.SparseIntArray;
 import android.view.View;
 import android.view.ViewGroup;
@@ -425,7 +426,9 @@ class FlexboxHelper {
         flexLine.mMainSize = mainPaddingStart + mainPaddingEnd;
 
         int childCount = mFlexContainer.getFlexItemCount();
+        Log.d("PH", "childCount is " + childCount);
         for (int i = fromIndex; i < childCount; i++) {
+            Log.d("PH", "evaluating " + i);
             View child = mFlexContainer.getReorderedFlexItemAt(i);
 
             if (child == null) {
@@ -617,16 +620,16 @@ class FlexboxHelper {
                 sumCrossSize = -flexLine.getCrossSize();
                 reachedToIndex = true;
             }
-            if (sumCrossSize > needsCalcAmount && reachedToIndex) {
-                // Stop the calculation if the sum of cross size calculated reached to the point
-                // beyond the needsCalcAmount value to avoid unneeded calculation in a
-                // RecyclerView.
-                // To be precise, the decoration length may be added to the sumCrossSize,
-                // but we omit adding the decoration length because even without the decorator
-                // length, it's guaranteed that calculation is done at least beyond the
-                // needsCalcAmount
-                break;
-            }
+//            if (sumCrossSize > needsCalcAmount && reachedToIndex) {
+//                // Stop the calculation if the sum of cross size calculated reached to the point
+//                // beyond the needsCalcAmount value to avoid unneeded calculation in a
+//                // RecyclerView.
+//                // To be precise, the decoration length may be added to the sumCrossSize,
+//                // but we omit adding the decoration length because even without the decorator
+//                // length, it's guaranteed that calculation is done at least beyond the
+//                // needsCalcAmount
+//                break;
+//            }
         }
 
         result.mChildState = childState;
