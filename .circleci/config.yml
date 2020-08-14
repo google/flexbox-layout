@@ -35,7 +35,15 @@ jobs:
               counter=0 ;
               result=1 ;
               while [ $result != 0 -a $counter -lt $MAX_RETRY ]; do
-                gcloud firebase test android run --type instrumentation --app demo-playground/build/outputs/apk/debug/demo-playground-debug.apk --test flexbox/build/outputs/apk/androidTest/debug/flexbox-debug-androidTest.apk --device-ids hammerhead,sailfish --os-version-ids 19,21,23,24,25,26 --locales en --orientations portrait,landscape --results-bucket ${GCLOUD_TEST_BUCKET_LIBRARY} --timeout 180s ;
+                gcloud firebase test android run \
+                  --type instrumentation \
+                  --app demo-playground/build/outputs/apk/debug/demo-playground-debug.apk \
+                  --test flexbox/build/outputs/apk/androidTest/debug/flexbox-debug-androidTest.apk \
+                  --device-ids hammerhead,sailfish \
+                  --os-version-ids 19,21,23,24,25,26 \
+                  --locales en --orientations portrait,landscape \
+                  --results-bucket android-devrel-ci-flexbox \
+                  --timeout 180s ;
                 result=$? ;
                 let counter=counter+1 ;
               done
