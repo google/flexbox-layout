@@ -148,9 +148,9 @@ Here is a quick overview of the attributes/features comparison between the two i
 * __flexWrap__
   * This attribute controls whether the flex container is single-line or multi-line, and the
   direction of the cross axis. Possible values are:
-    * nowrap (default)
-    * wrap
-    * wrap_reverse
+    * nowrap (default for FlexboxLayout)
+    * wrap (default for FlexboxLayoutManager)
+    * wrap_reverse (not supported by FlexboxLayoutManager)
 
     ![Flex Wrap explanation](/assets/flex-wrap.gif)
 
@@ -167,11 +167,11 @@ Here is a quick overview of the attributes/features comparison between the two i
 
 * __alignItems__
   * This attribute controls the alignment along the cross axis. Possible values are:
-    * flex_start (default)
+    * flex_start (default for FlexboxLayout)
     * flex_end
     * center
     * baseline
-    * stretch
+    * stretch (default for FlexboxLayoutManager)
 
     ![Align Items explanation](/assets/align-items.gif)
 
