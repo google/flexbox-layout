@@ -881,6 +881,7 @@ class FlexboxHelper {
         if (maxLine != NOT_SET && maxLine <= flexLinesSize + 1) {
             return false;
         }
+        mFlexContainer.calculateItemDecorationsForChild(view);
         int decorationLength =
                 mFlexContainer.getDecorationLengthMainAxis(view, index, indexInFlexLine);
         if (decorationLength > 0) {

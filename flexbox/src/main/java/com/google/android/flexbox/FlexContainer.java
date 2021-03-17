@@ -298,4 +298,15 @@ interface FlexContainer {
      * @param view     the view instance
      */
     void updateViewCache(int position, View view);
+
+    /**
+     * Calculates the item decor insets applied to the given child and updates the provided
+     *
+     * Note that item decorations are automatically calculated when one of the LayoutManager's
+     * measure child methods is called. If you need to measure the child with custom specs via
+     * {@link View#measure(int, int)}, you can use this method to get decorations.
+     *
+     * @param child The child view whose decorations should be calculated
+     */
+    void calculateItemDecorationsForChild(View child);
 }
