@@ -10,17 +10,20 @@ Add the following dependency to your `build.gradle` file:
 
 ```
 dependencies {
-    implementation 'com.google.android:flexbox:2.0.1'
+    implementation 'com.google.android.flexbox:flexbox:3.0.0'
 }
 ```
 
-**Note that the default values for `alignItems` and `alignContent` for `FlexboxLayout` have been changed from `stretch` to `flex_start` starting from 2.0.0, it may break the existing apps.
-Please make sure to set `stretch` explicitly if you want to apply the behavior of `stretch`.**
+**Starting from 3.0.0, the groupId is changed to `com.google.android.flexbox` in preparation to uploading the artifacts to google maven.
+You can still download the artifacts from jcenter for the past versions with the prior groupId (`com.google.android`), but migrating the library 3.0.0 is recommended.**
+
+Note that the default values for `alignItems` and `alignContent` for `FlexboxLayout` have been changed from `stretch` to `flex_start` starting from 2.0.0, it may break the existing apps.
+Please make sure to set `stretch` explicitly if you want to apply the behavior of `stretch`.
 
 
-**Note that starting from 1.1.0, the library is expected to use with AndroidX. Please migrate to [AndroidX](https://developer.android.com/jetpack/androidx/migrate) if you use 1.1.0 or above.**
+Note that starting from 1.1.0, the library is expeced to use with AndroidX. Please migrate to [AndroidX](https://developer.android.com/jetpack/androidx/migrate) if you use 1.1.0 or above.
 
-**Please use 1.0.0 if you haven't migrated to AndroidX.**
+Please use 1.0.0 if you haven't migrated to AndroidX.
 
 
 # Usage

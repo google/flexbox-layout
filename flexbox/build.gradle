@@ -16,8 +16,7 @@
 
 apply plugin: 'com.android.library'
 apply plugin: 'kotlin-android'
-apply from: 'maven.gradle'
-apply from: 'bintray.gradle'
+apply from: 'maven-puglisher-plugin.gradle'
 
 android {
     compileSdkVersion rootProject.ext.compileSdkVersion

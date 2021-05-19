@@ -20,9 +20,9 @@ ext {
 
     githubUrl = 'https://github.com/google/flexbox-layout'
 
-    mavenGroup = 'com.google.android'
+    mavenGroup = 'com.google.android.flexbox'
     mavenArtifactId = 'flexbox'
-    mavenVersion = '2.0.1'
+    mavenVersion = '3.0.0'
 
     bintrayOrg = 'google'
 }
