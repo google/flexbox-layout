@@ -390,6 +390,8 @@ public class FlexboxLayoutManager extends RecyclerView.LayoutManager implements 
     @Override
     public int getDecorationLengthMainAxis(View view, int index, int indexInFlexLine) {
         if (isMainAxisDirectionHorizontal()) {
+            view = mRecycler.getViewForPosition(index);
+            calculateItemDecorationsForChild(view, TEMP_RECT);
             return getLeftDecorationWidth(view) + getRightDecorationWidth(view);
         } else {
             return getTopDecorationHeight(view) + getBottomDecorationHeight(view);
