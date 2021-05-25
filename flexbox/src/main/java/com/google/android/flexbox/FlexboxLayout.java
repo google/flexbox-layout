@@ -1328,6 +1328,11 @@ public class FlexboxLayout extends ViewGroup implements FlexContainer {
         // No op
     }
 
+    @Override
+    public void calculateItemDecorationsForChild(View child) {
+        // No op
+    }
+
     /**
      * @return the horizontal divider drawable that will divide each item.
      * @see #setDividerDrawable(Drawable)

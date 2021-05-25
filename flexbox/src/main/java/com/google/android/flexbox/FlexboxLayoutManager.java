@@ -533,6 +533,11 @@ public class FlexboxLayoutManager extends RecyclerView.LayoutManager implements 
     public void updateViewCache(int position, View view) {
         mViewCache.put(position, view);
     }
+
+    @Override
+    public void calculateItemDecorationsForChild(View child) {
+        calculateItemDecorationsForChild(child, TEMP_RECT);
+    }
     // The end of methods from FlexContainer
 
     // ScrollVectorProvider method

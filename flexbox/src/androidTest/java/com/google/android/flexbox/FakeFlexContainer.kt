@@ -148,4 +148,6 @@ internal class FakeFlexContainer : FlexContainer {
     override fun getFlexLinesInternal() = flexLines
 
     override fun updateViewCache(position: Int, view: View) = Unit
+
+    override fun calculateItemDecorationsForChild(child: View?) = Unit
 }
