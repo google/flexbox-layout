@@ -17,6 +17,7 @@
 package com.google.android.flexbox
 
 import android.view.View
+import android.view.ViewGroup
 import android.widget.CheckBox
 import android.widget.TextView
 import androidx.core.widget.CompoundButtonCompat
@@ -165,6 +166,84 @@ class FlexboxHelperTest {
         val thirdLine = result.mFlexLines[2]
         assertEquals(3, thirdLine.mFirstIndex)
         assertEquals(3, thirdLine.mLastIndex)
+    }
+
+    @Test
+    @Throws(Throwable::class)
+    fun testCalculateVertical_flexWrap_wrap_flexDirection_column_viewSize_match_parent() {
+        val activity = activityRule.activity
+        val lp1 = FlexboxLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, 490)
+        val view1 = View(activity)
+        view1.layoutParams = lp1
+
+        val lp2 = FlexboxLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, 500)
+        val view2 = View(activity)
+        view2.layoutParams = lp2
+
+        val lp3 = FlexboxLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, 500)
+        val view3 = View(activity)
+        view3.layoutParams = lp3
+
+        val lp4 = FlexboxLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, 700)
+        val view4 = View(activity)
+        view4.layoutParams = lp4
+
+        val lp5 = FlexboxLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, 300)
+        val view5 = View(activity)
+        view5.layoutParams = lp5
+
+        val lp6 = FlexboxLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, 100)
+        val view6 = View(activity)
+        view6.layoutParams = lp6
+
+        flexContainer.addView(view1)
+        flexContainer.addView(view2)
+        flexContainer.addView(view3)
+        flexContainer.addView(view4)
+        flexContainer.addView(view5)
+        flexContainer.addView(view6)
+        flexContainer.flexWrap = FlexWrap.WRAP
+        flexContainer.flexDirection = FlexDirection.COLUMN
+        val widthMeasureSpec = View.MeasureSpec.makeMeasureSpec(500, View.MeasureSpec.EXACTLY)
+        val heightMeasureSpec = View.MeasureSpec.makeMeasureSpec(1000, View.MeasureSpec.EXACTLY)
+
+        flexboxHelper.ensureIndexToFlexLine(flexContainer.flexItemCount)
+        val result = FlexboxHelper.FlexLinesResult()
+        flexboxHelper.calculateVerticalFlexLines(result, widthMeasureSpec, heightMeasureSpec)
+
+
+        assertEquals(4, result.mFlexLines.size)
+        assertEquals(990, result.mFlexLines[0].mainSize)
+        assertEquals(500, result.mFlexLines[1].mainSize)
+        assertEquals(1000, result.mFlexLines[2].mainSize)
+        assertEquals(100, result.mFlexLines[3].mainSize)
+        assertEquals(500, result.mFlexLines[0].crossSize)
+        //they don't show yet
+        assertEquals(0, result.mFlexLines[1].crossSize)
+        assertEquals(0, result.mFlexLines[2].crossSize)
+        assertEquals(0, result.mFlexLines[3].crossSize)
+
+        assertNotNull(flexboxHelper.mIndexToFlexLine)
+        assertEquals(0, flexboxHelper.mIndexToFlexLine!![0])
+        assertEquals(0, flexboxHelper.mIndexToFlexLine!![1])
+        assertEquals(1, flexboxHelper.mIndexToFlexLine!![2])
+        assertEquals(2, flexboxHelper.mIndexToFlexLine!![3])
+        assertEquals(2, flexboxHelper.mIndexToFlexLine!![4])
+        assertEquals(3, flexboxHelper.mIndexToFlexLine!![5])
+
+        val firstLine = result.mFlexLines[0]
+        assertEquals(0, firstLine.mFirstIndex)
+        assertEquals(1, firstLine.mLastIndex)
+        val secondLine = result.mFlexLines[1]
+        assertEquals(2, secondLine.mFirstIndex)
+        assertEquals(2, secondLine.mLastIndex)
+        val thirdLine = result.mFlexLines[2]
+        assertEquals(3, thirdLine.mFirstIndex)
+        assertEquals(4, thirdLine.mLastIndex)
+        val fourthLine = result.mFlexLines[3]
+        assertEquals(5, fourthLine.mFirstIndex)
+        assertEquals(5, fourthLine.mLastIndex)
+
     }
 
     @Test
