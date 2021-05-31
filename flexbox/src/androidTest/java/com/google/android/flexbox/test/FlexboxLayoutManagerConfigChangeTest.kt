@@ -31,6 +31,7 @@ import androidx.test.filters.MediumTest
 import androidx.test.rule.ActivityTestRule
 import androidx.test.runner.AndroidJUnit4
 import com.google.android.flexbox.FlexDirection
+import com.google.android.flexbox.FlexWrap
 import com.google.android.flexbox.FlexboxLayoutManager
 import org.hamcrest.Matchers.`is`
 import org.hamcrest.core.IsNot.not
@@ -98,6 +99,181 @@ class FlexboxLayoutManagerConfigChangeTest {
         InstrumentationRegistry.getInstrumentation().waitForIdleSync()
         val firstLineAfterRotation = layoutManager.flexLines[0]
         assertThat(firstLine.mainSize, `is`(not(firstLineAfterRotation.mainSize)))
+    }
+
+
+    @Test
+    @FlakyTest
+    @Throws(Throwable::class)
+    fun testPaddingTop_row_nowrap_topless() {
+        val activity = activityRule.activity
+        val layoutManager = FlexboxLayoutManager(activity)
+        layoutManager.flexWrap = FlexWrap.NOWRAP
+        layoutManager.flexDirection = FlexDirection.ROW
+        val adapter = TestAdapter()
+        val topPadding = 0
+        val leftPadding = 20
+        activityRule.runOnUiThread{
+            activity.setContentView(R.layout.recyclerview)
+            val recyclerView = activity.findViewById<RecyclerView>(R.id.recyclerview)
+            recyclerView.setPadding(leftPadding, topPadding, 0,0)
+            recyclerView.layoutManager = layoutManager
+            recyclerView.adapter = adapter
+            for (i in 0..20) {
+                var lp = createLayoutParams(activity, 80, 50)
+                adapter.addItem(lp)
+            }
+        }
+        InstrumentationRegistry.getInstrumentation().waitForIdleSync()
+
+        val firstChild = layoutManager.getChildAt(0)!!
+        val lastChild = layoutManager.getChildAt(layoutManager.childCount - 1)!!
+        assertThat(firstChild.top, IsEqualAllowingError.isEqualAllowingError(topPadding))
+        assertThat(firstChild.left, IsEqualAllowingError.isEqualAllowingError(leftPadding))
+        assertThat(lastChild.top, IsEqualAllowingError.isEqualAllowingError(topPadding))
+
+        activityRule.runOnUiThread {
+            val orientation = activity.resources.configuration.orientation
+            if (orientation == Configuration.ORIENTATION_PORTRAIT) {
+                activity.requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE
+            } else {
+                activity.requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_PORTRAIT
+            }
+        }
+        InstrumentationRegistry.getInstrumentation().waitForIdleSync()
+
+        val firstChildAfterRotate = layoutManager.getChildAt(0)!!
+        val lastChildAfterRotate = layoutManager.getChildAt(layoutManager.childCount - 1)!!
+        assertThat(firstChildAfterRotate.top, IsEqualAllowingError.isEqualAllowingError(topPadding))
+        assertThat(firstChildAfterRotate.left, IsEqualAllowingError.isEqualAllowingError(leftPadding))
+        assertThat(lastChildAfterRotate.top, IsEqualAllowingError.isEqualAllowingError(topPadding))
+
+        activityRule.runOnUiThread {
+            val orientation = activity.resources.configuration.orientation
+            if (orientation == Configuration.ORIENTATION_PORTRAIT) {
+                activity.requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE
+            } else {
+                activity.requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_PORTRAIT
+            }
+        }
+        InstrumentationRegistry.getInstrumentation().waitForIdleSync()
+
+    }
+
+    @Test
+    @FlakyTest
+    @Throws(Throwable::class)
+    fun testPaddingTop_row_nowrap_leftless() {
+        val activity = activityRule.activity
+        val layoutManager = FlexboxLayoutManager(activity)
+        layoutManager.flexWrap = FlexWrap.NOWRAP
+        layoutManager.flexDirection = FlexDirection.ROW
+        val adapter = TestAdapter()
+        val topPadding = 40
+        val leftPadding = 20
+        activityRule.runOnUiThread{
+            activity.setContentView(R.layout.recyclerview)
+            val recyclerView = activity.findViewById<RecyclerView>(R.id.recyclerview)
+            recyclerView.setPadding(leftPadding, topPadding, 0,0)
+            recyclerView.layoutManager = layoutManager
+            recyclerView.adapter = adapter
+            for (i in 0..20) {
+                var lp = createLayoutParams(activity, 80, 50)
+                adapter.addItem(lp)
+            }
+        }
+        InstrumentationRegistry.getInstrumentation().waitForIdleSync()
+
+        val firstChild = layoutManager.getChildAt(0)!!
+        val lastChild = layoutManager.getChildAt(layoutManager.childCount - 1)!!
+        assertThat(firstChild.top, IsEqualAllowingError.isEqualAllowingError(topPadding))
+        assertThat(firstChild.left, IsEqualAllowingError.isEqualAllowingError(leftPadding))
+        assertThat(lastChild.top, IsEqualAllowingError.isEqualAllowingError(topPadding))
+
+        activityRule.runOnUiThread {
+            val orientation = activity.resources.configuration.orientation
+            if (orientation == Configuration.ORIENTATION_PORTRAIT) {
+                activity.requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE
+            } else {
+                activity.requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_PORTRAIT
+            }
+        }
+        InstrumentationRegistry.getInstrumentation().waitForIdleSync()
+
+        val firstChildAfterRotate = layoutManager.getChildAt(0)!!
+        val lastChildAfterRotate = layoutManager.getChildAt(layoutManager.childCount - 1)!!
+        assertThat(firstChildAfterRotate.top, IsEqualAllowingError.isEqualAllowingError(topPadding))
+        assertThat(firstChildAfterRotate.left, IsEqualAllowingError.isEqualAllowingError(leftPadding))
+        assertThat(lastChildAfterRotate.top, IsEqualAllowingError.isEqualAllowingError(topPadding))
+
+        activityRule.runOnUiThread {
+            val orientation = activity.resources.configuration.orientation
+            if (orientation == Configuration.ORIENTATION_PORTRAIT) {
+                activity.requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE
+            } else {
+                activity.requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_PORTRAIT
+            }
+        }
+        InstrumentationRegistry.getInstrumentation().waitForIdleSync()
+
+    }
+
+    @Test
+    @FlakyTest
+    @Throws(Throwable::class)
+    fun testPaddingTop_column_nowrap_topless() {
+        val activity = activityRule.activity
+        val layoutManager = FlexboxLayoutManager(activity)
+        layoutManager.flexWrap = FlexWrap.NOWRAP
+        layoutManager.flexDirection = FlexDirection.COLUMN
+        val adapter = TestAdapter()
+        val topPadding = 0
+        val leftPadding = 20
+        activityRule.runOnUiThread{
+            activity.setContentView(R.layout.recyclerview)
+            val recyclerView = activity.findViewById<RecyclerView>(R.id.recyclerview)
+            recyclerView.setPadding(leftPadding, topPadding, 0,0)
+            recyclerView.layoutManager = layoutManager
+            recyclerView.adapter = adapter
+            for (i in 0..20) {
+                var lp = createLayoutParams(activity, 80, 50)
+                adapter.addItem(lp)
+            }
+        }
+        InstrumentationRegistry.getInstrumentation().waitForIdleSync()
+
+        val firstChild = layoutManager.getChildAt(0)!!
+        val lastChild = layoutManager.getChildAt(layoutManager.childCount - 1)!!
+        assertThat(firstChild.top, IsEqualAllowingError.isEqualAllowingError(topPadding))
+        assertThat(firstChild.left, IsEqualAllowingError.isEqualAllowingError(leftPadding))
+        assertThat(lastChild.left, IsEqualAllowingError.isEqualAllowingError(leftPadding))
+
+        activityRule.runOnUiThread {
+            val orientation = activity.resources.configuration.orientation
+            if (orientation == Configuration.ORIENTATION_PORTRAIT) {
+                activity.requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE
+            } else {
+                activity.requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_PORTRAIT
+            }
+        }
+        InstrumentationRegistry.getInstrumentation().waitForIdleSync()
+
+        val firstChildAfterRotate = layoutManager.getChildAt(0)!!
+        val lastChildAfterRotate = layoutManager.getChildAt(layoutManager.childCount - 1)!!
+        assertThat(firstChildAfterRotate.top, IsEqualAllowingError.isEqualAllowingError(topPadding))
+        assertThat(firstChildAfterRotate.left, IsEqualAllowingError.isEqualAllowingError(leftPadding))
+        assertThat(lastChildAfterRotate.left, IsEqualAllowingError.isEqualAllowingError(leftPadding))
+
+        activityRule.runOnUiThread {
+            val orientation = activity.resources.configuration.orientation
+            if (orientation == Configuration.ORIENTATION_PORTRAIT) {
+                activity.requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE
+            } else {
+                activity.requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_PORTRAIT
+            }
+        }
+        InstrumentationRegistry.getInstrumentation().waitForIdleSync()
+
     }
 
     @Test

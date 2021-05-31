@@ -1083,7 +1083,10 @@ public class FlexboxLayoutManager extends RecyclerView.LayoutManager implements 
         anchorInfo.mPosition = mPendingScrollPosition;
         anchorInfo.mFlexLinePosition = mFlexboxHelper.mIndexToFlexLine[anchorInfo.mPosition];
         if (mPendingSavedState != null && mPendingSavedState.hasValidAnchor(state.getItemCount())) {
-            anchorInfo.mCoordinate = mOrientationHelper.getStartAfterPadding() +
+            OrientationHelper tempOrientationHelper = mFlexWrap == FlexWrap.NOWRAP?
+                    mSubOrientationHelper
+                    : mOrientationHelper;
+            anchorInfo.mCoordinate = tempOrientationHelper.getStartAfterPadding() +
                     savedState.mAnchorOffset;
             anchorInfo.mAssignedFromSavedState = true;
             anchorInfo.mFlexLinePosition = NO_POSITION;
@@ -1131,11 +1134,14 @@ public class FlexboxLayoutManager extends RecyclerView.LayoutManager implements 
         }
 
         // TODO: Support reverse layout when flex wrap == FlexWrap.WRAP_REVERSE
+        OrientationHelper tempOrientationHelper = mFlexWrap == FlexWrap.NOWRAP
+                ? mSubOrientationHelper
+                : mOrientationHelper;
         if (!isMainAxisDirectionHorizontal() && mIsRtl) {
             anchorInfo.mCoordinate = mPendingScrollPositionOffset
-                    - mOrientationHelper.getEndPadding();
+                    - tempOrientationHelper.getEndPadding();
         } else {
-            anchorInfo.mCoordinate = mOrientationHelper.getStartAfterPadding()
+            anchorInfo.mCoordinate = tempOrientationHelper.getStartAfterPadding()
                     + mPendingScrollPositionOffset;
         }
         return true;
@@ -1733,11 +1739,14 @@ public class FlexboxLayoutManager extends RecyclerView.LayoutManager implements 
         } else {
             mLayoutState.mInfinite = false;
         }
+        OrientationHelper orientationHelper = mFlexWrap == FlexWrap.NOWRAP
+                ? mSubOrientationHelper
+                : mOrientationHelper;
         if (!isMainAxisDirectionHorizontal() && mIsRtl) {
             mLayoutState.mAvailable = anchorInfo.mCoordinate - getPaddingRight();
         } else {
-            mLayoutState.mAvailable =
-                    mOrientationHelper.getEndAfterPadding() - anchorInfo.mCoordinate;
+            mLayoutState.mAvailable = orientationHelper.getEndAfterPadding()
+                    - anchorInfo.mCoordinate;
         }
         mLayoutState.mPosition = anchorInfo.mPosition;
         mLayoutState.mItemDirection = LayoutState.ITEM_DIRECTION_TAIL;
@@ -1775,11 +1784,14 @@ public class FlexboxLayoutManager extends RecyclerView.LayoutManager implements 
         } else {
             mLayoutState.mInfinite = false;
         }
+        OrientationHelper orientationHelper = mFlexWrap == FlexWrap.NOWRAP
+                ? mSubOrientationHelper
+                : mOrientationHelper;
         if (!isMainAxisDirectionHorizontal() && mIsRtl) {
             mLayoutState.mAvailable = mParent.getWidth() - anchorInfo.mCoordinate
-                    - mOrientationHelper.getStartAfterPadding();
+                    - orientationHelper.getStartAfterPadding();
         } else {
-            mLayoutState.mAvailable = anchorInfo.mCoordinate - mOrientationHelper
+            mLayoutState.mAvailable = anchorInfo.mCoordinate - orientationHelper
                     .getStartAfterPadding();
         }
         mLayoutState.mPosition = anchorInfo.mPosition;
@@ -2903,12 +2915,15 @@ public class FlexboxLayoutManager extends RecyclerView.LayoutManager implements 
         }
 
         private void assignCoordinateFromPadding() {
+            OrientationHelper tempOrientationHelper = mFlexWrap == FlexWrap.NOWRAP
+                    ? mSubOrientationHelper
+                    : mOrientationHelper;
             if (!isMainAxisDirectionHorizontal() && mIsRtl) {
-                mCoordinate = mLayoutFromEnd ? mOrientationHelper.getEndAfterPadding()
-                        : getWidth() - mOrientationHelper.getStartAfterPadding();
+                mCoordinate = mLayoutFromEnd ? tempOrientationHelper.getEndAfterPadding()
+                        : getWidth() - tempOrientationHelper.getStartAfterPadding();
             } else {
-                mCoordinate = mLayoutFromEnd ? mOrientationHelper.getEndAfterPadding()
-                        : mOrientationHelper.getStartAfterPadding();
+                mCoordinate = mLayoutFromEnd ? tempOrientationHelper.getEndAfterPadding()
+                        : tempOrientationHelper.getStartAfterPadding();
             }
         }
 
