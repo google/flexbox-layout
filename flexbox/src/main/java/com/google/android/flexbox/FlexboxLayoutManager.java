@@ -183,6 +183,14 @@ public class FlexboxLayoutManager extends RecyclerView.LayoutManager implements 
     private View mParent;
 
     /**
+     * if mFillAllItemsForced == true fixes all issues with "not all items displayed when wrap_content"
+     * issues: #349 #336 #339
+     */
+    private Boolean mSetAllItemsForced = false;
+
+
+
+    /**
      * Indicates the position that the view position that the flex line which has the view having
      * this position needs to be recomputed before the next layout.
      * For example, this is updated when a new View is inserted into the position before the
@@ -313,6 +321,14 @@ public class FlexboxLayoutManager extends RecyclerView.LayoutManager implements 
             mSubOrientationHelper = null;
             requestLayout();
         }
+    }
+
+    public Boolean getmSetAllItemsForced() {
+        return mSetAllItemsForced;
+    }
+
+    public void setmSetAllItemsForced(Boolean mSetAllItemsForced) {
+        this.mSetAllItemsForced = mSetAllItemsForced;
     }
 
     @JustifyContent
@@ -881,7 +897,8 @@ public class FlexboxLayoutManager extends RecyclerView.LayoutManager implements 
             // passed as 0 from the RecyclerView)
             // Set the upper limit as the height of the device in order to prevent computing all
             // items in the adapter
-            needsToFill = mLayoutState.mInfinite ?
+            // or set the mSetAllItemsForced to true to force all items to show
+            needsToFill = mSetAllItemsForced ? 999999999 : mLayoutState.mInfinite ?
                     mContext.getResources().getDisplayMetrics().heightPixels
                     : mLayoutState.mAvailable;
         } else {
@@ -892,7 +909,8 @@ public class FlexboxLayoutManager extends RecyclerView.LayoutManager implements 
             // passed as 0 from the RecyclerView)
             // Set the upper limit as the width of the device in order to prevent computing all
             // items in the adapter
-            needsToFill = mLayoutState.mInfinite ?
+            // or set the mSetAllItemsForced to true to force all items to show
+            needsToFill = mSetAllItemsForced ? 999999999 : mLayoutState.mInfinite ?
                     mContext.getResources().getDisplayMetrics().widthPixels
                     : mLayoutState.mAvailable;
         }
