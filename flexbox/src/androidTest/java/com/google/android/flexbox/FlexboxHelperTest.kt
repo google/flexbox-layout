@@ -403,6 +403,27 @@ class FlexboxHelperTest {
 
     @Test
     @Throws(Throwable::class)
+    fun testDetermineMainSize_directionRow_unconstrainedWidth_childrenCanBeSizeTheyWant() {
+        val activity = activityRule.activity
+        val view1 = View(activity).apply {
+            layoutParams = FlexboxLayout.LayoutParams(100, 100)
+        }.also(flexContainer::addView)
+        val view2 = View(activity).apply {
+            layoutParams = FlexboxLayout.LayoutParams(1000, 100)
+        }.also(flexContainer::addView)
+        val widthMeasureSpec = View.MeasureSpec.makeMeasureSpec(0, View.MeasureSpec.UNSPECIFIED)
+        val heightMeasureSpec = View.MeasureSpec.makeMeasureSpec(1000, View.MeasureSpec.UNSPECIFIED)
+        val result = FlexboxHelper.FlexLinesResult()
+        flexboxHelper.calculateHorizontalFlexLines(result, widthMeasureSpec, heightMeasureSpec)
+        flexContainer.flexLines = result.mFlexLines
+        flexboxHelper.determineMainSize(widthMeasureSpec, heightMeasureSpec)
+
+        assertThat(view1.measuredWidth, `is`(100))
+        assertThat(view2.measuredWidth, `is`(1000))
+    }
+
+    @Test
+    @Throws(Throwable::class)
     fun testDetermineMainSize_directionRow_considerCompoundButtonImplicitMinSizeWhenNotSpecified() {
         val containerWidth = 500
         val activity = activityRule.activity
