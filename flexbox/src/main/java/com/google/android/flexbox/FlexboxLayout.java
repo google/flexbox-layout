@@ -455,6 +455,9 @@ public class FlexboxLayout extends ViewGroup implements FlexContainer {
                 throw new IllegalArgumentException("Invalid flex direction: " + flexDirection);
         }
 
+        calculatedMaxWidth = Math.max(calculatedMaxWidth, getSuggestedMinimumWidth());
+        calculatedMaxHeight = Math.max(calculatedMaxHeight, getSuggestedMinimumHeight());
+
         int widthSizeAndState;
         switch (widthMode) {
             case MeasureSpec.EXACTLY:
