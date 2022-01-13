@@ -16,7 +16,7 @@
 
 apply plugin: 'com.android.library'
 apply plugin: 'kotlin-android'
-apply from: 'maven-puglisher-plugin.gradle'
+apply from: rootProject.file("gradle/publish.gradle")
 
 android {
     compileSdkVersion rootProject.ext.compileSdkVersion
@@ -25,7 +25,7 @@ android {
         minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.targetSdkVersion
         versionCode 1
-        versionName "$mavenVersion"
+        versionName rootProject.ext.publisher.version
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
 

@@ -1,0 +1,34 @@
+name: Publish
+on:
+  push:
+    branches: [ main ]
+
+jobs:
+  publish:
+    name: Main
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+      - name: Define version name
+        run: |
+          echo 'version='$(sed -E -n -e "/version *:/s/^.*\"(.*)\".*$/\\1/p" build.gradle) >> $GITHUB_ENV
+      - name: Add secrets to properties
+        run: |
+          echo "github_user=${{ secrets.MAVEN_USER }}" >> gradle.properties
+          echo "github_key=${{ secrets.MAVEN_KEY }}" >> gradle.properties
+      - name: Set up JDK 11
+        uses: actions/setup-java@v2
+        with:
+          java-version: '11'
+          distribution: 'adopt'
+      - name: Grant permission for gradlew
+        run: chmod +x gradlew
+      - name: Build
+        run: ./gradlew flexbox:publish --no-daemon
+      - name: Github Release
+        uses: softprops/action-gh-release@v1
+        with:
+          tag_name: ${{ env.version }}
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
