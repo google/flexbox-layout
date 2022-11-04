@@ -1662,7 +1662,7 @@ public class FlexboxLayoutManager extends RecyclerView.LayoutManager implements 
             }
 
             childTop += (lp.topMargin + getTopDecorationHeight(view));
-            childBottom -= (lp.rightMargin + getBottomDecorationHeight(view));
+            childBottom -= (lp.bottomMargin + getBottomDecorationHeight(view));
 
             if (layoutState.mLayoutDirection == LayoutState.LAYOUT_END) {
                 calculateItemDecorationsForChild(view, TEMP_RECT);
@@ -1699,9 +1699,9 @@ public class FlexboxLayoutManager extends RecyclerView.LayoutManager implements 
                             Math.round(childTop) + view.getMeasuredHeight());
                 }
             }
-            childTop += (view.getMeasuredHeight() + lp.topMargin + getBottomDecorationHeight(view)
+            childTop += (view.getMeasuredHeight() + lp.bottomMargin + getBottomDecorationHeight(view)
                     + spaceBetweenItem);
-            childBottom -= (view.getMeasuredHeight() + lp.bottomMargin +
+            childBottom -= (view.getMeasuredHeight() + lp.topMargin +
                     getTopDecorationHeight(view) + spaceBetweenItem);
         }
         layoutState.mFlexLinePosition += mLayoutState.mLayoutDirection;
