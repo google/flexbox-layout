@@ -23,7 +23,8 @@ import androidx.annotation.IntDef;
 
 /** This attribute controls the alignment of the flex lines in the flex container. */
 @IntDef({AlignContent.FLEX_START, AlignContent.FLEX_END, AlignContent.CENTER,
-        AlignContent.SPACE_BETWEEN, AlignContent.SPACE_AROUND, AlignContent.STRETCH})
+        AlignContent.SPACE_BETWEEN, AlignContent.SPACE_AROUND, AlignContent.STRETCH,
+        AlignContent.SPACE_EVENLY})
 @Retention(RetentionPolicy.SOURCE)
 public @interface AlignContent {
 
@@ -53,4 +54,6 @@ public @interface AlignContent {
      * Flex lines are stretched to fill the remaining space along the cross axis.
      */
     int STRETCH = 5;
+
+    int SPACE_EVENLY = 6;
 }
