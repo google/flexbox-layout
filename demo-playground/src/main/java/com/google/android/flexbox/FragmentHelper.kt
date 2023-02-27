@@ -301,6 +301,7 @@ internal class FragmentHelper(private val activity: MainActivity, private val fl
                             SPACE_BETWEEN -> AlignContent.SPACE_BETWEEN
                             SPACE_AROUND -> AlignContent.SPACE_AROUND
                             STRETCH -> AlignContent.STRETCH
+                            SPACE_EVENLY -> AlignContent.SPACE_EVENLY
                             else -> return
                         }
                     }
@@ -317,6 +318,7 @@ internal class FragmentHelper(private val activity: MainActivity, private val fl
                     AlignContent.SPACE_BETWEEN -> return SPACE_BETWEEN
                     AlignContent.SPACE_AROUND -> return SPACE_AROUND
                     AlignContent.STRETCH -> return STRETCH
+                    AlignContent.SPACE_EVENLY -> return SPACE_EVENLY
                     else -> return STRETCH
                 }
             }
