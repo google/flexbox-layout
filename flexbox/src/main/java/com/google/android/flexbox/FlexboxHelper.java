@@ -1516,6 +1516,36 @@ class FlexboxHelper {
                         mFlexContainer.setFlexLines(newFlexLines);
                         break;
                     }
+                    case AlignContent.SPACE_EVENLY: {
+                        if (totalCrossSize >= size) {
+                            // If the size of the content is larger than the flex container, the
+                            // Flex lines should be aligned center like ALIGN_CONTENT_CENTER
+                            mFlexContainer.setFlexLines(
+                                    constructFlexLinesForAlignContentCenter(flexLines, size,
+                                            totalCrossSize));
+                            break;
+                        }
+                        // The value of free space along the cross axis which needs to be put on top
+                        // and below the bottom of each flex line.
+                        int spaceTopAndBottom = size - totalCrossSize;
+                        // The number of spaces along the cross axis
+                        int numberOfSpaces = flexLines.size() + 1;
+                        spaceTopAndBottom = spaceTopAndBottom / numberOfSpaces;
+                        List<FlexLine> newFlexLines = new ArrayList<>();
+                        FlexLine dummySpaceFlexLine = new FlexLine();
+                        dummySpaceFlexLine.mCrossSize = spaceTopAndBottom;
+                        boolean isFirstLine = true;
+                        for (FlexLine flexLine : flexLines) {
+                            if (isFirstLine) {
+                                newFlexLines.add(dummySpaceFlexLine);
+                                isFirstLine = false;
+                            }
+                            newFlexLines.add(flexLine);
+                            newFlexLines.add(dummySpaceFlexLine);
+                        }
+                        mFlexContainer.setFlexLines(newFlexLines);
+                        break;
+                    }
                     case AlignContent.SPACE_BETWEEN: {
                         if (totalCrossSize >= size) {
                             break;

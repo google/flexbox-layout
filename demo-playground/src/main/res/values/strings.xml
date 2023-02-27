@@ -84,6 +84,7 @@ limitations under the License.
         <item>@string/space_between</item>
         <item>@string/space_around</item>
         <item>@string/stretch</item>
+        <item>@string/space_evenly</item>
     </string-array>
 
     <string-array translatable="false" name="array_align_self">
