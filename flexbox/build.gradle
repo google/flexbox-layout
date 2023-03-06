@@ -24,8 +24,6 @@ android {
     defaultConfig {
         minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.targetSdkVersion
-        versionCode 1
-        versionName "$mavenVersion"
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
 
@@ -36,6 +34,7 @@ android {
             minifyEnabled false
         }
     }
+    namespace 'com.google.android.flexbox'
 
     libraryVariants.all {
         it.generateBuildConfigProvider.configure { enabled = false }
