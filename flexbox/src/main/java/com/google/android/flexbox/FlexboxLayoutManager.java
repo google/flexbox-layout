@@ -20,6 +20,7 @@ import static androidx.recyclerview.widget.LinearLayoutManager.INVALID_OFFSET;
 import static androidx.recyclerview.widget.RecyclerView.NO_POSITION;
 
 import android.content.Context;
+import android.content.res.TypedArray;
 import android.graphics.PointF;
 import android.graphics.Rect;
 import android.os.Parcel;
@@ -242,6 +243,14 @@ public class FlexboxLayoutManager extends RecyclerView.LayoutManager implements 
      */
     public FlexboxLayoutManager(Context context, AttributeSet attrs, int defStyleAttr,
             int defStyleRes) {
+        TypedArray a = context.obtainStyledAttributes(
+                attrs, R.styleable.FlexboxLayout, defStyleAttr, 0);
+        mFlexWrap = a.getInt(R.styleable.FlexboxLayout_flexWrap, FlexWrap.WRAP);
+        mJustifyContent = a
+                .getInt(R.styleable.FlexboxLayout_justifyContent, JustifyContent.FLEX_START);
+        mAlignItems = a.getInt(R.styleable.FlexboxLayout_alignItems, AlignItems.STRETCH);
+        mMaxLine = a.getInt(R.styleable.FlexboxLayout_maxLine, NOT_SET);
+        a.recycle();
         Properties properties = getProperties(context, attrs, defStyleAttr, defStyleRes);
         switch (properties.orientation) {
             case LinearLayoutManager.HORIZONTAL:
@@ -259,8 +268,10 @@ public class FlexboxLayoutManager extends RecyclerView.LayoutManager implements 
                 }
                 break;
         }
-        setFlexWrap(FlexWrap.WRAP);
-        setAlignItems(AlignItems.STRETCH);
+        setFlexWrap(mFlexWrap);
+        setJustifyContent(mJustifyContent);
+        setAlignItems(mAlignItems);
+        setMaxLine(mMaxLine);
         mContext = context;
     }
 

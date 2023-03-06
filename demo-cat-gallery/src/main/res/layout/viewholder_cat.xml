@@ -13,11 +13,12 @@ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
 limitations under the License.
 -->
-<ImageView
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<ImageView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/imageview"
     android:layout_width="wrap_content"
     android:layout_height="wrap_content"
-    android:scaleType="centerCrop"
     android:layout_margin="1dp"
-    android:contentDescription="@string/content_description_cat_view_holder"/>
+    android:contentDescription="@string/content_description_cat_view_holder"
+    android:scaleType="centerCrop"
+    tools:src="@drawable/cat_2" />
