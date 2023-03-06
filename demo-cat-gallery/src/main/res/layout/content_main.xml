@@ -13,10 +13,15 @@ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
 limitations under the License.
 -->
-<androidx.recyclerview.widget.RecyclerView
+<androidx.recyclerview.widget.RecyclerView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:android="http://schemas.android.com/apk/res/android"
-    app:layout_behavior="@string/appbar_scrolling_view_behavior"
+    xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/recyclerview"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"/>
+    android:layout_height="match_parent"
+    app:layoutManager="com.google.android.flexbox.FlexboxLayoutManager"
+    app:flexWrap="wrap"
+    android:orientation="horizontal"
+    tools:listitem="@layout/viewholder_cat"
+    app:alignItems="stretch"
+    app:layout_behavior="@string/appbar_scrolling_view_behavior" />

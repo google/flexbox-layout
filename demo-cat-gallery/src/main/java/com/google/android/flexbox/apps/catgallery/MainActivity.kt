@@ -41,15 +41,7 @@ class MainActivity : AppCompatActivity() {
         val toolbar: Toolbar = findViewById(R.id.toolbar)
         setSupportActionBar(toolbar)
 
-        val flexboxLayoutManager = FlexboxLayoutManager(this).apply {
-            flexWrap = FlexWrap.WRAP
-            flexDirection = FlexDirection.ROW
-            alignItems = AlignItems.STRETCH
-        }
-
-        val recyclerView: RecyclerView = findViewById(R.id.recyclerview)
-        recyclerView.apply {
-            layoutManager = flexboxLayoutManager
+        findViewById<RecyclerView>(R.id.recyclerview).apply {
             adapter = CatAdapter()
         }
     }
