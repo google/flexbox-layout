@@ -1273,6 +1273,10 @@ class FlexboxHelper {
                 if (!mChildrenFrozen[index] && flexItem.getFlexShrink() > 0f) {
                     float rawCalculatedWidth = childMeasuredWidth
                             - unitShrink * flexItem.getFlexShrink();
+                    if (rawCalculatedWidth < 0) {
+                        // Make sure no negative width when shrinking
+                        rawCalculatedWidth = 0;
+                    }
                     if (i == flexLine.mItemCount - 1) {
                         rawCalculatedWidth += accumulatedRoundError;
                         accumulatedRoundError = 0;
